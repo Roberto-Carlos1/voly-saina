@@ -11,3 +11,4 @@
 *.log
 *.tmp
 *.bak
+src/main/resources/application.properties

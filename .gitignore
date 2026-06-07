@@ -1,3 +1,13 @@
+.vscode/
 
-/target
-/target
+/target/
+/target/classes/
+/target/test-classes/
+/target/generated-sources/
+/target/generated-test-sources/
+/target/maven-status/
+/target/maven-archiver/
+/logs/*
+*.log
+*.tmp
+*.bak

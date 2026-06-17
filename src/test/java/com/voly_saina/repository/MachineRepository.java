@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface MachineRepository extends JpaRepository<Machine, Long> {
     
-    List<Machine> findByEtat(String etat);
+    List<Machine> findByEtatMachineCode(String code);
     
     List<Machine> findByDisponibleTrue();
     
@@ -21,6 +21,6 @@ public interface MachineRepository extends JpaRepository<Machine, Long> {
     @Query("SELECT m FROM Machine m WHERE m.prixJour <= :prixMax AND m.disponible = true")
     List<Machine> findAvailableMachinesByMaxPrice(@Param("prixMax") BigDecimal prixMax);
     
-    @Query("SELECT m FROM Machine m WHERE m.etat = :etat AND m.disponible = :disponible")
-    List<Machine> findByEtatAndDisponible(@Param("etat") String etat, @Param("disponible") Boolean disponible);
+    @Query("SELECT m FROM Machine m WHERE m.etatMachine.code = :code AND m.disponible = :disponible")
+    List<Machine> findByEtatMachineCodeAndDisponible(@Param("code") String code, @Param("disponible") Boolean disponible);
 }

@@ -41,8 +41,9 @@ public class ReservationMachine {
     @Column(name = "prix_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal prixTotal = BigDecimal.ZERO;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: en_attente, validee, refusee, en_cours, terminee, annulee
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_reservation", nullable = false)
+    private StatutReservation statutReservation;
     
     @Column(name = "motif_refus")
     private String motifRefus;

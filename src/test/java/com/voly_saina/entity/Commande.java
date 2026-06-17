@@ -35,8 +35,9 @@ public class Commande {
     @Column(name = "mode_paiement", length = 80)
     private String modePaiement;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: en_attente, validee, preparee, en_livraison, livree, annulee
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_commande", nullable = false)
+    private StatutCommande statutCommande;
     
     @Column(name = "montant_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal montantTotal = BigDecimal.ZERO;

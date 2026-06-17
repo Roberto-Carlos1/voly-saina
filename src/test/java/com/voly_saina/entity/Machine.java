@@ -33,8 +33,9 @@ public class Machine {
     @Column(name = "prix_jour", nullable = false, precision = 12, scale = 2)
     private BigDecimal prixJour;
     
-    @Column(name = "etat", nullable = false)
-    private String etat; // Valeurs: disponible, louee, maintenance, hors_service
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_etat_machine", nullable = false)
+    private EtatMachine etatMachine;
     
     @Column(name = "localisation")
     private String localisation;

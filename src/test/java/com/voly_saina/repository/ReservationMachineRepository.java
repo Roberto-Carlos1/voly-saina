@@ -16,17 +16,17 @@ public interface ReservationMachineRepository extends JpaRepository<ReservationM
     
     List<ReservationMachine> findByMachineIdMachine(Long machineId);
     
-    List<ReservationMachine> findByStatut(String statut);
+    List<ReservationMachine> findByStatutReservationCode(String code);
     
     @Query("SELECT r FROM ReservationMachine r WHERE r.machine.idMachine = :machineId " +
            "AND r.dateDebut <= :dateFin AND r.dateFin >= :dateDebut " +
-           "AND r.statut NOT IN ('refusee', 'annulee', 'terminee')")
+           "AND r.statutReservation.code NOT IN ('refusee', 'annulee', 'terminee')")
     List<ReservationMachine> findConflictingReservations(
         @Param("machineId") Long machineId,
         @Param("dateDebut") LocalDate dateDebut,
         @Param("dateFin") LocalDate dateFin
     );
     
-    @Query("SELECT r FROM ReservationMachine r WHERE r.client.idUtilisateur = :clientId AND r.statut = :statut")
-    List<ReservationMachine> findByClientAndStatut(@Param("clientId") Long clientId, @Param("statut") String statut);
+    @Query("SELECT r FROM ReservationMachine r WHERE r.client.idUtilisateur = :clientId AND r.statutReservation.code = :code")
+    List<ReservationMachine> findByClientAndStatutReservationCode(@Param("clientId") Long clientId, @Param("code") String code);
 }

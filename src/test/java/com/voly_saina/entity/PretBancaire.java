@@ -35,6 +35,7 @@ public class PretBancaire {
     @Column(name = "date_debut", nullable = false)
     private LocalDate dateDebut;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: en_cours, cloture, en_retard
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_pret", nullable = false)
+    private StatutPret statutPret;
 }

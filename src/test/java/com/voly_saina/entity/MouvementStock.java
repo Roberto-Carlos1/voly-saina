@@ -25,8 +25,9 @@ public class MouvementStock {
     @JoinColumn(name = "id_produit", nullable = false)
     private Produit produit;
     
-    @Column(name = "type_mouvement", nullable = false)
-    private String typeMouvement; // Valeurs: entree, sortie, correction
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_type_mouvement", nullable = false)
+    private TypeMouvementStock typeMouvement;
     
     @Column(name = "quantite", nullable = false, precision = 12, scale = 2)
     private BigDecimal quantite;

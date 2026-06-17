@@ -39,6 +39,7 @@ public class MaintenanceMachine {
     @Column(name = "travaux")
     private String travaux;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: prevue, en_cours, terminee, annulee
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_maintenance", nullable = false)
+    private StatutMaintenance statutMaintenance;
 }

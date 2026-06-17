@@ -31,8 +31,9 @@ public class TacheEmploye {
     @Column(name = "date_limite")
     private LocalDate dateLimite;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: a_faire, en_cours, terminee, en_retard
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_tache", nullable = false)
+    private StatutTache statutTache;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_reservation")

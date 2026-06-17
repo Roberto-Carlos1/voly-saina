@@ -7,12 +7,13 @@ import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "rapport", schema = "voly_saina")
 public class Rapport {
@@ -33,7 +34,7 @@ public class Rapport {
     
     @Column(name = "contenu", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    private JsonNode contenu;
+    private String contenu;
     
     @CreationTimestamp
     @Column(name = "date_generation", nullable = false, updatable = false)

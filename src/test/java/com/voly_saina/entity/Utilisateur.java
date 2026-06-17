@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -34,11 +32,13 @@ public class Utilisateur {
     @Column(name = "mot_de_passe", nullable = false)
     private String motDePasse;
     
-    @Column(name = "role", nullable = false)
-    private String role; // Valeurs: client, gestionnaire, responsable, employe
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role", nullable = false)
+    private RoleUtilisateur role;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: actif, inactif, bloque
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_compte", nullable = false)
+    private StatutCompte statutCompte;
     
     @CreationTimestamp
     @Column(name = "date_creation", nullable = false, updatable = false)

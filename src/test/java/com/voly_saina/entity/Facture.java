@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.voly_saina.repository.UtilisateurRepository;
-
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.math.BigDecimal;
@@ -35,7 +33,7 @@ public class Facture {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_client", nullable = false)
-    private UtilisateurRepository client;
+    private Utilisateur client;
     
     @CreationTimestamp
     @Column(name = "date_facture", nullable = false, updatable = false)
@@ -47,8 +45,9 @@ public class Facture {
     @Column(name = "montant_paye", nullable = false, precision = 12, scale = 2)
     private BigDecimal montantPaye = BigDecimal.ZERO;
     
-    @Column(name = "statut", nullable = false)
-    private String statut; // Valeurs: en_attente, payee, partiellement_payee, en_retard, annulee
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_facture", nullable = false)
+    private StatutFacture statutFacture;
     
     @Column(name = "date_limite")
     private LocalDate dateLimite;

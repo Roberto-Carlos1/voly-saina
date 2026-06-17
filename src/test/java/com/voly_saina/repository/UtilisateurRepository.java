@@ -14,12 +14,12 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
     
     Optional<Utilisateur> findByEmail(String email);
     
-    List<Utilisateur> findByRole(String role);
+    List<Utilisateur> findByRoleCode(String code);
     
-    List<Utilisateur> findByStatut(String statut);
+    List<Utilisateur> findByStatutCompteCode(String code);
     
-    @Query("SELECT u FROM Utilisateur u WHERE u.role = :role AND u.statut = :statut")
-    List<Utilisateur> findByRoleAndStatut(@Param("role") String role, @Param("statut") String statut);
+    @Query("SELECT u FROM Utilisateur u WHERE u.role.code = :roleCode AND u.statutCompte.code = :statutCode")
+    List<Utilisateur> findByRoleCodeAndStatutCompteCode(@Param("roleCode") String roleCode, @Param("statutCode") String statutCode);
     
     boolean existsByEmail(String email);
 }

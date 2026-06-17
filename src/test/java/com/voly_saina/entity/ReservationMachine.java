@@ -1,4 +1,4 @@
-package com.voly.saina.entity;
+package com.voly_saina.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "reservation_machine", schema = "voly_saina")
 public class ReservationMachine {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_reservation")

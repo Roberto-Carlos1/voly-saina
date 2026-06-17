@@ -1,4 +1,4 @@
-package com.voly.saina.entity;
+package com.voly_saina.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.voly.saina.repository.UtilisateurRepository;
+import com.voly_saina.repository.UtilisateurRepository;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;

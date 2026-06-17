@@ -1,19 +1,18 @@
-package com.voly.saina.entity;
+package com.voly_saina.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
-@Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "rapport", schema = "voly_saina")
 public class Rapport {

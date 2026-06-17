@@ -1,4 +1,4 @@
-package com.voly.saina.entity;
+package com.voly_saina.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package com.voly.saina.repository;
+package com.voly_saina.repository;
 
-import com.voly.saina.entity.ReservationMachine;
+import com.voly_saina.entity.ReservationMachine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

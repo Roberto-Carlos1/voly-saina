@@ -1,6 +1,6 @@
-package com.voly.saina.repository;
+package com.voly_saina.repository;
 
-import com.voly.saina.entity.Utilisateur;
+import com.voly_saina.entity.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

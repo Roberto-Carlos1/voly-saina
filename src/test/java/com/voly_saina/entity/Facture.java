@@ -1,0 +1,55 @@
+package com.voly.saina.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.voly.saina.repository.UtilisateurRepository;
+
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "facture", schema = "voly_saina")
+public class Facture {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_facture")
+    private Long idFacture;
+    
+    @Column(name = "numero", nullable = false, length = 50, unique = true)
+    private String numero;
+    
+    @Column(name = "type_operation", nullable = false, length = 30)
+    private String typeOperation; // Valeurs: location, commande
+    
+    @Column(name = "id_operation", nullable = false)
+    private Long idOperation;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_client", nullable = false)
+    private UtilisateurRepository client;
+    
+    @CreationTimestamp
+    @Column(name = "date_facture", nullable = false, updatable = false)
+    private LocalDateTime dateFacture;
+    
+    @Column(name = "montant_total", nullable = false, precision = 12, scale = 2)
+    private BigDecimal montantTotal;
+    
+    @Column(name = "montant_paye", nullable = false, precision = 12, scale = 2)
+    private BigDecimal montantPaye = BigDecimal.ZERO;
+    
+    @Column(name = "statut", nullable = false)
+    private String statut; // Valeurs: en_attente, payee, partiellement_payee, en_retard, annulee
+    
+    @Column(name = "date_limite")
+    private LocalDate dateLimite;
+}

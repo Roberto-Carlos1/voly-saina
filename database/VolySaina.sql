@@ -1,3 +1,4 @@
+-- Active: 1773080411410@@127.0.0.1@5432@voly_saina
 DROP SCHEMA IF EXISTS voly_saina CASCADE;
 CREATE SCHEMA voly_saina;
 SET search_path TO voly_saina;
@@ -71,7 +72,7 @@ CREATE TABLE fiche_culture (
 -- =========================
 -- 4. Machines, réservations et retours
 -- =========================
-CREATE TABLE machine (
+CREATE TABLE machine (  
     id_machine SERIAL PRIMARY KEY,
     nom VARCHAR(150) NOT NULL,
     type_machine VARCHAR(80) NOT NULL,

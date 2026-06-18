@@ -17,12 +17,14 @@
             <th>Nom machine</th>
             <th>Type machine</th>
             <th>Etat</th>
+            <th>Action</th>
         </tr>
 
         <tr th:each="machine : ${machines}">
             <td th:text = ${machine.getNom()}></td>
             <td th:text = ${machine.getTypeMachine()}></td>
             <td th:text = ${machine.getEtatMachine().getLibelle()}></td>
+            <td th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</td>
         </tr>
     </table>
 </body>

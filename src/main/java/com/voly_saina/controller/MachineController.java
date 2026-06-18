@@ -52,9 +52,6 @@ public class MachineController {
         Machine m= machineService.findById(id);
         model.addAttribute("machine", m);
 
-        Utilisateur user= utilisateurService.findById(m.getIdMachine());
-        model.addAttribute("user", user);
-
         List<ReservationMachine> reservation= reservationMachineService.findMachine(id); 
         model.addAttribute("reservations", reservation);
 

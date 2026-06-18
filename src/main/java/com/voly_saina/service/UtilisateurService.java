@@ -18,8 +18,8 @@ public class UtilisateurService {
         return utilisateurRepository.findAll();
     }
 
-    public Utilisateur findById(Long id) {
-        return utilisateurRepository.findById(id).orElse(null);
+    public Optional<Utilisateur> findById(Long id) {
+        return utilisateurRepository.findById(id);
     }
 
     public Utilisateur save(Utilisateur utilisateur) {

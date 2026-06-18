@@ -1,29 +1,34 @@
 package com.voly_saina.controller;
 
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.Utilisateur;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.UtilisateurService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-
+@Controller
 @RequestMapping("/api/machines")
 public class MachineController {
 
     @Autowired
     private final MachineService machineService;
     private final UtilisateurService utilisateurService;
+    private final ReservationMachineService reservationMachineService;
 
-    public MachineController(MachineService machineService, UtilisateurService utilisateurService) {
+    public MachineController(MachineService machineService, UtilisateurService utilisateurService, ReservationMachineService reservationMachineService) {
         this.machineService = machineService;
         this.utilisateurService = utilisateurService;
+        this.reservationMachineService = reservationMachineService;
     }
 
     @GetMapping("/")
@@ -39,42 +44,47 @@ public class MachineController {
 
     // GET /api/machines/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Machine> getById(@PathVariable Long id) {
-        return machineService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
+    // public ResponseEntity<Machine> getById(@PathVariable Long id) {
+    //     return machineService.findById(id)
+    //             .map(ResponseEntity::ok)
+    //             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    // }
 
-    public String getMachinebyId(@PathVariable Integer id, Model model){
+    public String getMachinebyId(@PathVariable Long id, Model model){
         Machine m= machineService.findById(id);
-        return "detail-machine";
+        model.addAttribute("machine", m);
+
+        Utilisateur user= utilisateurService.findById(m.getIdMachine());
+        model.addAttribute("user", user);
+
+        return "machines/detail-machine";
     }
 
     // POST /api/machines
-    @PostMapping
-    public ResponseEntity<Machine> create(@RequestBody Machine machine) {
-        Machine saved = machineService.save(machine);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
+    // @PostMapping
+    // public ResponseEntity<Machine> create(@RequestBody Machine machine) {
+    //     Machine saved = machineService.save(machine);
+    //     return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    // }
 
     // PUT /api/machines/{id}
-    @PutMapping("/{id}")
-    public ResponseEntity<Machine> update(@PathVariable Long id, @RequestBody Machine machine) {
-        if (!machineService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        machine.setIdMachine(id);
-        Machine updated = machineService.save(machine);
-        return ResponseEntity.ok(updated);
-    }
+    // @PutMapping("/{id}")
+    // public ResponseEntity<Machine> update(@PathVariable Long id, @RequestBody Machine machine) {
+    //     if (!machineService.existsById(id)) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    //     }
+    //     machine.setIdMachine(id);
+    //     Machine updated = machineService.save(machine);
+    //     return ResponseEntity.ok(updated);
+    // }
 
     // DELETE /api/machines/{id}
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!machineService.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        machineService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> delete(@PathVariable Long id) {
+    //     if (!machineService.existsById(id)) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    //     }
+    //     machineService.deleteById(id);
+    //     return ResponseEntity.noContent().build();
+    // }
 }

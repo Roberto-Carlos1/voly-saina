@@ -3,8 +3,11 @@ package com.voly_saina.controller;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.entity.StatutReservation;
+
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ReservationMachineService;
+import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
 
 import org.springframework.beans.factory.annotation.Autowired;

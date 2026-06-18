@@ -1,4 +1,23 @@
-<h2> Détails machine</h2>
+<h2 th:text=" 'À propos du ' + ${machine.getNom()}"></h2>
 
-<h4 th:text= ${machine.getNom()}></h4>
-<p th:text= ${machine.getTypeMachine()}></p>
+<div class="container">
+    <ul>
+        <li th:text=" 'Type : ' + ${machine.getTypeMachine()}"></li>
+        <li th:text=" 'A propos: ' + ${machine.getDescription()}"></li>
+        <li th:text="'Prix (par jour): ' + ${machine.getPrixJour()} + ' Ar'"></li>
+    </ul>
+
+    <h2 th:text="${machine.getEtatMachine().getLibelle()}"></h2>
+
+    <table border="1">
+        <tr>
+            <th> Date Debut </th>
+            <th> Date Fin </th>
+            <th> Prix Total </th>
+        </tr>
+
+        <tr th:if="${reservations}">
+            
+        </tr>
+    </table>
+</div>

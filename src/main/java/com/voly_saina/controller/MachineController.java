@@ -2,19 +2,29 @@ package com.voly_saina.controller;
 
 import com.voly_saina.entity.Machine;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.UtilisateurService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/api/machines")
 public class MachineController {
 
     @Autowired
-    private MachineService machineService;
+    private final MachineService machineService;
+    private final UtilisateurService utilisateurService;
+
+    public MachineController(MachineService machineService, UtilisateurService utilisateurService) {
+        this.machineService = machineService;
+        this.utilisateurService = utilisateurService;
+    }
 
     @GetMapping("/")
     public String index() {
@@ -33,6 +43,11 @@ public class MachineController {
         return machineService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    public String getMachinebyId(@PathVariable Integer id, Model model){
+        Machine m= machineService.findById(id);
+        return "detail-machine";
     }
 
     // POST /api/machines

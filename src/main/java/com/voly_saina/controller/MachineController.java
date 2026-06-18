@@ -26,7 +26,8 @@ public class MachineController {
     public ResponseEntity<List<Machine>> getAll() {
         return ResponseEntity.ok(machineService.findAll());
     }
-
+    
+    
     // GET /api/machines/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Machine> getById(@PathVariable Long id) {

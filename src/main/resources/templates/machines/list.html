@@ -8,11 +8,31 @@
 </head>
 
 <body>
+
     <h1>Liste des machines</h1>
 
+    <h3>Filtre</h3>
+    <form action="/machines/filtre" method="post">
+        <p>Etat machine
+            <select name="etatMachine" id="">
+                <option value="">Vide</option>
+                <option th:each="etat : ${etatMachine}" th:value="${etat.getIdEtatMachine()}"
+                    th:text="${etat.getLibelle()}"></option>
+            </select>
+
+            Type machine
+            <select name="typeMachine" id="">
+                <option value="">Vide</option>
+                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}"
+                    th:text="${type.getLibelle()}"></option>
+            </select>
+            
+            <input type="submit" value="Filtrer">
+        </p>
+
+    </form>
 
     <table border="1">
-
         <tr>
             <th>Nom machine</th>
             <th>Type machine</th>
@@ -22,10 +42,11 @@
 
         <tr th:each="machine : ${machines}">
             <td th:text=${machine.getNom()}></td>
-            <td th:text=${machine.getTypeMachine()}></td>
+            <td th:text=${machine.getTypeMachine().getLibelle()}></td>
             <td th:text=${machine.getEtatMachine().getLibelle()}></td>
             <td><a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a></td>
         </tr>
+
     </table>
 </body>
 

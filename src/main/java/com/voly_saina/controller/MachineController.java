@@ -1,7 +1,12 @@
 package com.voly_saina.controller;
 
+import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.TypeMachine;
+import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.TypeMachineService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,24 +19,36 @@ import java.util.List;
 @Controller
 @RequestMapping("/api/machines")
 public class MachineController {
+    private final EtatMachineService etatMachineService;
+    private final MachineService machineService;
+    private final TypeMachineService typeMachineService;
 
-    @Autowired
-    private MachineService machineService;
+    public MachineController(EtatMachineService etatMachineService, MachineService machineService,
+            TypeMachineService typeMachineService) {
+        this.etatMachineService = etatMachineService;
+        this.machineService = machineService;
+        this.typeMachineService = typeMachineService;
+    }
 
     @GetMapping("/")
     public String index() {
         return "index";
     }
-    
+
     // GET /api/machines
     @GetMapping
     public String getAll(Model model) {
+        List<EtatMachine> etats = etatMachineService.findAll();
+        List<TypeMachine> types = typeMachineService.findAll();
         List<Machine> liste = machineService.findAll();
+        
         model.addAttribute("machines", liste);
+        model.addAttribute("etatMachine", etats);
+        model.addAttribute("types", types);
 
         return "machines/list";
     }
-    
+
     // GET /api/machines/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Machine> getById(@PathVariable Long id) {

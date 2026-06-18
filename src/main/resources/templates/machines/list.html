@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machines</title>
+</head>
+
+<body>
+    <h1>Liste des machines</h1>
+
+
+    <table border="1">
+
+        <tr>
+            <th>Nom machine</th>
+            <th>Type machine</th>
+            <th>Etat</th>
+        </tr>
+
+        <tr th:each="machine : ${machines}">
+            <td th:text = ${machine.getNom()}></td>
+            <td th:text = ${machine.getTypeMachine()}></td>
+            <td th:text = ${machine.getEtatMachine().getLibelle()}></td>
+        </tr>
+    </table>
+</body>
+
+</html>

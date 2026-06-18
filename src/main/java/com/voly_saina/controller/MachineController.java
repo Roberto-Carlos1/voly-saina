@@ -5,11 +5,13 @@ import com.voly_saina.service.MachineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/machines")
 public class MachineController {
 
@@ -23,10 +25,12 @@ public class MachineController {
     
     // GET /api/machines
     @GetMapping
-    public ResponseEntity<List<Machine>> getAll() {
-        return ResponseEntity.ok(machineService.findAll());
+    public String getAll(Model model) {
+        List<Machine> liste = machineService.findAll();
+        model.addAttribute("machines", liste);
+
+        return "machines/list";
     }
-    
     
     // GET /api/machines/{id}
     @GetMapping("/{id}")

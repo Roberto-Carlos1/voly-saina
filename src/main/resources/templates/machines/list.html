@@ -21,10 +21,10 @@
         </tr>
 
         <tr th:each="machine : ${machines}">
-            <td th:text = ${machine.getNom()}></td>
-            <td th:text = ${machine.getTypeMachine()}></td>
-            <td th:text = ${machine.getEtatMachine().getLibelle()}></td>
-            <td th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</td>
+            <td th:text=${machine.getNom()}></td>
+            <td th:text=${machine.getTypeMachine()}></td>
+            <td th:text=${machine.getEtatMachine().getLibelle()}></td>
+            <td><a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a></td>
         </tr>
     </table>
 </body>

@@ -18,8 +18,8 @@ public class MachineService {
         return machineRepository.findAll();
     }
 
-    public Optional<Machine> findById(Long id) {
-        return machineRepository.findById(id);
+    public Machine findById(Long id) {
+        return machineRepository.findById(id).orElse(null);
     }
 
     public Machine save(Machine machine) {

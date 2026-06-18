@@ -5,12 +5,10 @@
     <td th:text="${produit.prix}"></td>
 </tr>
 
-${produits} : liste envoyée depuis le controller
-produit : variable temporaire
 
 ## Condition
-<p th:if="${produit.prix > 1000}">Cher</p>
-<p th:unless="${produit.prix > 1000}">Pas cher</p>
+<p th:if="${produit.prix > 1000}"></p>
+<p th:unless="${produit.prix > 1000}"></p>
 
 ## Afficher les donnees
     remplacer le contenu de la balise

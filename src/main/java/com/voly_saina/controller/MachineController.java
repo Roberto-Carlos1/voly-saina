@@ -1,38 +1,69 @@
 package com.voly_saina.controller;
 
+import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.entity.TypeMachine;
+import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.ReservationMachineService;
+import com.voly_saina.service.TypeMachineService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/machines")
 public class MachineController {
+    private final EtatMachineService etatMachineService;
+    private final MachineService machineService;
+    private final TypeMachineService typeMachineService;
+    private final ReservationMachineService reservationMachineService;
 
-    @Autowired
-    private MachineService machineService;
+    public MachineController(EtatMachineService etatMachineService, MachineService machineService,
+            TypeMachineService typeMachineService, ReservationMachineService reservationMachineService) {
+        this.etatMachineService = etatMachineService;
+        this.machineService = machineService;
+        this.typeMachineService = typeMachineService;
+        this.reservationMachineService= reservationMachineService;
+    }
 
     @GetMapping("/")
     public String index() {
         return "index";
     }
-    
+
     // GET /api/machines
     @GetMapping
-    public ResponseEntity<List<Machine>> getAll() {
-        return ResponseEntity.ok(machineService.findAll());
+    public String getAll(Model model) {
+        List<EtatMachine> etats = etatMachineService.findAll();
+        List<TypeMachine> types = typeMachineService.findAll();
+        List<Machine> liste = machineService.findAll();
+        
+        model.addAttribute("machines", liste);
+        model.addAttribute("etatMachine", etats);
+        model.addAttribute("types", types);
+
+        return "machines/list";
     }
 
     // GET /api/machines/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Machine> getById(@PathVariable Long id) {
-        return machineService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
+    public String getMachinebyId(@PathVariable Long id, Model model){
+        Machine m= machineService.findById(id);
+        model.addAttribute("machine", m);
+
+        List<ReservationMachine> reservation= reservationMachineService.findMachine(id); 
+        model.addAttribute("reservations", reservation);
+
+        return "machines/detail-machine";
     }
 
     // POST /api/machines

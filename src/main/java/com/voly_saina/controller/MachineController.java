@@ -2,9 +2,11 @@ package com.voly_saina.controller;
 
 import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.TypeMachineService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +24,14 @@ public class MachineController {
     private final EtatMachineService etatMachineService;
     private final MachineService machineService;
     private final TypeMachineService typeMachineService;
+    private final ReservationMachineService reservationMachineService;
 
     public MachineController(EtatMachineService etatMachineService, MachineService machineService,
-            TypeMachineService typeMachineService) {
+            TypeMachineService typeMachineService, ReservationMachineService reservationMachineService) {
         this.etatMachineService = etatMachineService;
         this.machineService = machineService;
         this.typeMachineService = typeMachineService;
+        this.reservationMachineService= reservationMachineService;
     }
 
     @GetMapping("/")

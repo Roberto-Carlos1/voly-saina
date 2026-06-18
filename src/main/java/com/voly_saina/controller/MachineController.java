@@ -4,9 +4,12 @@ import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.TypeMachine;
+import com.voly_saina.entity.MaintenanceMachine;
+import com.voly_saina.entity.StatutMaintenance;
 import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ReservationMachineService;
+import com.voly_saina.service.MaintenanceMachineService;
 import com.voly_saina.service.TypeMachineService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +28,14 @@ public class MachineController {
     private final MachineService machineService;
     private final TypeMachineService typeMachineService;
     private final ReservationMachineService reservationMachineService;
-
+    private final MaintenanceMachineService maintenanceMachineService;
     public MachineController(EtatMachineService etatMachineService, MachineService machineService,
-            TypeMachineService typeMachineService, ReservationMachineService reservationMachineService) {
+            TypeMachineService typeMachineService, ReservationMachineService reservationMachineService, MaintenanceMachineService maintenanceMachineService ) {
         this.etatMachineService = etatMachineService;
         this.machineService = machineService;
         this.typeMachineService = typeMachineService;
         this.reservationMachineService= reservationMachineService;
+        this.maintenanceMachineService = maintenanceMachineService;
     }
 
     @GetMapping("/")
@@ -62,10 +66,11 @@ public class MachineController {
 
         List<ReservationMachine> reservation= reservationMachineService.findMachine(id); 
         model.addAttribute("reservations", reservation);
-
+        List<MaintenanceMachine> maintenance= maintenanceMachineService.findByMachine(m);
+        model.addAttribute("maintenances", maintenance);
         return "machines/detail-machine";
     }
-
+    
     // POST /api/machines
     @PostMapping
     public ResponseEntity<Machine> create(@RequestBody Machine machine) {

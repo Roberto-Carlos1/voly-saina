@@ -1,14 +1,11 @@
 package com.voly_saina.controller;
 
+import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
-import com.voly_saina.entity.Utilisateur;
-import com.voly_saina.entity.ReservationMachine;
-import com.voly_saina.entity.StatutReservation;
-
+import com.voly_saina.entity.TypeMachine;
+import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
-import com.voly_saina.service.ReservationMachineService;
-import com.voly_saina.service.StatutReservationService;
-import com.voly_saina.service.UtilisateurService;
+import com.voly_saina.service.TypeMachineService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,27 +19,34 @@ import java.util.List;
 @Controller
 @RequestMapping("/api/machines")
 public class MachineController {
-
-    @Autowired
+    private final EtatMachineService etatMachineService;
     private final MachineService machineService;
-    private final UtilisateurService utilisateurService;
-    private final ReservationMachineService reservationMachineService;
+    private final TypeMachineService typeMachineService;
 
-    public MachineController(MachineService machineService, UtilisateurService utilisateurService, ReservationMachineService reservationMachineService) {
+    public MachineController(EtatMachineService etatMachineService, MachineService machineService,
+            TypeMachineService typeMachineService) {
+        this.etatMachineService = etatMachineService;
         this.machineService = machineService;
-        this.utilisateurService = utilisateurService;
-        this.reservationMachineService = reservationMachineService;
+        this.typeMachineService = typeMachineService;
     }
 
     @GetMapping("/")
     public String index() {
         return "index";
     }
-    
+
     // GET /api/machines
     @GetMapping
-    public ResponseEntity<List<Machine>> getAll() {
-        return ResponseEntity.ok(machineService.findAll());
+    public String getAll(Model model) {
+        List<EtatMachine> etats = etatMachineService.findAll();
+        List<TypeMachine> types = typeMachineService.findAll();
+        List<Machine> liste = machineService.findAll();
+        
+        model.addAttribute("machines", liste);
+        model.addAttribute("etatMachine", etats);
+        model.addAttribute("types", types);
+
+        return "machines/list";
     }
 
     // GET /api/machines/{id}

@@ -16,6 +16,11 @@ public class MachineController {
     @Autowired
     private MachineService machineService;
 
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+    
     // GET /api/machines
     @GetMapping
     public ResponseEntity<List<Machine>> getAll() {

@@ -33,4 +33,9 @@ public class ReservationMachineService {
     public void deleteById(Long id) {
         reservationMachineRepository.deleteById(id);
     }
+
+    public List<ReservationMachine> findMachine(Long id){
+        return reservationMachineRepository.findByMachineIdMachine(id);
+    }
+
 }

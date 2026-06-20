@@ -3,12 +3,14 @@ package com.voly_saina.controller;
 import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Pages;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.TypeMachine;
 
 import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.TypeMachineService;
 import com.voly_saina.service.PageService;
+import com.voly_saina.service.ReservationMachineService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,13 +30,15 @@ public class MachineController {
     private final EtatMachineService etatMachineService;
     private final MachineService machineService;
     private final TypeMachineService typeMachineService;
+    private final ReservationMachineService reservationMachineService;
     private final PageService pageService;
 
     public MachineController(EtatMachineService etatMachineService, MachineService machineService,
-            TypeMachineService typeMachineService, PageService pageService) {
+            TypeMachineService typeMachineService, ReservationMachineService reservationMachineService, PageService pageService) {
         this.etatMachineService = etatMachineService;
         this.machineService = machineService;
         this.typeMachineService = typeMachineService;
+        this.reservationMachineService = reservationMachineService;
         this.pageService = pageService;
     }
 
@@ -56,7 +60,7 @@ public class MachineController {
 
         Page<Machine> machinePage = machineService.findByPage(pageable);
 
-        model.addAttribute("machines", machinePage.getContent()); 
+        model.addAttribute("machines", machinePage.getContent());
         model.addAttribute("etatMachine", etats);
         model.addAttribute("types", types);
 
@@ -67,19 +71,24 @@ public class MachineController {
     }
 
     @PostMapping("/pages")
-    public String nombrePages(@RequestParam("pages") int page, Model model){
+    public String nombrePages(@RequestParam("pages") int page, Model model) {
         Pages p = pageService.findById(1L);
         p.setNombre(page);
         pageService.save(p);
-        return "redirect:/api/machines" ;
+        return "redirect:/api/machines";
     }
 
     // GET /api/machines/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Machine> getById(@PathVariable Long id) {
-        return machineService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+
+    public String getMachinebyId(@PathVariable Long id, Model model) {
+        Machine m = machineService.findById(id);
+        model.addAttribute("machine", m);
+
+        List<ReservationMachine> reservation = reservationMachineService.findMachine(id);
+        model.addAttribute("reservations", reservation);
+
+        return "machines/detail-machine";
     }
 
     // POST /api/machines

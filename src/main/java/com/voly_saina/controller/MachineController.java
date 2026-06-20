@@ -2,12 +2,18 @@ package com.voly_saina.controller;
 
 import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.Pages;
 import com.voly_saina.entity.TypeMachine;
+
 import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.TypeMachineService;
+import com.voly_saina.service.PageService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,12 +28,14 @@ public class MachineController {
     private final EtatMachineService etatMachineService;
     private final MachineService machineService;
     private final TypeMachineService typeMachineService;
+    private final PageService pageService;
 
     public MachineController(EtatMachineService etatMachineService, MachineService machineService,
-            TypeMachineService typeMachineService) {
+            TypeMachineService typeMachineService, PageService pageService) {
         this.etatMachineService = etatMachineService;
         this.machineService = machineService;
         this.typeMachineService = typeMachineService;
+        this.pageService = pageService;
     }
 
     @GetMapping("/")
@@ -37,16 +45,33 @@ public class MachineController {
 
     // GET /api/machines
     @GetMapping
-    public String getAll(Model model) {
+    public String getAll(@RequestParam(defaultValue = "0") int page, Model model) {
         List<EtatMachine> etats = etatMachineService.findAll();
         List<TypeMachine> types = typeMachineService.findAll();
-        List<Machine> liste = machineService.findAll();
-        
-        model.addAttribute("machines", liste);
+
+        Pages config = pageService.getConfiguration();
+        int size = config.getNombre();
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Machine> machinePage = machineService.findByPage(pageable);
+
+        model.addAttribute("machines", machinePage.getContent()); 
         model.addAttribute("etatMachine", etats);
         model.addAttribute("types", types);
 
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", machinePage.getTotalPages());
+
         return "machines/list";
+    }
+
+    @PostMapping("/pages")
+    public String nombrePages(@RequestParam("pages") int page, Model model){
+        Pages p = pageService.findById(1L);
+        p.setNombre(page);
+        pageService.save(p);
+        return "redirect:/api/machines" ;
     }
 
     // GET /api/machines/{id}

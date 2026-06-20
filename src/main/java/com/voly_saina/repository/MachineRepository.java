@@ -1,6 +1,9 @@
 package com.voly_saina.repository;
 
 import com.voly_saina.entity.Machine;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +26,7 @@ public interface MachineRepository extends JpaRepository<Machine, Long> {
     
     @Query("SELECT m FROM Machine m WHERE m.etatMachine.code = :code AND m.disponible = :disponible")
     List<Machine> findByEtatMachineCodeAndDisponible(@Param("code") String code, @Param("disponible") Boolean disponible);
+
+    Page<Machine> findAll(Pageable pageable);
+    
 }

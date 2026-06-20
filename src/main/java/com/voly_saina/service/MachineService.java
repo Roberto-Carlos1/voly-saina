@@ -3,6 +3,8 @@ package com.voly_saina.service;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.repository.MachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,5 +34,9 @@ public class MachineService {
 
     public void deleteById(Long id) {
         machineRepository.deleteById(id);
+    }
+
+    public Page<Machine> findByPage(Pageable pageable){
+        return machineRepository.findAll(pageable);
     }
 }

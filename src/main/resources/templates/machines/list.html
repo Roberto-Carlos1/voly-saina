@@ -12,6 +12,14 @@
     <h1>Liste des machines</h1>
 
     <h3>Filtre</h3>
+    <form action="/api/machines/pages" method="post">
+        <p>
+            Éléments par page
+            <input type="number" name="pages" id="">
+            <input type="submit" value="Afficher">
+        </p>
+    </form>
+
     <form action="/machines/filtre" method="post">
         <p>Etat machine
             <select name="etatMachine" id="">
@@ -23,10 +31,10 @@
             Type machine
             <select name="typeMachine" id="">
                 <option value="">Vide</option>
-                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}"
-                    th:text="${type.getLibelle()}"></option>
+                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}" th:text="${type.getLibelle()}">
+                </option>
             </select>
-            
+
             <input type="submit" value="Filtrer">
         </p>
 
@@ -48,6 +56,15 @@
         </tr>
 
     </table>
+
+    <div>
+        <a th:if="${currentPage > 0}" th:href="@{/api/machines(page=${currentPage - 1})}"> Précédent </a>
+
+        <span> Page <strong th:text="${currentPage + 1}">1</strong> sur <strong th:text="${totalPages}">X</strong>
+        </span>
+
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/api/machines(page=${currentPage + 1})}"> Suivant </a>
+    </div>
 </body>
 
 </html>

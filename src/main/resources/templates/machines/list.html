@@ -8,8 +8,10 @@
 </head>
 
 <body>
-
+<a href="/api/machines/view/insert">Inserer une machine</a>
     <h1>Liste des machines</h1>
+    <p th:if="${success}" th:text="${success}"></p>
+    <p th:if="${error}" th:text="${error}"></p>
 
     <h3>Filtre</h3>
     <form action="/api/machines/pages" method="post">
@@ -51,8 +53,12 @@
         <tr th:each="machine : ${machines}">
             <td th:text=${machine.getNom()}></td>
             <td th:text=${machine.getTypeMachine().getLibelle()}></td>
-            <td th:text=${machine.getEtatMachine().getLibelle()}></td>
-            <td><a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a></td>
+            <td th:text="${machine.getEtatMachine() != null ? machine.getEtatMachine().getLibelle() : 'Aucun état'}"></td>
+            <td>
+                <a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a>
+                <a th:href="@{/api/machines/modify/{id_machine}(id_machine=${machine.getIdMachine()})}">Modifier</a>
+                <a th:href="@{/api/machines/delete/{id_machine}(id_machine=${machine.getIdMachine()})}">Supprimer</a>
+            </td>
         </tr>
 
     </table>

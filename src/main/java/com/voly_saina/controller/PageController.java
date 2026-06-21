@@ -1,13 +1,14 @@
 package com.voly_saina.controller;
 
-import com.voly_saina.entity.Pages;
-import com.voly_saina.service.PageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.voly_saina.entity.Pages;
+import com.voly_saina.service.PageService;
 
 @RestController
 public class PageController {
@@ -16,12 +17,12 @@ public class PageController {
     private PageService PageService;
 
     // GET /api/categories-produit/{id}
-    @GetMapping
-    public ResponseEntity<Pages> getById(@PathVariable Long id) {
-        return PageService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
+    // @GetMapping
+    // public ResponseEntity<Pages> getById(@PathVariable Long id) {
+    //     return PageService.findById(id)
+    //             .map(ResponseEntity::ok)
+    //             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    // }
 
     // POST /api/categories-produit
     @PostMapping

@@ -4,11 +4,12 @@ import com.voly_saina.entity.Machine;
 import com.voly_saina.repository.MachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MachineService {
@@ -21,7 +22,7 @@ public class MachineService {
     }
 
     public Machine findById(Long id) {
-        return machineRepository.findById(id).orElse(null);
+        return machineRepository.findByIdWithRelations(id).orElse(null);
     }
 
     public Machine save(Machine machine) {
@@ -37,6 +38,29 @@ public class MachineService {
     }
 
     public Page<Machine> findByPage(Pageable pageable){
-        return machineRepository.findAll(pageable);
+        Page<Machine> page = machineRepository.findAll(pageable);
+        List<Long> ids = new ArrayList<>();
+
+        for (Machine machine : page.getContent()) {
+            ids.add(machine.getIdMachine());
+        }
+
+        if (ids.isEmpty()) {
+            return page;
+        }
+
+        List<Machine> machinesWithRelations = machineRepository.findByIdMachineInWithRelations(ids);
+        List<Machine> machines = new ArrayList<>();
+
+        for (Long id : ids) {
+            for (Machine machine : machinesWithRelations) {
+                if (machine.getIdMachine().equals(id)) {
+                    machines.add(machine);
+                    break;
+                }
+            }
+        }
+
+        return new PageImpl<>(machines, pageable, page.getTotalElements());
     }
 }

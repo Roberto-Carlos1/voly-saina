@@ -16,4 +16,7 @@ public class TypeMachineService {
     public List<TypeMachine> findAll() {
         return typeMachineRepository.findAll();
     }
+    public TypeMachine findById(Long id) {
+        return typeMachineRepository.findById(id).orElse(null);
+    }
 }

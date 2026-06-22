@@ -85,12 +85,18 @@ public class MachineController {
     }
 
     @PostMapping("/pages")
-    public String nombrePages(@RequestParam("pages") int page, Model model) {
+    public String nombrePages(@RequestParam("pages") int page, RedirectAttributes attributes) {
         Pages p = pageService.findById(1L);
-        p.setNombre(page);
-        pageService.save(p);
+        if(page <= 0){
+            attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
+            return "redirect:/api/machines";
+        } else {
+            p.setNombre(page);
+            pageService.save(p);
+        }
         return "redirect:/api/machines";
     }
+
     @GetMapping("/view/insert")
     public String insertMachine(Model model) {
         List<EtatMachine> etats = etatMachineService.findAll();

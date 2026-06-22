@@ -19,9 +19,13 @@ import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Pages;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.StatutMachine;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.TypeMachine;
+import com.voly_saina.entity.MaintenanceMachine;
+import com.voly_saina.entity.StatutMaintenance;
 import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.MaintenanceMachineService;
 import com.voly_saina.service.PageService;
 import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutMachineService;
@@ -34,16 +38,18 @@ public class MachineController {
     private final EtatMachineService etatMachineService;
     private final MachineService machineService;
     private final TypeMachineService typeMachineService;
+    private final MaintenanceMachineService maintenanceMachineService;
     private final ReservationMachineService reservationMachineService;
     private final PageService pageService;
     private final StatutMachineService statutMachineService;
 
 
     public MachineController(EtatMachineService etatMachineService, MachineService machineService,
-            TypeMachineService typeMachineService, ReservationMachineService reservationMachineService, PageService pageService, StatutMachineService statutMachineService) {
+            TypeMachineService typeMachineService, MaintenanceMachineService maintenanceMachineService, ReservationMachineService reservationMachineService, PageService pageService, StatutMachineService statutMachineService) {
         this.etatMachineService = etatMachineService;
         this.machineService = machineService;
         this.typeMachineService = typeMachineService;
+        this.maintenanceMachineService = maintenanceMachineService;
         this.reservationMachineService = reservationMachineService;
         this.pageService = pageService;
         this.statutMachineService = statutMachineService;
@@ -180,12 +186,13 @@ public class MachineController {
     @GetMapping("/{id}")
 
     public String getMachinebyId(@PathVariable Long id, Model model) {
-        Machine m = machineService.findById(id);
+        Machine m= machineService.findById(id);
         model.addAttribute("machine", m);
 
-        List<ReservationMachine> reservation = reservationMachineService.findMachine(id);
+        List<ReservationMachine> reservation= reservationMachineService.findMachine(id); 
         model.addAttribute("reservations", reservation);
-
+        List<MaintenanceMachine> maintenance= maintenanceMachineService.findByMachine(m);
+        model.addAttribute("maintenances", maintenance);
         return "machines/detail-machine";
     }
 

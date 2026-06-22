@@ -1,5 +1,6 @@
 package com.voly_saina.service;
 
+import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.MaintenanceMachine;
 import com.voly_saina.repository.MaintenanceMachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ public class MaintenanceMachineService {
     public Optional<MaintenanceMachine> findById(Long id) {
         return maintenanceMachineRepository.findById(id);
     }
-
+    public List<MaintenanceMachine> findByMachine(Machine machineId) {
+        return maintenanceMachineRepository.findByMachine(machineId);
+    }
     public MaintenanceMachine save(MaintenanceMachine maintenanceMachine) {
         return maintenanceMachineRepository.save(maintenanceMachine);
     }

@@ -1,6 +1,8 @@
 package com.voly_saina.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +33,6 @@ import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutMachineService;
 import com.voly_saina.service.TypeMachineService;
 
-
 @Controller
 @RequestMapping("/api/machines")
 public class MachineController {
@@ -43,9 +44,10 @@ public class MachineController {
     private final PageService pageService;
     private final StatutMachineService statutMachineService;
 
-
     public MachineController(EtatMachineService etatMachineService, MachineService machineService,
-            TypeMachineService typeMachineService, MaintenanceMachineService maintenanceMachineService, ReservationMachineService reservationMachineService, PageService pageService, StatutMachineService statutMachineService) {
+            TypeMachineService typeMachineService, MaintenanceMachineService maintenanceMachineService,
+            ReservationMachineService reservationMachineService, PageService pageService,
+            StatutMachineService statutMachineService) {
         this.etatMachineService = etatMachineService;
         this.machineService = machineService;
         this.typeMachineService = typeMachineService;
@@ -53,7 +55,7 @@ public class MachineController {
         this.reservationMachineService = reservationMachineService;
         this.pageService = pageService;
         this.statutMachineService = statutMachineService;
-        
+
     }
 
     @GetMapping("/")
@@ -66,6 +68,7 @@ public class MachineController {
     public String getAll(@RequestParam(defaultValue = "0") int page, Model model) {
         List<EtatMachine> etats = etatMachineService.findAll();
         List<TypeMachine> types = typeMachineService.findAll();
+        List<StatutMachine> status = statutMachineService.findAll();
 
         Pages config = pageService.getConfiguration();
         int size = config.getNombre();
@@ -74,20 +77,31 @@ public class MachineController {
 
         Page<Machine> machinePage = machineService.findByPage(pageable);
 
-        model.addAttribute("machines", machinePage.getContent());
+        List<Machine> machines = machinePage.getContent();
+
+        Map<Long, StatutMachine> derniersStatuts = new HashMap<>();
+
+        for (Machine m : machines) {
+            StatutMachine actuel = statutMachineService.findCurrentByMachineId(m.getIdMachine());
+            if (actuel != null) {
+                derniersStatuts.put(m.getIdMachine(), actuel);
+            }
+        }
+
+        model.addAttribute("machines", machines);
         model.addAttribute("etatMachine", etats);
         model.addAttribute("types", types);
+        model.addAttribute("derniersStatuts", derniersStatuts);
 
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", machinePage.getTotalPages());
-
         return "machines/list";
     }
 
     @PostMapping("/pages")
     public String nombrePages(@RequestParam("pages") int page, RedirectAttributes attributes) {
         Pages p = pageService.findById(1L);
-        if(page <= 0){
+        if (page <= 0) {
             attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
             return "redirect:/api/machines";
         } else {
@@ -105,16 +119,17 @@ public class MachineController {
         model.addAttribute("types", types);
         return "machines/insert-machine";
     }
+
     @PostMapping("/insert")
     public String insertMachine(@RequestParam("nom") String nom,
-                                @RequestParam("typeMachine") Long typeMachineId,
-                                @RequestParam("description") String description,
-                                @RequestParam("prixJour") String prixJour,
-                                @RequestParam("etatMachine") Long etatMachine,
-                                @RequestParam("localisation") String localisation,
-                                @RequestParam("kilometrage") String kilometrage,
-                                @RequestParam(value = "disponible", defaultValue = "true") Boolean disponible,
-                                RedirectAttributes redirectAttributes) {
+            @RequestParam("typeMachine") Long typeMachineId,
+            @RequestParam("description") String description,
+            @RequestParam("prixJour") String prixJour,
+            @RequestParam("etatMachine") Long etatMachine,
+            @RequestParam("localisation") String localisation,
+            @RequestParam("kilometrage") String kilometrage,
+            @RequestParam(value = "disponible", defaultValue = "true") Boolean disponible,
+            RedirectAttributes redirectAttributes) {
         Machine machine = new Machine();
         machine.setNom(nom);
         machine.setTypeMachine(typeMachineService.findById(typeMachineId));
@@ -133,11 +148,13 @@ public class MachineController {
         redirectAttributes.addFlashAttribute("success", "Machine insérée avec succès");
         return "redirect:/api/machines";
     }
+
     @GetMapping("/delete/{id}")
     public String deleteMachine(@PathVariable Long id, Model model) {
         machineService.deleteById(id);
         return "redirect:/api/machines";
     }
+
     @GetMapping("/modify/{id}")
     public String modifyMachine(@PathVariable Long id, Model model) {
         Machine m = machineService.findById(id);
@@ -151,15 +168,15 @@ public class MachineController {
 
     @PostMapping("/modify/{id}")
     public String updateMachine(@PathVariable Long id,
-                                @RequestParam("nom") String nom,
-                                @RequestParam("typeMachine") Long typeMachineId,
-                                @RequestParam("description") String description,
-                                @RequestParam("prixJour") String prixJour,
-                                @RequestParam("etatMachine") Long etatMachineId,
-                                @RequestParam("localisation") String localisation,
-                                @RequestParam("kilometrage") String kilometrage,
-                                @RequestParam(value = "disponible", defaultValue = "false") Boolean disponible,
-                                RedirectAttributes redirectAttributes) {
+            @RequestParam("nom") String nom,
+            @RequestParam("typeMachine") Long typeMachineId,
+            @RequestParam("description") String description,
+            @RequestParam("prixJour") String prixJour,
+            @RequestParam("etatMachine") Long etatMachineId,
+            @RequestParam("localisation") String localisation,
+            @RequestParam("kilometrage") String kilometrage,
+            @RequestParam(value = "disponible", defaultValue = "false") Boolean disponible,
+            RedirectAttributes redirectAttributes) {
         Machine machine = machineService.findById(id);
         if (machine == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
@@ -192,12 +209,12 @@ public class MachineController {
     @GetMapping("/{id}")
 
     public String getMachinebyId(@PathVariable Long id, Model model) {
-        Machine m= machineService.findById(id);
+        Machine m = machineService.findById(id);
         model.addAttribute("machine", m);
 
-        List<ReservationMachine> reservation= reservationMachineService.findMachine(id); 
+        List<ReservationMachine> reservation = reservationMachineService.findMachine(id);
         model.addAttribute("reservations", reservation);
-        List<MaintenanceMachine> maintenance= maintenanceMachineService.findByMachine(m);
+        List<MaintenanceMachine> maintenance = maintenanceMachineService.findByMachine(m);
         model.addAttribute("maintenances", maintenance);
         return "machines/detail-machine";
     }

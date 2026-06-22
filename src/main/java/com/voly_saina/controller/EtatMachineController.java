@@ -24,11 +24,11 @@ public class EtatMachineController {
 
     // GET /api/etats-machine/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<EtatMachine> getById(@PathVariable Long id) {
-        return etatMachineService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
+    // public ResponseEntity<EtatMachine> getById(@PathVariable Long id) {
+    //     return etatMachineService.findById(id)
+    //             .map(ResponseEntity::ok)
+    //             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    // }
 
     // POST /api/etats-machine
     @PostMapping

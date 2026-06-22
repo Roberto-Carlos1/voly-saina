@@ -25,7 +25,7 @@ public class StatutMachineService {
     }
 
     public StatutMachine findCurrentByMachineId(Long idMachine) {
-        return repository.findTopByMachineIdMachineOrderByDateCreationDescIdDesc(idMachine);
+        return repository.findCurrentMachine(idMachine);
     }
 
     public void deleteById(Long id) {

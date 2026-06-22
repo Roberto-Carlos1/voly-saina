@@ -394,8 +394,6 @@ INSERT INTO statut_machine(id_machine, id_etat_machine,date_creation) VALUES
 (3, 1, '2026-06-21'),
 (4, 1, '2026-06-21');
 
-
-
 INSERT INTO produit(id_categorie, nom, description, conseil_usage, prix_unitaire, stock, seuil_stock) VALUES
 (1, 'NPK', 'Engrais composé pour améliorer la croissance', 'Respecter la dose recommandée selon la culture.', 25000, 100, 10),
 (1, 'Urée', 'Engrais azoté', 'Utiliser avec prudence et éviter le surdosage.', 22000, 80, 10),

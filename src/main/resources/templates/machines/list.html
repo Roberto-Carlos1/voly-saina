@@ -23,8 +23,10 @@
         </p>
     </form>
 
-    <form action="/machines/filtre" method="post">
-        <p>Etat machine
+    <form id="filtreForm">
+        <p>Nom machine <input type="text" name="nomMachine" placeholder="toyota">
+
+            Etat machine
             <select name="etatMachine" id="">
                 <option value="">Vide</option>
                 <option th:each="etat : ${etatMachine}" th:value="${etat.getIdEtatMachine()}"
@@ -38,7 +40,7 @@
                 </option>
             </select>
 
-            <input type="submit" value="Filtrer">
+            <button type="submit">Filtrer</button>
         </p>
 
     </form>
@@ -51,24 +53,28 @@
             <th>Action</th>
         </tr>
 
-        <tr th:each="machine : ${machines}">
-            <td th:text=${machine.getNom()}></td>
-            <td th:text=${machine.getTypeMachine().getLibelle()}></td>
-            <td>
-                <span th:if="${derniersStatuts.containsKey(machine.idMachine)}"
-                    th:text="${derniersStatuts[machine.idMachine].etatMachine.libelle}">
-                </span>
+        <tbody id="machineLines">
+            <tr th:each="machine : ${machines}">
+                <td th:text=${machine.getNom()}></td>
+                <td th:text=${machine.getTypeMachine().getLibelle()}></td>
+                <td>
+                    <span th:if="${derniersStatuts.containsKey(machine.idMachine)}"
+                        th:text="${derniersStatuts[machine.idMachine].etatMachine.libelle}">
+                    </span>
 
-                <span th:unless="${derniersStatuts.containsKey(machine.idMachine)}">
-                    Aucun statut
-                </span>
-            </td>
-            <td>
-                <a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a>
-                <a th:href="@{/api/machines/modify/{id_machine}(id_machine=${machine.getIdMachine()})}">Modifier</a>
-                <a th:href="@{/api/machines/delete/{id_machine}(id_machine=${machine.getIdMachine()})}">Supprimer</a>
-            </td>
-        </tr>
+                    <span th:unless="${derniersStatuts.containsKey(machine.idMachine)}">
+                        Aucun statut
+                    </span>
+                </td>
+                <td>
+                    <a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a>
+                    <a th:href="@{/api/machines/modify/{id_machine}(id_machine=${machine.getIdMachine()})}">Modifier</a>
+                    <a
+                        th:href="@{/api/machines/delete/{id_machine}(id_machine=${machine.getIdMachine()})}">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+
 
     </table>
 
@@ -81,5 +87,42 @@
         <a th:if="${currentPage + 1 < totalPages}" th:href="@{/api/machines(page=${currentPage + 1})}"> Suivant </a>
     </div>
 </body>
+
+<script>
+    const form = document.getElementById("filtreForm")
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        console.log("Pas de rechargement")
+
+        const data = new FormData(form)
+        const lines = document.getElementById("machineLines")
+        lines.innerHTML = ""
+
+
+        fetch("/api/machines/filtre", {
+            method: "POST",
+            body: data
+        })
+
+            .then(response => response.json())
+            .then(machines => {
+                console.log(machines)
+
+                machines.forEach(machine => {
+                    var line = document.createElement("tr");
+
+                    // On utilise innerHTML et les accents graves (``) pour injecter la variable
+                    line.innerHTML = `<td>${machine.nom}</td>
+                          <td>${machine.typeMachine.libelle}</td>
+                          <td>${machine.etatMachine.libelle}</td>
+                          <td><a href="/api/machines/${machine.idMachine}">Voir plus</a> 
+                            <a href="/api/machines/modify/${machine.idMachine}">Modifier</a>
+                        <a href="/api/machines/delete/${machine.idMachine}">Supprimer</a></td>`;
+
+                    lines.appendChild(line);
+                });
+            })
+    });
+</script>
 
 </html>

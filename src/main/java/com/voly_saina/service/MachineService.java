@@ -1,8 +1,11 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.repository.MachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +40,7 @@ public class MachineService {
         machineRepository.deleteById(id);
     }
 
-    public Page<Machine> findByPage(Pageable pageable){
+    public Page<Machine> findByPage(Pageable pageable) {
         Page<Machine> page = machineRepository.findAll(pageable);
         List<Long> ids = new ArrayList<>();
 
@@ -62,5 +65,27 @@ public class MachineService {
         }
 
         return new PageImpl<>(machines, pageable, page.getTotalElements());
+    }
+
+    public List<Machine> filtrerMachine(String idtype, String nom) {
+        Machine machineExemple = new Machine();
+
+        if (nom != null && !nom.trim().isEmpty()) {
+            machineExemple.setNom(nom);
+        }
+
+        if (idtype != null && !idtype.trim().isEmpty()) {
+            TypeMachine type = new TypeMachine();
+            type.setIdTypeMachine(Long.parseLong(idtype));
+            machineExemple.setTypeMachine(type);
+        }
+
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING) // Équivalent de LIKE %texte%
+                .withIgnoreCase();
+
+        Example<Machine> exemple = Example.of(machineExemple, matcher);
+
+        return machineRepository.findAll(exemple);
     }
 }

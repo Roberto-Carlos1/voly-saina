@@ -23,7 +23,7 @@ public class EtatMachineController {
     }
 
     // GET /api/etats-machine/{id}
-    @GetMapping("/{id}")
+    // @GetMapping("/{id}")
     // public ResponseEntity<EtatMachine> getById(@PathVariable Long id) {
     //     return etatMachineService.findById(id)
     //             .map(ResponseEntity::ok)

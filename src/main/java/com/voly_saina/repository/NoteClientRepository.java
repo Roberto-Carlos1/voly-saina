@@ -1,9 +1,0 @@
-package com.voly_saina.repository;
-
-import com.voly_saina.entity.NoteClient;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface NoteClientRepository extends JpaRepository<NoteClient, Long> {
-}

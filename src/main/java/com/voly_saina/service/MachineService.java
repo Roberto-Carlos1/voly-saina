@@ -70,8 +70,9 @@ public class MachineService {
         return new PageImpl<>(machines, pageable, page.getTotalElements());
     }
 
-    public List<Machine> filtrerMachine(String idtype, String nom) {
+    public Page<Machine> filtrerMachine(String idtype, String nom, Pageable page) {
         Machine machineExemple = new Machine();
+        machineExemple.setDisponible(null);
 
         if (nom != null && !nom.trim().isEmpty()) {
             machineExemple.setNom(nom);
@@ -88,8 +89,7 @@ public class MachineService {
                 .withIgnoreCase();
 
         Example<Machine> exemple = Example.of(machineExemple, matcher);
-
-        return machineRepository.findAll(exemple);
+        return machineRepository.findAll(exemple, page);
     }
 
     public List<Machine> findByTypeMachine(Long typeId) {

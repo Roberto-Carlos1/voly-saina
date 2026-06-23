@@ -222,14 +222,15 @@ public class MachineController {
     @PostMapping("/filtre")
     public ResponseEntity<Page<Machine>> filtreMachine(@RequestParam("nomMachine") String name,
             @RequestParam("typeMachine") String typeID,
+            @RequestParam("etatMachine") String etatID,
             @RequestParam("page") int page) {
 
         // List<Machine> liste = machineService.filtrerMachine(typeID, name);
         Pages config = pageService.getConfiguration();
         Pageable pageable = PageRequest.of(page, config.getNombre());
-
-        Page<Machine> machines = machineService.filtrerMachine(typeID, name, pageable);
+        
+        Page<Machine> machines = machineService.filtrerMachine(typeID, etatID, name, pageable);
         return ResponseEntity.ok(machines);
-    
+
     }
 }

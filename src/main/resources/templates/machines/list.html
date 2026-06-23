@@ -120,7 +120,9 @@
                 });
 
                 // 2. Mise à jour visuelle des infos de pagination
-                document.getElementById("infoPage").textContent = `Page ${pageSpring.number + 1} sur ${pageSpring.totalPages}`;
+                if (pageSpring.number < pageSpring.totalPages) {
+                    document.getElementById("infoPage").textContent = `Page ${pageSpring.number + 1} sur ${pageSpring.totalPages}`;
+                }
 
                 // Gestion de l'activation/désactivation des boutons
                 document.getElementById("btnPrecedent").disabled = pageSpring.first;

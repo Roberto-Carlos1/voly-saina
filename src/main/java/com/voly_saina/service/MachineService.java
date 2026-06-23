@@ -3,7 +3,9 @@ package com.voly_saina.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.voly_saina.entity.EtatMachine;
 import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.StatutMachine;
 import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.repository.MachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,12 @@ public class MachineService {
 
     @Autowired
     private MachineRepository machineRepository;
+
+    private final StatutMachineService statutMachineService;
+
+    public MachineService(StatutMachineService statutMachineService) {
+        this.statutMachineService = statutMachineService;
+    }
 
     public List<Machine> findAll() {
         return machineRepository.findAll();
@@ -70,26 +78,18 @@ public class MachineService {
         return new PageImpl<>(machines, pageable, page.getTotalElements());
     }
 
-    public Page<Machine> filtrerMachine(String idtype, String nom, Pageable page) {
-        Machine machineExemple = new Machine();
-        machineExemple.setDisponible(null);
-
-        if (nom != null && !nom.trim().isEmpty()) {
-            machineExemple.setNom(nom);
-        }
+    public Page<Machine> filtrerMachine(String idtype, String idetat, String nom, Pageable pageable) {
+        String nomFiltre = (nom != null && !nom.trim().isEmpty()) ? nom : null;
+        Long idTypeFiltre = null;
 
         if (idtype != null && !idtype.trim().isEmpty()) {
-            TypeMachine type = new TypeMachine();
-            type.setIdTypeMachine(Long.parseLong(idtype));
-            machineExemple.setTypeMachine(type);
+            idTypeFiltre = Long.parseLong(idtype);
         }
-
-        ExampleMatcher matcher = ExampleMatcher.matching()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING) // Équivalent de LIKE %texte%
-                .withIgnoreCase();
-
-        Example<Machine> exemple = Example.of(machineExemple, matcher);
-        return machineRepository.findAll(exemple, page);
+        Long idEtatFiltre = null;
+        if (idetat != null && !idetat.trim().isEmpty()) {
+            idEtatFiltre = Long.parseLong(idetat);
+        }
+        return machineRepository.filtrerLesMachines(nomFiltre, idTypeFiltre, idEtatFiltre, pageable);
     }
 
     public List<Machine> findByTypeMachine(Long typeId) {
@@ -100,5 +100,4 @@ public class MachineService {
         return machineRepository.findAvailableMachines();
     }
 
-    
 }

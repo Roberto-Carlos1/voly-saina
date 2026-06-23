@@ -23,15 +23,21 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Service
 public class ExelImport {
-
-    // genralisation de l'importation des données à partir d'un fichier Excel
 
     private final EntityManager entityManager;
 
     public ExelImport(EntityManager entityManager) {
         this.entityManager = entityManager;
+    }
+
+    @Transactional
+    public List<Object> importExcel(InputStream inputStream) {
+        return new UniversalTemplateGenerator().importGeneralise(inputStream);
     }
 
     public class UniversalTemplateGenerator {
@@ -50,68 +56,53 @@ public class ExelImport {
                 Row headerRow = sheet.createRow(0);
                 int columnIndex = 0;
 
-                // 1. Loop through each entity class provided
                 for (Class<?> clazz : entityClasses) {
-                    // Get a clean prefix name (e.g., "Machine" becomes "machine")
                     String entityPrefix = clazz.getSimpleName().substring(0, 1).toLowerCase()
                             + clazz.getSimpleName().substring(1);
 
-                    // 2. Inspect the fields of the current class
                     for (Field field : clazz.getDeclaredFields()) {
 
-                        // Skip system-managed fields
                         if (field.isAnnotationPresent(GeneratedValue.class) ||
                                 field.isAnnotationPresent(CreationTimestamp.class)) {
                             continue;
                         }
 
-                        // 3. Create the header following the "entityPrefix_fieldName" rule
                         Cell cell = headerRow.createCell(columnIndex++);
                         String headerName = entityPrefix + "_" + field.getName();
                         cell.setCellValue(headerName);
                     }
                 }
 
-                // Write the generated template out
                 workbook.write(outputStream);
             }
         }
 
-        // Pass in the list of available machine types from your database
-        public List<Object> importGeneralise(InputStream inputStream) {
+        private List<Object> importGeneralise(InputStream inputStream) {
             List<Object> entities = new ArrayList<>();
 
             try (Workbook workbook = WorkbookFactory.create(inputStream)) {
-                // Read the first sheet
                 Sheet sheet = workbook.getSheetAt(0);
                 Row headerRow = sheet.getRow(0);
 
-                // 1. Map header names to column indices
                 Map<String, Integer> headerMap = new HashMap<>();
                 for (Cell cell : headerRow) {
                     headerMap.put(cell.getStringCellValue(), cell.getColumnIndex());
                 }
 
-                // 2. Identify all distinct entities present in the headers
-                // Example headers: "machine_nom", "machine_prixJour",
-                // "typeMachine_idTypeMachine"
                 Set<String> entityPrefixes = new HashSet<>();
                 for (String header : headerMap.keySet()) {
                     if (header.contains("_")) {
-                        entityPrefixes.add(header.split("_")[0]); // yields "machine", "typeMachine"
+                        entityPrefixes.add(header.split("_")[0]);
                     }
                 }
 
-                // 3. Process each data row
                 for (int r = 1; r <= sheet.getLastRowNum(); r++) {
                     Row row = sheet.getRow(r);
                     if (row == null)
                         continue;
 
-                    // Keep track of all instantiated objects for this specific row
                     Map<String, Object> rowEntities = new HashMap<>();
 
-                    // Instantiate an instance for each entity prefix found
                     for (String prefix : entityPrefixes) {
                         Class<?> clazz = getEntityClassByName(prefix);
                         if (clazz != null) {
@@ -120,26 +111,21 @@ public class ExelImport {
                         }
                     }
 
-                    // 4. Populate fields dynamically across all instantiated row objects
                     populateEntityFields(row, headerMap, rowEntities);
 
-                    // Add all fully populated row entities to the final return list
                     entities.addAll(rowEntities.values());
                 }
 
-                // 5. Persist everything to the database dynamically
-                persistEntity(entities);
+                for (Object entity : entities) {
+                    entityManager.persist(entity);
+                }
 
             } catch (Exception e) {
-                if (entityManager.getTransaction().isActive()) {
-                    entityManager.getTransaction().rollback();
-                }
+                throw new RuntimeException("Import echoue: " + e.getMessage(), e);
             }
             return entities;
         }
 
-        // Helper to dynamically find a class type by its simple name matching your
-        // populate
         private void populateEntityFields(Row row, Map<String, Integer> headerMap, Map<String, Object> rowEntities)
                 throws IllegalAccessException {
             for (String header : headerMap.keySet()) {
@@ -161,20 +147,10 @@ public class ExelImport {
                     continue;
 
                 dynamicValueBinding(currentEntity, currentEntity, field, cell);
-                
+
             }
         }
 
-        // persist
-        private void persistEntity(List<Object> entities) {
-            entityManager.getTransaction().begin();
-            for (Object entity : entities) {
-                entityManager.persist(entity);
-            }
-            entityManager.getTransaction().commit();
-        }
-
-        // --- Dynamic Value Binding ---
         private void dynamicValueBinding(Object entityInstance, Object currentEntity, Field field, Cell cell)
         throws IllegalAccessException {
             Class<?> fieldType = field.getType();
@@ -191,12 +167,9 @@ public class ExelImport {
             } else if (fieldType == Long.class || fieldType == long.class) {
                 field.set(currentEntity, (long) cell.getNumericCellValue());
             }
-            // --- Handle Relational Entity Fields (Object Relations) ---
             else if (!fieldType.getName().startsWith("java.")) {
-                // If it's a relation, Excel provides an ID (Integer/Long)
                 Long foreignId = (long) cell.getNumericCellValue();
 
-                // Dynamically find and fetch the matching related record from the database
                 Object managedRelation = entityManager.find(fieldType, foreignId);
                 if (managedRelation != null) {
                     field.set(currentEntity, managedRelation);
@@ -205,11 +178,9 @@ public class ExelImport {
             
         }
 
-        // package layout
         private Class<?> getEntityClassByName(String entityName) {
             try {
-                // Update this string to your exact entity package location
-                String packagePrefix = "com.example.project.entity.";
+                String packagePrefix = "com.voly_saina.entity.";
                 String className = packagePrefix + entityName.substring(0, 1).toUpperCase() + entityName.substring(1);
                 return Class.forName(className);
             } catch (ClassNotFoundException e) {
@@ -217,7 +188,6 @@ public class ExelImport {
             }
         }
 
-        // Helper to find a field even if it lives up inside a parent superclass
         private Field getFieldProperties(Class<?> clazz, String fieldName) {
             try {
                 return clazz.getDeclaredField(fieldName);

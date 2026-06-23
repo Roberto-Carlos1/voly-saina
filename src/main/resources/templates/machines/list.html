@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-    <p th:text="${derniersStatuts}"></p>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Machines</title>
@@ -42,7 +41,7 @@
 
             <button type="submit">Filtrer</button>
         </p>
-
+        <input type="hidden" name="page" value="0" id="numeroPage">
     </form>
 
     <table border="1">
@@ -78,50 +77,72 @@
 
     </table>
 
-    <div>
-        <a th:if="${currentPage > 0}" th:href="@{/api/machines(page=${currentPage - 1})}"> Précédent </a>
-
-        <span> Page <strong th:text="${currentPage + 1}">1</strong> sur <strong th:text="${totalPages}">X</strong>
-        </span>
-
-        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/api/machines(page=${currentPage + 1})}"> Suivant </a>
+    <div id="paginationButtons">
+        <button type="button" id="btnPrecedent">Précédent</button>
+        <span id="infoPage" th:text="'Page 1 sur ' + ${totalPages}"></span>
+        <button type="button" id="btnSuivant">Suivant</button>
     </div>
+
 </body>
 
 <script>
-    const form = document.getElementById("filtreForm")
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        console.log("Pas de rechargement")
+    const form = document.getElementById("filtreForm");
+    const numeroPageInput = document.getElementById("numeroPage");
+    const lines = document.getElementById("machineLines");
 
-        const data = new FormData(form)
-        const lines = document.getElementById("machineLines")
-        lines.innerHTML = ""
+    function chargerMachines(pageCible) {
+        numeroPageInput.value = pageCible;
 
+        const data = new FormData(form);
+        lines.innerHTML = ""; // Vider le tableau
 
         fetch("/api/machines/filtre", {
             method: "POST",
             body: data
         })
-
             .then(response => response.json())
-            .then(machines => {
-                console.log(machines)
-
-                machines.forEach(machine => {
+            .then(pageSpring => {
+                pageSpring.content.forEach(machine => {
                     var line = document.createElement("tr");
+                    const libelleType = machine.typeMachine ? machine.typeMachine.libelle : 'Aucun';
+                    const libelleEtat = machine.etatMachine ? machine.etatMachine.libelle : 'Aucun statut';
 
-                    // On utilise innerHTML et les accents graves (``) pour injecter la variable
-                    line.innerHTML = `<td>${machine.nom}</td>
-                          <td>${machine.typeMachine.libelle}</td>
-                          <td>${machine.etatMachine.libelle}</td>
-                          <td><a href="/api/machines/${machine.idMachine}">Voir plus</a> 
-                            <a href="/api/machines/modify/${machine.idMachine}">Modifier</a>
-                        <a href="/api/machines/delete/${machine.idMachine}">Supprimer</a></td>`;
-
+                    line.innerHTML = `
+                <td>${machine.nom}</td>
+                <td>${libelleType}</td>
+                <td>${libelleEtat}</td>
+                <td>
+                    <a href="/api/machines/${machine.idMachine}">Voir plus</a> 
+                    <a href="/api/machines/modify/${machine.idMachine}">Modifier</a>
+                    <a href="/api/machines/delete/${machine.idMachine}">Supprimer</a>
+                </td>`;
                     lines.appendChild(line);
                 });
-            })
+
+                // 2. Mise à jour visuelle des infos de pagination
+                document.getElementById("infoPage").textContent = `Page ${pageSpring.number + 1} sur ${pageSpring.totalPages}`;
+
+                // Gestion de l'activation/désactivation des boutons
+                document.getElementById("btnPrecedent").disabled = pageSpring.first;
+                document.getElementById("btnSuivant").disabled = pageSpring.last;
+            });
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        chargerMachines(0);
+    });
+
+    document.getElementById("btnSuivant").addEventListener("click", function () {
+        let pageActuelle = parseInt(numeroPageInput.value, 10);
+        chargerMachines(pageActuelle + 1);
+    });
+
+    document.getElementById("btnPrecedent").addEventListener("click", function () {
+        let pageActuelle = parseInt(numeroPageInput.value, 10);
+        if (pageActuelle > 0) {
+            chargerMachines(pageActuelle - 1);
+        }
     });
 </script>
 

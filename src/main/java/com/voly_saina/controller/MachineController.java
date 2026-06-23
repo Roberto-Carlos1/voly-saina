@@ -208,7 +208,6 @@ public class MachineController {
 
     // GET /api/machines/{id}
     @GetMapping("/{id}")
-
     public String getMachinebyId(@PathVariable Long id, Model model) {
         Machine m = machineService.findById(id);
         model.addAttribute("machine", m);
@@ -221,12 +220,16 @@ public class MachineController {
     }
 
     @PostMapping("/filtre")
+    public ResponseEntity<Page<Machine>> filtreMachine(@RequestParam("nomMachine") String name,
+            @RequestParam("typeMachine") String typeID,
+            @RequestParam("page") int page) {
 
-    public ResponseEntity<List<Machine>> filtreMachine(@RequestParam("nomMachine") String name,
-            @RequestParam("typeMachine") String typeID) {
+        // List<Machine> liste = machineService.filtrerMachine(typeID, name);
+        Pages config = pageService.getConfiguration();
+        Pageable pageable = PageRequest.of(page, config.getNombre());
 
-        List<Machine> liste = machineService.filtrerMachine(typeID, name);
-        return ResponseEntity.ok(liste);
-
+        Page<Machine> machines = machineService.filtrerMachine(typeID, name, pageable);
+        return ResponseEntity.ok(machines);
+    
     }
 }

@@ -76,4 +76,16 @@ public interface MachineRepository extends JpaRepository<Machine, Long> {
                         """)
         List<Machine> findByIdMachineInWithRelations(@Param("ids") List<Long> ids);
 
+        @Query("SELECT m FROM Machine m " +
+                        "LEFT JOIN m.statuts s " +
+                        "WHERE (:nom IS NULL OR m.nom LIKE %:nom%) " +
+                        "AND (:idType IS NULL OR m.typeMachine.idTypeMachine = :idType) " +
+                        "AND (:idEtat IS NULL OR s.etatMachine.idEtatMachine = :idEtat) " +
+                        "AND (s.id IS NULL OR s.id = (SELECT MAX(s2.id) FROM StatutMachine s2 WHERE s2.machine = m))")
+        Page<Machine> filtrerLesMachines(
+                        @Param("nom") String nom,
+                        @Param("idType") Long idType,
+                        @Param("idEtat") Long idEtat,
+                        Pageable pageable);
+
 }

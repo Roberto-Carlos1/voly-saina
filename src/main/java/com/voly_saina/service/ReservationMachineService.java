@@ -37,4 +37,5 @@ public class ReservationMachineService {
     public List<ReservationMachine> findMachine(Long id){
         return reservationMachineRepository.findByMachineIdMachine(id);
     }
+
 }

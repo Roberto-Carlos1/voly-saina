@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Inserer machine</h1>
+    <form action="/api/machines/insert" method="post">
+        <p>
+            Nom machine
+            <input type="text" name="nom" id="">
+        </p>
+
+        <p>
+            Description
+            <input type="text" name="description" id="">
+        </p>
+
+        <p>
+            Prix (par jour)
+            <input type="number" name="prixJour" step="0.01" required>
+        </p>
+
+        <p>
+            Type machine
+            <select name="typeMachine" required>
+                <option value="">-- Choisir type --</option>
+                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}" th:text="${type.getLibelle()}">
+                </option>
+            </select>
+        </p>
+
+        <p>
+            Etat machine
+            <select name="etatMachine" required>
+                <option value="">-- Choisir etat --</option>
+                <option th:each="etat : ${etatMachine}" th:value="${etat.getIdEtatMachine()}"
+                    th:text="${etat.getLibelle()}"></option>
+            </select>
+        </p>
+
+        <p>
+            Localisation
+            <input type="text" name="localisation" id="">
+        </p>
+
+        <p>
+            Kilometrage
+            <input type="number" name="kilometrage" step="0.01" value="0">
+        </p>
+
+        <p>
+            Disponible
+            <input type="checkbox" name="disponible" value="true" checked>
+        </p>
+
+        <input type="submit" value="Inserer">
+    </form>
+
+</body>
+</html>

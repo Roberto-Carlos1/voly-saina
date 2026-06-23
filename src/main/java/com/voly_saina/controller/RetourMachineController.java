@@ -16,13 +16,11 @@ public class RetourMachineController {
     @Autowired
     private RetourMachineService retourMachineService;
 
-    // GET /api/retours-machine
     @GetMapping
     public ResponseEntity<List<RetourMachine>> getAll() {
         return ResponseEntity.ok(retourMachineService.findAll());
     }
 
-    // GET /api/retours-machine/{id}
     @GetMapping("/{id}")
     public ResponseEntity<RetourMachine> getById(@PathVariable Long id) {
         return retourMachineService.findById(id)
@@ -30,14 +28,12 @@ public class RetourMachineController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // POST /api/retours-machine
     @PostMapping
     public ResponseEntity<RetourMachine> create(@RequestBody RetourMachine retourMachine) {
-        RetourMachine saved = retourMachineService.save(retourMachine);
+        RetourMachine saved = retourMachineService.enregistrerRetour(retourMachine);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    // PUT /api/retours-machine/{id}
     @PutMapping("/{id}")
     public ResponseEntity<RetourMachine> update(@PathVariable Long id, @RequestBody RetourMachine retourMachine) {
         if (!retourMachineService.existsById(id)) {
@@ -48,7 +44,6 @@ public class RetourMachineController {
         return ResponseEntity.ok(updated);
     }
 
-    // DELETE /api/retours-machine/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!retourMachineService.existsById(id)) {

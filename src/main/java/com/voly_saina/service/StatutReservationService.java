@@ -33,4 +33,8 @@ public class StatutReservationService {
     public void deleteById(Long id) {
         statutReservationRepository.deleteById(id);
     }
+
+    public StatutReservation findByCode(String code) {
+        return statutReservationRepository.findByCode(code);
+    }
 }

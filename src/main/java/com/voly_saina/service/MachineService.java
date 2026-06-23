@@ -1,5 +1,8 @@
 package com.voly_saina.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.repository.MachineRepository;
@@ -11,8 +14,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.voly_saina.entity.Machine;
+import com.voly_saina.repository.MachineRepository;
 
 @Service
 public class MachineService {
@@ -88,4 +91,14 @@ public class MachineService {
 
         return machineRepository.findAll(exemple);
     }
+
+    public List<Machine> findByTypeMachine(Long typeId) {
+        return machineRepository.findByTypeMachineId(typeId);
+    }
+
+    public List<Machine> findAvailableMachines() {
+        return machineRepository.findAvailableMachines();
+    }
+
+    
 }

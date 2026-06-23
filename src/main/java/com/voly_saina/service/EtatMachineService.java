@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EtatMachineService {
@@ -16,6 +17,11 @@ public class EtatMachineService {
     public List<EtatMachine> findAll() {
         return etatMachineRepository.findAll();
     }
+
+    public Optional<EtatMachine> findByCode(String code) {
+        return etatMachineRepository.findByCode(code);
+    }
+    
 
     public EtatMachine findById(Long id) {
         return etatMachineRepository.findById(id).orElse(null);

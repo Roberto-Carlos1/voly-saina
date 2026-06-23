@@ -31,7 +31,7 @@ public class EtatMachineController {
     // }
 
     // POST /api/etats-machine
-    @PostMapping
+@PostMapping
     public ResponseEntity<EtatMachine> create(@RequestBody EtatMachine etatMachine) {
         EtatMachine saved = etatMachineService.save(etatMachine);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);

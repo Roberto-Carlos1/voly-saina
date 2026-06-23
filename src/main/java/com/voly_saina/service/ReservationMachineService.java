@@ -1,12 +1,13 @@
 package com.voly_saina.service;
 
-import com.voly_saina.entity.ReservationMachine;
-import com.voly_saina.repository.ReservationMachineRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.repository.ReservationMachineRepository;
 
 @Service
 public class ReservationMachineService {
@@ -37,5 +38,12 @@ public class ReservationMachineService {
     public List<ReservationMachine> findMachine(Long id){
         return reservationMachineRepository.findByMachineIdMachine(id);
     }
+    
+    public List<ReservationMachine> findByClientId(Long clientId) {
+        return reservationMachineRepository.findByClientIdUtilisateur(clientId);
+    }
 
+    public List<ReservationMachine> findActiveReservationsByClient(Long clientId) {
+        return reservationMachineRepository.findActiveReservationsByClient(clientId);
+    }
 }

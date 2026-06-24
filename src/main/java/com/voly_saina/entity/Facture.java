@@ -30,6 +30,9 @@ public class Facture {
     @Column(name = "type_operation", nullable = false, length = 30)
     private String typeOperation; // Valeurs: location, commande
 
+    @Column(name = "id_operation")
+    private Long idOperation; // id de la réservation ou commande liée
+
     @OneToMany(mappedBy = "idFacture")
     private List<OperationMachine> operationMachine;
 

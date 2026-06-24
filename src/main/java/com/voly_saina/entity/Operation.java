@@ -18,7 +18,7 @@ public class Operation {
     private Long idOperation;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_prouit")
+    @JoinColumn(name = "id_produit")
     private Produit idProduit;
     
     @ManyToOne(fetch = FetchType.LAZY)

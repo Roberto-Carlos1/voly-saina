@@ -1,4 +1,4 @@
-package com.voly_saina.controller;
+package com.voly_saina.controller.paiement;
 
 import com.voly_saina.entity.Paiement;
 import com.voly_saina.service.PaiementService;

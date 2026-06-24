@@ -1,4 +1,4 @@
-package com.voly_saina.controller;
+package com.voly_saina.controller.client;
 
 import com.voly_saina.entity.NoteClient;
 import com.voly_saina.service.NoteClientService;

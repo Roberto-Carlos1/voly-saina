@@ -1,4 +1,4 @@
-package com.voly_saina.controller;
+package com.voly_saina.controller.stock;
 
 import com.voly_saina.entity.Produit;
 import com.voly_saina.service.ProduitService;

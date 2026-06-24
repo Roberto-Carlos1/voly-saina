@@ -9,8 +9,8 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "operation", schema = "voly_saina")
-public class Operation {
+@Table(name = "operation_produit", schema = "voly_saina")
+public class OperationProduit {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +22,8 @@ public class Operation {
     private Produit idProduit;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_machine")
-    private Machine idMachine;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_client")
-    private Utilisateur idClient;
+    @JoinColumn(name = "id_facture")
+    private Facture idFacture;
 
     @Column(name = "quantite")
     private Long quantite;

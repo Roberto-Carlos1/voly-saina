@@ -32,7 +32,7 @@ public class Facture {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_operation")
-    private Operation idOperation;
+    private OperationMachine idOperation;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_client", nullable = false)

@@ -292,25 +292,30 @@ CREATE TABLE ligne_commande (
 -- =========================
 -- 6. Factures et paiements
 -- =========================
-CREATE TABLE operation(
-    id_operation SERIAL PRIMARY KEY,
-    id_produit INT REFERENCES produit(id_produit) ON DELETE CASCADE,
-    id_machine INT REFERENCES machine(id_machine) ON DELETE CASCADE,
-    id_client INT NOT NULL REFERENCES utilisateur(id_utilisateur),
-    quantite INT NOT NULL
-);
-
 CREATE TABLE facture (
     id_facture SERIAL PRIMARY KEY,
     numero VARCHAR(50) NOT NULL UNIQUE,
     type_operation VARCHAR(30) NOT NULL CHECK (type_operation IN ('location', 'commande')),
-    id_operation INT REFERENCES operation(id_operation) ON DELETE CASCADE,
     id_client INT NOT NULL REFERENCES utilisateur(id_utilisateur),
     date_facture TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     montant_total NUMERIC(12,2) NOT NULL CHECK (montant_total >= 0),
     montant_paye NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (montant_paye >= 0),
     id_statut_facture INT NOT NULL REFERENCES statut_facture(id_statut_facture),
     date_limite DATE
+);
+
+CREATE TABLE operation_machine(
+    id_operation SERIAL PRIMARY KEY,
+    id_machine INT REFERENCES machine(id_machine) ON DELETE CASCADE,
+    id_facture INT NOT NULL REFERENCES facture(id_facture) ON DELETE CASCADE,
+    quantite INT NOT NULL
+);
+
+CREATE TABLE operation_produit(
+    id_operation SERIAL PRIMARY KEY,
+    id_produit INT REFERENCES produit(id_produit) ON DELETE CASCADE,
+    id_facture INT NOT NULL REFERENCES facture(id_facture) ON DELETE CASCADE,
+    quantite INT NOT NULL
 );
 
 CREATE TABLE paiement (
@@ -411,5 +416,53 @@ INSERT INTO produit(id_categorie, nom, description, conseil_usage, prix_unitaire
 (1, 'Urée', 'Engrais azoté', 'Utiliser avec prudence et éviter le surdosage.', 22000, 80, 10),
 (1, 'Compost', 'Fertilisant organique', 'Adapter la quantité à la surface cultivée.', 12000, 150, 20);
 
-insert into operation(id_produit, id_machine, id_client, quantite) values 
-(1, 1, 1, 2);
+-- ===========================
+-- FACTURE
+-- ===========================
+
+INSERT INTO facture
+(numero, type_operation, id_client, date_facture, montant_total, montant_paye, id_statut_facture, date_limite)
+VALUES
+('FAC-2026001', 'location', 1, '2026-06-01 09:15:00', 450000.00, 450000.00, 3, '2026-06-10'),
+('FAC-2026002', 'commande', 1, '2026-06-02 10:30:00', 125000.00, 50000.00, 2, '2026-06-12'),
+('FAC-2026003', 'location', 1, '2026-06-03 14:00:00', 800000.00, 0.00, 1, '2026-06-15'),
+('FAC-2026004', 'commande', 1, '2026-06-05 08:45:00', 98000.00, 98000.00, 3, '2026-06-08'),
+('FAC-2026005', 'location', 1, '2026-06-07 13:20:00', 620000.00, 300000.00, 2, '2026-06-20'),
+('FAC-2026006', 'commande', 1, '2026-06-09 11:00:00', 215000.00, 0.00, 1, '2026-06-19'),
+('FAC-2026007', 'location', 1, '2026-06-10 15:45:00', 390000.00, 390000.00, 3, '2026-06-18'),
+('FAC-2026008', 'commande', 1, '2026-06-12 16:30:00', 175000.00, 100000.00, 2, '2026-06-22');
+
+-- ===========================
+-- OPERATION_MACHINE
+-- ===========================
+
+INSERT INTO operation_machine
+(id_machine, id_facture, quantite)
+VALUES
+(1, 1, 2),
+(2, 1, 1),
+(3, 3, 3),
+(1, 3, 1),
+(2, 5, 2),
+(3, 5, 2),
+(1, 7, 1),
+(2, 7, 1);
+
+-- ===========================
+-- OPERATION_PRODUIT
+-- ===========================
+
+INSERT INTO operation_produit
+(id_produit, id_facture, quantite)
+VALUES
+(1, 2, 10),
+(2, 2, 5),
+(3, 2, 2),
+(1, 4, 6),
+(2, 4, 3),
+(3, 6, 8),
+(1, 6, 4),
+(2, 6, 2),
+(3, 8, 5),
+(1, 8, 7),
+(2, 8, 12);

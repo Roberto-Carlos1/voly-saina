@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des factures</title>
+</head>
+
+<body>
+
+    <h1>Liste des factures</h1>
+
+    <table border="1">
+        <tr>
+            <td>Numero facture</td>
+            <td>Type operation</td>
+            <td>Utilisateur</td>
+            <td>Statut</td>
+            <td>Montant paye</td>
+            <td>Montant total</td>
+            <td>Date creation</td>
+            <td>Date limite</td>
+            <td>Action</td>
+        </tr>
+
+        <tbody>
+            <tr th:each="facture : ${factures}">
+                <td th:text="${facture.getNumero()}"></td>
+                <td th:text="${facture.getTypeOperation()}"></td>
+                <td th:text="${facture.getClient().getNom()}"></td>
+                <td th:text="${facture.getStatutFacture().getLibelle()}"></td>
+                <td th:text="${facture.getDateFacture()}"></td>
+                <td th:text="${facture.getMontantPaye()}"></td>
+                <td th:text="${facture.getMontantTotal()}"></td>
+                <td th:text="${facture.getDateLimite()}"></td>
+                <td>
+                    <a th:href="@{/api/factures/{id_facture}(id_facture=${facture.getIdFacture()})}">Voir plus</a>
+                    <a th:href="@{/api/factures/modify/{id_facture}(id_facture=${facture.getIdFacture()})}">Modifier</a>
+                    <a
+                        th:href="@{/api/factures/delete/{id_facture}(id_facture=${facture.getIdFacture()})}">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

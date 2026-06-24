@@ -30,10 +30,12 @@ public class Facture {
     @Column(name = "type_operation", nullable = false, length = 30)
     private String typeOperation; // Valeurs: location, commande
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_operation")
-    private OperationMachine idOperation;
-    
+    @OneToMany(mappedBy = "idFacture")
+    private List<OperationMachine> operationMachine;
+
+    @OneToMany(mappedBy = "idFacture")
+    private List<OperationProduit> operationProduit;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_client", nullable = false)
     private Utilisateur client;
@@ -49,8 +51,10 @@ public class Facture {
     private BigDecimal montantPaye = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_statut_facture", nullable = false)
     private StatutFacture statutFacture;
 
     @Column(name = "date_limite")
     private LocalDate dateLimite;
+
 }

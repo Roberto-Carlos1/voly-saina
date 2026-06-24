@@ -16,11 +16,15 @@ public class OperationProduit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_operation")
     private Long idOperation;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_produit")
     private Produit idProduit;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_facture")
+    private Facture facture;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_facture")
     private Facture idFacture;

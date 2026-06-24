@@ -23,10 +23,6 @@ public class OperationProduit {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_facture")
-    private Facture facture;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_facture")
     private Facture idFacture;
 
     @Column(name = "quantite")

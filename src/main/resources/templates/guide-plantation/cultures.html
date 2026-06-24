@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide de plantation</title>
+</head>
+<body>
+<h1>Guide de plantation</h1>
+
+<form method="get" th:action="@{/guide-plantation/cultures}">
+    <label>
+        Localisation
+        <input type="text" name="localisation" th:value="${filtres.localisation}" placeholder="Ex: Antananarivo">
+    </label>
+    <button type="submit">Filtrer</button>
+    <a th:href="@{/guide-plantation/cultures}">Réinitialiser</a>
+</form>
+
+<p th:if="${#lists.isEmpty(cultures)}">Aucune culture disponible.</p>
+
+<h1>Fiche detaillée</h1>
+
+<table th:if="${!#lists.isEmpty(cultures)}" border="1">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Région / localisation adaptée</th>
+        <th>Saison adaptée</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="culture : ${cultures}">
+        <td th:text="${culture.nom}">Nom</td>
+        <td th:text="${culture.description}">Description</td>
+        <td th:text="${culture.localisationRecommandee}">Localisation</td>
+        <td th:text="${culture.saisonRecommandee}">Saison</td>
+        <td>
+            <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Détail</a>
+            <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}">Fiche</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -60,4 +60,6 @@ public interface ReservationMachineRepository extends JpaRepository<ReservationM
     @Query("SELECT r FROM ReservationMachine r WHERE r.statutReservation.code = 'annulee'")
     List<ReservationMachine> findReservationSAnnule();
 
+    List<ReservationMachine> findByClientIdUtilisateurAndDateDebutBetweenAndStatutReservationCodeIn(Long idClient, LocalDate debut, LocalDate fin, List<String> statuts);
+
 }

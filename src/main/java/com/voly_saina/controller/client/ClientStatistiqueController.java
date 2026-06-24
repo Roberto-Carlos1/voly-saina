@@ -1,79 +1,58 @@
 package com.voly_saina.controller.client;
 
-import com.voly_saina.entity.ReservationMachine;
-import com.voly_saina.entity.RetourMachine;
-import com.voly_saina.entity.Utilisateur;
-import com.voly_saina.service.ReservationMachineService;
-import com.voly_saina.service.UtilisateurService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.voly_saina.dto.StatistiquesClientDTO;
+import com.voly_saina.service.client.ClientStatistiqueService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/client/statistiques")
+@RequiredArgsConstructor
 public class ClientStatistiqueController {
 
-    @Autowired
-    private ReservationMachineService reservationService;
-    
-    @Autowired
-    private UtilisateurService utilisateurService;
+    private final ClientStatistiqueService clientStatistiqueService;
 
     @GetMapping
-    public String statistiques(@RequestParam(required = false) Long clientId, Model model) {
-        Long idClient = clientId != null ? clientId : 1L;
-        Utilisateur client = utilisateurService.findById(idClient)
-            .orElseThrow(() -> new RuntimeException("Client non trouvé"));
-        Long clientIdFinal = client.getIdUtilisateur();
+    public String statistiques(
+            @RequestParam Long idClient,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateDebut,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFin,
+            @RequestParam(required = false) String periode,
+            Model model) {
+        // TODO: remplacer par l'utilisateur connecté via Spring Security
         
-        List<ReservationMachine> reservations = reservationService.findByClientId(clientIdFinal);
+        LocalDate debut = dateDebut;
+        LocalDate fin = dateFin;
         
-        long total = reservations.size();
-        long enAttente = reservations.stream()
-            .filter(r -> "en_attente".equals(r.getStatutReservation().getCode()))
-            .count();
-        long enCours = reservations.stream()
-            .filter(r -> "en_cours".equals(r.getStatutReservation().getCode()))
-            .count();
-        long terminees = reservations.stream()
-            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
-            .count();
-        long annulees = reservations.stream()
-            .filter(r -> "annulee".equals(r.getStatutReservation().getCode()))
-            .count();
+        if (periode != null && !periode.isEmpty()) {
+            var periodes = clientStatistiqueService.periodesDisponibles();
+            if (periodes.containsKey(periode)) {
+                LocalDate[] dates = periodes.get(periode);
+                debut = dates[0];
+                fin = dates[1];
+            }
+        }
         
-        BigDecimal penalites = reservations.stream()
-            .map(ReservationMachine::getRetour)
-            .filter(r -> r != null && r.getPenalite() != null)
-            .map(RetourMachine::getPenalite)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (debut == null || fin == null) {
+            LocalDate[] periodeDefaut = clientStatistiqueService.periodeDefaut();
+            debut = periodeDefaut[0];
+            fin = periodeDefaut[1];
+        }
         
-        BigDecimal depense = reservations.stream()
-            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
-            .map(ReservationMachine::getPrixTotal)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        StatistiquesClientDTO stats = clientStatistiqueService.genererStatistiquesClient(idClient, debut, fin);
         
-        long retoursAvecPenalite = reservations.stream()
-            .map(ReservationMachine::getRetour)
-            .filter(r -> r != null && r.getPenalite() != null && r.getPenalite().compareTo(BigDecimal.ZERO) > 0)
-            .count();
-        
-        model.addAttribute("client", client);
-        model.addAttribute("total", total);
-        model.addAttribute("enAttente", enAttente);
-        model.addAttribute("enCours", enCours);
-        model.addAttribute("terminees", terminees);
-        model.addAttribute("annulees", annulees);
-        model.addAttribute("penalites", penalites);
-        model.addAttribute("depense", depense);
-        model.addAttribute("retoursAvecPenalite", retoursAvecPenalite);
-        model.addAttribute("clientId", clientId);
+        model.addAttribute("stats", stats);
+        model.addAttribute("dateDebut", debut);
+        model.addAttribute("dateFin", fin);
+        model.addAttribute("idClient", idClient);
+        model.addAttribute("periodeSelectionnee", periode);
         
         return "client/statistiques/index";
     }

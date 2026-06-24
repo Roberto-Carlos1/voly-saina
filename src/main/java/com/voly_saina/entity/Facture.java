@@ -49,6 +49,7 @@ public class Facture {
     private BigDecimal montantPaye = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id_statut_facture", nullable = false)
     private StatutFacture statutFacture;
 
     @Column(name = "date_limite")

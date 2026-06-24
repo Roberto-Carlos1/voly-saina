@@ -5,6 +5,7 @@ import com.voly_saina.service.PaiementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,11 +18,19 @@ public class PaiementController {
     private PaiementService paiementService;
 
     // GET /api/paiements
-    @GetMapping
-    public ResponseEntity<List<Paiement>> getAll() {
-        return ResponseEntity.ok(paiementService.findAll());
-    }
+    // @GetMapping
+    // public ResponseEntity<List<Paiement>> getAll() {
+    // return ResponseEntity.ok(paiementService.findAll());
+    // }
 
+    @GetMapping
+    public String getAll(Model model) {
+        List<Paiement> liste = paiementService.findAll();
+
+        model.addAttribute("paiements", liste);
+        return "paiements/list";
+    }
+    
     // GET /api/paiements/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Paiement> getById(@PathVariable Long id) {

@@ -1,15 +1,18 @@
 package com.voly_saina.controller.paiement;
 
 import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.Paiement;
 import com.voly_saina.service.FactureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/factures")
 public class FactureController {
 
@@ -17,9 +20,17 @@ public class FactureController {
     private FactureService factureService;
 
     // GET /api/factures
+    // @GetMapping
+    // public ResponseEntity<List<Facture>> getAll() {
+    // return ResponseEntity.ok(factureService.findAll());
+    // }
+
     @GetMapping
-    public ResponseEntity<List<Facture>> getAll() {
-        return ResponseEntity.ok(factureService.findAll());
+    public String getAll(Model model) {
+        List<Facture> liste = factureService.findAll();
+
+        model.addAttribute("factures", liste);
+        return "facturation/list";
     }
 
     // GET /api/factures/{id}

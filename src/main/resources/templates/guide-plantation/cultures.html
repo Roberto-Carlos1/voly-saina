@@ -5,40 +5,20 @@
     <title>Guide de plantation</title>
 </head>
 <body>
-<div align="right">
-    <a th:href="@{/guide-plantation/fiche-culture}">
-        <button type="button">Page 04</button>
-    </a>
-</div>
-
 <h1>Guide de plantation</h1>
 
 <form method="get" th:action="@{/guide-plantation/cultures}">
     <label>
-        Nom
-        <input type="text" name="nom" th:value="${filtres.nom}">
-    </label>
-    <label>
         Localisation
-        <input type="text" name="localisation" th:value="${filtres.localisation}">
-    </label>
-    <label>
-        Région
-        <input type="text" name="region" th:value="${filtres.region}">
-    </label>
-    <label>
-        Saison
-        <input type="text" name="saison" th:value="${filtres.saison}">
-    </label>
-    <label>
-        Description
-        <input type="text" name="description" th:value="${filtres.description}">
+        <input type="text" name="localisation" th:value="${filtres.localisation}" placeholder="Ex: Antananarivo">
     </label>
     <button type="submit">Filtrer</button>
     <a th:href="@{/guide-plantation/cultures}">Réinitialiser</a>
 </form>
 
 <p th:if="${#lists.isEmpty(cultures)}">Aucune culture disponible.</p>
+
+<h1>Fiche detaillée</h1>
 
 <table th:if="${!#lists.isEmpty(cultures)}" border="1">
     <thead>

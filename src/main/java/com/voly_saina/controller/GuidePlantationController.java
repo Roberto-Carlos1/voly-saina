@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -23,32 +22,14 @@ public class GuidePlantationController {
     private GuidePlantationService guidePlantationService;
 
     @GetMapping({"", "/", "/cultures"})
-    public String listerCultures(@RequestParam(required = false) String nom,
-                                 @RequestParam(required = false) String localisation,
-                                 @RequestParam(required = false) String region,
-                                 @RequestParam(required = false) String saison,
-                                 @RequestParam(required = false) String description,
+    public String listerCultures(@RequestParam(required = false) String localisation,
                                  Model model) {
         Map<String, String> filtres = new HashMap<>();
-        filtres.put("nom", nom);
         filtres.put("localisation", localisation);
-        filtres.put("region", region);
-        filtres.put("saison", saison);
-        filtres.put("description", description);
 
         model.addAttribute("cultures", guidePlantationService.listerRessources("culture", filtres));
         model.addAttribute("filtres", filtres);
         return "guide-plantation/cultures";
-    }
-
-    @GetMapping("/fiche-culture")
-    public String consulterPremiereFicheCulture() {
-        List<Culture> cultures = guidePlantationService.listerRessources("culture", new HashMap<>());
-        if (cultures.isEmpty()) {
-            return "redirect:/guide-plantation/cultures";
-        }
-
-        return "redirect:/guide-plantation/cultures/" + cultures.get(0).getIdCulture() + "/fiche";
     }
 
     @GetMapping("/cultures/{idCulture}")

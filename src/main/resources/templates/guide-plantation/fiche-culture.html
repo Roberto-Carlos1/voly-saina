@@ -5,12 +5,6 @@
     <title>Fiche détaillée culture</title>
 </head>
 <body>
-<div align="right">
-    <a th:href="@{/guide-plantation/cultures}">
-        <button type="button">Page 03</button>
-    </a>
-</div>
-
 <p>
     <a th:href="@{/guide-plantation/cultures}">Retour à la liste</a>
     <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Retour au détail</a>
@@ -47,12 +41,6 @@
 
         <dt>Conseils pratiques</dt>
         <dd th:text="${ficheCulture.conseilsPratiques}">Conseils</dd>
-
-        <dt>Validée</dt>
-        <dd th:text="${ficheCulture.valide}">false</dd>
-
-        <dt>Date de mise à jour</dt>
-        <dd th:text="${ficheCulture.dateMiseAJour}">Date</dd>
     </dl>
 </section>
 

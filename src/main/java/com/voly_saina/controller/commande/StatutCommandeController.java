@@ -1,4 +1,4 @@
-package com.voly_saina.controller;
+package com.voly_saina.controller.commande;
 
 import com.voly_saina.entity.StatutCommande;
 import com.voly_saina.service.StatutCommandeService;

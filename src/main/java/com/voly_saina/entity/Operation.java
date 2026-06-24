@@ -11,16 +11,20 @@ import lombok.AllArgsConstructor;
 @Entity
 @Table(name = "operation", schema = "voly_saina")
 public class Operation {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_operation")
     private Long idOperation;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_produit")
     private Produit idProduit;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_facture")
+    private Facture facture;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_machine")
     private Machine idMachine;

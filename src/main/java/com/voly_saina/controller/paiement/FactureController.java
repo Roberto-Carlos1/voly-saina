@@ -35,10 +35,11 @@ public class FactureController {
 
     // GET /api/factures/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Facture> getById(@PathVariable Long id) {
-        return factureService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public String getFactureById(@PathVariable Long id, Model model) {
+        Facture facture = factureService.findById(id);
+
+        model.addAttribute("facture", facture);
+        return "facturation/detail-facture";
     }
 
     // POST /api/factures

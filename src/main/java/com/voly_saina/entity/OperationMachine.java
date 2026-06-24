@@ -1,5 +1,7 @@
 package com.voly_saina.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,7 @@ public class OperationMachine {
     @JoinColumn(name = "id_machine")
     private Machine idMachine;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_facture")
     private Facture idFacture;

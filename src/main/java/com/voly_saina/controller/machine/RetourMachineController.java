@@ -1,4 +1,4 @@
-package com.voly_saina.controller;
+package com.voly_saina.controller.machine;
 
 import com.voly_saina.entity.RetourMachine;
 import com.voly_saina.service.RetourMachineService;

@@ -1,4 +1,4 @@
-package com.voly_saina.controller;
+package com.voly_saina.controller.machine;
 
 import java.util.HashMap;
 import java.util.List;

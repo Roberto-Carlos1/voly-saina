@@ -12,6 +12,17 @@
 
 <h1 th:text="'Fiche détaillée - ' + ${culture.nom}">Fiche détaillée</h1>
 
+<dl>
+    <dt>Description</dt>
+    <dd th:text="${culture.description}">Description</dd>
+
+    <dt>Région / localisation adaptée</dt>
+    <dd th:text="${culture.localisationRecommandee}">Localisation</dd>
+
+    <dt>Saison adaptée</dt>
+    <dd th:text="${culture.saisonRecommandee}">Saison</dd>
+</dl>
+
 <section th:if="${ficheCulture == null}">
     <p>Aucune fiche détaillée disponible pour cette culture.</p>
 </section>
@@ -59,7 +70,7 @@
     <tbody>
     <tr th:each="outil : ${outils}">
         <td th:text="${outil.nom}">Nom</td>
-        <td th:text="${outil.typeMachine}">Type</td>
+        <td th:text="${outil.typeMachine != null ? outil.typeMachine.libelle : ''}">Type</td>
         <td th:text="${outil.description}">Description</td>
         <td th:text="${outil.localisation}">Localisation</td>
         <td th:text="${outil.prixJour}">Prix</td>

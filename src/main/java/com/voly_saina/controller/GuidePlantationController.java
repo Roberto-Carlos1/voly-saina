@@ -22,10 +22,10 @@ public class GuidePlantationController {
     private GuidePlantationService guidePlantationService;
 
     @GetMapping({"", "/", "/cultures"})
-    public String listerCultures(@RequestParam(required = false) String localisation,
+    public String listerCultures(@RequestParam(required = false) String region,
                                  Model model) {
         Map<String, String> filtres = new HashMap<>();
-        filtres.put("localisation", localisation);
+        filtres.put("region", region);
 
         model.addAttribute("cultures", guidePlantationService.listerRessources("culture", filtres));
         model.addAttribute("filtres", filtres);
@@ -34,24 +34,33 @@ public class GuidePlantationController {
 
     @GetMapping("/cultures/{idCulture}")
     public String consulterCulture(@PathVariable Long idCulture, Model model) {
-        Culture culture = guidePlantationService.consulterDetailCulture(idCulture)
-                .orElseThrow(() -> new IllegalArgumentException("Culture introuvable: " + idCulture));
+        Culture culture = consulterCultureExistante(idCulture);
+        FicheCulture ficheCulture = guidePlantationService.consulterDetail("fiche_culture", idCulture)
+                .map(FicheCulture.class::cast)
+                .orElse(null);
 
         model.addAttribute("culture", culture);
-        model.addAttribute("ficheCulture", guidePlantationService.consulterDetailFicheCulture(idCulture).orElse(null));
+        model.addAttribute("ficheCulture", ficheCulture);
         return "guide-plantation/detail-culture";
     }
 
     @GetMapping("/cultures/{idCulture}/fiche")
     public String consulterFicheCulture(@PathVariable Long idCulture, Model model) {
-        Culture culture = guidePlantationService.consulterDetailCulture(idCulture)
-                .orElseThrow(() -> new IllegalArgumentException("Culture introuvable: " + idCulture));
-        FicheCulture ficheCulture = guidePlantationService.consulterDetailFicheCulture(idCulture).orElse(null);
+        Culture culture = consulterCultureExistante(idCulture);
+        FicheCulture ficheCulture = guidePlantationService.consulterDetail("fiche_culture", idCulture)
+                .map(FicheCulture.class::cast)
+                .orElse(null);
 
         model.addAttribute("culture", culture);
         model.addAttribute("ficheCulture", ficheCulture);
-        model.addAttribute("outils", guidePlantationService.listerSuggestionsOutils(idCulture));
-        model.addAttribute("produits", guidePlantationService.listerSuggestionsProduits(idCulture));
+        model.addAttribute("outils", guidePlantationService.listerSuggestions("outil", idCulture));
+        model.addAttribute("produits", guidePlantationService.listerSuggestions("produit", idCulture));
         return "guide-plantation/fiche-culture";
+    }
+
+    private Culture consulterCultureExistante(Long idCulture) {
+        return guidePlantationService.consulterDetail("culture", idCulture)
+                .map(Culture.class::cast)
+                .orElseThrow(() -> new IllegalArgumentException("Culture introuvable: " + idCulture));
     }
 }

@@ -132,6 +132,9 @@ CREATE TABLE utilisateur (
     date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO utilisateur(nom, mot_de_passe, id_role, id_statut_compte) VALUES
+('Rakoto', 'aaaaaaaa', 1, 1);
+
 CREATE TABLE profil_utilisateur (
     id_profil SERIAL PRIMARY KEY,
     id_utilisateur INT NOT NULL UNIQUE REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE,
@@ -297,6 +300,9 @@ CREATE TABLE operation(
     CONSTRAINT chk_machine_ou_produit CHECK (id_produit IS NOT NULL OR id_machine IS NOT NULL)
 );
 
+insert into operation(id_produit, id_machine, id_client, quantite) values 
+(1, 1, 1, 2);
+
 CREATE TABLE facture (
     id_facture SERIAL PRIMARY KEY,
     numero VARCHAR(50) NOT NULL UNIQUE,
@@ -407,3 +413,4 @@ INSERT INTO produit(id_categorie, nom, description, conseil_usage, prix_unitaire
 (1, 'NPK', 'Engrais composé pour améliorer la croissance', 'Respecter la dose recommandée selon la culture.', 25000, 100, 10),
 (1, 'Urée', 'Engrais azoté', 'Utiliser avec prudence et éviter le surdosage.', 22000, 80, 10),
 (1, 'Compost', 'Fertilisant organique', 'Adapter la quantité à la surface cultivée.', 12000, 150, 20);
+

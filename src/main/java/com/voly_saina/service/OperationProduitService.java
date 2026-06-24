@@ -1,9 +1,5 @@
 package com.voly_saina.service;
 
-<<<<<<< Updated upstream
-=======
-import com.voly_saina.entity.OperationMachine;
->>>>>>> Stashed changes
 import com.voly_saina.entity.OperationProduit;
 import com.voly_saina.repository.OperationProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +26,6 @@ public class OperationProduitService {
         operationProduitRepository.save(OperationProduit);
     }
 
-<<<<<<< Updated upstream
-=======
-    public List<OperationProduit> findByIdFacture(Long id) {
-        return operationProduitRepository.findByIdFacture_IdFacture(id);
-    }
-
->>>>>>> Stashed changes
     public boolean existsById(Long id) {
         return operationProduitRepository.existsById(id);
     }

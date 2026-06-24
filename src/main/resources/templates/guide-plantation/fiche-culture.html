@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiche détaillée culture</title>
+</head>
+<body>
+<div align="right">
+    <a th:href="@{/guide-plantation/cultures}">
+        <button type="button">Page 03</button>
+    </a>
+</div>
+
+<p>
+    <a th:href="@{/guide-plantation/cultures}">Retour à la liste</a>
+    <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Retour au détail</a>
+</p>
+
+<h1 th:text="'Fiche détaillée - ' + ${culture.nom}">Fiche détaillée</h1>
+
+<section th:if="${ficheCulture == null}">
+    <p>Aucune fiche détaillée disponible pour cette culture.</p>
+</section>
+
+<section th:if="${ficheCulture != null}">
+    <dl>
+        <dt>Période de plantation</dt>
+        <dd th:text="${ficheCulture.periodePlantation}">Période</dd>
+
+        <dt>Durée avant récolte</dt>
+        <dd th:text="${ficheCulture.dureeAvantRecolte}">Durée</dd>
+
+        <dt>Préparation du sol</dt>
+        <dd th:text="${ficheCulture.preparationSol}">Préparation</dd>
+
+        <dt>Quantité de semence</dt>
+        <dd th:text="${ficheCulture.quantiteSemence}">Semence</dd>
+
+        <dt>Engrais recommandés</dt>
+        <dd th:text="${ficheCulture.engraisRecommandes}">Engrais</dd>
+
+        <dt>Arrosage</dt>
+        <dd th:text="${ficheCulture.arrosage}">Arrosage</dd>
+
+        <dt>Maladies courantes</dt>
+        <dd th:text="${ficheCulture.maladiesCourantes}">Maladies</dd>
+
+        <dt>Conseils pratiques</dt>
+        <dd th:text="${ficheCulture.conseilsPratiques}">Conseils</dd>
+
+        <dt>Validée</dt>
+        <dd th:text="${ficheCulture.valide}">false</dd>
+
+        <dt>Date de mise à jour</dt>
+        <dd th:text="${ficheCulture.dateMiseAJour}">Date</dd>
+    </dl>
+</section>
+
+<h2>Outils recommandés</h2>
+<p th:if="${#lists.isEmpty(outils)}">Aucun outil disponible.</p>
+<table th:if="${!#lists.isEmpty(outils)}" border="1">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Localisation</th>
+        <th>Prix par jour</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="outil : ${outils}">
+        <td th:text="${outil.nom}">Nom</td>
+        <td th:text="${outil.typeMachine}">Type</td>
+        <td th:text="${outil.description}">Description</td>
+        <td th:text="${outil.localisation}">Localisation</td>
+        <td th:text="${outil.prixJour}">Prix</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Produits suggérés</h2>
+<p th:if="${#lists.isEmpty(produits)}">Aucun produit disponible.</p>
+<table th:if="${!#lists.isEmpty(produits)}" border="1">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Catégorie</th>
+        <th>Description</th>
+        <th>Conseil d'usage</th>
+        <th>Prix unitaire</th>
+        <th>Stock</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="produit : ${produits}">
+        <td th:text="${produit.nom}">Nom</td>
+        <td th:text="${produit.categorie != null ? produit.categorie.nom : ''}">Catégorie</td>
+        <td th:text="${produit.description}">Description</td>
+        <td th:text="${produit.conseilUsage}">Conseil</td>
+        <td th:text="${produit.prixUnitaire}">Prix</td>
+        <td th:text="${produit.stock}">Stock</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -4,6 +4,7 @@ import com.voly_saina.entity.Machine;
 import com.voly_saina.repository.MachineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +33,10 @@ public class MachineService {
 
     public void deleteById(Long id) {
         machineRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Machine> findDisponibles() {
+        return machineRepository.findByDisponibleTrue();
     }
 }

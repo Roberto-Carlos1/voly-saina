@@ -300,9 +300,6 @@ CREATE TABLE operation(
     CONSTRAINT chk_machine_ou_produit CHECK (id_produit IS NOT NULL OR id_machine IS NOT NULL)
 );
 
-insert into operation(id_produit, id_machine, id_client, quantite) values 
-(1, 1, 1, 2);
-
 CREATE TABLE facture (
     id_facture SERIAL PRIMARY KEY,
     numero VARCHAR(50) NOT NULL UNIQUE,
@@ -414,3 +411,5 @@ INSERT INTO produit(id_categorie, nom, description, conseil_usage, prix_unitaire
 (1, 'Urée', 'Engrais azoté', 'Utiliser avec prudence et éviter le surdosage.', 22000, 80, 10),
 (1, 'Compost', 'Fertilisant organique', 'Adapter la quantité à la surface cultivée.', 12000, 150, 20);
 
+insert into operation(id_produit, id_machine, id_client, quantite) values 
+(1, 1, 1, 2);

@@ -22,6 +22,13 @@ public class OperationMachineService {
         return operationMachineRepository.findById(id);
     }
 
+<<<<<<< Updated upstream
+=======
+    public List<OperationMachine> findByIdFacture(Long id) {
+        return operationMachineRepository.findByIdFacture_IdFacture(id);
+    }
+
+>>>>>>> Stashed changes
     public void save(OperationMachine OperationMachine) {
         operationMachineRepository.save(OperationMachine);
     }

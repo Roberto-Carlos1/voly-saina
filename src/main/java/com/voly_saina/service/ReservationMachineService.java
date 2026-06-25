@@ -66,4 +66,8 @@ public class ReservationMachineService {
         List<ReservationMachine> conflits = findConfList(machineId, dateDebut, dateFin);
         return conflits.isEmpty();
     }
+
+    public List<ReservationMachine> findByStatutReservationAndCode(String code) {
+        return reservationMachineRepository.findByStatutReservationCode(code);
+    }
 }

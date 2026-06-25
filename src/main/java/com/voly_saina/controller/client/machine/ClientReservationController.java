@@ -54,8 +54,9 @@ public class ClientReservationController {
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClientAndStatut(
             @PathVariable Long clientId,
             @PathVariable String statut) {
-        List<ReservationMachine> reservations = reservationService
-            .findByClientAndStatutReservationCode(clientId, statut);
+        List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientId).stream()
+            .filter(r -> r.getStatutReservation() != null && statut.equals(r.getStatutReservation().getCode()))
+            .collect(Collectors.toList());
         List<ReservationClientDTO> response = reservations.stream()
             .map(this::mapToDTO)
             .collect(Collectors.toList());
@@ -121,8 +122,7 @@ public class ClientReservationController {
             }
 
             // Vérifier les conflits
-            List<ReservationMachine> conflits = reservationService
-                .findConflictingReservations(machineId, dateDebut, dateFin);
+            List<ReservationMachine> conflits = reservationService.findConfList(machineId, dateDebut, dateFin);
             if (!conflits.isEmpty()) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Cette machine est déjà réservée sur cette période");

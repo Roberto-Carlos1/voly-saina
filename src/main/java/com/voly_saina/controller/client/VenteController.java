@@ -2,11 +2,13 @@ package com.voly_saina.controller.client;
 
 import com.voly_saina.entity.Produit;
 import com.voly_saina.service.ProduitService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +28,60 @@ public class VenteController {
 
     // GET /client/ventes/catalogue
     @GetMapping("/catalogue")
-    public String catalogue(Model model) {
+    public String catalogue(
+            Model model,
+            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "categorie", required = false) String categorie,
+            @RequestParam(value = "disponible", required = false) String disponible
+    ) {
         List<Produit> produits = produitService.findAll();
-        model.addAttribute("produits", produits);
+
+        String qNorm = (q == null) ? "" : q.trim().toLowerCase();
+        String categorieNorm = (categorie == null) ? "" : categorie.trim().toLowerCase();
+
+        LocalDate today = LocalDate.now();
+
+        List<Produit> filtres = produits.stream()
+                .filter(p -> p != null)
+                .filter(Produit::getActif)
+                .filter(p -> {
+                    if (!qNorm.isEmpty()) {
+                        String nom = p.getNom() != null ? p.getNom().toLowerCase() : "";
+                        String description = p.getDescription() != null ? p.getDescription().toLowerCase() : "";
+                        String conseil = p.getConseilUsage() != null ? p.getConseilUsage().toLowerCase() : "";
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
+                                ? p.getCategorie().getNom().toLowerCase()
+                                : "";
+
+                        boolean matchQ = nom.contains(qNorm) || description.contains(qNorm) || conseil.contains(qNorm) || categorieNom.contains(qNorm);
+                        if (!matchQ) return false;
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (!categorieNorm.isEmpty()) {
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
+                                ? p.getCategorie().getNom().toLowerCase()
+                                : "";
+                        if (!categorieNom.contains(categorieNorm)) return false;
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (disponible == null || disponible.isBlank()) {
+                        return true;
+                    }
+                    boolean estDispo = estDisponible(p);
+                    return "oui".equalsIgnoreCase(disponible) ? estDispo : "non".equalsIgnoreCase(disponible) ? !estDispo : true;
+                })
+                .toList();
+
+
+        // Pour compatibilité avec le template: la liste 'produits' contient déjà les filtres
+        model.addAttribute("produits", filtres);
+        model.addAttribute("q", q);
+        model.addAttribute("categorie", categorie);
+        model.addAttribute("disponible", disponible);
         return "client/ventes/catalogue";
     }
 
@@ -53,7 +106,7 @@ public class VenteController {
     public String detailProduit(@PathVariable Long id, Model model) {
         Produit produit = produitService.findById(id).orElse(null);
         if (produit == null || !Boolean.TRUE.equals(produit.getActif())) {
-            return "error/404";
+            return "Désolé, le produit demandé n'est pas disponible.";
         }
 
         model.addAttribute("produit", produit);

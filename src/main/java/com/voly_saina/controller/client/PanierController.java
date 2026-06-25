@@ -296,9 +296,22 @@ public class PanierController {
         commandePanier.setAdresseLivraison(adresseLivraison);
         commandePanier.setModePaiement(modePaiement);
         commandePanier.setStatutCommande(statutLivraison);
+
+        // Sécurité : recalculer le total du panier au moment de la clôture
+        BigDecimal total = ligneCommandeService.findAll().stream()
+                .filter(lc -> lc != null && lc.getCommande() != null)
+                .filter(lc -> lc.getCommande().getIdCommande() != null && lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
+                .map(lc -> lc.getSousTotal() == null ? BigDecimal.ZERO : lc.getSousTotal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        commandePanier.setMontantTotal(total);
+
         commandeService.save(commandePanier);
 
+        // Message de confirmation côté UI
+        model.addAttribute("message", "Achat effectué avec succès. Merci pour votre commande !");
+
         return "redirect:/client/ventes/catalogue";
+
     }
 }
 

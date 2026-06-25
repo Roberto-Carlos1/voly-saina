@@ -100,6 +100,12 @@ public class ClientReservationController {
             Utilisateur client = utilisateurService.findById(idClient)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
             
+            List<ReservationMachine> conflits = reservationService.findConfList(machineId, dateDebut, dateFin);
+            if (!conflits.isEmpty()) {
+                model.addAttribute("error", "La machine est deja reservee pour cette periode");
+                return "client/reservations/form";
+            }
+
             Machine machine = machineService.findById(machineId);
             
             if (machine == null || !"disponible".equals(machine.getEtatMachine().getCode())) {

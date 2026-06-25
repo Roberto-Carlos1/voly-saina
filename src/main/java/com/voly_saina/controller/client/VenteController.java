@@ -58,10 +58,7 @@ public class VenteController {
                         String nom = p.getNom() != null ? p.getNom().toLowerCase() : "";
                         String description = p.getDescription() != null ? p.getDescription().toLowerCase() : "";
                         String conseil = p.getConseilUsage() != null ? p.getConseilUsage().toLowerCase() : "";
-                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
-                                ? p.getCategorie().getNom().toLowerCase()
-                                : "";
-
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null) ? p.getCategorie().getNom().toLowerCase(): "";
                         boolean matchQ = nom.contains(qNorm) || description.contains(qNorm) || conseil.contains(qNorm) || categorieNom.contains(qNorm);
                         if (!matchQ) return false;
                     }
@@ -69,9 +66,7 @@ public class VenteController {
                 })
                 .filter(p -> {
                     if (!categorieNorm.isEmpty()) {
-                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
-                                ? p.getCategorie().getNom().toLowerCase()
-                                : "";
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null) ? p.getCategorie().getNom().toLowerCase(): "";
                         if (!categorieNom.contains(categorieNorm)) return false;
                     }
                     return true;
@@ -157,9 +152,7 @@ public class VenteController {
                         String nom = p.getNom() != null ? p.getNom().toLowerCase() : "";
                         String description = p.getDescription() != null ? p.getDescription().toLowerCase() : "";
                         String conseil = p.getConseilUsage() != null ? p.getConseilUsage().toLowerCase() : "";
-                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
-                                ? p.getCategorie().getNom().toLowerCase()
-                                : "";
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null) ? p.getCategorie().getNom().toLowerCase() : "";
 
                         return nom.contains(qNorm) || description.contains(qNorm) || conseil.contains(qNorm) || categorieNom.contains(qNorm);
                     }
@@ -168,8 +161,7 @@ public class VenteController {
                 .filter(p -> {
                     if (!categorieNorm.isEmpty()) {
                         String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
-                                ? p.getCategorie().getNom().toLowerCase()
-                                : "";
+                                ? p.getCategorie().getNom().toLowerCase() : "";
                         return categorieNom.contains(categorieNorm);
                     }
                     return true;

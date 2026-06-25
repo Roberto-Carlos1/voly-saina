@@ -80,9 +80,10 @@
                 </div>
             </form>
 
-            <div th:if="${produits == null or produits.empty}" class="text-center py-5 text-muted">
+            <div id="ventesEmpty" th:if="${produits == null or produits.empty}" class="text-center py-5 text-muted">
                 Aucun produit trouvé.
             </div>
+
 
             <div class="table-responsive" th:if="${produits != null and not produits.empty}">
                 <table class="table table-hover">
@@ -96,8 +97,9 @@
                         <th style="width: 10%;">Actions</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="ventesTableBody">
                     <tr th:each="produit : ${produits}">
+
                         <td>
                             <div style="font-weight:700;" th:text="${produit.nom != null ? produit.nom : '-'}"></div>
                             <div class="text-muted" style="font-size:12px;" th:text="${produit.description != null ? produit.description : ''}"></div>
@@ -109,8 +111,12 @@
                         <td th:text="${produit.dateExpiration != null ? #temporals.format(produit.dateExpiration, 'dd/MM/yyyy') : '-'}"></td>
                         <td>
                             <span class="badge"
-                                  th:classappend="${estDisponible != null and estDisponible.contains(produit.id) ? 'badge-green' : 'badge-gray'}"
-                                  th:text="${estDisponible != null and estDisponible.contains(produit.id) ? 'Disponible' : 'Indisponible'}"></span>
+                                  th:classappend="${produit != null and (produit.stock != null ? produit.stock : 0) > (produit.seuilStock != null ? produit.seuilStock : 0)
+                                                     and (produit.actif != null ? produit.actif : false)
+                                                     and (produit.dateExpiration == null ? true : produit.dateExpiration.isAfter(T(java.time.LocalDate).now())) ? 'badge-green' : 'badge-gray'}"
+                                  th:text="${produit != null and (produit.stock != null ? produit.stock : 0) > (produit.seuilStock != null ? produit.seuilStock : 0)
+                                                     and (produit.actif != null ? produit.actif : false)
+                                                     and (produit.dateExpiration == null ? true : produit.dateExpiration.isAfter(T(java.time.LocalDate).now())) ? 'Disponible' : 'Indisponible'}"></span>
                         </td>
                         <td>
                             <a th:href="@{/client/ventes/{id}(id=${produit.idProduit})}" class="btn btn-primary">Voir</a>

@@ -1,123 +1,135 @@
 package com.voly_saina.controller.client.machine;
 
+import com.voly_saina.dto.dtoMacine.ReservationClientDTO;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.ReservationMachine;
-import com.voly_saina.entity.RetourMachine;
+import com.voly_saina.entity.StatutReservation;
 import com.voly_saina.entity.Utilisateur;
-import com.voly_saina.entity.EtatMachine;
-import com.voly_saina.service.EtatMachineService;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ReservationMachineService;
-import com.voly_saina.service.RetourMachineService;
 import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping("/client/reservations")
+@RestController
+@RequestMapping("/api/client/reservations")
 public class ClientReservationController {
 
     @Autowired
-    private MachineService machineService;
-    
-    @Autowired
     private ReservationMachineService reservationService;
-    
+
     @Autowired
-    private StatutReservationService statutReservationService;
-    
-    @Autowired
-    private EtatMachineService etatMachineService;
-    
+    private MachineService machineService;
+
     @Autowired
     private UtilisateurService utilisateurService;
-    
+
     @Autowired
-    private RetourMachineService retourService;
+    private StatutReservationService statutReservationService;
 
-    // ==================== FORMULAIRES ====================
-
-    @GetMapping("/{machineId}/nouvelle")
-    public String formulaireReservation(@PathVariable Long machineId,
-                                        @RequestParam(required = false) Long clientId,
-                                        Model model) {
-        Machine machine = machineService.findById(machineId);
-        if (machine == null || !"disponible".equals(machine.getEtatMachine().getCode())) {
-            model.addAttribute("error", "Machine non disponible");
-            return "client/machines/error";
-        }
-        model.addAttribute("machine", machine);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
-        return "client/reservations/form";
+    // GET /api/client/reservations/client/{clientId}
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<ReservationClientDTO>> getReservationsByClient(@PathVariable Long clientId) {
+        List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
+        List<ReservationClientDTO> response = reservations.stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}/annuler")
-    public String formulaireAnnulation(@PathVariable Long id,
-                                       @RequestParam(required = false) Long clientId,
-                                       Model model) {
-        Long idClient = clientId != null ? clientId : 1L;
-        Utilisateur client = utilisateurService.findById(idClient)
-            .orElseThrow(() -> new RuntimeException("Client non trouvé"));
-            
+    // GET /api/client/reservations/client/{clientId}/statut/{statut}
+    @GetMapping("/client/{clientId}/statut/{statut}")
+    public ResponseEntity<List<ReservationClientDTO>> getReservationsByClientAndStatut(
+            @PathVariable Long clientId,
+            @PathVariable String statut) {
+        List<ReservationMachine> reservations = reservationService
+            .findByClientAndStatutReservationCode(clientId, statut);
+        List<ReservationClientDTO> response = reservations.stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    // GET /api/client/reservations/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationClientDTO> getReservationById(@PathVariable Long id) {
         ReservationMachine reservation = reservationService.findById(id)
-            .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
-        
-        if (!reservation.getClient().getIdUtilisateur().equals(client.getIdUtilisateur())) {
-            model.addAttribute("error", "Vous n'êtes pas autorisé");
-            return "client/machines/error";
+            .orElse(null);
+        if (reservation == null) {
+            return ResponseEntity.notFound().build();
         }
-        
-        String statut = reservation.getStatutReservation().getCode();
-        if ("terminee".equals(statut) || "annulee".equals(statut)) {
-            model.addAttribute("error", "Cette réservation ne peut plus être annulée");
-            return "client/machines/error";
-        }
-        
-        model.addAttribute("reservation", reservation);
-        model.addAttribute("clientId", clientId);
-        return "client/reservations/annuler-form";
+        return ResponseEntity.ok(mapToDTO(reservation));
     }
 
-    // ==================== ACTIONS ====================
+    // GET /api/client/reservations/client/{clientId}/active
+    @GetMapping("/client/{clientId}/active")
+    public ResponseEntity<List<ReservationClientDTO>> getActiveReservations(@PathVariable Long clientId) {
+        List<ReservationMachine> reservations = reservationService
+            .findActiveReservationsByClient(clientId);
+        List<ReservationClientDTO> response = reservations.stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
 
-    @PostMapping("/{machineId}/nouvelle")
-    public String creerReservation(@PathVariable Long machineId,
-                                   @RequestParam LocalDate dateDebut,
-                                   @RequestParam LocalDate dateFin,
-                                   @RequestParam(required = false) String lieuLivraison,
-                                   @RequestParam(required = false) Long clientId,
-                                   Model model) {
+    // POST /api/client/reservations
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> createReservation(@RequestBody Map<String, Object> payload) {
         try {
-            Long idClient = clientId != null ? clientId : 1L;
-            Utilisateur client = utilisateurService.findById(idClient)
+            Long clientId = Long.valueOf(payload.get("clientId").toString());
+            Long machineId = Long.valueOf(payload.get("machineId").toString());
+            LocalDate dateDebut = LocalDate.parse(payload.get("dateDebut").toString());
+            LocalDate dateFin = LocalDate.parse(payload.get("dateFin").toString());
+            String lieuLivraison = payload.containsKey("lieuLivraison") ? 
+                payload.get("lieuLivraison").toString() : null;
+
+            // Vérifier l'utilisateur
+            Utilisateur client = utilisateurService.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
-            
-            List<ReservationMachine> conflits = reservationService.findConfList(machineId, dateDebut, dateFin);
-            if (!conflits.isEmpty()) {
-                model.addAttribute("error", "La machine est deja reservee pour cette periode");
-                return "client/reservations/form";
-            }
 
+            // Vérifier la machine
             Machine machine = machineService.findById(machineId);
-            
-            if (machine == null || !"disponible".equals(machine.getEtatMachine().getCode())) {
-                model.addAttribute("error", "Machine non disponible");
-                return "client/machines/error";
+            if (machine == null || !machine.getDisponible()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Machine non disponible");
+                return ResponseEntity.badRequest().body(error);
             }
 
+            // Vérifier les dates
             if (dateFin.isBefore(dateDebut)) {
-                model.addAttribute("error", "Date de fin invalide");
-                return "client/reservations/form";
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Date de fin invalide");
+                return ResponseEntity.badRequest().body(error);
             }
 
+            if (dateDebut.isBefore(LocalDate.now())) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "La date de début ne peut pas être dans le passé");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            // Vérifier les conflits
+            List<ReservationMachine> conflits = reservationService
+                .findConflictingReservations(machineId, dateDebut, dateFin);
+            if (!conflits.isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Cette machine est déjà réservée sur cette période");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            // Créer la réservation
             ReservationMachine reservation = new ReservationMachine();
             reservation.setMachine(machine);
             reservation.setClient(client);
@@ -129,143 +141,170 @@ public class ClientReservationController {
             if (jours == 0) jours = 1;
             reservation.setPrixTotal(machine.getPrixJour().multiply(BigDecimal.valueOf(jours)));
 
-            reservation.setStatutReservation(statutReservationService.findByCode("en_attente"));
+            reservation.setStatutReservation(
+                statutReservationService.findByCode("en_attente")
+            );
 
             ReservationMachine saved = reservationService.save(reservation);
 
-            model.addAttribute("reservation", saved);
-            model.addAttribute("machine", machine);
-            model.addAttribute("clientId", clientId);
-            return "client/reservations/success";
+            // Rendre la machine indisponible
+            machine.setDisponible(false);
+            machineService.save(machine);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Réservation créée avec succès");
+            response.put("reservation", mapToDTO(saved));
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "client/machines/error";
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
-    @PostMapping("/{id}/annuler")
-    public String annulerReservation(@PathVariable Long id,
-                                     @RequestParam(required = false) String motif,
-                                     @RequestParam(required = false) Long clientId,
-                                     Model model) {
+    // PUT /api/client/reservations/{id}/annuler
+    @PutMapping("/{id}/annuler")
+    public ResponseEntity<Map<String, Object>> annulerReservation(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> payload) {
         try {
-            Long idClient = clientId != null ? clientId : 1L;
-            Utilisateur client = utilisateurService.findById(idClient)
-                .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+            String motif = payload != null ? payload.get("motif") : null;
             
             ReservationMachine reservation = reservationService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
 
-            if (!reservation.getClient().getIdUtilisateur().equals(client.getIdUtilisateur())) {
-                model.addAttribute("error", "Vous n'êtes pas autorisé car vous n'etes pas le propriétaire de cette réservation");
-                return "client/machines/error";
-            }
-
             String statut = reservation.getStatutReservation().getCode();
             if ("terminee".equals(statut) || "annulee".equals(statut)) {
-                model.addAttribute("error", "Cette réservation ne peut plus être annulée");
-                return "client/machines/error";
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Cette réservation ne peut plus être annulée");
+                return ResponseEntity.badRequest().body(error);
             }
 
-            reservation.setStatutReservation(statutReservationService.findByCode("annulee"));
+            reservation.setStatutReservation(
+                statutReservationService.findByCode("annulee")
+            );
             if (motif != null) reservation.setMotifRefus(motif);
             reservationService.save(reservation);
 
+            // Libérer la machine
             Machine machine = reservation.getMachine();
-            if ("louee".equals(machine.getEtatMachine().getCode())) {
-                EtatMachine disponible = etatMachineService.findById(1L);
-                machine.getStatutMachine().setEtatMachine(disponible);
-                machineService.save(machine);
-            }
+            machine.setDisponible(true);
+            machineService.save(machine);
 
-            model.addAttribute("reservation", reservation);
-            model.addAttribute("message", "Réservation annulée avec succès");
-            model.addAttribute("clientId", clientId);
-            return "client/reservations/annuler-success";
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Réservation annulée avec succès");
+            response.put("reservation", mapToDTO(reservation));
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "client/machines/error";
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
-    @PostMapping("/annuler-tout")
-    public String annulerTout(@RequestParam(required = false) Long clientId, Model model) {
+    // PUT /api/client/reservations/client/{clientId}/annuler-tout
+    @PutMapping("/client/{clientId}/annuler-tout")
+    public ResponseEntity<Map<String, Object>> annulerTout(@PathVariable Long clientId) {
         try {
-            Long idClient = clientId != null ? clientId : 1L;
-            Utilisateur client = utilisateurService.findById(idClient)
-                .orElseThrow(() -> new RuntimeException("Client non trouvé"));
-            Long clientIdFinal = client.getIdUtilisateur();
-            
-            List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientIdFinal);
-            
+            List<ReservationMachine> reservations = reservationService
+                .findActiveReservationsByClient(clientId);
+
             int annulees = 0;
             for (ReservationMachine r : reservations) {
                 String statut = r.getStatutReservation().getCode();
                 if (!"terminee".equals(statut) && !"annulee".equals(statut)) {
-                    r.setStatutReservation(statutReservationService.findByCode("annulee"));
+                    r.setStatutReservation(
+                        statutReservationService.findByCode("annulee")
+                    );
                     reservationService.save(r);
+                    
+                    // Libérer la machine
+                    Machine machine = r.getMachine();
+                    machine.setDisponible(true);
+                    machineService.save(machine);
+                    
                     annulees++;
                 }
             }
 
-            model.addAttribute("total", reservations.size());
-            model.addAttribute("annulees", annulees);
-            model.addAttribute("message", annulees + " réservation(s) annulée(s)");
-            model.addAttribute("clientId", clientId);
-            return "client/reservations/annuler-tout-success";
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", annulees + " réservation(s) annulée(s)");
+            response.put("total", reservations.size());
+            response.put("annulees", annulees);
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "client/machines/error";
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
-    // ==================== CONSULTATION ====================
-
-    @GetMapping("/mes-reservations")
-    public String mesReservations(@RequestParam(required = false) Long clientId, Model model) {
-        Long idClient = clientId != null ? clientId : 1L;
-        Utilisateur client = utilisateurService.findById(idClient)
-            .orElseThrow(() -> new RuntimeException("Client non trouvé"));
-        Long clientIdFinal = client.getIdUtilisateur();
+    // GET /api/client/reservations/client/{clientId}/statistiques
+    @GetMapping("/client/{clientId}/statistiques")
+    public ResponseEntity<Map<String, Object>> getStatistiques(@PathVariable Long clientId) {
+        List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         
-        List<ReservationMachine> reservations = reservationService.findByClientId(clientIdFinal);
+        long total = reservations.size();
+        long enCours = reservations.stream()
+            .filter(r -> "en_cours".equals(r.getStatutReservation().getCode()))
+            .count();
+        long terminees = reservations.stream()
+            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
+            .count();
+        long annulees = reservations.stream()
+            .filter(r -> "annulee".equals(r.getStatutReservation().getCode()))
+            .count();
         
-        BigDecimal totalPenalites = reservations.stream()
-            .map(ReservationMachine::getRetour)
-            .filter(r -> r != null && r.getPenalite() != null)
-            .map(RetourMachine::getPenalite)
+        BigDecimal totalDepenses = reservations.stream()
+            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
+            .map(ReservationMachine::getPrixTotal)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalReservations", total);
+        stats.put("reservationsEnCours", enCours);
+        stats.put("reservationsTerminees", terminees);
+        stats.put("reservationsAnnulees", annulees);
+        stats.put("totalDepenses", totalDepenses);
         
-        model.addAttribute("reservations", reservations);
-        model.addAttribute("totalPenalites", totalPenalites);
-        model.addAttribute("client", client);
-        model.addAttribute("clientId", clientId);
-        return "client/reservations/list";
+        return ResponseEntity.ok(stats);
     }
 
-    @GetMapping("/{id}")
-    public String detailReservation(@PathVariable Long id,
-                                    @RequestParam(required = false) Long clientId,
-                                    Model model) {
-        Long idClient = clientId != null ? clientId : 1L;
-        Utilisateur client = utilisateurService.findById(idClient)
-            .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+    private ReservationClientDTO mapToDTO(ReservationMachine reservation) {
+        ReservationClientDTO dto = new ReservationClientDTO();
+        dto.setIdReservation(reservation.getIdReservation());
+        dto.setIdMachine(reservation.getMachine().getIdMachine());
+        dto.setMachineNom(reservation.getMachine().getNom());
         
-        ReservationMachine reservation = reservationService.findById(id)
-            .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
-        
-        if (!reservation.getClient().getIdUtilisateur().equals(client.getIdUtilisateur())) {
-            model.addAttribute("error", "Vous n'êtes pas autorisé");
-            return "client/machines/error";
+        if (reservation.getMachine().getTypeMachine() != null) {
+            dto.setMachineType(reservation.getMachine().getTypeMachine().getLibelle());
         }
         
-        model.addAttribute("reservation", reservation);
-        model.addAttribute("retour", retourService.findByReservation(id));
-        model.addAttribute("clientId", clientId);
-        return "client/reservations/detail";
+        dto.setPrixJour(reservation.getMachine().getPrixJour());
+        dto.setDateDebut(reservation.getDateDebut());
+        dto.setDateFin(reservation.getDateFin());
+        dto.setLieuLivraison(reservation.getLieuLivraison());
+        dto.setPrixTotal(reservation.getPrixTotal());
+        
+        if (reservation.getStatutReservation() != null) {
+            dto.setStatut(reservation.getStatutReservation().getCode());
+            dto.setStatutLibelle(reservation.getStatutReservation().getLibelle());
+        }
+        
+        dto.setMotifRefus(reservation.getMotifRefus());
+        dto.setDateCreation(reservation.getDateCreation());
+        
+        // Calcul des actions possibles
+        String statut = reservation.getStatutReservation() != null ? 
+            reservation.getStatutReservation().getCode() : "";
+        
+        dto.setPeutAnnuler("en_attente".equals(statut) || "validee".equals(statut));
+        dto.setPeutRetourner("en_cours".equals(statut) || "validee".equals(statut));
+        dto.setEstTerminee("terminee".equals(statut) || "annulee".equals(statut));
+        
+        return dto;
     }
-
 }

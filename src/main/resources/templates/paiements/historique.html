@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique paiement</title>
+</head>
+
+<body>
+
+    <h2 th:text=" 'Historique de paiement pour la facture :  ' + ${facture.getNumero()}"></h2>
+
+    <p th:if="${#lists.isEmpty(paiements)}">
+        Historique vide pour le moment
+    </p>
+
+    <table th:unless="${#lists.isEmpty(paiements)}" border="1">
+        <tr>
+            <td>Id paiement</td>
+            <td>Montant</td>
+            <td>Date de paiement</td>
+            <td>Mode de paiement</td>
+        </tr>
+
+        <tr th:each="paiement : ${paiements}">
+            <td th:text="${paiement.getIdPaiement()}"></td>
+            <td th:text="${paiement.getMontant()}"></td>
+            <td th:text="${paiement.getDatePaiement()}"></td>
+            <td th:text="${paiement.getModePaiement()}"></td>
+        </tr>
+    </table>
+</body>
+
+</html>

@@ -44,7 +44,7 @@ public class PaiementController {
         model.addAttribute("paiements", liste);
         return "paiements/list";
     }
-    
+
     // GET /api/paiements/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Paiement> getById(@PathVariable Long id) {
@@ -55,35 +55,35 @@ public class PaiementController {
 
     @GetMapping("/reste/{id}")
     public String getResteById(@PathVariable Long id, Model model) {
-        Facture facture= factureService.findById(id);
+        Facture facture = factureService.findById(id);
         model.addAttribute("facture", facture);
         return "paiements/form-reste";
     }
 
     @PostMapping("/restePayee")
-    public String payerReste(PaiementDTO paiementDTO){
-        Long id= Long.parseLong(paiementDTO.getIdFacture());
+    public String payerReste(PaiementDTO paiementDTO) {
+        Long id = Long.parseLong(paiementDTO.getIdFacture());
         double montant = Double.parseDouble(paiementDTO.getMontant());
-        BigDecimal m= BigDecimal.valueOf(montant);
+        BigDecimal m = BigDecimal.valueOf(montant);
 
-        DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        LocalDateTime date= LocalDateTime.parse(paiementDTO.getDate(), format);
-        String mode= paiementDTO.getMode(); 
-        
-        Facture f= factureService.findById(id);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime date = LocalDateTime.parse(paiementDTO.getDate(), format);
+        String mode = paiementDTO.getMode();
+
+        Facture f = factureService.findById(id);
 
         Paiement p = new Paiement();
         p.setFacture(f);
         p.setMontant(m);
         p.setDatePaiement(date);
         p.setModePaiement(mode);
-        
+
         paiementService.save(p);
 
         f.setMontantPaye(f.getMontantPaye().add(m));
         factureService.save(f);
 
-        return "redirect:/api/factures/" +id;
+        return "redirect:/api/factures/" + id;
     }
 
     // POST /api/paiements
@@ -112,5 +112,17 @@ public class PaiementController {
         }
         paiementService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/facture/{id}")
+    public String historiquePaiementFacture(@PathVariable Long id, Model model) {
+        Facture facture = factureService.findById(id);
+
+        List<Paiement> paiements = paiementService.findByFacture(id);
+
+        model.addAttribute("paiements", paiements);
+        model.addAttribute("facture", facture);
+        
+        return "paiements/historique";
     }
 }

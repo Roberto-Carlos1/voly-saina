@@ -1,6 +1,7 @@
 <div class="container">
 
     <a href="/api/factures" class="button"> Retour </a>
+    <a th:href="@{/api/paiements/facture/{id_facture}(id_facture=${facture.getIdFacture()})}" class="button"> Historique de paiement </a>
 
     <h2 th:text=" 'À propos du ' + ${facture.getNumero()}"></h2>
 

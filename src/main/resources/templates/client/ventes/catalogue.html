@@ -121,8 +121,10 @@
                                                      and (produit.dateExpiration == null ? true : produit.dateExpiration.isAfter(T(java.time.LocalDate).now())) ? 'Disponible' : 'Indisponible'}"></span>
                         </td>
                         <td>
-                            <a th:href="@{/client/ventes/{id}(id=${produit.idProduit})}" class="btn btn-primary">Voir</a>
-
+                            <div class="d-flex flex-column gap-2" style="min-width: 140px;">
+                                <a th:href="@{/client/ventes/{id}(id=${produit.idProduit})}" class="btn btn-primary">Voir</a>
+                                <a th:href="@{/client/panier/ajouter(produitId=${produit.idProduit})}" class="btn btn-success">Mettre dans panier</a>
+                            </div>
                         </td>
                     </tr>
                     </tbody>

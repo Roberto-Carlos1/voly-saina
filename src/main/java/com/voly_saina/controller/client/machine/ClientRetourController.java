@@ -1,4 +1,4 @@
-package com.voly_saina.controller.client;
+package com.voly_saina.controller.client.machine;
 
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.RetourMachine;

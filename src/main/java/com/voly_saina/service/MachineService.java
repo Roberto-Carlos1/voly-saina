@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.voly_saina.entity.Machine;
 import com.voly_saina.repository.MachineRepository;
@@ -100,4 +101,9 @@ public class MachineService {
         return machineRepository.findAvailableMachines();
     }
 
+
+    @Transactional(readOnly = true)
+    public List<Machine> findDisponibles() {
+        return machineRepository.findByDisponibleTrue();
+    }
 }

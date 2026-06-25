@@ -12,3 +12,4 @@
 *.tmp
 *.bak
 src/main/resources/application.properties
+database/guide_plantation_test_data.sql

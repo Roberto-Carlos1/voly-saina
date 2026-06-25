@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +25,7 @@ public interface MachineRepository extends JpaRepository<Machine, Long> {
         List<Machine> findByEtatMachineCode(String code);
 
         // recherche des machines disponibles (en utilisant l'etat seulement)
+        @EntityGraph(attributePaths = "typeMachine")
         List<Machine> findByDisponibleTrue();
 
         @Query("SELECT m FROM Machine m WHERE m.typeMachine.libelle = :typeMachine")

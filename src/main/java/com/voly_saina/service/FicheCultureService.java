@@ -4,6 +4,7 @@ import com.voly_saina.entity.FicheCulture;
 import com.voly_saina.repository.FicheCultureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +33,10 @@ public class FicheCultureService {
 
     public void deleteById(Long id) {
         ficheCultureRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<FicheCulture> findByCultureId(Long idCulture) {
+        return ficheCultureRepository.findByCultureIdCulture(idCulture);
     }
 }

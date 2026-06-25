@@ -307,11 +307,59 @@ public class PanierController {
 
         commandeService.save(commandePanier);
 
-        // Message de confirmation côté UI
-        model.addAttribute("message", "Achat effectué avec succès. Merci pour votre commande !");
-
-        return "redirect:/client/ventes/catalogue";
+        return "redirect:/client/panier/recap?commandeId=" + commandePanier.getIdCommande();
 
     }
+
+    @GetMapping("/recap")
+    public String recapCommande(
+            @RequestParam("commandeId") Long commandeId,
+            @RequestParam(value = "clientId", required = false) Long clientId,
+            Model model
+    ) {
+        try {
+            Long idClientFinal = clientId != null ? clientId : 1L;
+            Utilisateur client = utilisateurService.findById(idClientFinal)
+                    .orElse(null);
+            if (client == null) {
+                model.addAttribute("error", "Client non trouvé");
+                return "client/recu/recap-commande";
+            }
+
+            Commande commande = commandeService.findAll().stream()
+                    .filter(c -> c != null && c.getIdCommande() != null)
+                    .filter(c -> c.getIdCommande().equals(commandeId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (commande == null || commande.getClient() == null || commande.getClient().getIdUtilisateur() == null) {
+                model.addAttribute("error", "Commande introuvable");
+                return "client/recu/recap-commande";
+            }
+
+            if (!commande.getClient().getIdUtilisateur().equals(idClientFinal)) {
+                model.addAttribute("error", "Accès refusé");
+                return "client/recu/recap-commande";
+            }
+
+            var lignes = ligneCommandeService.findAll().stream()
+                    .filter(lc -> lc != null && lc.getCommande() != null)
+                    .filter(lc -> lc.getCommande().getIdCommande() != null)
+                    .filter(lc -> lc.getCommande().getIdCommande().equals(commandeId))
+                    .toList();
+
+            BigDecimal montantTotal = commande.getMontantTotal() != null ? commande.getMontantTotal() : BigDecimal.ZERO;
+
+            model.addAttribute("commande", commande);
+            model.addAttribute("lignes", lignes);
+            model.addAttribute("montantTotal", montantTotal);
+
+            return "client/recu/recap-commande";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "client/recu/recap-commande";
+        }
+    }
 }
+
 

@@ -2,6 +2,8 @@ package com.voly_saina.controller.client;
 
 import com.voly_saina.entity.Produit;
 import com.voly_saina.service.ProduitService;
+import com.voly_saina.service.CategorieProduitService;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,10 @@ public class VenteController {
     @Autowired
     private ProduitService produitService;
 
+    @Autowired
+    private CategorieProduitService categorieProduitService;
+
+
     // ==================== CATALOGUE (HTML) ====================
 
     // GET /client/ventes/catalogue
@@ -35,9 +41,12 @@ public class VenteController {
             @RequestParam(value = "disponible", required = false) String disponible
     ) {
         List<Produit> produits = produitService.findAll();
+        model.addAttribute("categories", categorieProduitService.findAll());
 
         String qNorm = (q == null) ? "" : q.trim().toLowerCase();
+
         String categorieNorm = (categorie == null) ? "" : categorie.trim().toLowerCase();
+
 
         LocalDate today = LocalDate.now();
 

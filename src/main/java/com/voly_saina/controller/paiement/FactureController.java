@@ -71,7 +71,7 @@ public class FactureController {
     @GetMapping("/{id}")
     public String getFactureById(@PathVariable Long id, Model model) {
         Facture facture = factureService.findById(id);
-
+        
         model.addAttribute("facture", facture);
         return "facturation/detail-facture";
     }

@@ -1,0 +1,73 @@
+<div class="container">
+
+    <a href="/api/factures" class="button"> Retour </a>
+
+    <h2 th:text=" 'À propos du ' + ${facture.getNumero()}"></h2>
+
+    <div class="liste">
+        <ul>
+            <li th:text=" 'Client : ' + ${facture.getClient().getNom()}"></li>
+            <li th:text=" 'Type operation : ' + ${facture.getTypeOperation()}"></li>
+            <li th:text=" 'Montant paye : ' + ${facture.getMontantPaye()}"></li>
+            <li th:text=" 'Montant total : ' + ${facture.getMontantTotal()} + ' Ar'"></li>
+        </ul>
+    </div>
+
+    <div class="statut-facture">
+        <h2 th:text="${facture.getStatutFacture() != null ? facture.getStatutFacture().getLibelle() : 'Aucun état'}">
+        </h2>
+    </div>
+
+
+    <h3>Operation machine</h3>
+    <div class="table-operation-machine">
+        <p th:if="${#lists.isEmpty(facture.getOperationMachine())}">
+            Aucune machine pour cette facture
+        </p>
+
+        <table th:unless="${#lists.isEmpty(facture.getOperationMachine())}" border="1">
+            <tr>
+                <th> Id Operaton Machine</th>
+                <th> Nom machine </th>
+                <th> Quantite </th>
+                <th> Prix par jour </th>
+                <th> Prix Total </th>
+            </tr>
+
+            <tr th:each="machineOP : ${facture.getOperationMachine()}">
+                <td th:text="${machineOP.getIdMachine().getIdMachine()}"></td>
+                <td th:text="${machineOP.getIdMachine().getNom()}"></td>
+                <td th:text="${machineOP.getQuantite()}"></td>
+                <td th:text="${machineOP.getIdMachine().getPrixJour()}"></td>
+                <td>Total</td>
+            </tr>
+        </table>
+    </div>
+
+    <h3>Operation produit</h3>
+    <div class="table-operation-produit">
+        <p th:if="${#lists.isEmpty(facture.getOperationProduit())}">
+            Aucun produit pour cette facture
+        </p>
+
+        <table th:unless="${#lists.isEmpty(facture.getOperationProduit())}" border="1">
+            <tr>
+                <th> Id Operaton Produit</th>
+                <th> Nom produit </th>
+                <th> Quantite </th>
+                <th> Prix Unitaire </th>
+                <th> Prix Total </th>
+            </tr>
+
+            <tr th:each="produitOP : ${facture.getOperationProduit()}">
+                <td th:text="${produitOP.getIdProduit().getIdProduit()}"></td>
+                <td th:text="${produitOP.getIdProduit().getNom()}"></td>
+                <td th:text="${produitOP.getQuantite()}"></td>
+                <td th:text="${produitOP.getIdProduit().getPrixUnitaire()}"></td>
+                <td>Total</td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</div>

@@ -134,12 +134,79 @@ public class VenteController {
 
     // ==================== API JSON ====================
 
+    // ==================== API JSON (CATALOGUE) ====================
+
+    // GET /client/ventes/api/catalogue
+    @GetMapping("/api/catalogue")
+    @ResponseBody
+    public ResponseEntity<List<com.voly_saina.dto.CatalogueProduitDTO>> apiCatalogue(
+            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "categorie", required = false) String categorie,
+            @RequestParam(value = "disponible", required = false) String disponible
+    ) {
+        List<Produit> produits = produitService.findAll();
+
+        String qNorm = (q == null) ? "" : q.trim().toLowerCase();
+        String categorieNorm = (categorie == null) ? "" : categorie.trim().toLowerCase();
+
+        List<com.voly_saina.dto.CatalogueProduitDTO> result = produits.stream()
+                .filter(p -> p != null)
+                .filter(Produit::getActif)
+                .filter(p -> {
+                    if (!qNorm.isEmpty()) {
+                        String nom = p.getNom() != null ? p.getNom().toLowerCase() : "";
+                        String description = p.getDescription() != null ? p.getDescription().toLowerCase() : "";
+                        String conseil = p.getConseilUsage() != null ? p.getConseilUsage().toLowerCase() : "";
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
+                                ? p.getCategorie().getNom().toLowerCase()
+                                : "";
+
+                        return nom.contains(qNorm) || description.contains(qNorm) || conseil.contains(qNorm) || categorieNom.contains(qNorm);
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (!categorieNorm.isEmpty()) {
+                        String categorieNom = (p.getCategorie() != null && p.getCategorie().getNom() != null)
+                                ? p.getCategorie().getNom().toLowerCase()
+                                : "";
+                        return categorieNom.contains(categorieNorm);
+                    }
+                    return true;
+                })
+                .filter(p -> {
+                    if (disponible == null || disponible.isBlank()) return true;
+                    boolean estDispo = estDisponible(p);
+                    return "oui".equalsIgnoreCase(disponible)
+                            ? estDispo
+                            : "non".equalsIgnoreCase(disponible)
+                                ? !estDispo
+                                : true;
+                })
+                .map(p -> {
+                    com.voly_saina.dto.CatalogueProduitDTO dto = new com.voly_saina.dto.CatalogueProduitDTO();
+                    dto.setIdProduit(p.getIdProduit());
+                    dto.setNom(p.getNom());
+                    dto.setDescription(p.getDescription());
+                    dto.setStock(p.getStock());
+                    dto.setDateExpiration(p.getDateExpiration());
+                    dto.setActif(Boolean.TRUE.equals(p.getActif()));
+                    dto.setDisponible(estDisponible(p));
+                    dto.setCategorie(p.getCategorie());
+                    return dto;
+                })
+                .toList();
+
+        return ResponseEntity.ok(result);
+    }
+
     // GET /client/ventes/api/produits
     @GetMapping("/api/produits")
     @ResponseBody
     public ResponseEntity<List<Produit>> apiListeProduits() {
         return ResponseEntity.ok(produitService.findAll());
     }
+
 
     // GET /client/ventes/api/produits/{id}
     @GetMapping("/api/produits/{id}")

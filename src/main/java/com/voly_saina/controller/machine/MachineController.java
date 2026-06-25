@@ -231,6 +231,5 @@ public class MachineController {
         
         Page<Machine> machines = machineService.filtrerMachine(typeID, etatID, name, pageable);
         return ResponseEntity.ok(machines);
-
     }
 }

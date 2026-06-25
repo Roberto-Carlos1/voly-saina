@@ -4,43 +4,32 @@
     <title>Réserver</title>
 </head>
 <body>
+    <h2>Réserver une machine</h2>
+    <div id="machineInfo"></div>
+    <form id="reservationForm">
+        <input type="hidden" name="clientId" th:value="${clientId}">
+        <input type="hidden" name="machineId" th:value="${machineId}">
+        <div>
+            <label>Date début:</label><br>
+            <input type="date" id="dateDebut" required>
+        </div>
+        <br>
+        <div>
+            <label>Date fin:</label><br>
+            <input type="date" id="dateFin" required>
+        </div>
+        <br>
+        <div>
+            <label>Lieu livraison:</label><br>
+            <input type="text" id="lieuLivraison">
+        </div>
+        <br>
+        <button type="submit">Confirmer</button>
+        <a th:href="@{/client/machines/catalogue}">Annuler</a>
+    </form>
+    <div id="resultat"></div>
 
-<h2>Réserver une machine</h2>
-
-<div style="border:1px solid #ddd;padding:15px;margin:10px;border-radius:5px;">
-    <p><strong>Machine:</strong> <span th:text="${machine.nom}"></span></p>
-    <p><strong>Type:</strong> <span th:text="${machine.typeMachine.libelle}"></span></p>
-    <p><strong>Prix/Jour:</strong> <span th:text="${#numbers.formatDecimal(machine.prixJour, 0, 'COMMA', 2, 'POINT')}"></span> MGA</p>
-</div>
-
-<div th:if="${error}" style="color:red;border:1px solid red;padding:10px;margin:10px;">
-    <strong>Erreur:</strong> <span th:text="${error}"></span>
-</div>
-
-<form th:action="@{/client/reservations/{id}/nouvelle(id=${machine.idMachine})}" method="post">
-    <input type="hidden" name="clientId" th:value="${clientId}">
-    
-    <div>
-        <label>Date début:</label><br>
-        <input type="date" name="dateDebut" required>
-    </div>
-    <br>
-    
-    <div>
-        <label>Date fin:</label><br>
-        <input type="date" name="dateFin" required>
-    </div>
-    <br>
-    
-    <div>
-        <label>Lieu livraison:</label><br>
-        <input type="text" name="lieuLivraison" placeholder="Ex: Antananarivo">
-    </div>
-    <br>
-    
-    <button type="submit">Confirmer la réservation</button>
-    <a th:href="@{/client/machines/catalogue}">Annuler</a>
-</form>
-
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/reservation-form.js"></script>
 </body>
 </html>

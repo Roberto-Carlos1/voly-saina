@@ -4,24 +4,13 @@
     <title>Catalogue</title>
 </head>
 <body>
+    <h1>Catalogue des machines</h1>
+    <div id="listeMachines"></div>
+    <br>
+    <a th:href="@{/client/reservations/mes-reservations(clientId=1)}">Mes réservations</a>
+    <a th:href="@{/client/accueil(clientId=1)}">Accueil</a>
 
-<h2>Catalogue des machines</h2>
-
-<div th:each="machine : ${machines}" style="border:1px solid #ddd;padding:15px;margin:10px;border-radius:5px;">
-    <h3 th:text="${machine.nom}">Nom machine</h3>
-    <p th:text="${machine.description}">Description</p>
-    <p><strong>Type:</strong> <span th:text="${machine.typeMachine}"></span></p>
-    <p><strong>État:</strong> <span th:text="${machine.etatMachine}"></span></p>
-    <p><strong>Prix:</strong> <span th:text="${#numbers.formatDecimal(machine.prixJour, 0, 'COMMA', 2, 'POINT')}"></span> MGA/jour</p>
-    <p><strong>Disponible:</strong> <span th:text="${machine.disponible} ? '✅ Oui' : '❌ Non'"></span></p>
-    <a th:href="@{/client/reservations/{id}/nouvelle(id=${machine.idMachine})}">
-        <button th:disabled="${!machine.disponible}" th:text="${machine.disponible} ? 'Réserver' : 'Indisponible'"></button>
-    </a>
-</div>
-
-<br>
-<a href="/client/reservations/mes-reservations">Mes réservations</a> |
-<a href="/client/retours/mes-retours">Mes retours</a>
-
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/catalogue.js"></script>
 </body>
 </html>

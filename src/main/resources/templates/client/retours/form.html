@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Retourner</title>
+</head>
+<body>
+    <h1>Retourner une machine</h1>
+    <div id="infoReservation"></div>
+    <form id="formRetour">
+        <div>
+            <label>État de la machine:</label><br>
+            <input type="radio" name="etatRetour" value="bon" checked> Bon état<br>
+            <input type="radio" name="etatRetour" value="use"> Usure normale<br>
+            <input type="radio" name="etatRetour" value="endommage"> Endommagé<br>
+            <input type="radio" name="etatRetour" value="casse"> Cassé<br>
+            <input type="radio" name="etatRetour" value="perdu"> Perdu
+        </div>
+        <br>
+        <div>
+            <label>Remarque:</label><br>
+            <textarea name="remarque" rows="3" cols="40"></textarea>
+        </div>
+        <br>
+        <button type="submit">Enregistrer</button>
+        <button type="button" onclick="window.location.href='/client/reservations/mes-reservations?clientId=${clientId}'">Annuler</button>
+    </form>
+    <div id="message"></div>
+
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/retour-form.js"></script>
+</body>
+</html>

@@ -4,38 +4,13 @@
     <title>Mes réservations</title>
 </head>
 <body>
+    <h1>Mes réservations</h1>
+    <div id="listeReservations"></div>
+    <br>
+    <a th:href="@{/client/machines/catalogue}">Catalogue</a>
+    <a th:href="@{/client/accueil(clientId=${clientId})}">Accueil</a>
 
-<h2> Mes réservations</h2>
-
-<div th:if="${reservations.empty}">
-    <p>Aucune réservation trouvée.</p>
-    <a href="/client/machines/catalogue">Voir le catalogue</a>
-</div>
-
-<div th:each="r : ${reservations}" style="border:1px solid #ddd;padding:15px;margin:10px;border-radius:5px;">
-    <p><strong>Machine:</strong> <span th:text="${r.machine.nom}"></span></p>
-    <p><strong>Type:</strong> <span th:text="${r.machine.typeMachine.libelle}"></span></p>
-    <p><strong>Période:</strong> <span th:text="${#temporals.format(r.dateDebut, 'dd/MM/yyyy')}"></span> au <span th:text="${#temporals.format(r.dateFin, 'dd/MM/yyyy')}"></span></p>
-    <p><strong>Prix total:</strong> <span th:text="${#numbers.formatDecimal(r.prixTotal, 0, 'COMMA', 2, 'POINT')}"></span> MGA</p>
-    <p><strong>Statut:</strong> <span th:text="${r.statutReservation.libelle}"></span></p>
-    
-    <div th:if="${r.statutReservation.code == 'en_attente' || r.statutReservation.code == 'validee'}">
-        <a th:href="@{/client/reservations/{id}/annuler(id=${r.idReservation}, clientId=${clientId})}">
-            <button>Annuler</button>
-        </a>
-    </div>
-    
-    <div th:if="${r.statutReservation.code == 'en_cours' || r.statutReservation.code == 'validee'}">
-        <a th:href="@{/client/retours/{id}/nouveau(id=${r.idReservation}, clientId=${clientId})}">
-            <button>Retourner</button>
-        </a>
-    </div>
-    
-    <a th:href="@{/client/reservations/{id}(id=${r.idReservation}, clientId=${clientId})}">Voir détails</a>
-</div>
-
-<br>
-<a href="/client/machines/catalogue">Voir le catalogue</a>
-
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/reservation-list.js"></script>
 </body>
 </html>

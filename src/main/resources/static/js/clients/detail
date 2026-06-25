@@ -1,0 +1,30 @@
+// Récupérer l'ID depuis l'URL
+const reservationId = getUrlParam('id') || 1;
+
+// Récupérer le détail de la réservation
+fetch('/api/client/reservations/' + reservationId)
+    .then(response => {
+        if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
+        return response.json();
+    })
+    .then(r => {
+        let html = `
+            <div style="border:1px solid #ccc;padding:15px;margin:10px;border-radius:5px;">
+                <h3>${r.machineNom}</h3>
+                <p><strong>Type:</strong> ${r.machineType}</p>
+                <p><strong>Période:</strong> ${formatDate(r.dateDebut)} au ${formatDate(r.dateFin)}</p>
+                <p><strong>Prix total:</strong> ${formatNumber(r.prixTotal)} MGA</p>
+                <p><strong>Statut:</strong> ${r.statutLibelle}</p>
+                <p><strong>Lieu livraison:</strong> ${r.lieuLivraison || 'Non spécifié'}</p>
+                <p><strong>Date création:</strong> ${r.dateCreation ? formatDate(r.dateCreation) : ''}</p>
+                ${r.motifRefus ? `<p><strong>Motif refus:</strong> ${r.motifRefus}</p>` : ''}
+            </div>
+        `;
+        
+        document.getElementById('detailReservation').innerHTML = html;
+    })
+    .catch(error => {
+        document.getElementById('detailReservation').innerHTML = 
+            '<p style="color:red;">❌ Erreur de chargement: ' + error.message + '</p>';
+        console.error('Erreur:', error);
+    });

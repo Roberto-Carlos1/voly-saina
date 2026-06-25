@@ -3,16 +3,16 @@ package com.voly_saina.controller.client.machine;
 import com.voly_saina.dto.dtoMacine.ReservationClientDTO;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.ReservationMachine;
-import com.voly_saina.entity.StatutReservation;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/client/reservations")
+@Controller
+@RequestMapping("/client/reservations")
 public class ClientReservationController {
 
     @Autowired
@@ -39,8 +39,50 @@ public class ClientReservationController {
     @Autowired
     private StatutReservationService statutReservationService;
 
-    // GET /api/client/reservations/client/{clientId}
-    @GetMapping("/client/{clientId}")
+    // ========== PAGES HTML ==========
+
+    // Page formulaire de réservation
+    @GetMapping("/{machineId}/nouvelle")
+    public String formulaireReservation(@PathVariable Long machineId,
+                                        @RequestParam(required = false) Long clientId,
+                                        Model model) {
+        model.addAttribute("machineId", machineId);
+        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        return "client/reservations/form";
+    }
+
+    // Page annulation
+    @GetMapping("/{id}/annuler")
+    public String formulaireAnnulation(@PathVariable Long id,
+                                       @RequestParam(required = false) Long clientId,
+                                       Model model) {
+        model.addAttribute("reservationId", id);
+        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        return "client/reservations/annuler-form";
+    }
+
+    // Page mes réservations
+    @GetMapping("/mes-reservations")
+    public String mesReservations(@RequestParam(required = false) Long clientId, Model model) {
+        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        return "client/reservations/list";
+    }
+
+    // Page détail réservation
+    @GetMapping("/{id}")
+    public String detailReservation(@PathVariable Long id,
+                                    @RequestParam(required = false) Long clientId,
+                                    Model model) {
+        model.addAttribute("reservationId", id);
+        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        return "client/reservations/detail";
+    }
+
+    // ========== API REST ==========
+
+    // GET /client/reservations/api/client/{clientId}
+    @GetMapping("/api/client/{clientId}")
+    @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClient(@PathVariable Long clientId) {
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         List<ReservationClientDTO> response = reservations.stream()
@@ -49,22 +91,22 @@ public class ClientReservationController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /api/client/reservations/client/{clientId}/statut/{statut}
-    @GetMapping("/client/{clientId}/statut/{statut}")
+    // GET /client/reservations/api/client/{clientId}/statut/{statut}
+    @GetMapping("/api/client/{clientId}/statut/{statut}")
+    @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClientAndStatut(
             @PathVariable Long clientId,
             @PathVariable String statut) {
-        List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientId).stream()
-            .filter(r -> r.getStatutReservation() != null && statut.equals(r.getStatutReservation().getCode()))
-            .collect(Collectors.toList());
+        List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientId);
         List<ReservationClientDTO> response = reservations.stream()
             .map(this::mapToDTO)
             .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
 
-    // GET /api/client/reservations/{id}
-    @GetMapping("/{id}")
+    // GET /client/reservations/api/{id}
+    @GetMapping("/api/{id}")
+    @ResponseBody
     public ResponseEntity<ReservationClientDTO> getReservationById(@PathVariable Long id) {
         ReservationMachine reservation = reservationService.findById(id)
             .orElse(null);
@@ -74,8 +116,9 @@ public class ClientReservationController {
         return ResponseEntity.ok(mapToDTO(reservation));
     }
 
-    // GET /api/client/reservations/client/{clientId}/active
-    @GetMapping("/client/{clientId}/active")
+    // GET /client/reservations/api/client/{clientId}/active
+    @GetMapping("/api/client/{clientId}/active")
+    @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getActiveReservations(@PathVariable Long clientId) {
         List<ReservationMachine> reservations = reservationService
             .findActiveReservationsByClient(clientId);
@@ -85,8 +128,9 @@ public class ClientReservationController {
         return ResponseEntity.ok(response);
     }
 
-    // POST /api/client/reservations
-    @PostMapping
+    // POST /client/reservations/api
+    @PostMapping("/api")
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> createReservation(@RequestBody Map<String, Object> payload) {
         try {
             Long clientId = Long.valueOf(payload.get("clientId").toString());
@@ -96,11 +140,9 @@ public class ClientReservationController {
             String lieuLivraison = payload.containsKey("lieuLivraison") ? 
                 payload.get("lieuLivraison").toString() : null;
 
-            // Vérifier l'utilisateur
             Utilisateur client = utilisateurService.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
 
-            // Vérifier la machine
             Machine machine = machineService.findById(machineId);
             if (machine == null || !machine.getDisponible()) {
                 Map<String, Object> error = new HashMap<>();
@@ -108,7 +150,6 @@ public class ClientReservationController {
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Vérifier les dates
             if (dateFin.isBefore(dateDebut)) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Date de fin invalide");
@@ -121,7 +162,6 @@ public class ClientReservationController {
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Vérifier les conflits
             List<ReservationMachine> conflits = reservationService.findConfList(machineId, dateDebut, dateFin);
             if (!conflits.isEmpty()) {
                 Map<String, Object> error = new HashMap<>();
@@ -129,7 +169,6 @@ public class ClientReservationController {
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Créer la réservation
             ReservationMachine reservation = new ReservationMachine();
             reservation.setMachine(machine);
             reservation.setClient(client);
@@ -147,7 +186,6 @@ public class ClientReservationController {
 
             ReservationMachine saved = reservationService.save(reservation);
 
-            // Rendre la machine indisponible
             machine.setDisponible(false);
             machineService.save(machine);
 
@@ -163,8 +201,9 @@ public class ClientReservationController {
         }
     }
 
-    // PUT /api/client/reservations/{id}/annuler
-    @PutMapping("/{id}/annuler")
+    // PUT /client/reservations/api/{id}/annuler
+    @PutMapping("/api/{id}/annuler")
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> annulerReservation(
             @PathVariable Long id,
             @RequestBody(required = false) Map<String, String> payload) {
@@ -187,7 +226,6 @@ public class ClientReservationController {
             if (motif != null) reservation.setMotifRefus(motif);
             reservationService.save(reservation);
 
-            // Libérer la machine
             Machine machine = reservation.getMachine();
             machine.setDisponible(true);
             machineService.save(machine);
@@ -204,8 +242,9 @@ public class ClientReservationController {
         }
     }
 
-    // PUT /api/client/reservations/client/{clientId}/annuler-tout
-    @PutMapping("/client/{clientId}/annuler-tout")
+    // PUT /client/reservations/api/client/{clientId}/annuler-tout
+    @PutMapping("/api/client/{clientId}/annuler-tout")
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> annulerTout(@PathVariable Long clientId) {
         try {
             List<ReservationMachine> reservations = reservationService
@@ -220,7 +259,6 @@ public class ClientReservationController {
                     );
                     reservationService.save(r);
                     
-                    // Libérer la machine
                     Machine machine = r.getMachine();
                     machine.setDisponible(true);
                     machineService.save(machine);
@@ -242,8 +280,9 @@ public class ClientReservationController {
         }
     }
 
-    // GET /api/client/reservations/client/{clientId}/statistiques
-    @GetMapping("/client/{clientId}/statistiques")
+    // GET /client/reservations/api/client/{clientId}/statistiques
+    @GetMapping("/api/client/{clientId}/statistiques")
+    @ResponseBody
     public ResponseEntity<Map<String, Object>> getStatistiques(@PathVariable Long clientId) {
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         
@@ -297,7 +336,6 @@ public class ClientReservationController {
         dto.setMotifRefus(reservation.getMotifRefus());
         dto.setDateCreation(reservation.getDateCreation());
         
-        // Calcul des actions possibles
         String statut = reservation.getStatutReservation() != null ? 
             reservation.getStatutReservation().getCode() : "";
         

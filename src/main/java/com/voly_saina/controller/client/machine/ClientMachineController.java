@@ -5,10 +5,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.voly_saina.dto.dtoMacine.MachineCatalogueDTO;
 import com.voly_saina.entity.Machine;
@@ -16,8 +18,8 @@ import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.TypeMachineService;
 
-@RestController
-@RequestMapping("/api/client/machines")
+@Controller
+@RequestMapping("/client/machines")
 public class ClientMachineController {
 
     @Autowired
@@ -26,9 +28,39 @@ public class ClientMachineController {
     @Autowired
     private TypeMachineService typeMachineService;
 
-    
-    // GET /api/client/machines/catalogue
+    // ========== PAGES HTML ==========
+
+    // Page catalogue
     @GetMapping("/catalogue")
+    public String catalogue(Model model) {
+        return "client/machines/catalogue";
+    }
+
+    // Page machines par type
+    @GetMapping("/type/{typeId}")
+    public String machinesByType(@PathVariable Long typeId, Model model) {
+        model.addAttribute("typeId", typeId);
+        return "client/machines/list-by-type";
+    }
+
+    // Page machines disponibles
+    @GetMapping("/disponibles")
+    public String machinesDisponibles(Model model) {
+        return "client/machines/disponibles";
+    }
+
+    // Page détail machine
+    @GetMapping("/{id}")
+    public String detailMachine(@PathVariable Long id, Model model) {
+        model.addAttribute("machineId", id);
+        return "client/machines/detail";
+    }
+
+    // ========== API REST ==========
+
+    // GET /client/machines/api/catalogue
+    @GetMapping("/api/catalogue")
+    @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getCatalogue() {
         List<Machine> machines = machineService.findAll();
         List<MachineCatalogueDTO> response = machines.stream()
@@ -37,8 +69,9 @@ public class ClientMachineController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /api/client/machines/type/{typeId}
-    @GetMapping("/type/{typeId}")
+    // GET /client/machines/api/type/{typeId}
+    @GetMapping("/api/type/{typeId}")
+    @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getMachinesByType(@PathVariable Long typeId) {
         List<Machine> machines = machineService.findByTypeMachine(typeId);
         List<MachineCatalogueDTO> response = machines.stream()
@@ -47,8 +80,9 @@ public class ClientMachineController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /api/client/machines/disponibles
-    @GetMapping("/disponibles")
+    // GET /client/machines/api/disponibles
+    @GetMapping("/api/disponibles")
+    @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getMachinesDisponibles() {
         List<Machine> machines = machineService.findAvailableMachines();
         List<MachineCatalogueDTO> response = machines.stream()
@@ -57,8 +91,9 @@ public class ClientMachineController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /api/client/machines/{id}
-    @GetMapping("/{id}")
+    // GET /client/machines/api/{id}
+    @GetMapping("/api/{id}")
+    @ResponseBody
     public ResponseEntity<MachineCatalogueDTO> getMachineById(@PathVariable Long id) {
         Machine machine = machineService.findById(id);
         if (machine == null) {
@@ -67,8 +102,9 @@ public class ClientMachineController {
         return ResponseEntity.ok(mapToCatalogueDTO(machine));
     }
 
-    // GET /api/client/machines/types
-    @GetMapping("/types")
+    // GET /client/machines/api/types
+    @GetMapping("/api/types")
+    @ResponseBody
     public ResponseEntity<List<TypeMachine>> getTypes() {
         return ResponseEntity.ok(typeMachineService.findAll());
     }
@@ -90,7 +126,7 @@ public class ClientMachineController {
         }
         
         dto.setDisponible(machine.getDisponible());
-        dto.setImageUrl(null); // À ajouter si vous avez des images
+        dto.setImageUrl(null);
         
         return dto;
     }

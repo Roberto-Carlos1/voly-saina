@@ -11,12 +11,15 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.voly_saina.dto.dtoMacine.FormulaireRetourDTO;
 import com.voly_saina.dto.dtoMacine.RetourClientDTO;
@@ -26,8 +29,8 @@ import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.RetourMachineService;
 import com.voly_saina.service.UtilisateurService;
 
-@RestController
-@RequestMapping("/api/client/retours")
+@Controller
+@RequestMapping("/client/retours")
 public class ClientRetourController {
 
     @Autowired
@@ -39,8 +42,23 @@ public class ClientRetourController {
     @Autowired
     private UtilisateurService utilisateurService;
 
-    // GET /api/client/retours/form/{reservationId}
-    @GetMapping("/form/{reservationId}")
+    // ========== PAGES HTML ==========
+
+    // Page formulaire de retour
+    @GetMapping("/{reservationId}/nouveau")
+    public String formulaireRetour(@PathVariable Long reservationId,
+                                   @RequestParam(required = false) Long clientId,
+                                   Model model) {
+        model.addAttribute("reservationId", reservationId);
+        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        return "client/retours/form";
+    }
+
+    // ========== API REST ==========
+
+    // GET /client/retours/api/form/{reservationId}
+    @GetMapping("/api/form/{reservationId}")
+    @ResponseBody
     public ResponseEntity<?> getFormulaireRetour(@PathVariable Long reservationId) {
         try {
             ReservationMachine reservation = reservationService.findById(reservationId)
@@ -56,8 +74,9 @@ public class ClientRetourController {
         }
     }
 
-    // GET /api/client/retours/reservation/{reservationId}
-    @GetMapping("/reservation/{reservationId}")
+    // GET /client/retours/api/reservation/{reservationId}
+    @GetMapping("/api/reservation/{reservationId}")
+    @ResponseBody
     public ResponseEntity<?> getRetourByReservation(@PathVariable Long reservationId) {
         try {
             RetourMachine retour = retourService.findByReservation(reservationId);
@@ -72,11 +91,11 @@ public class ClientRetourController {
         }
     }
 
-    // GET /api/client/retours/client/{clientId}
-    @GetMapping("/client/{clientId}")
+    // GET /client/retours/api/client/{clientId}
+    @GetMapping("/api/client/{clientId}")
+    @ResponseBody
     public ResponseEntity<List<RetourClientDTO>> getRetoursByClient(@PathVariable Long clientId) {
         List<RetourMachine> retours = new ArrayList<>();
-        // Récupérer toutes les réservations du client
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         
         for (ReservationMachine r : reservations) {
@@ -93,8 +112,9 @@ public class ClientRetourController {
         return ResponseEntity.ok(response);
     }
 
-    // POST /api/client/retours
-    @PostMapping
+    // POST /client/retours/api
+    @PostMapping("/api")
+    @ResponseBody
     public ResponseEntity<?> enregistrerRetour(@RequestBody Map<String, Object> payload) {
         try {
             Long reservationId = Long.valueOf(payload.get("reservationId").toString());
@@ -105,21 +125,18 @@ public class ClientRetourController {
             ReservationMachine reservation = reservationService.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
 
-            // Vérifier si le retour est déjà enregistré
             if (reservation.getRetour() != null) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "Retour déjà enregistré pour cette réservation");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Créer le retour
             RetourMachine retour = new RetourMachine();
             retour.setReservation(reservation);
             retour.setDateRetour(LocalDate.now());
             retour.setEtatRetour(etatRetour);
             retour.setRemarque(remarque);
 
-            // Enregistrer avec calcul de pénalité
             RetourMachine saved = retourService.enregistrerRetour(retour);
 
             Map<String, Object> response = new HashMap<>();
@@ -127,7 +144,6 @@ public class ClientRetourController {
             response.put("retour", mapToRetourDTO(saved));
             response.put("reservation", mapToReservationInfo(reservation));
             
-            // Calcul du montant total
             BigDecimal montantTotal = reservation.getPrixTotal();
             if (saved.getPenalite() != null) {
                 montantTotal = montantTotal.add(saved.getPenalite());
@@ -143,8 +159,9 @@ public class ClientRetourController {
         }
     }
 
-    // GET /api/client/retours/penalite/{reservationId}
-    @GetMapping("/penalite/{reservationId}")
+    // GET /client/retours/api/penalite/{reservationId}
+    @GetMapping("/api/penalite/{reservationId}")
+    @ResponseBody
     public ResponseEntity<?> getPenalite(@PathVariable Long reservationId) {
         try {
             ReservationMachine reservation = reservationService.findById(reservationId)
@@ -204,7 +221,6 @@ public class ClientRetourController {
         dto.setEstRetard(joursRetard > 0);
         dto.setJoursRetard(Math.max(joursRetard, 0));
 
-        // États possibles
         List<FormulaireRetourDTO.EtatOption> etats = new ArrayList<>();
         
         FormulaireRetourDTO.EtatOption bon = new FormulaireRetourDTO.EtatOption();

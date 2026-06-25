@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Retour enregistré</title>
+</head>
+<body>
+
+<h2>Retour enregistré avec succès !</h2>
+
+<div style="border:1px solid #ddd;padding:15px;margin:10px;border-radius:5px;">
+    <p><strong>Machine:</strong> <span th:text="${reservation.machine.nom}"></span></p>
+    <p><strong>Date retour:</strong> <span th:text="${#temporals.format(retour.dateRetour, 'dd/MM/yyyy')}"></span></p>
+    <p><strong>État:</strong> <span th:text="${retour.etatRetour}"></span></p>
+</div>
+
+<div th:if="${penalite != null && penalite > 0}" style="border:1px solid orange;padding:15px;margin:10px;border-radius:5px;background:#fff3cd;">
+    <h3>Pénalité appliquée</h3>
+    <p><strong>Motif:</strong> <span th:text="${penalite > 0 ? 'Retard' : ''}"></span></p>
+    <p><strong>Jours de retard:</strong> <span th:text="${joursRetard}"></span></p>
+    <p><strong>Montant:</strong> <span th:text="${#numbers.formatDecimal(penalite, 0, 'COMMA', 2, 'POINT')}"></span> MGA</p>
+</div>
+
+<div th:unless="${penalite != null && penalite > 0}" style="border:1px solid green;padding:15px;margin:10px;border-radius:5px;background:#d4edda;">
+    <p>Aucune pénalité appliquée</p>
+</div>
+
+<br>
+<a th:href="@{/client/reservations/mes-reservations(clientId=${clientId})}">Voir mes réservations</a> |
+<a href="/client/machines/catalogue">Louer une autre machine</a>
+
+</body>
+</html>

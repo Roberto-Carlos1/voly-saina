@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Réservation confirmée</title>
+</head>
+<body>
+
+<h2>Réservation confirmée !</h2>
+
+<div style="border:1px solid #ddd;padding:15px;margin:10px;border-radius:5px;">
+    <p><strong>Machine:</strong> <span th:text="${machine.nom}"></span></p>
+    <p><strong>Période:</strong> <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span> au <span th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span></p>
+    <p><strong>Prix total:</strong> <span th:text="${#numbers.formatDecimal(reservation.prixTotal, 0, 'COMMA', 2, 'POINT')}"></span> MGA</p>
+    <p><strong>Statut:</strong> <span th:text="${reservation.statutReservation.libelle}"></span></p>
+    <p><strong>Lieu livraison:</strong> <span th:text="${reservation.lieuLivraison}"></span></p>
+</div>
+
+<br>
+<a th:href="@{/client/reservations/mes-reservations(clientId=${clientId})}">Voir mes réservations</a> |
+<a href="/client/machines/catalogue">Louer une autre machine</a>
+
+</body>
+</html>

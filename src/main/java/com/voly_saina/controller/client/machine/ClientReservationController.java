@@ -158,7 +158,7 @@ public class ClientReservationController {
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
 
             if (!reservation.getClient().getIdUtilisateur().equals(client.getIdUtilisateur())) {
-                model.addAttribute("error", "Vous n'êtes pas autorisé");
+                model.addAttribute("error", "Vous n'êtes pas autorisé car vous n'etes pas le propriétaire de cette réservation");
                 return "client/machines/error";
             }
 
@@ -267,4 +267,5 @@ public class ClientReservationController {
         model.addAttribute("clientId", clientId);
         return "client/reservations/detail";
     }
+
 }

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Détail machine</title>
+</head>
+<body>
+
+    <h1>🔧 Détail de la machine</h1>
+    <hr>
+
+    <div id="detailMachine">
+        <p>Chargement...</p>
+    </div>
+
+    <br>
+    <a href="javascript:history.back()">← Retour</a> |
+    <a href="/client/machines/types">Types</a> |
+    <a th:href="@{/client/accueil(clientId=1)}">Accueil</a>
+
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/detail.js"></script>
+
+</body>
+</html>

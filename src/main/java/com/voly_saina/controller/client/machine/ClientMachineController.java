@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,35 +29,29 @@ public class ClientMachineController {
 
     // ========== PAGES HTML ==========
 
-    // Page catalogue
+    @GetMapping("/types")
+    public String types() {
+        return "client/machines/types";
+    }
+
     @GetMapping("/catalogue")
-    public String catalogue(Model model) {
+    public String catalogue() {
         return "client/machines/catalogue";
     }
 
-    // Page machines par type
-    @GetMapping("/type/{typeId}")
-    public String machinesByType(@PathVariable Long typeId, Model model) {
-        model.addAttribute("typeId", typeId);
-        return "client/machines/list-by-type";
-    }
-
-    // Page machines disponibles
-    @GetMapping("/disponibles")
-    public String machinesDisponibles(Model model) {
-        return "client/machines/disponibles";
-    }
-
-    // Page détail machine
-    @GetMapping("/{id}")
-    public String detailMachine(@PathVariable Long id, Model model) {
-        model.addAttribute("machineId", id);
+    @GetMapping("/detail")
+    public String detail() {
         return "client/machines/detail";
     }
+    // /client/machines/api/types
+    @GetMapping("/api/types")
+    @ResponseBody
+    public ResponseEntity<List<TypeMachine>> getTypes() {
+        List<TypeMachine> types = typeMachineService.findAll();
+        return ResponseEntity.ok(types);
+    }
 
-    // ========== API REST ==========
-
-    // GET /client/machines/api/catalogue
+    // /client/machines/api/catalogue
     @GetMapping("/api/catalogue")
     @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getCatalogue() {
@@ -69,18 +62,7 @@ public class ClientMachineController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /client/machines/api/type/{typeId}
-    @GetMapping("/api/type/{typeId}")
-    @ResponseBody
-    public ResponseEntity<List<MachineCatalogueDTO>> getMachinesByType(@PathVariable Long typeId) {
-        List<Machine> machines = machineService.findByTypeMachine(typeId);
-        List<MachineCatalogueDTO> response = machines.stream()
-            .map(this::mapToCatalogueDTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
-    }
-
-    // GET /client/machines/api/disponibles
+    // /client/machines/api/disponibles
     @GetMapping("/api/disponibles")
     @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getMachinesDisponibles() {
@@ -91,7 +73,18 @@ public class ClientMachineController {
         return ResponseEntity.ok(response);
     }
 
-    // GET /client/machines/api/{id}
+    // /client/machines/api/type/{typeId}
+    @GetMapping("/api/type/{typeId}")
+    @ResponseBody
+    public ResponseEntity<List<MachineCatalogueDTO>> getMachinesByType(@PathVariable Long typeId) {
+        List<Machine> machines = machineService.findByTypeMachine(typeId);
+        List<MachineCatalogueDTO> response = machines.stream()
+            .map(this::mapToCatalogueDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    // 5. ⚠️ /client/machines/api/{id} - DOIT ÊTRE EN DERNIER
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<MachineCatalogueDTO> getMachineById(@PathVariable Long id) {
@@ -100,13 +93,6 @@ public class ClientMachineController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(mapToCatalogueDTO(machine));
-    }
-
-    // GET /client/machines/api/types
-    @GetMapping("/api/types")
-    @ResponseBody
-    public ResponseEntity<List<TypeMachine>> getTypes() {
-        return ResponseEntity.ok(typeMachineService.findAll());
     }
 
     private MachineCatalogueDTO mapToCatalogueDTO(Machine machine) {

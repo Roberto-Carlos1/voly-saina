@@ -1,6 +1,6 @@
 const reservationId = getUrlParam('id') || 1;
 
-fetch('/client/reservations/api/' + reservationId)
+fetch('/api/client/reservations/' + reservationId)
     .then(r => r.json())
     .then(r => {
         document.getElementById('detailReservation').innerHTML = `

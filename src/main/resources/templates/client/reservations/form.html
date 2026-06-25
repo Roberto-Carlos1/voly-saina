@@ -3,33 +3,44 @@
 <head>
     <title>Réserver</title>
 </head>
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/reservation-form.js"></script>
 <body>
+
     <h2>Réserver une machine</h2>
-    <div id="machineInfo"></div>
+
+    <div id="machineInfo">
+        <p>Chargement des informations...</p>
+    </div>
+
     <form id="reservationForm">
         <input type="hidden" name="clientId" th:value="${clientId}">
         <input type="hidden" name="machineId" th:value="${machineId}">
+        
         <div>
             <label>Date début:</label><br>
             <input type="date" id="dateDebut" required>
         </div>
         <br>
+        
         <div>
             <label>Date fin:</label><br>
             <input type="date" id="dateFin" required>
         </div>
         <br>
+        
         <div>
             <label>Lieu livraison:</label><br>
-            <input type="text" id="lieuLivraison">
+            <input type="text" id="lieuLivraison" placeholder="Ex: Antananarivo">
         </div>
         <br>
+        
         <button type="submit">Confirmer</button>
         <a th:href="@{/client/machines/catalogue}">Annuler</a>
     </form>
+
     <div id="resultat"></div>
 
-    <script src="/js/client/common.js"></script>
-    <script src="/js/client/reservation-form.js"></script>
+
 </body>
 </html>

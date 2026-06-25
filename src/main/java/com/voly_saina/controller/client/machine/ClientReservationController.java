@@ -156,11 +156,11 @@ public class ClientReservationController {
                 return ResponseEntity.badRequest().body(error);
             }
 
-            if (dateDebut.isBefore(LocalDate.now())) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "La date de début ne peut pas être dans le passé");
-                return ResponseEntity.badRequest().body(error);
-            }
+            // if (dateDebut.isBefore(LocalDate.now())) {
+            //     Map<String, Object> error = new HashMap<>();
+            //     error.put("error", "La date de début ne peut pas être dans le passé");
+            //     return ResponseEntity.badRequest().body(error);
+            // }
 
             List<ReservationMachine> conflits = reservationService.findConfList(machineId, dateDebut, dateFin);
             if (!conflits.isEmpty()) {

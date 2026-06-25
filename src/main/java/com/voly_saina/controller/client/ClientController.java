@@ -12,7 +12,7 @@ public class ClientController {
 
     @GetMapping("/accueil")
     public String accueil(@RequestParam Long idClient, Model model) {
-        // TODO: remplacer par l'utilisateur connecté via Spring Security
+        idClient = 1L;// TODO: remplacer par l'utilisateur connecté via Spring Security
         model.addAttribute("idClient", idClient);
         return "client/accueil";
     }

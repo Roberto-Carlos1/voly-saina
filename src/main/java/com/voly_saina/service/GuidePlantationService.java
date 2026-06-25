@@ -5,6 +5,8 @@ import com.voly_saina.entity.FicheCulture;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Produit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,17 +35,35 @@ public class GuidePlantationService {
             throw new IllegalArgumentException("Type de ressource non pris en charge: " + typeRessource);
         }
 
+        String motCle = nettoyerFiltre(filtres.get("motCle"));
         String nom = nettoyerFiltre(filtres.get("nom"));
         String description = nettoyerFiltre(filtres.get("description"));
         String saison = nettoyerFiltre(filtres.get("saison"));
         String localisation = nettoyerFiltre(filtres.get("localisation"));
-        String region = nettoyerFiltre(filtres.get("region"));
 
-        if (localisation == null) {
-            localisation = region;
+        if (nom == null) {
+            nom = motCle;
+        }
+        if (description == null) {
+            description = motCle;
         }
 
         return cultureService.listerCulturesDisponibles(nom, description, saison, localisation);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Culture> listerRessourcesPage(String typeRessource, Map<String, String> filtres, Pageable pageable) {
+        if (!"culture".equals(typeRessource)) {
+            throw new IllegalArgumentException("Type de ressource non pris en charge: " + typeRessource);
+        }
+
+        String motCle = nettoyerFiltrePourRecherche(filtres.get("motCle"));
+        String saison = nettoyerFiltrePourRecherche(filtres.get("saison"));
+        String localisation = nettoyerFiltre(filtres.get("localisation"));
+
+        localisation = nettoyerFiltrePourRecherche(localisation);
+
+        return cultureService.rechercherCulturesDisponibles(motCle, saison, localisation, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -100,5 +120,10 @@ public class GuidePlantationService {
             return null;
         }
         return valeur.trim();
+    }
+
+    private String nettoyerFiltrePourRecherche(String valeur) {
+        String filtre = nettoyerFiltre(valeur);
+        return filtre == null ? "" : filtre;
     }
 }

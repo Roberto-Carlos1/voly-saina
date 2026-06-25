@@ -3,6 +3,10 @@ package com.voly_saina.service;
 import com.voly_saina.entity.Culture;
 import com.voly_saina.repository.CultureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +47,20 @@ public class CultureService {
                 .filter(culture -> contient(culture.getSaisonRecommandee(), saison))
                 .filter(culture -> contient(culture.getLocalisationRecommandee(), localisation))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Culture> rechercherCulturesDisponibles(String motCle, String saison, String localisation, Pageable pageable) {
+        Pageable pagination = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        if (estTriDesc(pageable)) {
+            return cultureRepository.rechercherCulturesDisponiblesTrieesDesc(motCle, saison, localisation, pagination);
+        }
+        return cultureRepository.rechercherCulturesDisponiblesTrieesAsc(motCle, saison, localisation, pagination);
+    }
+
+    private boolean estTriDesc(Pageable pageable) {
+        Sort.Order triNom = pageable.getSort().getOrderFor("nom");
+        return triNom != null && triNom.isDescending();
     }
 
     private boolean contient(String valeur, String filtre) {

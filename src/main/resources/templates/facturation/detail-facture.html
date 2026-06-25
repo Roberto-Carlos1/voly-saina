@@ -10,7 +10,12 @@
             <li th:text=" 'Type operation : ' + ${facture.getTypeOperation()}"></li>
             <li th:text=" 'Montant paye : ' + ${facture.getMontantPaye()}"></li>
             <li th:text=" 'Montant total : ' + ${facture.getMontantTotal()} + ' Ar'"></li>
+            <li>
+                <span th:text="'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar '"></span>
+                <a th:href="@{/api/paiements/reste/{id_facture}(id_facture=${facture.getIdFacture()})}" th:if="${(facture.montantTotal - facture.montantPaye) > 0}" th:text="'Payez le reste'"></a>
+            </li>
         </ul>
+
     </div>
 
     <div class="statut-facture">
@@ -39,7 +44,8 @@
                 <td th:text="${machineOP.getIdMachine().getNom()}"></td>
                 <td th:text="${machineOP.getQuantite()}"></td>
                 <td th:text="${machineOP.getIdMachine().getPrixJour()}"></td>
-                <td>Total</td>
+                <td th:text="${machineOP.getIdMachine().getPrixJour() * 
+                machineOP.getQuantite()} "></td>
             </tr>
         </table>
     </div>
@@ -64,7 +70,8 @@
                 <td th:text="${produitOP.getIdProduit().getNom()}"></td>
                 <td th:text="${produitOP.getQuantite()}"></td>
                 <td th:text="${produitOP.getIdProduit().getPrixUnitaire()}"></td>
-                <td>Total</td>
+                <td th:text="${produitOP.getIdProduit().getPrixUnitaire() * 
+                    produitOP.getQuantite()}"></td>
             </tr>
         </table>
     </div>

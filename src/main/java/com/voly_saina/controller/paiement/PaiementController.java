@@ -1,27 +1,41 @@
 package com.voly_saina.controller.paiement;
 
+import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Paiement;
+import com.voly_saina.entity.dto.PaiementDTO;
+import com.voly_saina.service.FactureService;
 import com.voly_saina.service.PaiementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.FacesRequestAttributes;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/api/paiements")
 public class PaiementController {
 
-    @Autowired
-    private PaiementService paiementService;
+    private final PaiementService paiementService;
+    private final FactureService factureService;
 
     // GET /api/paiements
     // @GetMapping
     // public ResponseEntity<List<Paiement>> getAll() {
     // return ResponseEntity.ok(paiementService.findAll());
     // }
+
+    public PaiementController(PaiementService paiementService, FactureService factureService) {
+        this.paiementService = paiementService;
+        this.factureService = factureService;
+    }
 
     @GetMapping
     public String getAll(Model model) {
@@ -37,6 +51,39 @@ public class PaiementController {
         return paiementService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @GetMapping("/reste/{id}")
+    public String getResteById(@PathVariable Long id, Model model) {
+        Facture facture= factureService.findById(id);
+        model.addAttribute("facture", facture);
+        return "paiements/form-reste";
+    }
+
+    @PostMapping("/restePayee")
+    public String payerReste(PaiementDTO paiementDTO){
+        Long id= Long.parseLong(paiementDTO.getIdFacture());
+        double montant = Double.parseDouble(paiementDTO.getMontant());
+        BigDecimal m= BigDecimal.valueOf(montant);
+
+        DateTimeFormatter format= DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime date= LocalDateTime.parse(paiementDTO.getDate(), format);
+        String mode= paiementDTO.getMode(); 
+        
+        Facture f= factureService.findById(id);
+
+        Paiement p = new Paiement();
+        p.setFacture(f);
+        p.setMontant(m);
+        p.setDatePaiement(date);
+        p.setModePaiement(mode);
+        
+        paiementService.save(p);
+
+        f.setMontantPaye(f.getMontantPaye().add(m));
+        factureService.save(f);
+
+        return "redirect:/api/factures/" +id;
     }
 
     // POST /api/paiements

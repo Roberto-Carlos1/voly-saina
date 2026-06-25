@@ -100,6 +100,8 @@
                     <tbody id="ventesTableBody">
                     <tr th:each="produit : ${produits}">
 
+
+
                         <td>
                             <div style="font-weight:700;" th:text="${produit.nom != null ? produit.nom : '-'}"></div>
                             <div class="text-muted" style="font-size:12px;" th:text="${produit.description != null ? produit.description : ''}"></div>
@@ -125,6 +127,25 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- ==================== PAGINATION ==================== -->
+            <div th:if="${totalPages != null and totalPages > 1}" class="d-flex justify-content-center mt-4">
+                <nav aria-label="Pagination catalogue">
+                    <ul class="pagination mb-0">
+                        <li class="page-item" th:classappend="${page <= 0} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/client/ventes/catalogue(page=${page-1},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" aria-label="Précédent">&laquo;</a>
+                        </li>
+
+                        <li class="page-item" th:each="p : ${#numbers.sequence(0, totalPages-1)}" th:classappend="${p == page} ? 'active'">
+                            <a class="page-link" th:href="@{/client/ventes/catalogue(page=${p},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" th:text="${p+1}"></a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${page >= totalPages-1} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/client/ventes/catalogue(page=${page+1},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" aria-label="Suivant">&raquo;</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
 
         </div>

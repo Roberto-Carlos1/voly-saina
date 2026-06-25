@@ -38,10 +38,13 @@ public class VenteController {
             Model model,
             @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "categorie", required = false) String categorie,
-            @RequestParam(value = "disponible", required = false) String disponible
+            @RequestParam(value = "disponible", required = false) String disponible,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         List<Produit> produits = produitService.findAll();
         model.addAttribute("categories", categorieProduitService.findAll());
+
 
         String qNorm = (q == null) ? "" : q.trim().toLowerCase();
 
@@ -80,9 +83,18 @@ public class VenteController {
                 })
                 .toList();
 
+        int total = filtres.size();
+        int fromIndex = Math.min(page * size, total);
+        int toIndex = Math.min(fromIndex + size, total);
+        List<Produit> pageProduits = filtres.subList(fromIndex, toIndex);
 
         // Pour compatibilité avec le template: la liste 'produits' contient déjà les filtres
-        model.addAttribute("produits", filtres);
+        model.addAttribute("produits", pageProduits);
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("total", total);
+        model.addAttribute("totalPages", size > 0 ? (int) Math.ceil((double) total / (double) size) : 1);
+
         model.addAttribute("q", q);
         model.addAttribute("categorie", categorie);
         model.addAttribute("disponible", disponible);

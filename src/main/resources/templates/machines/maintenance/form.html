@@ -1,16 +1,118 @@
-<h1>Create Maintenance Machine</h1>
-<form th:action="@{/maintenance-machines}" method="post">
-    <label for="idMachine">Machine ID:</label>
-    <input type="number" id="idMachine" name="idMachine" required><br><br>
+<!DOCTYPE html>
+<html lang="en">
 
-    <label for="dateCreation">Date Creation:</label>
-    <input type="date" id="dateCreation" name="dateCreation" required><br><br>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${action == 'update' ? 'Modifier maintenance' : 'Nouvelle maintenance'}">
+        Maintenance
+    </title>
+</head>
 
-    <label for="travaux">Travaux:</label>
-    <input type="text" id="travaux" name="travaux" required><br><br>
+<body>
+    <a href="/api/maintenances-machine">Retour à la liste</a>
+    <h1 th:text="${action == 'update' ? 'Modifier la maintenance' : 'Nouvelle maintenance'}"></h1>
 
-    <label for="cout">Cout:</label>
-    <input type="number" step="0.01" id="cout" name="cout" required><br><br>
+    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+    <p th:if="${success}" th:text="${success}" style="color: green;"></p>
 
-    <button type="submit">Create</button>
-</form>
+    <form th:action="@{${action == 'update' ? '/api/maintenances-machine/update/' + maintenance.idMaintenance : '/api/maintenances-machine/insert'}}"
+          method="post" onsubmit="return validerFormulaire()">
+
+        <label for="idMachine">Machine *</label>
+        <select id="idMachine" name="idMachine" required>
+            <option value="">Sélectionnez une machine</option>
+            <option th:each="m : ${machines}" th:value="${m.getIdMachine()}"
+                    th:text="${m.getNom() + ' (' + m.getIdMachine() + ')'}"
+                    th:selected="${maintenance != null && maintenance.machine != null && maintenance.machine.idMachine == m.idMachine}">
+            </option>
+        </select>
+        <span id="idMachineError" style="color: red; display: none;">Veuillez sélectionner une machine</span>
+        <br><br>
+
+        <label th:if="${action == 'update'}" for="dateDebut">Date début *</label>
+        <label th:unless="${action == 'update'}" for="dateCreation">Date création *</label>
+        <input type="date" id="dateDebut" name="dateDebut"
+               th:value="${maintenance != null ? maintenance.dateDebut : ''}"
+               th:attr="name=${action == 'update' ? 'dateDebut' : 'dateCreation'}"
+               required>
+        <span id="dateError" style="color: red; display: none;">Veuillez entrer une date valide</span>
+        <br><br>
+
+        <label for="dateRetourPrevue" th:if="${action == 'update'}">Date retour prévue</label>
+        <input type="date" id="dateRetourPrevue" name="dateRetourPrevue"
+               th:if="${action == 'update'}"
+               th:value="${maintenance != null ? maintenance.dateRetourPrevue : ''}">
+        <br><br th:if="${action == 'update'}">
+
+        <label for="travaux">Travaux *</label>
+        <textarea id="travaux" name="travaux" rows="3" required
+                  th:text="${maintenance != null ? maintenance.travaux : ''}"></textarea>
+        <span id="travauxError" style="color: red; display: none;">Veuillez décrire les travaux</span>
+        <br><br>
+
+        <label for="cout">Coût *</label>
+        <input type="number" step="0.01" min="0" id="cout" name="cout" required
+               th:value="${maintenance != null ? maintenance.cout : ''}">
+        <span id="coutError" style="color: red; display: none;">Veuillez entrer un coût valide (>= 0)</span>
+        <br><br>
+
+        <label th:if="${action == 'update'}" for="idStatutMaintenance">Statut</label>
+        <select id="idStatutMaintenance" name="idStatutMaintenance" th:if="${action == 'update'}">
+            <option value="">Sélectionnez un statut</option>
+            <option th:each="s : ${statuts}" th:value="${s.getIdStatutMaintenance()}"
+                    th:text="${s.getLibelle()}"
+                    th:selected="${maintenance != null && maintenance.statutMaintenance != null && maintenance.statutMaintenance.idStatutMaintenance == s.idStatutMaintenance}">
+            </option>
+        </select>
+        <br><br th:if="${action == 'update'}">
+
+        <button type="submit" th:text="${action == 'update' ? 'Mettre à jour' : 'Créer'}"></button>
+    </form>
+
+    <script>
+        function validerFormulaire() {
+            let valide = true;
+
+            const idMachine = document.getElementById("idMachine");
+            const idMachineError = document.getElementById("idMachineError");
+            if (!idMachine.value) {
+                idMachineError.style.display = "inline";
+                valide = false;
+            } else {
+                idMachineError.style.display = "none";
+            }
+
+            const dateInput = document.querySelector("input[type='date']");
+            const dateError = document.getElementById("dateError");
+            if (!dateInput.value) {
+                dateError.style.display = "inline";
+                valide = false;
+            } else {
+                dateError.style.display = "none";
+            }
+
+            const travaux = document.getElementById("travaux");
+            const travauxError = document.getElementById("travauxError");
+            if (!travaux.value.trim()) {
+                travauxError.style.display = "inline";
+                valide = false;
+            } else {
+                travauxError.style.display = "none";
+            }
+
+            const cout = document.getElementById("cout");
+            const coutError = document.getElementById("coutError");
+            if (!cout.value || parseFloat(cout.value) < 0) {
+                coutError.style.display = "inline";
+                valide = false;
+            } else {
+                coutError.style.display = "none";
+            }
+
+            return valide;
+        }
+    </script>
+</body>
+
+</html>

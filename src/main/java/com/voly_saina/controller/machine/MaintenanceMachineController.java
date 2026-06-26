@@ -1,9 +1,11 @@
 package com.voly_saina.controller.machine;
 
+import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.MaintenanceMachine;
 import com.voly_saina.entity.Pages;
 import com.voly_saina.entity.StatutMaintenance;
 import com.voly_saina.repository.MachineRepository;
+import com.voly_saina.service.MachineService;
 import com.voly_saina.service.MaintenanceMachineService;
 import com.voly_saina.service.PageService;
 import com.voly_saina.service.StatutMaintenanceService;
@@ -27,14 +29,16 @@ import java.util.List;
 public class MaintenanceMachineController {
 
     private final MachineRepository machineRepository;
+    private final MachineService machineService;
     private final PageService pageService;
     private final StatutMaintenanceService statutMaintenanceService;
 
     @Autowired
     private MaintenanceMachineService maintenanceMachineService;
 
-    MaintenanceMachineController(MachineRepository machineRepository, PageService pageService, StatutMaintenanceService statutMaintenanceService) {
+    MaintenanceMachineController(MachineRepository machineRepository, MachineService machineService, PageService pageService, StatutMaintenanceService statutMaintenanceService) {
         this.machineRepository = machineRepository;
+        this.machineService = machineService;
         this.pageService = pageService;
         this.statutMaintenanceService = statutMaintenanceService;
     }
@@ -93,6 +97,133 @@ public class MaintenanceMachineController {
 
         return ResponseEntity.ok(maintenances);
     }
+
+    // ==================== FORM VIEWS ====================
+
+    @GetMapping("/view/insert")
+    public String insertForm(Model model) {
+        List<Machine> machines = machineService.findAll();
+        List<StatutMaintenance> statuts = statutMaintenanceService.findAll();
+        model.addAttribute("machines", machines);
+        model.addAttribute("statuts", statuts);
+        model.addAttribute("action", "insert");
+        return "/machines/maintenance/form";
+    }
+
+    @GetMapping("/modify/{id}")
+    public String modifyForm(@PathVariable Long id, Model model) {
+        MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
+        if (maintenance == null) {
+            return "redirect:/api/maintenances-machine";
+        }
+        List<Machine> machines = machineService.findAll();
+        List<StatutMaintenance> statuts = statutMaintenanceService.findAll();
+        model.addAttribute("maintenance", maintenance);
+        model.addAttribute("machines", machines);
+        model.addAttribute("statuts", statuts);
+        model.addAttribute("action", "update");
+        return "/machines/maintenance/form";
+    }
+
+    @PostMapping("/insert")
+    public String insert(@RequestParam("idMachine") Long idMachine,
+                         @RequestParam("dateCreation") String dateCreation,
+                         @RequestParam("travaux") String travaux,
+                         @RequestParam("cout") String cout,
+                         RedirectAttributes redirectAttributes) {
+        if (idMachine == null || dateCreation == null || dateCreation.isEmpty()
+                || travaux == null || travaux.trim().isEmpty()
+                || cout == null || cout.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Tous les champs sont obligatoires");
+            return "redirect:/api/maintenances-machine/view/insert";
+        }
+        if (!dateCreation.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            redirectAttributes.addFlashAttribute("error", "Format de date invalide (AAAA-MM-JJ)");
+            return "redirect:/api/maintenances-machine/view/insert";
+        }
+        double coutVal;
+        try {
+            coutVal = Double.parseDouble(cout);
+            if (coutVal < 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("error", "Le coût doit être un nombre positif");
+            return "redirect:/api/maintenances-machine/view/insert";
+        }
+        if (machineService.findById(idMachine) == null) {
+            redirectAttributes.addFlashAttribute("error", "Machine introuvable");
+            return "redirect:/api/maintenances-machine/view/insert";
+        }
+
+        MaintenanceMachine saved = maintenanceMachineService.createMaintenanceMachine(
+                idMachine, travaux.trim(), coutVal, LocalDate.parse(dateCreation));
+        redirectAttributes.addFlashAttribute("success", "Maintenance créée avec succès");
+        return "redirect:/api/maintenances-machine";
+    }
+
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable Long id,
+                         @RequestParam("idMachine") Long idMachine,
+                         @RequestParam("dateDebut") String dateDebut,
+                         @RequestParam("dateRetourPrevue") String dateRetourPrevue,
+                         @RequestParam("travaux") String travaux,
+                         @RequestParam("cout") String cout,
+                         @RequestParam(value = "idStatutMaintenance", required = false) Long idStatutMaintenance,
+                         RedirectAttributes redirectAttributes) {
+        MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
+        if (maintenance == null) {
+            redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
+            return "redirect:/api/maintenances-machine";
+        }
+
+        if (travaux == null || travaux.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Le champ travaux est obligatoire");
+            return "redirect:/api/maintenances-machine/modify/" + id;
+        }
+        double coutVal;
+        try {
+            coutVal = Double.parseDouble(cout);
+            if (coutVal < 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            redirectAttributes.addFlashAttribute("error", "Le coût doit être un nombre positif");
+            return "redirect:/api/maintenances-machine/modify/" + id;
+        }
+        Machine machine = machineService.findById(idMachine);
+        if (machine == null) {
+            redirectAttributes.addFlashAttribute("error", "Machine introuvable");
+            return "redirect:/api/maintenances-machine/modify/" + id;
+        }
+
+        maintenance.setMachine(machine);
+        maintenance.setTravaux(travaux.trim());
+        maintenance.setCout(BigDecimal.valueOf(coutVal));
+        if (dateDebut != null && !dateDebut.isEmpty()) {
+            maintenance.setDateDebut(LocalDate.parse(dateDebut));
+        }
+        if (dateRetourPrevue != null && !dateRetourPrevue.isEmpty()) {
+            maintenance.setDateRetourPrevue(LocalDate.parse(dateRetourPrevue));
+        }
+        if (idStatutMaintenance != null) {
+            statutMaintenanceService.findById(idStatutMaintenance)
+                    .ifPresent(maintenance::setStatutMaintenance);
+        }
+
+        maintenanceMachineService.save(maintenance);
+        redirectAttributes.addFlashAttribute("success", "Maintenance modifiée avec succès");
+        return "redirect:/api/maintenances-machine";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        if (!maintenanceMachineService.existsById(id)) {
+            redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
+        } else {
+            maintenanceMachineService.deleteById(id);
+            redirectAttributes.addFlashAttribute("success", "Maintenance supprimée avec succès");
+        }
+        return "redirect:/api/maintenances-machine";
+    }
+
+    // ==================== API REST ====================
 
     // GET /api/maintenances-machine/{id}
     @GetMapping("/{id}")

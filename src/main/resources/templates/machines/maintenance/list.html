@@ -9,6 +9,7 @@
 
 <body>
     <h1>Liste des maintenances</h1>
+    <a href="/api/maintenances-machine/view/insert">Nouvelle maintenance</a>
     <p th:if="${success}" th:text="${success}"></p>
     <p th:if="${error}" th:text="${error}"></p>
 
@@ -46,11 +47,12 @@
             <th>Statut</th>
             <th>Description</th>
             <th>Coût</th>
+            <th>Action</th>
         </tr>
 
         <tbody id="maintenanceLines">
             <tr th:if="${#lists.isEmpty(maintenances)}">
-                <td colspan="7">Aucune maintenance</td>
+                <td colspan="8">Aucune maintenance</td>
             </tr>
             <tr th:unless="${#lists.isEmpty(maintenances)}" th:each="maintenance : ${maintenances}">
                 <td th:text="${maintenance.getMachine().getNom()}"></td>
@@ -60,6 +62,11 @@
                 <td th:text="${maintenance.getStatutMaintenance().getLibelle()}"></td>
                 <td th:text="${maintenance.getTravaux()}"></td>
                 <td th:text="${maintenance.getCout()}"></td>
+                <td>
+                    <a th:href="@{/api/maintenances-machine/modify/{id}(id=${maintenance.idMaintenance})}">Modifier</a>
+                    <a th:href="@{/api/maintenances-machine/delete/{id}(id=${maintenance.idMaintenance})}"
+                       onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -91,13 +98,14 @@
             .then(pageSpring => {
                 if (pageSpring.content.length === 0) {
                     var row = document.createElement("tr");
-                    row.innerHTML = '<td colspan="7">Aucune maintenance</td>';
+                    row.innerHTML = '<td colspan="8">Aucune maintenance</td>';
                     lines.appendChild(row);
                 } else {
                     pageSpring.content.forEach(m => {
                         var line = document.createElement("tr");
                         var machineNom = m.machine ? m.machine.nom : 'Inconnue';
                         var statutLibelle = m.statutMaintenance ? m.statutMaintenance.libelle : '';
+                        var id = m.idMaintenance;
                         line.innerHTML = `
                             <td>${machineNom}</td>
                             <td>${m.dateDebut || ''}</td>
@@ -105,7 +113,11 @@
                             <td>${m.dateRetourReelle || ''}</td>
                             <td>${statutLibelle}</td>
                             <td>${m.travaux || ''}</td>
-                            <td>${m.cout || ''}</td>`;
+                            <td>${m.cout || ''}</td>
+                            <td>
+                                <a href="/api/maintenances-machine/modify/${id}">Modifier</a>
+                                <a href="/api/maintenances-machine/delete/${id}" onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
+                            </td>`;
                         lines.appendChild(line);
                     });
                 }

@@ -1,28 +1,140 @@
-        <div class="div">
-            <h2> Maintenance </h2>
-        </div>
-        <table border="1">
-            <tr>
-                <th> Date Debut </th>
-                <th> Date Retour Reelle </th>
-                <th> Date Retour Prevue </th>
-                <th> Statut </th>
-                <th> Description </th>
-                <th> Action </th>
-            </tr>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenances</title>
+</head>
+
+<body>
+    <h1>Liste des maintenances</h1>
+    <p th:if="${success}" th:text="${success}"></p>
+    <p th:if="${error}" th:text="${error}"></p>
+
+    <h3>Filtre</h3>
+    <form action="/api/maintenances-machine/pages" method="post">
+        <p>
+            Éléments par page
+            <input type="number" name="pages" id="">
+            <input type="submit" value="Afficher">
+        </p>
+    </form>
+
+    <form id="filtreForm">
+        <p>
+            ID Machine <input type="text" name="idMachine" placeholder="1">
+
+            Statut
+            <select name="codeStatut" id="">
+                <option value="">Tous</option>
+                <option th:each="statut : ${statuts}" th:value="${statut.getCode()}"
+                    th:text="${statut.getLibelle()}"></option>
+            </select>
+
+            <button type="submit">Filtrer</button>
+        </p>
+        <input type="hidden" name="page" value="0" id="numeroPage">
+    </form>
+
+    <table border="1">
+        <tr>
+            <th>Machine</th>
+            <th>Date Debut</th>
+            <th>Date Retour Prevue</th>
+            <th>Date Retour Reelle</th>
+            <th>Statut</th>
+            <th>Description</th>
+            <th>Coût</th>
+        </tr>
+
+        <tbody id="maintenanceLines">
             <tr th:if="${#lists.isEmpty(maintenances)}">
-                <td> Aucune maintenance pour ce véhicule </td>
+                <td colspan="7">Aucune maintenance</td>
             </tr>
             <tr th:unless="${#lists.isEmpty(maintenances)}" th:each="maintenance : ${maintenances}">
+                <td th:text="${maintenance.getMachine().getNom()}"></td>
                 <td th:text="${maintenance.getDateDebut()}"></td>
-                <td th:text="${maintenance.getDateRetourReelle()}"></td>
                 <td th:text="${maintenance.getDateRetourPrevue()}"></td>
+                <td th:text="${maintenance.getDateRetourReelle()}"></td>
                 <td th:text="${maintenance.getStatutMaintenance().getLibelle()}"></td>
                 <td th:text="${maintenance.getTravaux()}"></td>
-                <td th:if="${maintenance.getStatutMaintenance().getCode() == 'prevue' || maintenance.getStatutMaintenance().getCode() == 'en_cours'}">
-                    <form th:action="@{/maintenance-machines/{id}(id=${maintenance.getId()})}" method="post">
-                        <input type="hidden" name="_method" value="put">
-                        <button type="submit">Mark as Completed</button>
-                    </form>
+                <td th:text="${maintenance.getCout()}"></td>
             </tr>
-        </table>
+        </tbody>
+    </table>
+
+    <div id="paginationButtons">
+        <button type="button" id="btnPrecedent">Précédent</button>
+        <span id="infoPage" th:text="'Page 1 sur ' + ${totalPages}"></span>
+        <button type="button" id="btnSuivant">Suivant</button>
+    </div>
+
+</body>
+
+<script>
+    const form = document.getElementById("filtreForm");
+    const numeroPageInput = document.getElementById("numeroPage");
+    const lines = document.getElementById("maintenanceLines");
+
+    function chargerMaintenances(pageCible) {
+        numeroPageInput.value = pageCible;
+
+        const data = new FormData(form);
+        lines.innerHTML = "";
+
+        fetch("/api/maintenances-machine/filtre", {
+            method: "POST",
+            body: data
+        })
+            .then(response => response.json())
+            .then(pageSpring => {
+                if (pageSpring.content.length === 0) {
+                    var row = document.createElement("tr");
+                    row.innerHTML = '<td colspan="7">Aucune maintenance</td>';
+                    lines.appendChild(row);
+                } else {
+                    pageSpring.content.forEach(m => {
+                        var line = document.createElement("tr");
+                        var machineNom = m.machine ? m.machine.nom : 'Inconnue';
+                        var statutLibelle = m.statutMaintenance ? m.statutMaintenance.libelle : '';
+                        line.innerHTML = `
+                            <td>${machineNom}</td>
+                            <td>${m.dateDebut || ''}</td>
+                            <td>${m.dateRetourPrevue || ''}</td>
+                            <td>${m.dateRetourReelle || ''}</td>
+                            <td>${statutLibelle}</td>
+                            <td>${m.travaux || ''}</td>
+                            <td>${m.cout || ''}</td>`;
+                        lines.appendChild(line);
+                    });
+                }
+
+                if (pageSpring.number < pageSpring.totalPages) {
+                    document.getElementById("infoPage").textContent = `Page ${pageSpring.number + 1} sur ${pageSpring.totalPages}`;
+                }
+
+                document.getElementById("btnPrecedent").disabled = pageSpring.first;
+                document.getElementById("btnSuivant").disabled = pageSpring.last;
+            });
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        chargerMaintenances(0);
+    });
+
+    document.getElementById("btnSuivant").addEventListener("click", function () {
+        let pageActuelle = parseInt(numeroPageInput.value, 10);
+        chargerMaintenances(pageActuelle + 1);
+    });
+
+    document.getElementById("btnPrecedent").addEventListener("click", function () {
+        let pageActuelle = parseInt(numeroPageInput.value, 10);
+        if (pageActuelle > 0) {
+            chargerMaintenances(pageActuelle - 1);
+        }
+    });
+</script>
+
+</html>

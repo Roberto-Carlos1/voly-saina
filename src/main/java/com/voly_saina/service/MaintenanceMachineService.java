@@ -10,6 +10,8 @@ import com.voly_saina.repository.StatutMachineRepository;
 import com.voly_saina.repository.StatutMaintenanceRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -74,6 +76,26 @@ public class MaintenanceMachineService {
 
     public List<MaintenanceMachine> findAll() {
         return maintenanceMachineRepository.findAll();
+    }
+
+    public Page<MaintenanceMachine> findAllByPage(Pageable pageable) {
+        return maintenanceMachineRepository.findAll(pageable);
+    }
+
+    public Page<MaintenanceMachine> findByMachinePage(Machine machine, Pageable pageable) {
+        return maintenanceMachineRepository.findByMachine(machine, pageable);
+    }
+
+    public Page<MaintenanceMachine> findByStatutCode(String code, Pageable pageable) {
+        return maintenanceMachineRepository.findByStatutMaintenance_Code(code, pageable);
+    }
+
+    public Page<MaintenanceMachine> findByMachineAndStatutCode(Long idMachine, String code, Pageable pageable) {
+        return maintenanceMachineRepository.findByMachine_IdMachineAndStatutMaintenance_Code(idMachine, code, pageable);
+    }
+
+    public Page<MaintenanceMachine> findByMachineId(Long idMachine, Pageable pageable) {
+        return maintenanceMachineRepository.findByMachine_IdMachine(idMachine, pageable);
     }
 
     public Optional<MaintenanceMachine> findById(Long id) {

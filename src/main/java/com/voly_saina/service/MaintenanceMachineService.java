@@ -9,7 +9,6 @@ import com.voly_saina.repository.MaintenanceMachineRepository;
 import com.voly_saina.repository.StatutMachineRepository;
 import com.voly_saina.repository.StatutMaintenanceRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,16 +21,23 @@ import java.util.Optional;
 @Service
 public class MaintenanceMachineService {
 
-    private final StatutMachineService statutMachineService;
-    @Autowired
-    private MaintenanceMachineRepository maintenanceMachineRepository;
-    private EtatMachineRepository etatMachineRepository;
-    private StatutMachineRepository statutMachineRepository;
-    private MachineRepository machineRepository;
-    private StatutMaintenanceRepository statutMaintenanceRepository;
+    private final MaintenanceMachineRepository maintenanceMachineRepository;
+    private final EtatMachineRepository etatMachineRepository;
+    private final StatutMachineRepository statutMachineRepository;
+    private final MachineRepository machineRepository;
+    private final StatutMaintenanceRepository statutMaintenanceRepository;
 
-    MaintenanceMachineService(StatutMachineService statutMachineService) {
-        this.statutMachineService = statutMachineService;
+    public MaintenanceMachineService(StatutMachineService statutMachineService,
+            MaintenanceMachineRepository maintenanceMachineRepository,
+            EtatMachineRepository etatMachineRepository,
+            StatutMachineRepository statutMachineRepository,
+            MachineRepository machineRepository,
+            StatutMaintenanceRepository statutMaintenanceRepository) {
+        this.maintenanceMachineRepository = maintenanceMachineRepository;
+        this.etatMachineRepository = etatMachineRepository;
+        this.statutMachineRepository = statutMachineRepository;
+        this.machineRepository = machineRepository;
+        this.statutMaintenanceRepository = statutMaintenanceRepository;
     }
 
     // create a maintenace machine
@@ -50,7 +56,7 @@ public class MaintenanceMachineService {
         status.setEtatMachine(etatMachineRepository.findByCode("maintenance").orElse(null));
         status.setDateCreation(dateCreation);
         statutMachineRepository.save(status);
-        
+
         return maintenanceMachineRepository.save(maintenanceMachine);
     }
 
@@ -65,7 +71,7 @@ public class MaintenanceMachineService {
 
             StatutMachine status = new StatutMachine();
             status.setMachine(machineRepository.findById(idMachine).orElse(null));
-            status.setEtatMachine(etatMachineRepository.findByCode("maintenance").orElse(null));
+            status.setEtatMachine(etatMachineRepository.findByCode("disponible").orElse(null));
             status.setDateCreation(dateRetourReelle);
             statutMachineRepository.save(status);
             return maintenanceMachineRepository.save(maintenanceMachine);

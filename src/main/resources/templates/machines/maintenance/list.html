@@ -63,6 +63,8 @@
                 <td th:text="${maintenance.getTravaux()}"></td>
                 <td th:text="${maintenance.getCout()}"></td>
                 <td>
+                    <a th:href="@{/api/maintenances-machine/view/validate/{id}(id=${maintenance.idMaintenance})}"
+                       th:if="${maintenance.getStatutMaintenance().getCode() == 'prevue' || maintenance.getStatutMaintenance().getCode() == 'en_cours'}">Valider</a>
                     <a th:href="@{/api/maintenances-machine/modify/{id}(id=${maintenance.idMaintenance})}">Modifier</a>
                     <a th:href="@{/api/maintenances-machine/delete/{id}(id=${maintenance.idMaintenance})}"
                        onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
@@ -106,6 +108,10 @@
                         var machineNom = m.machine ? m.machine.nom : 'Inconnue';
                         var statutLibelle = m.statutMaintenance ? m.statutMaintenance.libelle : '';
                         var id = m.idMaintenance;
+                        var statutCode = m.statutMaintenance ? m.statutMaintenance.code : '';
+                        var lienValider = (statutCode === 'prevue' || statutCode === 'en_cours')
+                            ? '<a href="/api/maintenances-machine/view/validate/' + id + '">Valider</a> '
+                            : '';
                         line.innerHTML = `
                             <td>${machineNom}</td>
                             <td>${m.dateDebut || ''}</td>
@@ -115,6 +121,7 @@
                             <td>${m.travaux || ''}</td>
                             <td>${m.cout || ''}</td>
                             <td>
+                                ${lienValider}
                                 <a href="/api/maintenances-machine/modify/${id}">Modifier</a>
                                 <a href="/api/maintenances-machine/delete/${id}" onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
                             </td>`;

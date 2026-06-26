@@ -244,13 +244,41 @@ public class MaintenanceMachineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    // POST /api/maintenances-machine/validate
+    @GetMapping("/view/validate/{id}")
+    public String validateForm(@PathVariable Long id, Model model) {
+        MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
+        if (maintenance == null) {
+            return "redirect:/api/maintenances-machine";
+        }
+        model.addAttribute("maintenance", maintenance);
+        return "/machines/maintenance/validation";
+    }
+
     @PostMapping("/validate")
-    public ResponseEntity<MaintenanceMachine> validate(@RequestParam("idMaintenance") Long idMaintenance,
-            @RequestParam("idMachine") Long idMachine, @RequestParam("dateRetourReelle") LocalDate dateRetourReelle) {
-        MaintenanceMachine validated = maintenanceMachineService.validateMaintenanceMachine(idMaintenance, idMachine,
-                dateRetourReelle);
-        return ResponseEntity.ok(validated);
+    public String validate(@RequestParam("idMaintenance") Long idMaintenance,
+                           @RequestParam("dateRetourReelle") String dateRetourReelle,
+                           RedirectAttributes redirectAttributes) {
+        MaintenanceMachine maintenance = maintenanceMachineService.findById(idMaintenance).orElse(null);
+        if (maintenance == null) {
+            redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
+            return "redirect:/api/maintenances-machine";
+        }
+        if (dateRetourReelle == null || dateRetourReelle.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "La date de retour réelle est obligatoire");
+            return "redirect:/api/maintenances-machine/view/validate/" + idMaintenance;
+        }
+        if (!dateRetourReelle.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            redirectAttributes.addFlashAttribute("error", "Format de date invalide (AAAA-MM-JJ)");
+            return "redirect:/api/maintenances-machine/view/validate/" + idMaintenance;
+        }
+        try {
+            maintenanceMachineService.validateMaintenanceMachine(
+                    idMaintenance, maintenance.getMachine().getIdMachine(), LocalDate.parse(dateRetourReelle));
+            redirectAttributes.addFlashAttribute("success", "Maintenance validée avec succès");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de la validation: " + e.getMessage());
+        }
+        return "redirect:/api/maintenances-machine";
     }
 
     // PUT /api/maintenances-machine/{id}

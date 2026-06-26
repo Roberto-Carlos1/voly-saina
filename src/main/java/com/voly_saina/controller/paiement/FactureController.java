@@ -51,6 +51,8 @@ public class FactureController {
         model.addAttribute("statuts", status);
         model.addAttribute("totalPages", facturePage.getTotalPages());
         model.addAttribute("currentPage", page);
+        model.addAttribute("nombreParPage", size);
+
         return "facturation/list";
     }
 

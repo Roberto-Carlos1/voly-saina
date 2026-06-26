@@ -9,7 +9,7 @@
         <ul>
             <li th:text=" 'Client : ' + ${facture.getClient().getNom()}"></li>
             <li th:text=" 'Type operation : ' + ${facture.getTypeOperation()}"></li>
-            <li th:text=" 'Montant paye : ' + ${facture.getMontantPaye()}"></li>
+            <li th:text=" 'Montant paye : ' + ${facture.getMontantPaye()} + ' Ar'"></li>
             <li th:text=" 'Montant total : ' + ${facture.getMontantTotal()} + ' Ar'"></li>
             <li>
                 <span th:text="'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar '"></span>
@@ -44,9 +44,9 @@
                 <td th:text="${machineOP.getIdMachine().getIdMachine()}"></td>
                 <td th:text="${machineOP.getIdMachine().getNom()}"></td>
                 <td th:text="${machineOP.getQuantite()}"></td>
-                <td th:text="${machineOP.getIdMachine().getPrixJour()}"></td>
+                <td th:text="${machineOP.getIdMachine().getPrixJour()} + ' Ar'"></td>
                 <td th:text="${machineOP.getIdMachine().getPrixJour() * 
-                machineOP.getQuantite()} "></td>
+                machineOP.getQuantite()} + ' Ar'"></td>
             </tr>
         </table>
     </div>

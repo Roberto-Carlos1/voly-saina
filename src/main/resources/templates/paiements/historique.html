@@ -25,7 +25,7 @@
 
         <tr th:each="paiement : ${paiements}">
             <td th:text="${paiement.getIdPaiement()}"></td>
-            <td th:text="${paiement.getMontant()}"></td>
+            <td th:text="${paiement.getMontant()} + ' Ar'"></td>
             <td th:text="${paiement.getDatePaiement()}"></td>
             <td th:text="${paiement.getModePaiement()}"></td>
         </tr>

@@ -1,0 +1,16 @@
+<h1>Create Maintenance Machine</h1>
+<form th:action="@{/maintenance-machines}" method="post">
+    <label for="idMachine">Machine ID:</label>
+    <input type="number" id="idMachine" name="idMachine" required><br><br>
+
+    <label for="dateCreation">Date Creation:</label>
+    <input type="date" id="dateCreation" name="dateCreation" required><br><br>
+
+    <label for="travaux">Travaux:</label>
+    <input type="text" id="travaux" name="travaux" required><br><br>
+
+    <label for="cout">Cout:</label>
+    <input type="number" step="0.01" id="cout" name="cout" required><br><br>
+
+    <button type="submit">Create</button>
+</form>

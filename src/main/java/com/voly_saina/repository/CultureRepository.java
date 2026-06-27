@@ -17,6 +17,26 @@ public interface CultureRepository extends JpaRepository<Culture, Long> {
     List<Culture> findByActifTrue();
 
     @Query("""
+            SELECT DISTINCT c.localisationRecommandee
+            FROM Culture c
+            WHERE c.actif = true
+            AND c.localisationRecommandee IS NOT NULL
+            AND c.localisationRecommandee <> ''
+            ORDER BY c.localisationRecommandee
+            """)
+    List<String> findLocalisationsDisponibles();
+
+    @Query("""
+            SELECT DISTINCT c.saisonRecommandee
+            FROM Culture c
+            WHERE c.actif = true
+            AND c.saisonRecommandee IS NOT NULL
+            AND c.saisonRecommandee <> ''
+            ORDER BY c.saisonRecommandee
+            """)
+    List<String> findSaisonsDisponibles();
+
+    @Query("""
             SELECT c
             FROM Culture c
             WHERE c.actif = true

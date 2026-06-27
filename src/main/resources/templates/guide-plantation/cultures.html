@@ -14,11 +14,27 @@
     </label>
     <label>
         Localisation
-        <input type="text" name="localisation" th:value="${filtres.localisation}" placeholder="Ex: Antananarivo">
+        <select name="localisation">
+            <option value="">Toutes</option>
+            <option th:each="localisationDisponible : ${localisationsDisponibles}"
+                    th:value="${localisationDisponible}"
+                    th:text="${localisationDisponible}"
+                    th:selected="${localisationDisponible == filtres.localisation}">
+                Localisation
+            </option>
+        </select>
     </label>
     <label>
         Saison
-        <input type="text" name="saison" th:value="${filtres.saison}" placeholder="Ex: Saison des pluies">
+        <select name="saison">
+            <option value="">Toutes</option>
+            <option th:each="saisonDisponible : ${saisonsDisponibles}"
+                    th:value="${saisonDisponible}"
+                    th:text="${saisonDisponible}"
+                    th:selected="${saisonDisponible == filtres.saison}">
+                Saison
+            </option>
+        </select>
     </label>
     <label>
         Tri

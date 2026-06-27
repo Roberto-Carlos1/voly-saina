@@ -1,7 +1,7 @@
 -- Active: 1782303930153@@127.0.0.1@5432@volysaina_db
 DROP SCHEMA IF EXISTS voly_saina CASCADE;
 CREATE SCHEMA voly_saina;
-SET search_path TO voly_saina;
+    SET search_path TO voly_saina;
 
 -- =========================
 -- 1. Tables de référence (anciennement types ENUM)

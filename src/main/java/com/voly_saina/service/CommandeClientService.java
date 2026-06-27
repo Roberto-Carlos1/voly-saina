@@ -44,7 +44,6 @@ public class CommandeClientService {
     @Autowired
     private TypeMouvementStockRepositoryAdapter typeMouvementStockRepositoryAdapter;
 
-
     /**
      * Unique source of truth pour calculer le montant d'une commande.
      */
@@ -146,9 +145,8 @@ public class CommandeClientService {
 
         Facture facture = new Facture();
         // Le champ numéro a unique=true: on génère un numéro simple (à adapter si collision possible)
-        String numero = (numeroFacturePrefixeIfNeeded == null || numeroFacturePrefixeIfNeeded.isBlank())
-                ? "FAC-" + LocalDate.now().getYear() + "-" + commande.getIdCommande()
-                : numeroFacturePrefixeIfNeeded + "-" + commande.getIdCommande();
+        String numero = numeroFacturePrefixeIfNeeded != null ? numeroFacturePrefixeIfNeeded : factureService.generateNumeroFacture(commande.getIdCommande());
+        
         facture.setNumero(numero);
 
         facture.setTypeOperation(TYPE_OPERATION_COMMANDE);

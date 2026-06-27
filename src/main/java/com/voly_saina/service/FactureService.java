@@ -5,6 +5,7 @@ import com.voly_saina.repository.FactureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -31,5 +32,12 @@ public class FactureService {
 
     public void deleteById(Long id) {
         factureRepository.deleteById(id);
+    }
+
+    //Numero de facture
+    public String generateNumeroFacture(long id) {
+        String prefix = "FAC-";
+        String year = String.valueOf(LocalDate.now().getYear());
+        return prefix + year + "-" + id;
     }
 }

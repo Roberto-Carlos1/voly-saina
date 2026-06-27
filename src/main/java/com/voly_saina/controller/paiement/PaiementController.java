@@ -5,13 +5,11 @@ import com.voly_saina.entity.Paiement;
 import com.voly_saina.entity.dto.PaiementDTO;
 import com.voly_saina.service.FactureService;
 import com.voly_saina.service.PaiementService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.FacesRequestAttributes;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -81,6 +79,9 @@ public class PaiementController {
         paiementService.save(p);
 
         f.setMontantPaye(f.getMontantPaye().add(m));
+        if(f.getMontantPaye() == f.getMontantTotal()){
+            f.setIdFacture(2L);
+        }
         factureService.save(f);
 
         return "redirect:/api/factures/" + id;

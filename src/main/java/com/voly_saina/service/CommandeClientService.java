@@ -106,7 +106,19 @@ public class CommandeClientService {
                     .orElseThrow(() -> new IllegalStateException("Produit introuvable: " + lc.getProduit().getIdProduit()));
 
             BigDecimal quantite = lc.getQuantite() == null ? BigDecimal.ZERO : lc.getQuantite();
-            p.setStock(p.getStock().subtract(quantite));
+            if (quantite.compareTo(BigDecimal.ZERO) <= 0) {
+                continue;
+            }
+
+            BigDecimal nouveauStock = p.getStock().subtract(quantite);
+            // Sécurité supplémentaire (ne jamais passer sous 0)
+            if (nouveauStock.compareTo(BigDecimal.ZERO) < 0) {
+                throw new IllegalStateException(
+                        "Stock insuffisant au moment du décrément pour " + p.getNom() + " (stock=" + p.getStock() + ", décrément=" + quantite + ")"
+                );
+            }
+
+            p.setStock(nouveauStock);
             produitService.save(p);
 
             MouvementStock ms = new MouvementStock();
@@ -116,6 +128,7 @@ public class CommandeClientService {
             ms.setMotif("Vente - commande #" + commande.getIdCommande());
             mouvementStockService.save(ms);
         }
+
 
         // 3) Calcul montant + créer facture (uniquement quand cloture => en_livraison)
         BigDecimal montantTotal = calculerMontant(commande, lignesCommande);

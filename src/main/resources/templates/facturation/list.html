@@ -27,7 +27,7 @@
         <form action="/api/factures/pages" method="post">
             <p>
                 Éléments par page
-                <input type="number" name="pages" id="">
+                <input type="number" name="pages" th:value="${nombreParPage}" id="">
                 <input type="submit" value="Afficher">
             </p>
         </form>
@@ -53,8 +53,8 @@
                 <td th:text="${facture.getTypeOperation()}"></td>
                 <td th:text="${facture.getClient().getNom()}"></td>
                 <td th:text="${facture.getStatutFacture().getLibelle()}"></td>
-                <td th:text="${facture.getMontantPaye()}"></td>
-                <td th:text="${facture.getMontantTotal()}"></td>
+                <td th:text="${facture.getMontantPaye()} + ' Ar' "></td>
+                <td th:text="${facture.getMontantTotal()} + ' Ar'"></td>
                 <td th:text="${facture.getDateFacture()}"></td>
                 <td th:text="${facture.getDateLimite()}"></td>
                 <td>

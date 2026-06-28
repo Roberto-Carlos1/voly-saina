@@ -41,4 +41,7 @@ public class Commande {
     
     @Column(name = "montant_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal montantTotal = BigDecimal.ZERO;
+    
+    @Column(name = "id_facture",nullable = true)
+    private Long idFacture;
 }

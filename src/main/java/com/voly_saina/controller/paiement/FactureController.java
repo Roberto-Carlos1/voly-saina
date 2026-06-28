@@ -4,6 +4,8 @@ import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Pages;
 import com.voly_saina.entity.StatutFacture;
 import com.voly_saina.entity.dto.FactureDTO;
+import com.voly_saina.entity.view.FactureFille;
+import com.voly_saina.repository.FactureFilleRepository;
 import com.voly_saina.service.FactureService;
 import com.voly_saina.service.PageService;
 import com.voly_saina.service.StatutFactureService;
@@ -30,10 +32,13 @@ public class FactureController {
 
     private final PageService pageService;
     private final StatutFactureService statutFactureService;
+    private final FactureFilleRepository factureFilleRepository;
 
-    public FactureController(PageService pageService, StatutFactureService statutFacture) {
+    public FactureController(PageService pageService, StatutFactureService statutFacture,
+                             FactureFilleRepository factureFilleRepository) {
         this.pageService = pageService;
         this.statutFactureService = statutFacture;
+        this.factureFilleRepository = factureFilleRepository;
     }
 
     @GetMapping
@@ -73,8 +78,10 @@ public class FactureController {
     @GetMapping("/{id}")
     public String getFactureById(@PathVariable Long id, Model model) {
         Facture facture = factureService.findById(id);
-        
+        List<FactureFille> operations = factureFilleRepository.findByIdFacture(id.intValue());
+
         model.addAttribute("facture", facture);
+        model.addAttribute("operations", operations);
         return "facturation/detail-facture";
     }
 

@@ -1,13 +1,14 @@
 package com.voly_saina.entity.view;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Subselect;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Immutable
 @Table(name = "v_facture_fille", schema = "voly_saina")
 public class FactureFille {
@@ -36,6 +37,4 @@ public class FactureFille {
 
     @Column(name = "statut")
     private String statut;
-
-    // getters / no setters needed since it's immutable
 }

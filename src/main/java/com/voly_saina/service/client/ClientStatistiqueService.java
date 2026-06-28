@@ -166,4 +166,43 @@ public class ClientStatistiqueService {
         
         return periodes;
     }
+
+    // Wrapper methods for traceability with design document
+    public StatistiquesClientDTO genererIndicateurs(String module, Long idClient, LocalDate dateDebut, LocalDate dateFin) {
+        if (!"client".equals(module)) {
+            throw new IllegalArgumentException("Module non supporté ici : " + module);
+        }
+        return genererStatistiquesClient(idClient, dateDebut, dateFin);
+    }
+
+    public List<?> listerTop(String typeRessource, Long idClient, LocalDate dateDebut, LocalDate dateFin) {
+        return switch (typeRessource) {
+            case "machine" -> listerTopMachines(idClient, dateDebut, dateFin);
+            case "produit" -> listerTopProduits(idClient, dateDebut, dateFin);
+            default -> throw new IllegalArgumentException("Type de ressource inconnu : " + typeRessource);
+        };
+    }
+
+    // Extracted methods for both internal use and generic wrapper
+    List<TopMachineDTO> listerTopMachines(Long idClient, LocalDate dateDebut, LocalDate dateFin) {
+        LocalDate debut = dateDebut != null ? dateDebut : LocalDate.now().minusMonths(12);
+        LocalDate fin = dateFin != null ? dateFin : LocalDate.now();
+        
+        List<String> statutsReservations = Arrays.asList("validee", "en_cours", "terminee");
+        List<ReservationMachine> reservations = reservationMachineRepository.findByClientIdUtilisateurAndDateDebutBetweenAndStatutReservationCodeIn(
+            idClient, debut, fin, statutsReservations);
+        
+        return calculerTopMachines(reservations);
+    }
+
+    List<TopProduitDTO> listerTopProduits(Long idClient, LocalDate dateDebut, LocalDate dateFin) {
+        LocalDateTime debut = dateDebut != null ? dateDebut.atStartOfDay() : LocalDate.now().minusMonths(12).atStartOfDay();
+        LocalDateTime fin = dateFin != null ? dateFin.atTime(23, 59, 59) : LocalDateTime.now();
+        
+        List<String> statutsCommandes = Arrays.asList("validee", "preparee", "en_livraison", "livree");
+        List<LigneCommande> lignesCommandes = ligneCommandeRepository.findLignesCommandeClient(
+            idClient, debut, fin, statutsCommandes);
+        
+        return calculerTopProduits(lignesCommandes);
+    }
 }

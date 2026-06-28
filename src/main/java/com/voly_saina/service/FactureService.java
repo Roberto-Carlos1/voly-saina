@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -80,4 +81,10 @@ public class FactureService {
         return factureRepository.filtrerFactures(facture.getNomClient(), idStatut, pageable);
     }
 
+    //Numero de facture
+    public String generateNumeroFacture(long id) {
+        String prefix = "FAC-";
+        String year = String.valueOf(LocalDate.now().getYear());
+        return prefix + year + "-" + id;
+    }
 }

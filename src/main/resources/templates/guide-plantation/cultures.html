@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide de plantation</title>
+</head>
+<body>
+<h1>Guide de plantation</h1>
+
+<form method="get" th:action="@{/guide-plantation/cultures}">
+    <label>
+        Mot-clé
+        <input type="text" name="motCle" th:value="${filtres.motCle}" placeholder="Nom ou description">
+    </label>
+    <label>
+        Localisation
+        <input type="text" name="localisation" th:value="${filtres.localisation}" placeholder="Ex: Antananarivo">
+    </label>
+    <label>
+        Saison
+        <input type="text" name="saison" th:value="${filtres.saison}" placeholder="Ex: Saison des pluies">
+    </label>
+    <label>
+        Tri
+        <select name="tri" onchange="this.form.submit()">
+            <option value="nom_asc" th:selected="${tri == 'nom_asc'}">Nom A-Z</option>
+            <option value="nom_desc" th:selected="${tri == 'nom_desc'}">Nom Z-A</option>
+        </select>
+    </label>
+    <label>
+        Taille page
+        <input type="number" name="size" min="1" max="100" th:value="${size}">
+    </label>
+    <button type="submit">Filtrer</button>
+    <a th:href="@{/guide-plantation/cultures}">Réinitialiser</a>
+</form>
+
+<p>
+    <a th:href="@{/guide-plantation/cultures/export/pdf(
+        motCle=${filtres.motCle},
+        localisation=${filtres.localisation},
+        saison=${filtres.saison},
+        page=${culturesPage.number},
+        size=${size},
+        tri=${tri}
+    )}">Exporter PDF</a>
+    <a th:href="@{/guide-plantation/cultures/export/excel(
+        motCle=${filtres.motCle},
+        localisation=${filtres.localisation},
+        saison=${filtres.saison},
+        page=${culturesPage.number},
+        size=${size},
+        tri=${tri}
+    )}">Exporter Excel</a>
+</p>
+
+<p th:text="'Résultats : ' + ${culturesPage.totalElements}">Résultats</p>
+
+<p th:if="${#lists.isEmpty(cultures)}">Aucune culture disponible.</p>
+
+<table th:if="${!#lists.isEmpty(cultures)}" border="1">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Localisation adaptée</th>
+        <th>Saison adaptée</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="culture : ${cultures}">
+        <td th:text="${culture.nom}">Nom</td>
+        <td th:text="${culture.description}">Description</td>
+        <td th:text="${culture.localisationRecommandee}">Localisation</td>
+        <td th:text="${culture.saisonRecommandee}">Saison</td>
+        <td>
+            <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Détail</a>
+            <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}">Fiche</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${culturesPage.totalPages > 1}">
+    <a th:if="${culturesPage.hasPrevious()}" th:href="@{/guide-plantation/cultures(
+        motCle=${filtres.motCle},
+        localisation=${filtres.localisation},
+        saison=${filtres.saison},
+        page=${culturesPage.number - 1},
+        size=${size},
+        tri=${tri}
+    )}">Précédent</a>
+
+    <span th:text="'Page ' + ${culturesPage.number + 1} + ' / ' + ${culturesPage.totalPages}">Page</span>
+
+    <a th:if="${culturesPage.hasNext()}" th:href="@{/guide-plantation/cultures(
+        motCle=${filtres.motCle},
+        localisation=${filtres.localisation},
+        saison=${filtres.saison},
+        page=${culturesPage.number + 1},
+        size=${size},
+        tri=${tri}
+    )}">Suivant</a>
+</p>
+</body>
+</html>

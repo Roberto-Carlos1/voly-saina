@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mes réservations</title>
+</head>
+<body>
+    <h1>Mes réservations</h1>
+    <div id="listeReservations"></div>
+    <br>
+    <a th:href="@{/client/machines/catalogue}">Catalogue</a>
+    <a th:href="@{/client/accueil(clientId=${clientId})}">Accueil</a>
+
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/reservation-list.js"></script>
+</body>
+</html>

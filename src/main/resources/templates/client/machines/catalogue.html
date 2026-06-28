@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Catalogue</title>
+</head>
+<body>
+
+    <h1>📍 Catalogue des machines</h1>
+    <hr>
+
+    <div id="infoType">
+        <p>Chargement...</p>
+    </div>
+
+    <div id="listeMachines">
+        <p>Chargement des machines...</p>
+    </div>
+
+    <br>
+    <a href="/client/machines/types">← Retour aux types</a> |
+    <a th:href="@{/client/accueil(clientId=1)}">Accueil</a>
+
+    <script src="/js/client/common.js"></script>
+    <script src="/js/client/machine-catalogue.js"></script>
+
+</body>
+</html>

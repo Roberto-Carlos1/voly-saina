@@ -1,5 +1,6 @@
 package com.voly_saina.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,5 +46,28 @@ public class ReservationMachineService {
 
     public List<ReservationMachine> findActiveReservationsByClient(Long clientId) {
         return reservationMachineRepository.findActiveReservationsByClient(clientId);
+    }
+
+    public List<ReservationMachine> findConfList(Long machineId,LocalDate dateDebut, LocalDate dateFin) {
+        if (machineId == null || machineId <= 0) {
+            throw new IllegalArgumentException("ID machine invalide");
+        }
+        if (dateDebut == null || dateFin == null) {
+            throw new IllegalArgumentException("Les dates ne peuvent pas etre nulles");
+        }
+        if (dateFin.isBefore(dateDebut)) {
+            throw new IllegalArgumentException("La date de fin ne peut pas etre avant la date de debut");
+        }
+        
+        return reservationMachineRepository.findConflictingReservations(machineId, dateDebut, dateFin);
+    }
+
+    public boolean isMachineAvailable(Long machineId, LocalDate dateDebut, LocalDate dateFin) {
+        List<ReservationMachine> conflits = findConfList(machineId, dateDebut, dateFin);
+        return conflits.isEmpty();
+    }
+
+    public List<ReservationMachine> findByStatutReservationAndCode(String code) {
+        return reservationMachineRepository.findByStatutReservationCode(code);
     }
 }

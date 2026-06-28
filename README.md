@@ -106,7 +106,7 @@ Le fichier `src/main/resources/application.properties` n'est **pas versionné** 
    CREATE DATABASE volysaina_db;
    ```
 
-2. Exécuter le script SQL fourni pour créer le schéma et les données de départ de la dernière version au format `VolySaina-DD-MM-HH:mm:ss######.sql`;
+2. Exécuter le script SQL fourni pour créer le schéma et les données de départ de la dernière version au format `VolySaina-DD-MM-HHmmss######.sql`;
    ```bash
    psql -U voly_user -d volysaina_db -f database/VolySaina-DD-MM-HH:mm:ss######.sql
    ```

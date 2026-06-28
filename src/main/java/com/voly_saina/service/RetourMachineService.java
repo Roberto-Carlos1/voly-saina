@@ -79,7 +79,6 @@ public class RetourMachineService {
     }
 
     // ========== Enregistrer un retour ==========
-    
     public RetourMachine enregistrerRetour(RetourMachine retour) {
         // Récupérer la réservation
         ReservationMachine reservation = reservationService
@@ -91,27 +90,21 @@ public class RetourMachineService {
             retour.setDateRetour(LocalDate.now());
         }
         
-        // Calcul de la pénalité
+        // Calcul et sauvegarde de la pénalité
         long joursRetard = ChronoUnit.DAYS.between(reservation.getDateFin(), retour.getDateRetour());
         retour.setPenalite(joursRetard > 0 ? 
-            reservation.getMachine().getPrixJour()
-                .multiply(BigDecimal.valueOf(joursRetard))
-                .multiply(BigDecimal.valueOf(1.5)) : 
+            reservation.getMachine().getPrixJour().multiply(BigDecimal.valueOf(joursRetard)).multiply(BigDecimal.valueOf(1.5)) : 
             BigDecimal.ZERO);
         
-        // Sauvegarder le retour
         RetourMachine saved = retourRepository.save(retour);
         
-        // Mettre à jour la reservation (statut = terminée)
-        StatutReservation termine = statutReservationService.findById(5L)
-            .orElseThrow(() -> new RuntimeException("Statut 'terminée' non trouvé"));
-        reservation.setStatutReservation(termine);
+        // Mise à jour statut réservation
+        reservation.setStatutReservation(statutReservationService.findByCode("terminee"));
         reservationService.save(reservation);
         
-        // Mettre a jour la machine (etat = disponible)
+        // Mise à jour état machine
         Machine machine = reservation.getMachine();
-        EtatMachine disponible = etatMachineService.findById(1L);
-        machine.getStatutMachine().setEtatMachine(disponible);
+        machine.getStatutMachine().setEtatMachine(etatMachineService.findByCode("disponible").orElse(null));
         machineService.save(machine);
         
         return saved;

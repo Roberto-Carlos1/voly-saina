@@ -1,6 +1,9 @@
 package com.voly_saina.controller.machine;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.service.ReservationMachineService;
@@ -30,11 +34,36 @@ public class ReservationMachineController {
     public String getAllReservations(Model model) {
         List<ReservationMachine> reservations = reservationMachineService.findAll();
         model.addAttribute("reservations", reservations);
-        return "reservation/list"; 
+        return "reservation/list";
     }
+
     @GetMapping("/calendrier")
     public String showCalendrier() {
         return "reservation/calendrier";
+    }
+
+    @GetMapping("/calendrier/events")
+    @ResponseBody
+    public List<Map<String, Object>> getEvents() {
+
+        List<ReservationMachine> reservations = reservationMachineService.findAll();
+
+        List<Map<String, Object>> events = new ArrayList<>();
+
+        for (ReservationMachine r : reservations) {
+
+            Map<String, Object> event = new HashMap<>();
+
+            event.put("title", r.getMachine().getNom());
+
+            event.put("start", r.getDateDebut());
+
+            event.put("end", r.getDateFin().plusDays(1));
+
+            events.add(event);
+        }
+
+        return events;
     }
 
     // GET /api/reservations-machine/{id}

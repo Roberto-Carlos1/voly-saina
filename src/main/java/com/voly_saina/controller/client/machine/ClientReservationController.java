@@ -11,6 +11,7 @@ import com.voly_saina.service.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -44,37 +45,41 @@ public class ClientReservationController {
     // Page formulaire de réservation
     @GetMapping("/{machineId}/nouvelle")
     public String formulaireReservation(@PathVariable Long machineId,
-                                        @RequestParam(required = false) Long clientId,
-                                        Model model) {
+                                        Model model,
+                                        Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
         model.addAttribute("machineId", machineId);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/form";
     }
 
     // Page annulation
     @GetMapping("/{id}/annuler")
     public String formulaireAnnulation(@PathVariable Long id,
-                                       @RequestParam(required = false) Long clientId,
-                                       Model model) {
+                                       Model model,
+                                       Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
         model.addAttribute("reservationId", id);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/annuler-form";
     }
 
     // Page mes réservations
     @GetMapping("/mes-reservations")
-    public String mesReservations(@RequestParam(required = false) Long clientId, Model model) {
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+    public String mesReservations(Model model, Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/list";
     }
 
     // Page détail réservation
     @GetMapping("/{id}")
     public String detailReservation(@PathVariable Long id,
-                                    @RequestParam(required = false) Long clientId,
-                                    Model model) {
+                                    Model model,
+                                    Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
         model.addAttribute("reservationId", id);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/detail";
     }
 
@@ -310,6 +315,15 @@ public class ClientReservationController {
         stats.put("totalDepenses", totalDepenses);
         
         return ResponseEntity.ok(stats);
+    }
+
+    private Long getCurrentUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return 1L; // Default fallback
+        }
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurService.findByEmail(email);
+        return utilisateur != null ? utilisateur.getIdUtilisateur() : 1L;
     }
 
     private ReservationClientDTO mapToDTO(ReservationMachine reservation) {

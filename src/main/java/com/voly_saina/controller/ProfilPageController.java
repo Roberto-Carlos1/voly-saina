@@ -5,6 +5,8 @@ import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.ProfilUtilisateurService;
 import com.voly_saina.service.UtilisateurService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,24 +25,34 @@ public class ProfilPageController {
         this.utilisateurService = utilisateurService;
     }
 
-    @GetMapping({"/page02", "/client/profil"})
-    public String afficherProfil(HttpSession session, Model model) {
-        Long idUtilisateur = (Long) session.getAttribute("idUtilisateur");
+    /**
+     * Page 02 : profil utilisateur.
+     * IMPORTANT : on garde seulement /page02 pour éviter le conflit avec ClientProfilController sur /client/profil.
+     */
+    @GetMapping("/page02")
+    public String afficherProfil(@AuthenticationPrincipal User user, HttpSession session, Model model) {
+        Utilisateur utilisateur = recupererUtilisateurConnecte(user, session);
 
-        if (idUtilisateur == null) {
+        if (utilisateur == null) {
             return "redirect:/page01";
         }
 
-        Utilisateur utilisateur = utilisateurService.trouverParId(idUtilisateur);
+        session.setAttribute("idUtilisateur", utilisateur.getIdUtilisateur());
+        session.setAttribute("idClient", utilisateur.getIdUtilisateur());
+
+        if (utilisateur.getRole() != null) {
+            session.setAttribute("roleUtilisateur", utilisateur.getRole().getCode());
+        }
+
         ProfilUtilisateur profil = profilUtilisateurService.getProfilOuNouveau(utilisateur);
 
         model.addAttribute("utilisateur", utilisateur);
         model.addAttribute("profil", profil);
-        model.addAttribute("idClient", idUtilisateur);
+        model.addAttribute("idClient", utilisateur.getIdUtilisateur());
         model.addAttribute("roleCode", utilisateur.getRole() != null ? utilisateur.getRole().getCode() : "");
 
         try {
-            model.addAttribute("recommandation", profilUtilisateurService.determinerRecommandations(idUtilisateur));
+            model.addAttribute("recommandation", profilUtilisateurService.determinerRecommandations(utilisateur.getIdUtilisateur()));
         } catch (RuntimeException e) {
             model.addAttribute("recommandation", "Complète le profil pour activer les recommandations.");
         }
@@ -50,6 +62,7 @@ public class ProfilPageController {
 
     @PostMapping("/page02/profil")
     public String enregistrerProfil(
+            @AuthenticationPrincipal User user,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) Integer age,
             @RequestParam(required = false) String csp,
@@ -58,14 +71,14 @@ public class ProfilPageController {
             HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
-        Long idUtilisateur = (Long) session.getAttribute("idUtilisateur");
+        Utilisateur utilisateur = recupererUtilisateurConnecte(user, session);
 
-        if (idUtilisateur == null) {
+        if (utilisateur == null) {
             return "redirect:/page01";
         }
 
         profilUtilisateurService.enregistrerProfil(
-                idUtilisateur,
+                utilisateur.getIdUtilisateur(),
                 genre,
                 age,
                 csp,
@@ -75,5 +88,21 @@ public class ProfilPageController {
 
         redirectAttributes.addFlashAttribute("success", "Profil enregistré avec succès.");
         return "redirect:/page02";
+    }
+
+    private Utilisateur recupererUtilisateurConnecte(User user, HttpSession session) {
+        if (user != null && user.getUsername() != null) {
+            Utilisateur utilisateur = utilisateurService.findByEmail(user.getUsername());
+            if (utilisateur != null) {
+                return utilisateur;
+            }
+        }
+
+        Long idUtilisateur = (Long) session.getAttribute("idUtilisateur");
+        if (idUtilisateur != null) {
+            return utilisateurService.trouverParId(idUtilisateur);
+        }
+
+        return null;
     }
 }

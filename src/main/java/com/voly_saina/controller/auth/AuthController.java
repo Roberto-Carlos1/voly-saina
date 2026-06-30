@@ -38,11 +38,10 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "auth/login";
-    }
-
+    /**
+     * On ne crée plus de deuxième route /login ici.
+     * La page officielle de connexion est /page01 dans AuthPageController.
+     */
     @GetMapping("/signup")
     public String signupPage(Model model) {
         model.addAttribute("utilisateur", new Utilisateur());
@@ -57,44 +56,39 @@ public class AuthController {
             return "auth/signup";
         }
 
-        // Vérifier si l'email existe déjà
         if (utilisateurRepository.existsByEmail(utilisateur.getEmail())) {
             model.addAttribute("error", "Cet email est déjà utilisé");
             return "auth/signup";
         }
 
-        // Hacher le mot de passe
+        utilisateur.setEmail(utilisateur.getEmail().trim().toLowerCase());
         utilisateur.setMotDePasse(passwordEncoder.encode(utilisateur.getMotDePasse()));
 
-        // Définir le rôle par défaut (CLIENT)
-        RoleUtilisateur roleClient = roleUtilisateurRepository.findByCode("CLIENT");
-        if (roleClient == null) {
-            roleClient = new RoleUtilisateur();
-            roleClient.setCode("CLIENT");
-            roleClient.setLibelle("Client");
-            roleClient = roleUtilisateurRepository.save(roleClient);
-        }
+        RoleUtilisateur roleClient = roleUtilisateurRepository.findByCode("client")
+                .orElseGet(() -> {
+                    RoleUtilisateur role = new RoleUtilisateur();
+                    role.setCode("client");
+                    role.setLibelle("Client / Agriculteur");
+                    return roleUtilisateurRepository.save(role);
+                });
         utilisateur.setRole(roleClient);
 
-        // Définir le statut par défaut (ACTIF)
-        StatutCompte statutActif = statutCompteRepository.findByCode("ACTIF");
-        if (statutActif == null) {
-            statutActif = new StatutCompte();
-            statutActif.setCode("ACTIF");
-            statutActif.setLibelle("Actif");
-            statutActif = statutCompteRepository.save(statutActif);
-        }
+        StatutCompte statutActif = statutCompteRepository.findByCode("actif")
+                .orElseGet(() -> {
+                    StatutCompte statut = new StatutCompte();
+                    statut.setCode("actif");
+                    statut.setLibelle("Actif");
+                    return statutCompteRepository.save(statut);
+                });
         utilisateur.setStatutCompte(statutActif);
 
-        // Sauvegarder l'utilisateur
         Utilisateur savedUser = utilisateurRepository.save(utilisateur);
 
-        // Créer le profil utilisateur vide
         ProfilUtilisateur profil = new ProfilUtilisateur();
         profil.setUtilisateur(savedUser);
         profilUtilisateurRepository.save(profil);
 
-        return "redirect:/login?signup=success";
+        return "redirect:/page01?inscription=success";
     }
 
     @GetMapping("/access-denied")

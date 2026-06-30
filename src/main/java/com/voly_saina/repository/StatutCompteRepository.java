@@ -4,7 +4,10 @@ import com.voly_saina.entity.StatutCompte;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface StatutCompteRepository extends JpaRepository<StatutCompte, Long> {
-    StatutCompte findByCode(String code);
+
+    Optional<StatutCompte> findByCode(String code);
 }

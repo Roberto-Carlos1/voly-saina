@@ -148,7 +148,7 @@ public class PanierController {
             Model model
     ) {
         Long idClientFinal = clientId != null ? clientId : 1L;
-        Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
+        Utilisateur client = utilisateurService.findById(idClientFinal);
         if (client == null) {
             model.addAttribute("error", "Client non trouvé");
             return "client/panier";
@@ -258,7 +258,7 @@ public class PanierController {
     ) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
-            Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
+            Utilisateur client = utilisateurService.findById(idClientFinal);
             if (client == null) {
                 model.addAttribute("error", "Client non trouvé");
                 return "client/panier";
@@ -329,7 +329,7 @@ public class PanierController {
     ) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
-            Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
+            Utilisateur client = utilisateurService.findById(idClientFinal);
             if (client == null) {
                 model.addAttribute("error", "Client non trouvé");
                 return "client/recu/recap-commande";

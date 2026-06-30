@@ -23,12 +23,12 @@ public class CommandeController {
     }
 
     // GET /api/commandes/{id}
-    @GetMapping("/{id}")
-    public ResponseEntity<Commande> getById(@PathVariable Long id) {
-        return commandeService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-    }
+    // @GetMapping("/{id}")
+    // public ResponseEntity<Commande> getById(@PathVariable Long id) {
+    //     return commandeService.findById(id)
+    //             .map(ResponseEntity::ok)
+    //             .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    // }
 
     // POST /api/commandes
     @PostMapping
@@ -56,5 +56,12 @@ public class CommandeController {
         }
         commandeService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/valider-commande/{idCommande}")
+    public String validateCommande(@PathVariable Long idCommande) {
+
+        commandeService.validerCommande(idCommande);
+        return "redirect:/api/commandes";
     }
 }

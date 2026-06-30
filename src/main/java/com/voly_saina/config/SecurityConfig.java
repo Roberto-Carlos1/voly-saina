@@ -12,30 +12,62 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Encodeur compatible avec les nouveaux mots de passe BCrypt et les anciens mots de passe en clair.
+     * Cela évite de bloquer les comptes déjà présents dans la base pendant les tests.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return bcrypt.encode(rawPassword);
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                if (rawPassword == null || encodedPassword == null) {
+                    return false;
+                }
+
+                if (encodedPassword.startsWith("$2a$")
+                        || encodedPassword.startsWith("$2b$")
+                        || encodedPassword.startsWith("$2y$")) {
+                    return bcrypt.matches(rawPassword, encodedPassword);
+                }
+
+                return rawPassword.toString().equals(encodedPassword);
+            }
+        };
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers(
+                    "/page01", "/login", "/connexion", "/inscription", "/signup",
+                    "/access-denied", "/css/**", "/js/**", "/images/**", "/webjars/**"
+                ).permitAll()
+                .requestMatchers("/page02", "/page02/**").authenticated()
                 .requestMatchers("/client/**").hasAnyRole("CLIENT", "GESTIONNAIRE", "RESPONSABLE", "EMPLOYE")
                 .requestMatchers("/admin/**").hasRole("RESPONSABLE")
                 .anyRequest().permitAll()
             )
             .formLogin(login -> login
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/client/accueil", true)
-                .failureUrl("/login?error=true")
+                .loginPage("/page01")
+                .loginProcessingUrl("/connexion")
+                .usernameParameter("identifiant")
+                .passwordParameter("motDePasse")
+                .defaultSuccessUrl("/page02", true)
+                .failureUrl("/page01?error=true")
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
+                .logoutUrl("/deconnexion")
+                .logoutSuccessUrl("/page01?logout=true")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()
@@ -44,7 +76,7 @@ public class SecurityConfig {
                 .accessDeniedPage("/access-denied")
             )
             .csrf(csrf -> csrf.disable());
-        
+
         return http.build();
     }
 }

@@ -7,6 +7,7 @@ import com.voly_saina.repository.RoleUtilisateurRepository;
 import com.voly_saina.repository.StatutCompteRepository;
 import com.voly_saina.repository.UtilisateurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,9 @@ public class UtilisateurService {
 
     @Autowired
     private StatutCompteRepository statutCompteRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Utilisateur> findAll() {
         return utilisateurRepository.findAll();
@@ -70,7 +74,9 @@ public class UtilisateurService {
             throw new RuntimeException("Le rôle est obligatoire.");
         }
 
-        if (utilisateurRepository.existsByEmail(email)) {
+        String emailNettoye = email.trim().toLowerCase();
+
+        if (utilisateurRepository.existsByEmail(emailNettoye)) {
             throw new RuntimeException("Cet email est déjà utilisé.");
         }
 
@@ -82,9 +88,9 @@ public class UtilisateurService {
 
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setNom(nom.trim());
-        utilisateur.setTelephone(telephone);
-        utilisateur.setEmail(email.trim());
-        utilisateur.setMotDePasse(motDePasse);
+        utilisateur.setTelephone(telephone != null ? telephone.trim() : null);
+        utilisateur.setEmail(emailNettoye);
+        utilisateur.setMotDePasse(passwordEncoder.encode(motDePasse));
         utilisateur.setRole(role);
         utilisateur.setStatutCompte(statutActif);
 
@@ -108,7 +114,7 @@ public class UtilisateurService {
             throw new RuntimeException("Compte inactif ou bloqué.");
         }
 
-        if (!motDePasse.equals(utilisateur.getMotDePasse())) {
+        if (!passwordEncoder.matches(motDePasse, utilisateur.getMotDePasse())) {
             throw new RuntimeException("Mot de passe incorrect.");
         }
 

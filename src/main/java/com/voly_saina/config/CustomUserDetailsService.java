@@ -23,15 +23,22 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(email);
-        
-        if (utilisateur == null) {
-            throw new UsernameNotFoundException("Utilisateur non trouvé avec l'email: " + email);
+    public UserDetails loadUserByUsername(String identifiant) throws UsernameNotFoundException {
+        Utilisateur utilisateur = utilisateurRepository
+                .findByEmailOrTelephone(identifiant, identifiant)
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + identifiant));
+
+        if (utilisateur.getStatutCompte() != null
+                && !"actif".equalsIgnoreCase(utilisateur.getStatutCompte().getCode())) {
+            throw new UsernameNotFoundException("Compte inactif ou bloqué : " + identifiant);
         }
 
-        String role = "ROLE_" + utilisateur.getRole().getCode().toUpperCase();
-        
+        String roleCode = utilisateur.getRole() != null && utilisateur.getRole().getCode() != null
+                ? utilisateur.getRole().getCode().toUpperCase()
+                : "CLIENT";
+
+        String role = "ROLE_" + roleCode;
+
         return User.builder()
             .username(utilisateur.getEmail())
             .password(utilisateur.getMotDePasse())

@@ -3,7 +3,6 @@ package com.voly_saina.controller;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.repository.RoleUtilisateurRepository;
 import com.voly_saina.service.UtilisateurService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +21,20 @@ public class AuthPageController {
         this.roleUtilisateurRepository = roleUtilisateurRepository;
     }
 
+    /**
+     * Page 01 : page officielle de connexion/inscription.
+     * /login redirige ici pour éviter d'avoir deux pages de connexion différentes.
+     */
     @GetMapping({"/page01", "/login"})
     public String afficherConnexion(Model model) {
         model.addAttribute("roles", roleUtilisateurRepository.findAll());
         return "auth/page01";
     }
 
+    /**
+     * Inscription depuis Page 01.
+     * La connexion est ensuite faite par Spring Security via POST /connexion.
+     */
     @PostMapping("/inscription")
     public String creerCompte(
             @RequestParam String nom,
@@ -35,55 +42,16 @@ public class AuthPageController {
             @RequestParam String email,
             @RequestParam String motDePasse,
             @RequestParam Long idRole,
-            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
         try {
             Utilisateur utilisateur = utilisateurService.creerCompte(nom, telephone, email, motDePasse, idRole);
-            enregistrerSession(session, utilisateur);
-            redirectAttributes.addFlashAttribute("success", "Compte créé avec succès. Complète maintenant ton profil.");
-            return "redirect:/page02";
+            redirectAttributes.addFlashAttribute("success",
+                    "Compte créé avec succès pour " + utilisateur.getEmail() + ". Connecte-toi maintenant.");
+            return "redirect:/page01?inscription=success";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/page01";
-        }
-    }
-
-    @PostMapping("/connexion")
-    public String connecter(
-            @RequestParam String identifiant,
-            @RequestParam String motDePasse,
-            HttpSession session,
-            RedirectAttributes redirectAttributes
-    ) {
-        try {
-            Utilisateur utilisateur = utilisateurService.connecterUtilisateur(identifiant, motDePasse);
-            enregistrerSession(session, utilisateur);
-
-            if (utilisateur.getRole() != null && "client".equalsIgnoreCase(utilisateur.getRole().getCode())) {
-                return "redirect:/page02";
-            }
-
-            return "redirect:/api/machines";
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/page01";
-        }
-    }
-
-    @GetMapping("/deconnexion")
-    public String deconnecter(HttpSession session, RedirectAttributes redirectAttributes) {
-        session.invalidate();
-        redirectAttributes.addFlashAttribute("success", "Déconnexion réussie.");
-        return "redirect:/page01";
-    }
-
-    private void enregistrerSession(HttpSession session, Utilisateur utilisateur) {
-        session.setAttribute("idUtilisateur", utilisateur.getIdUtilisateur());
-        session.setAttribute("idClient", utilisateur.getIdUtilisateur());
-
-        if (utilisateur.getRole() != null) {
-            session.setAttribute("roleUtilisateur", utilisateur.getRole().getCode());
         }
     }
 }

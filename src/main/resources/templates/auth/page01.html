@@ -23,6 +23,9 @@
 
     <div th:if="${success}" class="alert alert-success shadow-sm" th:text="${success}"></div>
     <div th:if="${error}" class="alert alert-danger shadow-sm" th:text="${error}"></div>
+    <div th:if="${param.error}" class="alert alert-danger shadow-sm">Email/téléphone ou mot de passe incorrect.</div>
+    <div th:if="${param.logout}" class="alert alert-info shadow-sm">Déconnexion réussie.</div>
+    <div th:if="${param.inscription}" class="alert alert-success shadow-sm">Compte créé avec succès. Connecte-toi maintenant.</div>
 
     <div class="row g-4 align-items-stretch">
         <div class="col-lg-5">

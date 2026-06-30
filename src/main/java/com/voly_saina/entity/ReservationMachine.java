@@ -72,6 +72,5 @@ public class ReservationMachine {
     
     @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RetourMachine retour;
-    @Column(name = "id_facture",nullable = true)
-    private Long idFacture;
+
 }

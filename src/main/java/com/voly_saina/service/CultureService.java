@@ -40,6 +40,16 @@ public class CultureService {
     }
 
     @Transactional(readOnly = true)
+    public List<String> findLocalisationsDisponibles() {
+        return cultureRepository.findLocalisationsDisponibles();
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> findSaisonsDisponibles() {
+        return cultureRepository.findSaisonsDisponibles();
+    }
+
+    @Transactional(readOnly = true)
     public List<Culture> listerCulturesDisponibles(String nom, String description, String saison, String localisation) {
         return cultureRepository.findByActifTrue().stream()
                 .filter(culture -> contient(culture.getNom(), nom))

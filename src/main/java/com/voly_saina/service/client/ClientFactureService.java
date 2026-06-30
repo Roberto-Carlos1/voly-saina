@@ -76,6 +76,28 @@ public class ClientFactureService {
         }
     }
 
+    // Wrapper methods for traceability with design document
+    public List<FactureClientDTO> listerOperations(String typeOperation, Long idClient, String filtreStatut) {
+        if (!"facture".equals(typeOperation)) {
+            throw new IllegalArgumentException("Type d'opération non supporté ici : " + typeOperation);
+        }
+        return listerFacturesClient(idClient, filtreStatut);
+    }
+
+    public FactureClientDTO consulterDetail(String typeObjet, Long idFacture, Long idClient) {
+        if (!"facture".equals(typeObjet)) {
+            throw new IllegalArgumentException("Type d'objet non supporté ici : " + typeObjet);
+        }
+        return voirDetailFacture(idFacture, idClient);
+    }
+
+    public byte[] exporterDocument(String typeDocument, Long idFacture, Long idClient, String format) {
+        if (!"facture".equals(typeDocument) || !"PDF".equalsIgnoreCase(format)) {
+            throw new IllegalArgumentException("Document/format non supporté ici : " + typeDocument + " / " + format);
+        }
+        return exporterFacturePDF(idFacture, idClient);
+    }
+
     private FactureClientDTO mapToDTO(Facture facture) {
         FactureClientDTO dto = new FactureClientDTO();
         dto.setIdFacture(facture.getIdFacture());

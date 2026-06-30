@@ -46,6 +46,21 @@ public class CalendarController {
             events.add(event);
         }
 
+        for (MaintenanceMachine m : maintenanceMachineService.findAll()) {
+            Map<String, Object> event = new HashMap<>();
+            event.put("title", "Maintenance: " + m.getMachine().getNom() + " - " + m.getTravaux());
+            if (m.getDateRetourReelle() != null) {
+                event.put("start", m.getDateRetourReelle());
+                event.put("end", m.getDateRetourReelle().plusDays(1));
+            } else {
+                event.put("start", m.getDateDebut());
+                event.put("end", m.getDateDebut().plusDays(1));
+            }
+            // status color coding
+            String statusColor = m.getStatutMaintenance().getLibelle().equalsIgnoreCase("En cours") ? "#e74c3c" : "#2ecc71";
+            event.put("backgroundColor", statusColor);
+            events.add(event);
+        }
 
         return events;
     }

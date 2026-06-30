@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Liste des reservations</h1>
+    <table border="1">
+        <tr>
+            <th>Id reservation</th>
+            <th>Id client</th>
+            <th>Id machine</th>
+            <th>Date debut</th>
+            <th>Date fin</th>
+            <th>Lieu livraison</th>
+            <th>Actions</th>
+        </tr>
+
+        <tbody id="reservationLines">
+            <tr th:each="reservation : ${reservations}">
+                <td th:text=${reservation.getIdReservation()}></td>
+                <td th:text=${reservation.getClient().getIdUtilisateur()}></td>
+                <td th:text=${reservation.getMachine().getIdMachine()}></td>
+                <td th:text=${reservation.getDateDebut()}></td>
+                <td th:text=${reservation.getDateFin()}></td>
+                <td th:text=${reservation.getLieuLivraison()}></td>
+                <td>
+                    <a href="">Accepter</a>
+                    <a href="">Refuser</a>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

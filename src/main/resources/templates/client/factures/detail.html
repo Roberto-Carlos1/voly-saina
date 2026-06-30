@@ -69,13 +69,13 @@
                         </div>
                         <div class="row detail-row">
                             <div class="col-5 col-md-4 detail-label">Date de facture</div>
-                            <div class="col-7 col-md-8 detail-value" th:text="${facture.dateFacture}"></div>
+                            <div class="col-7 col-md-8 detail-value" th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy HH:mm')}"></div>
                         </div>
                         <div class="row detail-row">
                             <div class="col-5 col-md-4 detail-label">Date limite de paiement</div>
                             <div class="col-7 col-md-8 detail-value" 
                                   th:class="${facture.enRetard ? 'text-red' : ''}"
-                                  th:text="${facture.dateLimite}"></div>
+                                  th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '-'}"></div>
                         </div>
                         <div class="row detail-row">
                             <div class="col-5 col-md-4 detail-label">Statut</div>
@@ -95,16 +95,16 @@
                     <div class="card-body">
                         <div class="row detail-row">
                             <div class="col-5 col-md-4 detail-label">Montant total</div>
-                            <div class="col-7 col-md-8 detail-value" th:text="${facture.montantTotal} + ' MGA'"></div>
+                            <div class="col-7 col-md-8 detail-value" th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></div>
                         </div>
                         <div class="row detail-row">
                             <div class="col-5 col-md-4 detail-label">Montant payé</div>
-                            <div class="col-7 col-md-8 detail-value" th:text="${facture.montantPaye} + ' MGA'"></div>
+                            <div class="col-7 col-md-8 detail-value" th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></div>
                         </div>
                         <div class="row detail-row">
                             <div class="col-5 col-md-4 detail-label">Montant restant à payer</div>
                             <div class="col-7 col-md-8 detail-value highlight-amount" 
-                                  th:text="${facture.montantRestant} + ' MGA'"></div>
+                                  th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></div>
                         </div>
                     </div>
                 </div>

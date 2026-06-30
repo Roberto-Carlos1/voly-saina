@@ -6,10 +6,13 @@ import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Produit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +31,33 @@ public class GuidePlantationService {
 
     @Autowired
     private ProduitService produitService;
+
+    @Transactional(readOnly = true)
+    public Page<Culture> listerCultures(String motCle, String localisation, String saison,
+                                        int page, int size, String tri) {
+        return listerRessourcesPage(
+                "culture",
+                construireFiltresCulture(motCle, localisation, saison),
+                construirePageable(page, size, tri));
+    }
+
+    public Map<String, String> construireFiltresCulture(String motCle, String localisation, String saison) {
+        Map<String, String> filtres = new HashMap<>();
+        filtres.put("motCle", motCle);
+        filtres.put("localisation", localisation);
+        filtres.put("saison", saison);
+        return filtres;
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> listerLocalisationsDisponibles() {
+        return cultureService.findLocalisationsDisponibles();
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> listerSaisonsDisponibles() {
+        return cultureService.findSaisonsDisponibles();
+    }
 
     @Transactional(readOnly = true)
     public List<Culture> listerRessources(String typeRessource, Map<String, String> filtres) {
@@ -125,5 +155,12 @@ public class GuidePlantationService {
     private String nettoyerFiltrePourRecherche(String valeur) {
         String filtre = nettoyerFiltre(valeur);
         return filtre == null ? "" : filtre;
+    }
+
+    private Pageable construirePageable(int page, int size, String tri) {
+        int pageCourante = Math.max(page, 0);
+        int taillePage = Math.max(1, Math.min(size, 100));
+        Sort.Direction direction = "nom_desc".equals(tri) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return PageRequest.of(pageCourante, taillePage, Sort.by(direction, "nom"));
     }
 }

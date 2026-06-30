@@ -477,8 +477,8 @@ values
 insert into reservation_machine
 (id_client, id_machine, id_facture, date_debut, date_fin, lieu_livraison, prix_total, id_statut_reservation, motif_refus, remarque, date_creation)
 values
-(1, 1, 1, '2026-06-01', '2026-06-05', 'Zone pilote', 450000.00, 2, NULL, 'Réservation pour travaux agricoles', '2026-06-01 09:15:00'),
-(1, 2, 3, '2026-06-03', '2026-06-07', 'Zone pilote', 800000.00, 1, NULL, 'Réservation pour travaux agricoles', '2026-06-03 14:00:00'),
-(1, 3, 5, '2026-06-07', '2026-06-10', 'Zone pilote', 620000.00, 2, NULL, 'Réservation pour travaux agricoles', '2026-06-07 13:20:00'),
-(1, 1, 7, '2026-06-10', '2026-06-12', 'Zone pilote', 390000.00, 3, NULL, 'Réservation pour travaux agricoles', '2026-06-10 15:45:00');
+(1, 1, 12, '2026-06-01', '2026-06-05', 'Zone pilote', 450000.00, 2, NULL, 'Réservation pour travaux agricoles', '2026-06-01 09:15:00'),
+(1, 2, 12, '2026-06-03', '2026-06-07', 'Zone pilote', 800000.00, 1, NULL, 'Réservation pour travaux agricoles', '2026-06-03 14:00:00'),
+(1, 3, 13, '2026-06-07', '2026-06-10', 'Zone pilote', 620000.00, 2, NULL, 'Réservation pour travaux agricoles', '2026-06-07 13:20:00'),
+(1, 1, 13, '2026-06-10', '2026-06-12', 'Zone pilote', 390000.00, 3, NULL, 'Réservation pour travaux agricoles', '2026-06-10 15:45:00');
 

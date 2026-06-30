@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StatutCompteRepository extends JpaRepository<StatutCompte, Long> {
+    StatutCompte findByCode(String code);
 }

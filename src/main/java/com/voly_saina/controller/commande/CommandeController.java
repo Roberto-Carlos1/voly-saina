@@ -58,10 +58,4 @@ public class CommandeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/valider-commande/{idCommande}")
-    public String validateCommande(@PathVariable Long idCommande) {
-
-        commandeService.validerCommande(idCommande);
-        return "redirect:/api/commandes";
-    }
 }

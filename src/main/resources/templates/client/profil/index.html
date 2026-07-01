@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Voly Saina+</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 20px 20px;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .nav-tabs .nav-link {
+            color: #666;
+            border: none;
+            padding: 15px 20px;
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-color);
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/client/accueil}">Voly Saina+</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/client/accueil}">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/client/machines/catalogue}">Machines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/client/ventes/catalogue}">Produits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/client/reservations/mes-reservations}">Réservations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/client/factures}">Factures</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${utilisateur.nom}">Utilisateur</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{/client/profil}">Mon profil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/logout}">Déconnexion</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Profil -->
+    <div class="profile-header">
+        <div class="container text-center">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <h2 th:text="${utilisateur.nom}">Nom Utilisateur</h2>
+            <p class="mb-0" th:text="${utilisateur.email}">email@example.com</p>
+        </div>
+    </div>
+
+    <!-- Contenu Principal -->
+    <div class="container mb-5">
+        <!-- Statistiques rapides -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Réservations en cours</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Commandes</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Factures en attente</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="stat-number">0 Ar</div>
+                    <div class="stat-label">Total dépensé</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglets -->
+        <div class="card">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="profilTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="informations-tab" data-bs-toggle="tab" 
+                                data-bs-target="#informations" type="button" role="tab">
+                            <i class="fas fa-user me-2"></i>Informations
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reservations-tab" data-bs-toggle="tab" 
+                                data-bs-target="#reservations" type="button" role="tab">
+                            <i class="fas fa-calendar-alt me-2"></i>Réservations
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="commandes-tab" data-bs-toggle="tab" 
+                                data-bs-target="#commandes" type="button" role="tab">
+                            <i class="fas fa-shopping-cart me-2"></i>Commandes
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="factures-tab" data-bs-toggle="tab" 
+                                data-bs-target="#factures" type="button" role="tab">
+                            <i class="fas fa-file-invoice me-2"></i>Factures
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="parametres-tab" data-bs-toggle="tab" 
+                                data-bs-target="#parametres" type="button" role="tab">
+                            <i class="fas fa-cog me-2"></i>Paramètres
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-4" id="profilTabsContent">
+                    <!-- Onglet Informations -->
+                    <div class="tab-pane fade show active" id="informations" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Informations personnelles</h5>
+                                <form th:action="@{/client/profil/informations}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nom complet</label>
+                                        <input type="text" class="form-control" name="nom" 
+                                               th:value="${utilisateur.nom}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" name="email" 
+                                               th:value="${utilisateur.email}" disabled>
+                                        <small class="text-muted">L'email ne peut pas être modifié</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Téléphone</label>
+                                        <input type="tel" class="form-control" name="telephone" 
+                                               th:value="${utilisateur.telephone}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Enregistrer
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Profil détaillé</h5>
+                                <form th:action="@{/client/profil/informations}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Genre</label>
+                                        <select class="form-select" name="genre">
+                                            <option value="">Sélectionner</option>
+                                            <option value="HOMME" th:selected="${profil.genre == 'HOMME'}">Homme</option>
+                                            <option value="FEMME" th:selected="${profil.genre == 'FEMME'}">Femme</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Âge</label>
+                                        <input type="number" class="form-control" name="age" 
+                                               th:value="${profil.age}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Catégorie socio-professionnelle</label>
+                                        <input type="text" class="form-control" name="csp" 
+                                               th:value="${profil.csp}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Localisation</label>
+                                        <input type="text" class="form-control" name="localisation" 
+                                               th:value="${profil.localisation}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Enregistrer
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Réservations -->
+                    <div class="tab-pane fade" id="reservations" role="tabpanel">
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
+                            <h5>Mes réservations</h5>
+                            <p class="text-muted">Consultez et gérez vos réservations de machines</p>
+                            <a th:href="@{/client/reservations/mes-reservations}" class="btn btn-outline-primary">
+                                Voir mes réservations
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Commandes -->
+                    <div class="tab-pane fade" id="commandes" role="tabpanel">
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <h5>Mes commandes</h5>
+                            <p class="text-muted">Consultez vos commandes de produits</p>
+                            <a th:href="@{/client/panier/recap}" class="btn btn-outline-primary">
+                                Voir mes commandes
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Factures -->
+                    <div class="tab-pane fade" id="factures" role="tabpanel">
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                            <h5>Mes factures</h5>
+                            <p class="text-muted">Consultez et téléchargez vos factures</p>
+                            <a th:href="@{/client/factures}" class="btn btn-outline-primary">
+                                Voir mes factures
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Paramètres -->
+                    <div class="tab-pane fade" id="parametres" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Modifier le mot de passe</h5>
+                                <form th:action="@{/client/profil/mot-de-passe}" method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Mot de passe actuel</label>
+                                        <input type="password" class="form-control" name="oldPassword" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Nouveau mot de passe</label>
+                                        <input type="password" class="form-control" name="newPassword" required minlength="6">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Confirmer le nouveau mot de passe</label>
+                                        <input type="password" class="form-control" name="confirmPassword" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-key me-1"></i>Modifier le mot de passe
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="mb-3">Danger Zone</h5>
+                                <div class="alert alert-danger">
+                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Supprimer le compte</h6>
+                                    <p class="mb-2">Cette action est irréversible. Toutes vos données seront perdues.</p>
+                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete()">
+                                        <i class="fas fa-trash me-1"></i>Supprimer mon compte
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmDelete() {
+            if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
+                // TODO: Implémenter la suppression de compte
+                alert('Fonctionnalité en cours de développement');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,22 @@
 package com.voly_saina.controller.client.machine;
 
+import com.voly_saina.dto.dtoMacine.ReservationClientDTO;
+import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.entity.Utilisateur;
+import com.voly_saina.service.MachineService;
+import com.voly_saina.service.ReservationMachineService;
+import com.voly_saina.service.StatutReservationService;
+import com.voly_saina.service.UtilisateurService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -75,37 +92,41 @@ public class ClientReservationController {
     // GET /client/reservations/{machineId}/nouvelle
     @GetMapping("/{machineId}/nouvelle")
     public String formulaireReservation(@PathVariable Long machineId,
-                                        @RequestParam(required = false) Long clientId,
-                                        Model model) {
+                                        Model model,
+                                        Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
         model.addAttribute("machineId", machineId);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/form";
     }
 
     // GET /client/reservations/{id}/annuler
     @GetMapping("/{id}/annuler")
     public String formulaireAnnulation(@PathVariable Long id,
-                                       @RequestParam(required = false) Long clientId,
-                                       Model model) {
+                                       Model model,
+                                       Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
         model.addAttribute("reservationId", id);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/annuler-form";
     }
 
     // GET /client/reservations/mes-reservations
     @GetMapping("/mes-reservations")
-    public String mesReservations(@RequestParam(required = false) Long clientId, Model model) {
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+    public String mesReservations(Model model, Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/list";
     }
 
     // GET /client/reservations/{id}
     @GetMapping("/{id}")
     public String detailReservation(@PathVariable Long id,
-                                    @RequestParam(required = false) Long clientId,
-                                    Model model) {
+                                    Model model,
+                                    Authentication authentication) {
+        Long clientId = getCurrentUserId(authentication);
         model.addAttribute("reservationId", id);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        model.addAttribute("clientId", clientId);
         return "client/reservations/detail";
     }
 
@@ -504,6 +525,15 @@ public class ClientReservationController {
         long nextId = last != null ? last.getIdFacture() + 1 : 1;
         return "FAC-" + LocalDate.now().getYear() + "-" + String.format("%04d", nextId);
     }
+    private Long getCurrentUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return 1L; // Default fallback
+        }
+        String email = authentication.getName();
+        Utilisateur utilisateur = utilisateurService.findByEmail(email);
+        return utilisateur != null ? utilisateur.getIdUtilisateur() : 1L;
+    }
+
 
     private ReservationClientDTO mapToDTO(ReservationMachine reservation) {
         ReservationClientDTO dto = new ReservationClientDTO();

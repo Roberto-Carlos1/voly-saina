@@ -14,7 +14,6 @@ import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Produit;
-import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.StatutCommande;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.CommandeClientService;
@@ -22,7 +21,6 @@ import com.voly_saina.service.CommandeService;
 import com.voly_saina.service.LigneCommandeService;
 import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.ProduitService;
-import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutCommandeService;
 import com.voly_saina.service.UtilisateurService;
 
@@ -60,7 +58,6 @@ public class PanierController {
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            @RequestParam("reservationId") Long reservationId,
             Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
@@ -113,12 +110,6 @@ public class PanierController {
                         c.setMontantTotal(BigDecimal.ZERO);
                         return commandeService.save(c);
                     });
-                    
-            ReservationMachine reservation = ReservationMachineService.findReservationById(reservationId);
-            if (reservation == null || !reservation.getClient().getIdUtilisateur().equals(idClientFinal)) {
-                model.addAttribute("error", "Réservation introuvable ou non autorisée");
-                return "client/ventes/detail";
-            }
 
             LigneCommande ligneExistante = ligneCommandeService.findAll().stream()
                     .filter(lc -> lc != null && lc.getCommande() != null)

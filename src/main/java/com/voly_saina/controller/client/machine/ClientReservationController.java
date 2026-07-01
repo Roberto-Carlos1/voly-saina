@@ -1,5 +1,27 @@
 package com.voly_saina.controller.client.machine;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.voly_saina.dto.dtoMacine.ReservationClientDTO;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.ReservationMachine;
@@ -8,20 +30,6 @@ import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/client/reservations")
@@ -137,8 +145,7 @@ public class ClientReservationController {
             Long machineId = Long.valueOf(payload.get("machineId").toString());
             LocalDate dateDebut = LocalDate.parse(payload.get("dateDebut").toString());
             LocalDate dateFin = LocalDate.parse(payload.get("dateFin").toString());
-            String lieuLivraison = payload.containsKey("lieuLivraison") ? 
-                payload.get("lieuLivraison").toString() : null;
+            String lieuLivraison = payload.containsKey("lieuLivraison") ? payload.get("lieuLivraison").toString() : null;
 
             Utilisateur client = utilisateurService.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
@@ -172,6 +179,7 @@ public class ClientReservationController {
             ReservationMachine reservation = new ReservationMachine();
             reservation.setMachine(machine);
             reservation.setClient(client);
+            reservation.setStatutReservation(statutReservationService.findByCode("en_attente"));
             reservation.setDateDebut(dateDebut);
             reservation.setDateFin(dateFin);
             reservation.setLieuLivraison(lieuLivraison);
@@ -185,9 +193,6 @@ public class ClientReservationController {
             );
 
             ReservationMachine saved = reservationService.save(reservation);
-
-            machine.setDisponible(false);
-            machineService.save(machine);
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Réservation créée avec succès");

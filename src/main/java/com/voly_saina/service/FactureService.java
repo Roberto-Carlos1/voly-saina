@@ -102,13 +102,13 @@ public class FactureService {
 
         Facture last = this.findIdByLast();
         String numero = this.generateNumeroFacture(last.getIdFacture());
-        Utilisateur client = utilisateurService.findById(idUtilisateur);
+        Utilisateur client = utilisateurService.findById(idUtilisateur).orElse(null);
 
         BigDecimal montantReservation = panierService.montantReservation(client.getIdUtilisateur()),
                 montatCommande = panierService.montantCommande(client.getIdUtilisateur());
 
         LocalDateTime now = LocalDateTime.now();
-        StatutFacture statutFacture = statutFactureService.findById((long) 1);
+        StatutFacture statutFacture = statutFactureService.findById((long) 1).orElse(null);
 
         Facture factureNew = new Facture();
         factureNew.setNumero(numero);

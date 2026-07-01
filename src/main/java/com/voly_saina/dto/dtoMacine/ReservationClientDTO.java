@@ -23,4 +23,6 @@ public class ReservationClientDTO {
     private Boolean peutAnnuler;
     private Boolean peutRetourner;
     private Boolean estTerminee;
+    private Long factureId;
+    private String factureNumero;
 }

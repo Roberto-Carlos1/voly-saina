@@ -31,7 +31,6 @@
 
             <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
 
-
             <div th:if="${lignes == null or #lists.isEmpty(lignes)}" class="text-center py-5 text-muted">
                 Votre panier est vide.
             </div>
@@ -104,7 +103,12 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Mode de paiement</label>
-                                <input class="form-control" name="modePaiement" required title="Mode de paiement" placeholder="Ex: virement, cash..." th:value="${commande != null ? commande.modePaiement : ''}"/>
+                                <select name="modePaiement" >
+                                    <option th:each="mode: ${modePaiements}" 
+                                            th:value="${mode.idModePaiement}" 
+                                            th:text="${mode.libelle}"> 
+                                    </option>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-success w-100" id="btnCloturer">Clôturer et commander</button>
                         </form>     

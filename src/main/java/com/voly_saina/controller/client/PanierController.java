@@ -2,12 +2,14 @@ package com.voly_saina.controller.client;
 
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
+import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Produit;
 import com.voly_saina.entity.StatutCommande;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.CommandeClientService;
 import com.voly_saina.service.CommandeService;
 import com.voly_saina.service.LigneCommandeService;
+import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.ProduitService;
 import com.voly_saina.service.StatutCommandeService;
 import com.voly_saina.service.UtilisateurService;
@@ -43,8 +45,11 @@ public class PanierController {
     @Autowired
     private CommandeClientService commandeClientService;
 
+    @Autowired
+    private ModePaiementService modePaiementService;
+
     private static final String STATUT_PANIER = "en_attente";
-    private static final String STATUT_LIVRAISON = "en_livraison";
+    private static final String STATUT_LIVRAISON = "preparee";
 
     // Ajoute/actualise une ligne dans le panier (1 panier unique par client)
     @GetMapping("/ajouter")
@@ -52,8 +57,7 @@ public class PanierController {
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            Model model
-    ) {
+            Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
             Utilisateur client = utilisateurService.findById(idClientFinal)
@@ -84,13 +88,17 @@ public class PanierController {
 
             Commande commandePanier = commandeService.findAll().stream()
                     .filter(c -> c != null && c.getClient() != null)
-                    .filter(c -> c.getClient().getIdUtilisateur() != null && c.getClient().getIdUtilisateur().equals(idClientFinal))
+                    .filter(c -> c.getClient().getIdUtilisateur() != null
+                            && c.getClient().getIdUtilisateur().equals(idClientFinal))
                     .filter(c -> c.getStatutCommande() != null && c.getStatutCommande().getCode() != null)
                     .filter(c -> STATUT_PANIER.equalsIgnoreCase(c.getStatutCommande().getCode()))
                     .sorted((a, b) -> {
-                        if (a.getDateCommande() == null && b.getDateCommande() == null) return 0;
-                        if (a.getDateCommande() == null) return 1;
-                        if (b.getDateCommande() == null) return -1;
+                        if (a.getDateCommande() == null && b.getDateCommande() == null)
+                            return 0;
+                        if (a.getDateCommande() == null)
+                            return 1;
+                        if (b.getDateCommande() == null)
+                            return -1;
                         return b.getDateCommande().compareTo(a.getDateCommande());
                     })
                     .findFirst()
@@ -104,13 +112,16 @@ public class PanierController {
 
             LigneCommande ligneExistante = ligneCommandeService.findAll().stream()
                     .filter(lc -> lc != null && lc.getCommande() != null)
-                    .filter(lc -> lc.getCommande().getIdCommande() != null && lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
-                    .filter(lc -> lc.getProduit() != null && lc.getProduit().getIdProduit() != null && lc.getProduit().getIdProduit().equals(produitId))
+                    .filter(lc -> lc.getCommande().getIdCommande() != null
+                            && lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
+                    .filter(lc -> lc.getProduit() != null && lc.getProduit().getIdProduit() != null
+                            && lc.getProduit().getIdProduit().equals(produitId))
                     .findFirst()
                     .orElse(null);
 
             if (ligneExistante != null) {
-                BigDecimal nouvelleQuantite = (ligneExistante.getQuantite() == null ? BigDecimal.ZERO : ligneExistante.getQuantite()).add(quantite);
+                BigDecimal nouvelleQuantite = (ligneExistante.getQuantite() == null ? BigDecimal.ZERO
+                        : ligneExistante.getQuantite()).add(quantite);
                 ligneExistante.setQuantite(nouvelleQuantite);
                 ligneExistante.setPrixUnitaire(produit.getPrixUnitaire());
                 ligneExistante.setSousTotal(produit.getPrixUnitaire().multiply(nouvelleQuantite));
@@ -127,7 +138,8 @@ public class PanierController {
 
             BigDecimal total = ligneCommandeService.findAll().stream()
                     .filter(lc -> lc != null && lc.getCommande() != null)
-                    .filter(lc -> lc.getCommande().getIdCommande() != null && lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
+                    .filter(lc -> lc.getCommande().getIdCommande() != null
+                            && lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
                     .map(lc -> lc.getSousTotal() == null ? BigDecimal.ZERO : lc.getSousTotal())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             commandePanier.setMontantTotal(total);
@@ -145,8 +157,7 @@ public class PanierController {
     @GetMapping
     public String voirPanier(
             @RequestParam(value = "clientId", required = false) Long clientId,
-            Model model
-    ) {
+            Model model) {
         Long idClientFinal = clientId != null ? clientId : 1L;
         Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
         if (client == null) {
@@ -160,9 +171,12 @@ public class PanierController {
                 .filter(c -> c.getStatutCommande() != null && c.getStatutCommande().getCode() != null)
                 .filter(c -> STATUT_PANIER.equalsIgnoreCase(c.getStatutCommande().getCode()))
                 .sorted((a, b) -> {
-                    if (a.getDateCommande() == null && b.getDateCommande() == null) return 0;
-                    if (a.getDateCommande() == null) return 1;
-                    if (b.getDateCommande() == null) return -1;
+                    if (a.getDateCommande() == null && b.getDateCommande() == null)
+                        return 0;
+                    if (a.getDateCommande() == null)
+                        return 1;
+                    if (b.getDateCommande() == null)
+                        return -1;
                     return b.getDateCommande().compareTo(a.getDateCommande());
                 })
                 .findFirst()
@@ -181,7 +195,12 @@ public class PanierController {
 
         model.addAttribute("commande", commandePanier);
         model.addAttribute("lignes", lignes);
-        model.addAttribute("montantTotal", commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal());
+        model.addAttribute("montantTotal",
+                commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal());
+
+        List<ModePaiement> modePaiements = modePaiementService.findAll();
+        model.addAttribute("modePaiements", modePaiements);
+
         return "client/panier";
     }
 
@@ -189,14 +208,15 @@ public class PanierController {
     public String supprimerLigne(
             @RequestParam("ligneId") Long ligneId,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            Model model
-    ) {
+            Model model) {
         Long idClientFinal = clientId != null ? clientId : 1L;
         var ligne = ligneCommandeService.findById(ligneId).orElse(null);
-        if (ligne == null) return "redirect:/client/panier";
+        if (ligne == null)
+            return "redirect:/client/panier";
 
         var commande = ligne.getCommande();
-        if (commande == null || commande.getClient() == null || commande.getClient().getIdUtilisateur() == null || !commande.getClient().getIdUtilisateur().equals(idClientFinal)) {
+        if (commande == null || commande.getClient() == null || commande.getClient().getIdUtilisateur() == null
+                || !commande.getClient().getIdUtilisateur().equals(idClientFinal)) {
             return "redirect:/client/panier";
         }
 
@@ -218,14 +238,15 @@ public class PanierController {
             @RequestParam("ligneId") Long ligneId,
             @RequestParam("quantite") BigDecimal quantite,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            Model model
-    ) {
+            Model model) {
         Long idClientFinal = clientId != null ? clientId : 1L;
         var ligne = ligneCommandeService.findById(ligneId).orElse(null);
-        if (ligne == null) return "redirect:/client/panier";
+        if (ligne == null)
+            return "redirect:/client/panier";
 
         var commande = ligne.getCommande();
-        if (commande == null || commande.getClient() == null || commande.getClient().getIdUtilisateur() == null || !commande.getClient().getIdUtilisateur().equals(idClientFinal)) {
+        if (commande == null || commande.getClient() == null || commande.getClient().getIdUtilisateur() == null
+                || !commande.getClient().getIdUtilisateur().equals(idClientFinal)) {
             return "redirect:/client/panier";
         }
 
@@ -252,10 +273,9 @@ public class PanierController {
     @org.springframework.web.bind.annotation.PostMapping("/cloturer")
     public String cloturerPanier(
             @RequestParam("adresseLivraison") String adresseLivraison,
-            @RequestParam("modePaiement") String modePaiement,
+            @RequestParam("modePaiement") Long modePaiement,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            Model model
-    ) {
+            Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
             Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
@@ -284,12 +304,13 @@ public class PanierController {
                         StatutCommande sc = new StatutCommande();
                         sc.setIdStatutCommande(0L);
                         sc.setCode(STATUT_LIVRAISON);
-                        sc.setLibelle("En livraison");
+                        sc.setLibelle("Préparée");
                         return sc;
                     });
 
             commandePanier.setAdresseLivraison(adresseLivraison);
-            commandePanier.setModePaiement(modePaiement);
+            ModePaiement mode = modePaiementService.findById(modePaiement);
+            commandePanier.setModePaiement(mode);
             commandePanier.setStatutCommande(statutLivraison);
 
             // 1) recalculer sousTotal juste avant création facture (et sauvegarder)
@@ -299,7 +320,8 @@ public class PanierController {
                     .toList();
 
             for (LigneCommande lc : lignes) {
-                if (lc == null) continue;
+                if (lc == null)
+                    continue;
                 BigDecimal q = lc.getQuantite() == null ? BigDecimal.ZERO : lc.getQuantite();
                 BigDecimal p = lc.getPrixUnitaire() == null ? BigDecimal.ZERO : lc.getPrixUnitaire();
                 lc.setSousTotal(p.multiply(q));
@@ -325,8 +347,7 @@ public class PanierController {
     public String recapCommande(
             @RequestParam("commandeId") Long commandeId,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            Model model
-    ) {
+            Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
             Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
@@ -370,4 +391,3 @@ public class PanierController {
         }
     }
 }
-

@@ -23,4 +23,6 @@ public interface FactureRepository extends JpaRepository<Facture, Long> {
             " and (:idStatut is null or f.statutFacture.idStatutFacture = :idStatut)")
     Page<Facture> filtrerFactures(@Param("nomClient") String nom, @Param("idStatut") Long idStatut,
             Pageable pageable);
+
+        Optional<Facture> findTopByOrderByIdFactureDesc();
 }

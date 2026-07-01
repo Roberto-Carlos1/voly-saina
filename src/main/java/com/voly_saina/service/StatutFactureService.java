@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class StatutFactureService {
@@ -18,8 +17,8 @@ public class StatutFactureService {
         return statutFactureRepository.findAll();
     }
 
-    public Optional<StatutFacture> findById(Long id) {
-        return statutFactureRepository.findById(id);
+    public StatutFacture findById(Long id) {
+        return statutFactureRepository.findById(id).orElse(null);
     }
 
     public StatutFacture save(StatutFacture statutFacture) {

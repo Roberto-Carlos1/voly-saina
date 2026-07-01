@@ -22,7 +22,7 @@ public class FactureFille {
 
     @Column(name = "numero")
     private String numero;
-
+    
     @Column(name = "type_operation")
     private String typeOperation;
 

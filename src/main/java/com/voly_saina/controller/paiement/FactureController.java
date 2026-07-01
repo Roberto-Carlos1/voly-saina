@@ -79,7 +79,7 @@ public class FactureController {
     public String getFactureById(@PathVariable Long id, Model model) {
         Facture facture = factureService.findById(id);
         List<FactureFille> operations = factureFilleRepository.findByIdFacture(id.intValue());
-
+        
         model.addAttribute("facture", facture);
         model.addAttribute("operations", operations);
         return "facturation/detail-facture";

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Détail culture</title>
+</head>
+<body>
+<p><a th:href="@{/guide-plantation/cultures}">Retour à la liste</a></p>
+
+<h1 th:text="${culture.nom}">Culture</h1>
+
+<dl>
+    <dt>Description</dt>
+    <dd th:text="${culture.description}">Description</dd>
+
+    <dt>Localisation adaptée</dt>
+    <dd th:text="${culture.localisationRecommandee}">Localisation</dd>
+
+    <dt>Saison adaptée</dt>
+    <dd th:text="${culture.saisonRecommandee}">Saison</dd>
+</dl>
+
+<p th:if="${ficheCulture != null}">
+    <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}">Voir la fiche détaillée</a>
+</p>
+<p th:if="${ficheCulture == null}">Aucune fiche détaillée disponible pour cette culture.</p>
+</body>
+</html>

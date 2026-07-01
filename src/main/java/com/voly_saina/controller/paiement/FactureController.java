@@ -1,14 +1,25 @@
 package com.voly_saina.controller.paiement;
 
 import com.voly_saina.entity.Facture;
-import com.voly_saina.entity.Paiement;
+import com.voly_saina.entity.Pages;
+import com.voly_saina.entity.StatutFacture;
+import com.voly_saina.entity.dto.FactureDTO;
+import com.voly_saina.entity.view.FactureFille;
+import com.voly_saina.repository.FactureFilleRepository;
 import com.voly_saina.service.FactureService;
+import com.voly_saina.service.PageService;
+import com.voly_saina.service.StatutFactureService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,26 +30,58 @@ public class FactureController {
     @Autowired
     private FactureService factureService;
 
-    // GET /api/factures
-    // @GetMapping
-    // public ResponseEntity<List<Facture>> getAll() {
-    // return ResponseEntity.ok(factureService.findAll());
-    // }
+    private final PageService pageService;
+    private final StatutFactureService statutFactureService;
+    private final FactureFilleRepository factureFilleRepository;
+
+    public FactureController(PageService pageService, StatutFactureService statutFacture,
+                             FactureFilleRepository factureFilleRepository) {
+        this.pageService = pageService;
+        this.statutFactureService = statutFacture;
+        this.factureFilleRepository = factureFilleRepository;
+    }
 
     @GetMapping
-    public String getAll(Model model) {
-        List<Facture> liste = factureService.findAll();
+    public String getAll(@RequestParam(defaultValue = "0") int page, Model model) {
+        List<StatutFacture> status = statutFactureService.findAll();
 
-        model.addAttribute("factures", liste);
+        Pages config = pageService.getConfiguration();
+        int size = config.getNombre();
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Facture> facturePage = factureService.findByPage(pageable);
+        List<Facture> factures = facturePage.getContent();
+
+        model.addAttribute("factures", factures);
+        model.addAttribute("statuts", status);
+        model.addAttribute("totalPages", facturePage.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("nombreParPage", size);
+
         return "facturation/list";
+    }
+
+    @PostMapping("/pages")
+    public String nombrePages(@RequestParam("pages") int page, RedirectAttributes attributes) {
+        Pages p = pageService.findById(1L);
+        if (page <= 0) {
+            attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
+            return "redirect:/api/factures";
+        } else {
+            p.setNombre(page);
+            pageService.save(p);
+        }
+        return "redirect:/api/factures";
     }
 
     // GET /api/factures/{id}
     @GetMapping("/{id}")
     public String getFactureById(@PathVariable Long id, Model model) {
         Facture facture = factureService.findById(id);
-
+        List<FactureFille> operations = factureFilleRepository.findByIdFacture(id.intValue());
+        
         model.addAttribute("facture", facture);
+        model.addAttribute("operations", operations);
         return "facturation/detail-facture";
     }
 
@@ -68,5 +111,16 @@ public class FactureController {
         }
         factureService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/filtre")
+    public ResponseEntity<Page<Facture>> filtreFacture(FactureDTO facturedto) {
+
+        // List<Machine> liste = machineService.filtrerMachine(typeID, name);
+        Pages config = pageService.getConfiguration();
+        Pageable pageable = PageRequest.of(facturedto.getNumeroPage(), config.getNombre());
+
+        Page<Facture> factures = factureService.filtreFacture(facturedto, pageable);
+        return ResponseEntity.ok(factures);
     }
 }

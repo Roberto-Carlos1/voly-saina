@@ -32,8 +32,9 @@ public class Commande {
     @Column(name = "adresse_livraison")
     private String adresseLivraison;
     
-    @Column(name = "mode_paiement", length = 80)
-    private String modePaiement;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_mode_paiement")
+    private ModePaiement modePaiement;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_statut_commande", nullable = false)
@@ -41,4 +42,5 @@ public class Commande {
     
     @Column(name = "montant_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal montantTotal = BigDecimal.ZERO;
+
 }

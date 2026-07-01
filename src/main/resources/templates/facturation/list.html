@@ -24,15 +24,38 @@
             <td>Action</td>
         </tr>
 
-        <tbody>
+        <form action="/api/factures/pages" method="post">
+            <p>
+                Éléments par page
+                <input type="number" name="pages" th:value="${nombreParPage}" id="">
+                <input type="submit" value="Afficher">
+            </p>
+        </form>
+
+        <form id="filtreForm">
+            <p>Nom Client <input type="text" name="nomClient" placeholder="Rabe">
+
+                Statut
+                <select name="idStatut" id="">
+                    <option value="">Vide</option>
+                    <option th:each="statut : ${statuts}" th:value="${statut.getIdStatutFacture()}"
+                        th:text="${statut.getLibelle()}"></option>
+                </select>
+
+                <button type="submit">Filtrer</button>
+            </p>
+            <input type="hidden" name="numeroPage" value="0" id="numeroPage">
+        </form>
+
+        <tbody id="lines">
             <tr th:each="facture : ${factures}">
                 <td th:text="${facture.getNumero()}"></td>
                 <td th:text="${facture.getTypeOperation()}"></td>
                 <td th:text="${facture.getClient().getNom()}"></td>
                 <td th:text="${facture.getStatutFacture().getLibelle()}"></td>
+                <td th:text="${facture.getMontantPaye()} + ' Ar' "></td>
+                <td th:text="${facture.getMontantTotal()} + ' Ar'"></td>
                 <td th:text="${facture.getDateFacture()}"></td>
-                <td th:text="${facture.getMontantPaye()}"></td>
-                <td th:text="${facture.getMontantTotal()}"></td>
                 <td th:text="${facture.getDateLimite()}"></td>
                 <td>
                     <a th:href="@{/api/factures/{id_facture}(id_facture=${facture.getIdFacture()})}">Voir plus</a>
@@ -43,6 +66,81 @@
             </tr>
         </tbody>
     </table>
+
+    <div id="paginationButtons">
+        <button type="button" id="btnPrecedent">Précédent</button>
+        <span id="infoPage" th:text="'Page 1 sur ' + ${totalPages}"></span>
+        <button type="button" id="btnSuivant">Suivant</button>
+    </div>
 </body>
+
+<script>
+    const form = document.getElementById("filtreForm");
+    const numeroPageInput = document.getElementById("numeroPage");
+    const lines = document.getElementById("lines");
+
+    //filtrage dynamique
+    function chargerFacture(pageCible) {
+        numeroPageInput.value = pageCible;
+
+        const data = new FormData(form);
+        lines.innerHTML = ""; // Vider le tableau
+
+        fetch("/api/factures/filtre", {
+            method: "POST",
+            body: data
+        })
+            .then(response => response.json())
+            .then(pageSpring => {
+                pageSpring.content.forEach(facture => {
+                    var line = document.createElement("tr");
+
+                    line.innerHTML = `
+                <td>${facture.numero}</td>
+                <td>${facture.numero}</td>
+                <td>${facture.client.nom}</td>
+                <td>${facture.statutFacture.libelle}</td>
+                <td>${facture.montantPaye}</td>
+                <td>${facture.montantTotal}</td>
+                <td>${facture.dateFacture}</td>
+                <td>${facture.dateLimite}</td>
+                <td>
+                    <a href="/api/factures/${facture.idFacture}">Voir plus</a> 
+                    <a href="/api/factures/modify/${facture.idFacture}">Modifier</a>
+                    <a href="/api/factures/delete/${facture.idFacture}">Supprimer</a>
+                </td>`;
+                    lines.appendChild(line);
+                });
+
+                // 2. Mise à jour visuelle des infos de pagination
+                if (pageSpring.number < pageSpring.totalPages) {
+                    document.getElementById("infoPage").textContent = `Page ${pageSpring.number + 1} sur ${pageSpring.totalPages}`;
+                }
+
+                // Gestion de l'activation/désactivation des boutons
+                document.getElementById("btnPrecedent").disabled = pageSpring.first;
+                document.getElementById("btnSuivant").disabled = pageSpring.last;
+            });
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        chargerFacture(0);
+    });
+
+
+    //gestion des boutons
+    document.getElementById("btnSuivant").addEventListener("click", function () {
+        let pageActuelle = parseInt(numeroPageInput.value, 10);
+        chargerFacture(pageActuelle + 1);
+    });
+
+    document.getElementById("btnPrecedent").addEventListener("click", function () {
+        let pageActuelle = parseInt(numeroPageInput.value, 10);
+        if (pageActuelle > 0) {
+            chargerFacture(pageActuelle - 1);
+        }
+    });
+</script>
 
 </html>

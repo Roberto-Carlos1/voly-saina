@@ -33,4 +33,8 @@ public class PaiementService {
     public void deleteById(Long id) {
         paiementRepository.deleteById(id);
     }
+
+    public List<Paiement> findByFacture(Long id) {
+        return paiementRepository.findByIdFacture(id);
+    }
 }

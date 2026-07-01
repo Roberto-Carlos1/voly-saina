@@ -4,6 +4,7 @@ import com.voly_saina.entity.Produit;
 import com.voly_saina.repository.ProduitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,5 +33,10 @@ public class ProduitService {
 
     public void deleteById(Long id) {
         produitRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Produit> findActifs() {
+        return produitRepository.findByActifTrue();
     }
 }

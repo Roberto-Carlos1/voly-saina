@@ -1,0 +1,55 @@
+<div class="container">
+
+    <a href="/api/factures" class="button"> Retour </a>
+    <a th:href="@{/api/paiements/facture/{id_facture}(id_facture=${facture.getIdFacture()})}" class="button"> Historique de paiement </a>
+
+    <h2 th:text=" 'À propos du ' + ${facture.getNumero()}"></h2>
+
+    <div class="liste">
+        <ul>
+            <li th:text=" 'Client : ' + ${facture.getClient().getNom()}"></li>
+            <li th:text=" 'Type operation : ' + ${facture.getTypeOperation()}"></li>
+            <li th:text=" 'Montant paye : ' + ${facture.getMontantPaye()} + ' Ar'"></li>
+            <li th:text=" 'Montant total : ' + ${facture.getMontantTotal()} + ' Ar'"></li>
+            <li>
+                <span th:text="'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar '"></span>
+                <a th:href="@{/api/paiements/reste/{id_facture}(id_facture=${facture.getIdFacture()})}" th:if="${(facture.montantTotal - facture.montantPaye) > 0}" th:text="'Payez le reste'"></a>
+            </li>
+        </ul>
+
+    </div>
+
+    <div class="statut-facture">
+        <h2 th:text="${facture.getStatutFacture() != null ? facture.getStatutFacture().getLibelle() : 'Aucun état'}">
+        </h2>
+    </div>
+
+    <h3>Operations de la facture</h3>
+    <div class="table-operations">
+        <p th:if="${#lists.isEmpty(operations)}">
+            Aucune opération pour cette facture
+        </p>
+
+        <table th:unless="${#lists.isEmpty(operations)}" border="1">
+            <tr>
+                <th>Type</th>
+                <th>ID Opération</th>
+                <th>Date</th>
+                <th>Montant</th>
+                <th>Statut</th>
+            </tr>
+
+            <tr th:each="op : ${operations}">
+                <td th:text="${op.typeOperation}"></td>
+                <td>
+                    <span th:text="${op.typeOperation + ' #' + op.idOperation}"></span>
+                </td>
+                <td th:text="${op.dateOperation}"></td>
+                <td th:text="${op.montantTotal} + ' Ar'"></td>
+                <td th:text="${op.statut}"></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+</div>

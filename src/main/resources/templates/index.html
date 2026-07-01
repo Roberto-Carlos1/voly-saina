@@ -8,6 +8,7 @@
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { color: #333; margin-bottom: 30px; }
+        h2 { color: #555; margin: 30px 0 15px; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; }
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -18,19 +19,105 @@
 </head>
 <body>
     <div class="container">
-        <h1>Espace Client - Voly Saina+</h1>
-        
+        <h1>Voly Saina+ - Accueil</h1>
+
+        <h2>Espace Client</h2>
         <div class="cards-grid">
+            <a th:href="@{/client/accueil(idClient=1)}" class="card">
+                <div class="card-icon">🏠</div>
+                <div class="card-title">Accueil client</div>
+                <div class="card-description">Page d'accueil de l'espace client</div>
+            </a>
+
+            <a th:href="@{/client/ventes/catalogue}" class="card">
+                <div class="card-icon">🛍️</div>
+                <div class="card-title">Catalogue produits</div>
+                <div class="card-description">Parcourez et recherchez des produits</div>
+            </a>
+
+            <a th:href="@{/client/ventes/disponibles}" class="card">
+                <div class="card-icon">✅</div>
+                <div class="card-title">Produits disponibles</div>
+                <div class="card-description">Liste des produits en stock et valides</div>
+            </a>
+
+            <a th:href="@{/client/panier(clientId=1)}" class="card">
+                <div class="card-icon">🛒</div>
+                <div class="card-title">Mon panier</div>
+                <div class="card-description">Consultez et gérez votre panier</div>
+            </a>
+
             <a th:href="@{/client/factures(idClient=1)}" class="card">
                 <div class="card-icon">📄</div>
                 <div class="card-title">Mes factures</div>
-                <div class="card-description">Consultez vos factures, voyez les détails et téléchargez les PDF</div>
+                <div class="card-description">Consultez vos factures, détails et PDF</div>
             </a>
-            
+
             <a th:href="@{/client/statistiques(idClient=1)}" class="card">
                 <div class="card-icon">📊</div>
                 <div class="card-title">Mes statistiques</div>
-                <div class="card-description">Visualisez vos dépenses, locations et commandes</div>
+                <div class="card-description">Visualisez dépenses, locations et commandes</div>
+            </a>
+
+            <a th:href="@{/client/machines/types}" class="card">
+                <div class="card-icon">🔧</div>
+                <div class="card-title">Types de machines</div>
+                <div class="card-description">Liste des types de machines disponibles</div>
+            </a>
+
+            <a th:href="@{/client/machines/catalogue}" class="card">
+                <div class="card-icon">🚜</div>
+                <div class="card-title">Catalogue machines</div>
+                <div class="card-description">Parcourez les machines à louer</div>
+            </a>
+
+            <a th:href="@{/client/reservations/mes-reservations(clientId=1)}" class="card">
+                <div class="card-icon">📅</div>
+                <div class="card-title">Mes réservations</div>
+                <div class="card-description">Gérez vos réservations de machines</div>
+            </a>
+
+            <a th:href="@{/files}" class="card">
+                <div class="card-icon">📁</div>
+                <div class="card-title">Fichiers importés</div>
+                <div class="card-description">Liste des fichiers téléversés</div>
+            </a>
+        </div>
+
+        <h2>Administration</h2>
+        <div class="cards-grid">
+            <a th:href="@{/guide-plantation/cultures}" class="card">
+                <div class="card-icon">🌱</div>
+                <div class="card-title">Guide plantation</div>
+                <div class="card-description">Consultez le guide des cultures</div>
+            </a>
+
+            <a th:href="@{/api/machines}" class="card">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">Gestion machines</div>
+                <div class="card-description">Liste, ajout et modification des machines</div>
+            </a>
+
+            <a th:href="@{/api/factures}" class="card">
+                <div class="card-icon">📋</div>
+                <div class="card-title">Gestion factures</div>
+                <div class="card-description">Liste et suivi des factures</div>
+            </a>
+
+            <a th:href="@{/api/paiements}" class="card">
+                <div class="card-icon">💳</div>
+                <div class="card-title">Gestion paiements</div>
+                <div class="card-description">Liste et historique des paiements</div>
+            </a>
+            <a th:href="@{/api/maintenances-machine}" class="card">
+                <div class="card-icon">🛠️</div>
+                <div class="card-title">Gestion maintenances</div>
+                <div class="card-description">Liste et suivi des maintenances</div>
+            </a>
+            <a th:href="@{/api/reservations-machine}" class="card">
+                <div class="card-icon">📅</div>
+                <div class="card-title">Gestion reservations</div>
+                <div class="card-description">Liste et suivi des reservations</div>
             </a>
         </div>
     </div>

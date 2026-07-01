@@ -8,7 +8,7 @@ console.log('Client ID:', clientId);
 // Charger la machine avec timeout
 function chargerMachine() {
     console.log(' Appel API: /client/machines/api/' + machineId);
-    
+
     fetch('/client/machines/api/' + machineId)
         .then(r => {
             console.log(' Status:', r.status);
@@ -44,17 +44,17 @@ function chargerMachine() {
 chargerMachine();
 
 // Soumettre le formulaire
-document.getElementById('reservationForm').onsubmit = function(e) {
+document.getElementById('reservationForm').onsubmit = function (e) {
     e.preventDefault();
-    
+
     const dateDebut = document.getElementById('dateDebut').value;
     const dateFin = document.getElementById('dateFin').value;
-    
+
     if (!dateDebut || !dateFin) {
         document.getElementById('resultat').innerHTML = ' Veuillez remplir toutes les dates';
         return;
     }
-    
+
     const data = {
         clientId: Number(clientId),
         machineId: Number(machineId),
@@ -65,46 +65,47 @@ document.getElementById('reservationForm').onsubmit = function(e) {
 
     console.log('📤 Envoi:', data);
 
-    fetch('/client/reservations/api', {
+    fetch('/client/panier/api/ajouter-reservation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-    .then(r => {
-        console.log(' Status POST:', r.status);
-        return r.json();
-    })
-    .then(data => {
-        console.log(' Réponse:', data);
-        if (data.error) {
-            document.getElementById('resultat').innerHTML = `
+        .then(r => {
+            console.log(' Status POST:', r.status);
+            return r.json();
+        })
+        .then(data => {
+            console.log(' Réponse:', data);
+            if (data.error) {
+                document.getElementById('resultat').innerHTML = `
                 <div style="border:1px solid red;padding:10px;background:#f8d7da;color:red;">
                      ${data.error}
                 </div>
             `;
-        } else {
+            } else {
+                document.getElementById('resultat').innerHTML = `
+                    <div style="border:1px solid green;padding:15px;background:#d4edda;border-radius:5px;">
+                        <h3 style="color:green;">Ajouté au panier</h3>
+                        <p><strong>Machine:</strong> ${data.reservation.machineNom}</p>
+                        <p><strong>Période:</strong> ${data.reservation.dateDebut} au ${data.reservation.dateFin}</p>
+                        <p><strong>Prix total:</strong> ${data.reservation.prixTotal} MGA</p>
+                        <p><em>Statut: en attente de validation (après paiement)</em></p>
+                        <br>
+                        <button onclick="window.location.href='/client/panier?clientId=${clientId}'"
+                                style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
+                            Voir mon panier
+                        </button>
+                    </div>
+                `;
+                document.getElementById('reservationForm').style.display = 'none';
+            }
+        })
+        .catch(err => {
+            console.error('Erreur POST:', err);
             document.getElementById('resultat').innerHTML = `
-                <div style="border:1px solid green;padding:15px;background:#d4edda;border-radius:5px;">
-                    <h3 style="color:green;"> ${data.message}</h3>
-                    <p><strong>Machine:</strong> ${data.reservation.machineNom}</p>
-                    <p><strong>Période:</strong> ${data.reservation.dateDebut} au ${data.reservation.dateFin}</p>
-                    <p><strong>Prix total:</strong> ${data.reservation.prixTotal} MGA</p>
-                    <br>
-                    <button onclick="window.location.href='/client/reservations/mes-reservations?clientId=${clientId}'" 
-                            style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
-                        Voir mes réservations
-                    </button>
-                </div>
-            `;
-            document.getElementById('reservationForm').style.display = 'none';
-        }
-    })
-    .catch(err => {
-        console.error('Erreur POST:', err);
-        document.getElementById('resultat').innerHTML = `
             <div style="border:1px solid red;padding:10px;background:#f8d7da;color:red;">
                 Erreur: ${err.message}
             </div>
         `;
-    });
+        });
 };

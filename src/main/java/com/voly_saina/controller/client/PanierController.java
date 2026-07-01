@@ -335,6 +335,7 @@ public class PanierController {
 
             // 3) vérifier stock + décrément + créer facture + opérations
             commandeClientService.creerOperation("commande", commandePanier, lignes, null);
+            
 
             return "redirect:/client/panier/recap?commandeId=" + commandePanier.getIdCommande();
         } catch (Exception e) {

@@ -70,8 +70,7 @@ public class ClientReservationController {
     @Autowired
     private ModePaiementService modePaiementService;
 
-    // ========== PAGES HTML ==========
-
+    // GET /client/reservations/{machineId}/nouvelle
     @GetMapping("/{machineId}/nouvelle")
     public String formulaireReservation(@PathVariable Long machineId,
                                         @RequestParam(required = false) Long clientId,
@@ -81,6 +80,7 @@ public class ClientReservationController {
         return "client/reservations/form";
     }
 
+    // GET /client/reservations/{id}/annuler
     @GetMapping("/{id}/annuler")
     public String formulaireAnnulation(@PathVariable Long id,
                                        @RequestParam(required = false) Long clientId,
@@ -90,12 +90,14 @@ public class ClientReservationController {
         return "client/reservations/annuler-form";
     }
 
+    // GET /client/reservations/mes-reservations
     @GetMapping("/mes-reservations")
     public String mesReservations(@RequestParam(required = false) Long clientId, Model model) {
         model.addAttribute("clientId", clientId != null ? clientId : 1L);
         return "client/reservations/list";
     }
 
+    // GET /client/reservations/{id}
     @GetMapping("/{id}")
     public String detailReservation(@PathVariable Long id,
                                     @RequestParam(required = false) Long clientId,
@@ -105,8 +107,17 @@ public class ClientReservationController {
         return "client/reservations/detail";
     }
 
-    // ========== API REST ==========
+    // GET /client/reservations/facture/{factureId}
+    @GetMapping("/facture/{factureId}")
+    public String detailFacture(@PathVariable Long factureId,
+                                @RequestParam(required = false) Long clientId,
+                                Model model) {
+        model.addAttribute("factureId", factureId);
+        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+        return "client/reservations/facture-detail";
+    }
 
+    // GET /client/reservations/api/client/{clientId}
     @GetMapping("/api/client/{clientId}")
     @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClient(@PathVariable Long clientId) {
@@ -114,6 +125,7 @@ public class ClientReservationController {
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
+    // GET /client/reservations/api/client/{clientId}/statut/{statut}
     @GetMapping("/api/client/{clientId}/statut/{statut}")
     @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClientAndStatut(
@@ -126,6 +138,7 @@ public class ClientReservationController {
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
+    // GET /client/reservations/api/{id}
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<ReservationClientDTO> getReservationById(@PathVariable Long id) {
@@ -136,6 +149,7 @@ public class ClientReservationController {
         return ResponseEntity.ok(mapToDTO(reservation));
     }
 
+    // GET /client/reservations/api/client/{clientId}/active
     @GetMapping("/api/client/{clientId}/active")
     @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getActiveReservations(@PathVariable Long clientId) {
@@ -143,7 +157,7 @@ public class ClientReservationController {
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
-    // ========== CRÉER UNE RÉSERVATION ==========
+    // POST /client/reservations/api
     @PostMapping("/api")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> createReservation(@RequestBody Map<String, Object> payload) {
@@ -206,7 +220,7 @@ public class ClientReservationController {
         }
     }
 
-    // ========== ✅ NOUVEAU : FACTURER UNE RÉSERVATION ==========
+    // POST /client/reservations/api/{id}/facturer
     @PostMapping("/api/{id}/facturer")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> facturerReservation(@PathVariable Long id) {
@@ -214,21 +228,18 @@ public class ClientReservationController {
             ReservationMachine reservation = reservationService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
 
-            // Vérifier que la réservation est en attente
             if (!"en_attente".equals(reservation.getStatutReservation().getCode())) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Seules les réservations en attente peuvent être facturées");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Vérifier que la réservation n'a pas déjà une facture
             if (reservation.getFacture() != null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Cette réservation a déjà une facture");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Créer la facture
             Facture facture = new Facture();
             facture.setClient(reservation.getClient());
             facture.setNumero(genererNumeroFacture());
@@ -241,12 +252,10 @@ public class ClientReservationController {
             
             Facture savedFacture = factureService.save(facture);
 
-            // Associer la réservation à la facture
             reservation.setFacture(savedFacture);
             reservation.setStatutReservation(statutReservationService.findByCode("validee"));
             reservationService.save(reservation);
 
-            // Créer l'opération machine
             OperationMachine op = new OperationMachine();
             op.setIdMachine(reservation.getMachine());
             op.setIdFacture(savedFacture);
@@ -269,7 +278,7 @@ public class ClientReservationController {
         }
     }
 
-    // ========== ✅ NOUVEAU : PAYER UNE FACTURE ==========
+    // POST /client/reservations/api/facture/{factureId}/payer
     @PostMapping("/api/facture/{factureId}/payer")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> payerFacture(
@@ -286,21 +295,18 @@ public class ClientReservationController {
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Vérifier que c'est bien le client
             if (!facture.getClient().getIdUtilisateur().equals(clientId)) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Vous n'êtes pas autorisé");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
             }
 
-            // Vérifier que la facture est en attente
             if (!"en_attente".equals(facture.getStatutFacture().getCode())) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Cette facture a déjà été payée");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            // Créer le paiement
             Paiement paiement = new Paiement();
             paiement.setFacture(facture);
             paiement.setMontant(facture.getMontantTotal());
@@ -308,13 +314,11 @@ public class ClientReservationController {
             paiement.setReference("PAY-" + System.currentTimeMillis());
             paiementService.save(paiement);
 
-            // Mettre à jour la facture
             facture.setMontantPaye(facture.getMontantTotal());
-            facture.setStatutFacture(statutFactureService.findById(2L) // "payee"
+            facture.setStatutFacture(statutFactureService.findById(2L)
                 .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
             factureService.save(facture);
 
-            // Mettre à jour la réservation associée
             List<ReservationMachine> reservations = reservationService.findByClientId(clientId)
                 .stream()
                 .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
@@ -340,7 +344,42 @@ public class ClientReservationController {
         }
     }
 
-    // ========== ANNULER UNE RÉSERVATION ==========
+    // GET /client/reservations/api/facture/{factureId}/reservations
+    @GetMapping("/api/facture/{factureId}/reservations")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getReservationsByFacture(@PathVariable Long factureId) {
+        try {
+            Facture facture = factureService.findById(factureId);
+            if (facture == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<ReservationMachine> reservations = reservationService.findByClientId(facture.getClient().getIdUtilisateur())
+                .stream()
+                .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
+                .collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("facture", Map.of(
+                "idFacture", facture.getIdFacture(),
+                "numero", facture.getNumero(),
+                "montantTotal", facture.getMontantTotal(),
+                "montantPaye", facture.getMontantPaye(),
+                "statut", facture.getStatutFacture().getLibelle(),
+                "dateLimite", facture.getDateLimite()
+            ));
+            response.put("reservations", reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // PUT /client/reservations/api/{id}/annuler
     @PutMapping("/api/{id}/annuler")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> annulerReservation(
@@ -363,10 +402,9 @@ public class ClientReservationController {
             if (motif != null) reservation.setMotifRefus(motif);
             reservationService.save(reservation);
 
-            // Si la réservation avait une facture, l'annuler aussi
             if (reservation.getFacture() != null) {
                 Facture facture = reservation.getFacture();
-                facture.setStatutFacture(statutFactureService.findById(5L) // "annulee"
+                facture.setStatutFacture(statutFactureService.findById(5L)
                     .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
                 factureService.save(facture);
             }
@@ -381,6 +419,79 @@ public class ClientReservationController {
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
+    }
+
+    // PUT /client/reservations/api/client/{clientId}/annuler-tout
+    @PutMapping("/api/client/{clientId}/annuler-tout")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> annulerTout(@PathVariable Long clientId) {
+        try {
+            List<ReservationMachine> reservations = reservationService
+                .findActiveReservationsByClient(clientId);
+
+            int annulees = 0;
+            for (ReservationMachine r : reservations) {
+                String statut = r.getStatutReservation().getCode();
+                if (!"terminee".equals(statut) && !"annulee".equals(statut)) {
+                    r.setStatutReservation(
+                        statutReservationService.findByCode("annulee")
+                    );
+                    reservationService.save(r);
+                    
+                    if (r.getFacture() != null) {
+                        Facture facture = r.getFacture();
+                        facture.setStatutFacture(statutFactureService.findById(5L)
+                            .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
+                        factureService.save(facture);
+                    }
+                    
+                    annulees++;
+                }
+            }
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", annulees + " réservation(s) annulée(s)");
+            response.put("total", reservations.size());
+            response.put("annulees", annulees);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    // GET /client/reservations/api/client/{clientId}/statistiques
+    @GetMapping("/api/client/{clientId}/statistiques")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getStatistiques(@PathVariable Long clientId) {
+        List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
+        
+        long total = reservations.size();
+        long enCours = reservations.stream()
+            .filter(r -> "en_cours".equals(r.getStatutReservation().getCode()))
+            .count();
+        long terminees = reservations.stream()
+            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
+            .count();
+        long annulees = reservations.stream()
+            .filter(r -> "annulee".equals(r.getStatutReservation().getCode()))
+            .count();
+        
+        BigDecimal totalDepenses = reservations.stream()
+            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
+            .map(ReservationMachine::getPrixTotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalReservations", total);
+        stats.put("reservationsEnCours", enCours);
+        stats.put("reservationsTerminees", terminees);
+        stats.put("reservationsAnnulees", annulees);
+        stats.put("totalDepenses", totalDepenses);
+        
+        return ResponseEntity.ok(stats);
     }
 
     // ========== MÉTHODES PRIVÉES ==========

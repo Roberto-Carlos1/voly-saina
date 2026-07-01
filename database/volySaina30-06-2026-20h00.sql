@@ -306,6 +306,19 @@ CREATE TABLE ligne_commande (
     sous_total NUMERIC(12,2) NOT NULL CHECK (sous_total >= 0)
 );
 
+create table panier(
+    id_panier SERIAL PRIMARY KEY,
+    id_client INT NOT NULL REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE,
+    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+create table panier_details(
+    id_panier_details SERIAL PRIMARY KEY,
+    id_panier  INT REFERENCES panier(id_panier) ON DELETE CASCADE,
+    id_commande INT REFERENCES commande(id_commande) ON DELETE CASCADE,
+    id_reservation_machine INT REFERENCES reservation_machine(id_reservation) ON DELETE CASCADE
+);
+
 -- =========================
 -- 6. Factures et paiements
 -- =========================

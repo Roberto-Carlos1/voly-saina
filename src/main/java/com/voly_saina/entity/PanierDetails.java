@@ -18,18 +18,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "panier", schema = "voly_saina")
-public class Panier {
+@Table(name = "panier_details", schema = "voly_saina")
+public class PanierDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_panier")
-    private Long idPanier;
+    @Column(name = "id_panier_details")
+    private Long idPanierDetails;
 
     @ManyToOne
-    @JoinColumn(name = "id_client", nullable = false)
-    private Utilisateur client;
+    @JoinColumn(name = "id_panier", nullable = false)
+    private Panier panier;
 
-    @Column(name = "date_creation", nullable = true)
-    private LocalDateTime dateCreation;
+    @ManyToOne
+    @JoinColumn(name = "id_commande", nullable = true)
+    private Commande commande;
+
+    @ManyToOne
+    @JoinColumn(name = "id_reservation_machine", nullable = true)
+    private ReservationMachine reservationMachine;
     
 }

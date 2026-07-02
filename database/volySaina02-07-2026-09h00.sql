@@ -205,7 +205,7 @@ CREATE TABLE statut_machine (
 CREATE TABLE facture (
     id_facture SERIAL PRIMARY KEY,
     numero VARCHAR(50) NOT NULL UNIQUE,
-    type_operation VARCHAR(30) NOT NULL CHECK (type_operation IN ('location', 'commande')),
+    type_operation VARCHAR(30) NOT NULL CHECK (type_operation IN ('location', 'commande', 'commande-reservation')),
     id_client INT NOT NULL REFERENCES utilisateur(id_utilisateur),
     date_facture TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     montant_total NUMERIC(12,2) NOT NULL CHECK (montant_total >= 0),

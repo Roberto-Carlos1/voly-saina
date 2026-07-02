@@ -128,7 +128,6 @@ public class CommandeClientService {
             mouvementStockService.save(ms);
         }
 
-
         // 3) Calcul montant + créer facture (uniquement quand cloture => en_livraison)
         BigDecimal montantTotal = calculerMontant(commande, lignesCommande);
         StatutFacture statutFacture = statutFactureService.findAll().stream()

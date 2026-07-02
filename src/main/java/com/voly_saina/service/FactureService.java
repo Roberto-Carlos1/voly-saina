@@ -28,12 +28,13 @@ public class FactureService {
     private final PanierDetailsService panierDetailsService;
 
     public FactureService(FactureRepository factureRepository, UtilisateurService utilisateurService,
-            StatutFactureService statutFactureService, PanierService panierService, PanierDetailsService panierDetailsService) {
+            StatutFactureService statutFactureService, PanierService panierService,
+            PanierDetailsService panierDetailsService) {
         this.factureRepository = factureRepository;
         this.utilisateurService = utilisateurService;
         this.statutFactureService = statutFactureService;
         this.panierService = panierService;
-        this.panierDetailsService= panierDetailsService;
+        this.panierDetailsService = panierDetailsService;
     }
 
     public List<Facture> findAll() {
@@ -85,6 +86,33 @@ public class FactureService {
         return new PageImpl<>(result, pageable, page.getTotalElements());
     }
 
+    public Page<Facture> findFactureClientByPage(Pageable pageable, Long idClient) {
+        Page<Facture> page = factureRepository.findAll(pageable);
+        List<Long> ids = new ArrayList<>();
+
+        for (Facture facture : page.getContent()) {
+            if (ids.equals(idClient)) {
+                ids.add(facture.getIdFacture());
+            }
+        }
+
+        if (ids.isEmpty()) {
+            return page;
+        }
+
+        List<Facture> result = new ArrayList<>();
+        List<Facture> liste = factureRepository.findAll();
+        for (Long id : ids) {
+            for (Facture facture : liste) {
+                if (facture.getIdFacture() == id) {
+                    result.add(facture);
+                }
+            }
+        }
+
+        return new PageImpl<>(result, pageable, page.getTotalElements());
+    }
+
     public Page<Facture> filtreFacture(FactureDTO facture, Pageable pageable) {
         Long idStatut = null;
         if (facture.getIdStatut() != null && !facture.getIdStatut().isEmpty()) {
@@ -108,7 +136,7 @@ public class FactureService {
         Utilisateur client = utilisateurService.findById(idUtilisateur).orElse(null);
 
         BigDecimal montantReservation = panierDetailsService.montantReservation(idPanier),
-                montatCommande = panierDetailsService.montantCommande(idPanier);
+                montantCommande = panierDetailsService.montantCommande(idPanier);
 
         LocalDateTime now = LocalDateTime.now();
         StatutFacture statutFacture = statutFactureService.findById((long) 1).orElse(null);
@@ -119,7 +147,13 @@ public class FactureService {
         factureNew.setStatutFacture(statutFacture);
         factureNew.setDateFacture(now);
         factureNew.setMontantPaye(BigDecimal.valueOf(0));
-        factureNew.setMontantTotal(montatCommande.add(montantReservation));
+        if (montantCommande.equals(BigDecimal.valueOf(0)) && montantReservation.equals(BigDecimal.valueOf(0))) {
+            factureNew.setMontantTotal(montantCommande.add(montantReservation));
+        } else if (montantCommande != null && montantReservation == null) {
+            factureNew.setMontantTotal(montantCommande);
+        } else {
+            factureNew.setMontantTotal(montantReservation);
+        }
 
         factureNew.setTypeOperation("commande-reservation");
 

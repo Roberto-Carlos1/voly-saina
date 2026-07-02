@@ -72,7 +72,7 @@ public class PanierController {
     public String ajouterAuPanier(
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @RequestParam(value = "idClient", required = false) Long clientId,
             Model model) {
         Long idClientFinal = clientId != null ? clientId : 1L;
         Utilisateur client = utilisateurService.findById(idClientFinal)
@@ -172,7 +172,7 @@ public class PanierController {
 
     @GetMapping
     public String voirProduitsPanier(
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @RequestParam(value = "idClient", required = false) Long clientId,
             Model model) {
 
         Long idClientFinal = clientId != null ? clientId : 1L;
@@ -208,8 +208,9 @@ public class PanierController {
 
         model.addAttribute("commande", commandePanier);
 
-        Long idPanier = 1L;
-        List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(idPanier);
+        panier = panierService.findCurrentPanierByIdClient(idClientFinal);
+
+        List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
         List<LigneCommande> ligneCommande = ligneCommandeService.findAll();
 
         List<LigneCommande> lignes = new ArrayList<>();
@@ -232,7 +233,7 @@ public class PanierController {
         List<ModePaiement> modePaiements = modePaiementService.findAll();
         model.addAttribute("modePaiements", modePaiements);
 
-        model.addAttribute("idPanier", idPanier);
+        model.addAttribute("idPanier", panier.getIdPanier());
 
         return "client/commandePanier";
     }
@@ -374,75 +375,81 @@ public class PanierController {
             @RequestParam(value = "clientId", required = false) Long clientId,
             @RequestParam(value = "idPanier", required = false) Long idPanier,
             Model model) {
-        try {
-            Long idClientFinal = clientId != null ? clientId : 1L;
-            Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
-            if (client == null) {
-                model.addAttribute("error", "Client non trouvé");
-                return "client/panier";
-            }
 
-            Commande commandePanier = commandeService.findAll().stream()
-                    .filter(c -> c != null && c.getClient() != null && c.getClient().getIdUtilisateur() != null)
-                    .filter(c -> c.getClient().getIdUtilisateur().equals(idClientFinal))
-                    .filter(c -> c.getStatutCommande() != null && c.getStatutCommande().getCode() != null)
-                    .filter(c -> STATUT_PANIER.equalsIgnoreCase(c.getStatutCommande().getCode()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (commandePanier == null) {
-                model.addAttribute("error", "Panier introuvable");
-                return "client/panier";
-            }
-
-            StatutCommande statutLivraison = statutCommandeService.findAll().stream()
-                    .filter(sc -> sc != null && STATUT_LIVRAISON.equalsIgnoreCase(sc.getCode()))
-                    .findFirst()
-                    .orElseGet(() -> {
-                        StatutCommande sc = new StatutCommande();
-                        sc.setIdStatutCommande(0L);
-                        sc.setCode(STATUT_LIVRAISON);
-                        sc.setLibelle("Préparée");
-                        return sc;
-                    });
-
-            commandePanier.setAdresseLivraison(adresseLivraison);
-            commandePanier.setStatutCommande(statutLivraison);
-
-            // 1) recalculer sousTotal juste avant création facture (et sauvegarder)
-            var lignes = ligneCommandeService.findAll().stream()
-                    .filter(lc -> lc != null && lc.getCommande() != null && lc.getCommande().getIdCommande() != null)
-                    .filter(lc -> lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
-                    .toList();
-
-            for (LigneCommande lc : lignes) {
-                if (lc == null)
-                    continue;
-                BigDecimal q = lc.getQuantite() == null ? BigDecimal.ZERO : lc.getQuantite();
-                BigDecimal p = lc.getPrixUnitaire() == null ? BigDecimal.ZERO : lc.getPrixUnitaire();
-                lc.setSousTotal(p.multiply(q));
-                ligneCommandeService.save(lc);
-            }
-
-            // 2) recalcul total + sauvegarde
-            BigDecimal total = commandeClientService.calculerMontant(commandePanier, lignes);
-            commandePanier.setMontantTotal(total);
-            commandeService.save(commandePanier);
-
-            // 3) vérifier stock + décrément + créer facture + opérations
-            commandeClientService.creerOperation("commande", commandePanier, lignes, null);
-
-            Panier panier= panierService.findById(idPanier);
-            panier.setActif(false);
-            panierService.save(panier);
-
-            factureService.genererFactureProformat(idClientFinal, idPanier);
-
-            return "redirect:/client/panier/recap?commandeId=" + commandePanier.getIdCommande();
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
+        Long idClientFinal = clientId != null ? clientId : 1L;
+        Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
+        if (client == null) {
+            model.addAttribute("error", "Client non trouvé");
             return "client/panier";
         }
+
+        Commande commandePanier = commandeService.findAll().stream()
+                .filter(c -> c != null && c.getClient() != null && c.getClient().getIdUtilisateur() != null)
+                .filter(c -> c.getClient().getIdUtilisateur().equals(idClientFinal))
+                .filter(c -> c.getStatutCommande() != null && c.getStatutCommande().getCode() != null)
+                .filter(c -> STATUT_PANIER.equalsIgnoreCase(c.getStatutCommande().getCode()))
+                .findFirst()
+                .orElse(null);
+
+        if (commandePanier == null) {
+            model.addAttribute("error", "Panier introuvable");
+            return "client/panier";
+        }
+
+        StatutCommande statutLivraison = statutCommandeService.findAll().stream()
+                .filter(sc -> sc != null && STATUT_LIVRAISON.equalsIgnoreCase(sc.getCode()))
+                .findFirst()
+                .orElseGet(() -> {
+                    StatutCommande sc = new StatutCommande();
+                    sc.setIdStatutCommande(0L);
+                    sc.setCode(STATUT_LIVRAISON);
+                    sc.setLibelle("Préparée");
+                    return sc;
+                });
+
+        commandePanier.setAdresseLivraison(adresseLivraison);
+        commandePanier.setStatutCommande(statutLivraison);
+
+        // 1) recalculer sousTotal juste avant création facture (et sauvegarder)
+        List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(idPanier);
+        List<LigneCommande> ligneCommande = ligneCommandeService.findAll();
+
+        List<LigneCommande> lignes = new ArrayList<>();
+
+        for (LigneCommande ligne : ligneCommande) {
+            for (PanierDetails panier : panierDetails) {
+                if (panier.getCommande().getIdCommande() == ligne.getCommande().getIdCommande()) {
+                    if (!lignes.contains(ligne)) {
+                        lignes.add(ligne);
+                    }
+                }
+            }
+        }
+
+        for (LigneCommande lc : lignes) {
+            if (lc == null)
+                continue;
+            BigDecimal q = lc.getQuantite() == null ? BigDecimal.ZERO : lc.getQuantite();
+            BigDecimal p = lc.getPrixUnitaire() == null ? BigDecimal.ZERO : lc.getPrixUnitaire();
+            lc.setSousTotal(p.multiply(q));
+            ligneCommandeService.save(lc);
+        }
+
+        // 2) recalcul total + sauvegarde
+        BigDecimal total = commandeClientService.calculerMontant(commandePanier, lignes);
+        commandePanier.setMontantTotal(total);
+        commandeService.save(commandePanier);
+
+        // 3) vérifier stock + décrément + créer facture + opérations
+        commandeClientService.creerOperation("commande", commandePanier, lignes, null);
+
+        Panier panier = panierService.findById(idPanier);
+        panier.setActif(false);
+        panierService.save(panier);
+
+        // factureService.genererFactureProformat(idClientFinal, idPanier);
+
+        return "redirect:/client/factures?idClient=" +idClientFinal;
     }
 
     @GetMapping("/recap")

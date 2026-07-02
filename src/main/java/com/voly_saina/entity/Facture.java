@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.query.common.FetchClauseType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,6 +54,10 @@ public class Facture {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_statut_facture", nullable = false)
     private StatutFacture statutFacture;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id_panier", nullable = true)
+    private Panier panier;
 
     @Column(name = "date_limite")
     private LocalDate dateLimite;

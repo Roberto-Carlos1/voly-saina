@@ -1,4 +1,4 @@
--- Active: 1782303930153@@127.0.0.1@5432@volysaina_db
+-- Active: 1773080411410@@127.0.0.1@5432@voly_saina@voly_saina
 DROP SCHEMA IF EXISTS voly_saina CASCADE;
 CREATE SCHEMA voly_saina;
 SET search_path TO voly_saina;
@@ -202,6 +202,13 @@ CREATE TABLE statut_machine (
     foreign key (id_etat_machine) references etat_machine(id_etat_machine) on delete cascade
 );
 
+create table panier(
+    id_panier SERIAL PRIMARY KEY,
+    id_client INT NOT NULL REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE,
+    actif boolean,
+    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE facture (
     id_facture SERIAL PRIMARY KEY,
     numero VARCHAR(50) NOT NULL UNIQUE,
@@ -211,6 +218,7 @@ CREATE TABLE facture (
     montant_total NUMERIC(12,2) NOT NULL CHECK (montant_total >= 0),
     montant_paye NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (montant_paye >= 0),
     id_statut_facture INT NOT NULL REFERENCES statut_facture(id_statut_facture),
+    id_panier INT REFERENCES panier(id_panier),
     date_limite DATE
 );
 
@@ -303,13 +311,6 @@ CREATE TABLE ligne_commande (
     quantite NUMERIC(12,2) NOT NULL CHECK (quantite > 0),
     prix_unitaire NUMERIC(12,2) NOT NULL CHECK (prix_unitaire >= 0),
     sous_total NUMERIC(12,2) NOT NULL CHECK (sous_total >= 0)
-);
-
-create table panier(
-    id_panier SERIAL PRIMARY KEY,
-    id_client INT NOT NULL REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE,
-    actif boolean,
-    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 create table panier_details(
@@ -498,3 +499,37 @@ values
 (1, 1, 4, '2026-06-10', '2026-06-12', 'Zone pilote', 390000.00, 3, NULL, 'Réservation pour travaux agricoles', '2026-06-10 15:45:00');
 
 CREATE INDEX idx_panier ON panier_details(id_panier);
+
+CREATE OR REPLACE VIEW voly_saina.v_facture_fille AS
+SELECT
+    CONCAT('CMD-', c.id_commande) AS id_operation_key,
+    f.id_facture,
+    f.numero,
+    'commande' AS type_operation,
+    c.id_commande AS id_operation,
+    c.date_commande AS date_operation,
+    
+    c.montant_total,
+    sc.code AS statut
+FROM voly_saina.facture f
+JOIN voly_saina.panier pa ON f.id_panier = pa.id_panier
+JOIN voly_saina.panier_details pd ON pa.id_panier = pd.id_panier
+JOIN voly_saina.commande c ON pd.id_commande = c.id_commande
+JOIN voly_saina.statut_commande sc ON sc.id_statut_commande = c.id_statut_commande
+
+UNION ALL
+
+SELECT
+    CONCAT('RES-', rm.id_reservation) AS id_operation_key,
+    f.id_facture,
+    f.numero,
+    'reservation' AS type_operation,
+    rm.id_reservation AS id_operation,
+    rm.date_creation AS date_operation,
+    rm.prix_total AS montant_total,
+    sr.code AS statut
+FROM voly_saina.facture f
+JOIN voly_saina.panier pa ON f.id_panier = pa.id_panier
+JOIN voly_saina.panier_details pd ON pa.id_panier = pd.id_panier
+JOIN voly_saina.reservation_machine rm ON pd.id_reservation_machine = rm.id_reservation
+JOIN voly_saina.statut_reservation sr ON sr.id_statut_reservation = rm.id_statut_reservation;

@@ -1,26 +1,32 @@
 package com.voly_saina.controller.client;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
+import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Produit;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.StatutCommande;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.CommandeClientService;
 import com.voly_saina.service.CommandeService;
 import com.voly_saina.service.LigneCommandeService;
+import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.ProduitService;
+import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutCommandeService;
 import com.voly_saina.service.UtilisateurService;
 
@@ -49,6 +55,13 @@ public class PanierController {
     @Autowired
     private ModePaiementService modePaiementService;
 
+    @Autowired
+    private MachineService machineService;
+
+     @Autowired
+    private ReservationMachineService reservationMachineService;
+
+
     private static final String STATUT_PANIER = "en_attente";
     private static final String STATUT_LIVRAISON = "preparee";
 
@@ -58,6 +71,7 @@ public class PanierController {
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
             @RequestParam(value = "clientId", required = false) Long clientId,
+            @RequestParam("reservationId") Long reservationId,
             Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
@@ -154,7 +168,48 @@ public class PanierController {
             return "client/ventes/detail";
         }
     }
+    
+    @PostMapping("/api/ajouter-reservation")
+    public String ajouterReservationAuPanier(
+            @RequestParam("clientId") Long clientId,
+            @RequestParam("machineId") Long machineId,
+            @RequestParam("dateDebut") String dateDebut,
+            @RequestParam("dateFin") String dateFin,
+            @RequestParam(value = "lieuLivraison", required = false) String lieuLivraison,
+            Model model) {
+        try {
+            Utilisateur client = utilisateurService.findById(clientId)
+                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
 
+            Machine machine = machineService.findById(machineId);
+
+            if (!Boolean.TRUE.equals(machine.getDisponible())) {
+                model.addAttribute("error", "Machine indisponible");
+                return "client/reservations/form";
+            }
+
+            LocalDate debut = LocalDate.parse(dateDebut);
+            LocalDate fin = LocalDate.parse(dateFin);
+            ReservationMachine reservation = new ReservationMachine();
+            reservation.setMachine(machine);
+            reservation.setClient(client);
+            reservation.setDateDebut(debut);
+            reservation.setDateFin(fin);
+            reservation.setLieuLivraison(lieuLivraison);
+
+            reservationMachineService.save(reservation);
+            PanierController.this.ajouterAuPanier(null, BigDecimal.ONE, clientId,reservation.getIdReservation(), model);
+
+            return "redirect:/client/panier";
+
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "client/reservations/form";
+        }
+    }
+
+
+    
     @GetMapping
     public String voirPanier(
             @RequestParam(value = "clientId", required = false) Long clientId,

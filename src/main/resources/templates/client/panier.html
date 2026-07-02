@@ -1,187 +1,266 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panier - Voly Saina+</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f5f5f5; padding: 20px 0; }
-        .container { max-width: 1200px; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0 !important; }
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-block; }
-        .badge-green { background: #dcfce7; color: #166534; }
-        .badge-gray { background: #f3f4f6; color: #4b5563; }
-        .btn { border-radius: 8px; }
-        .table thead th { background: #f9fafb; border-bottom: 2px solid #e5e7eb; }
+        body {
+            background-color: #f5f5f5;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-gray {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+
+        .table thead th {
+            background: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <div class="card">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Votre panier</h4>
-            <a th:href="@{/client/ventes/catalogue}" class="text-decoration-none" style="color: white; font-weight: 500;">← Continuer mes achats</a>
-        </div>
-
-        <div class="card-body p-4">
-
-            <div th:if="${message != null}" class="alert alert-success" th:text="${message}"></div>
-
-            <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
-
-            <div th:if="${lignes == null or #lists.isEmpty(lignes)}" class="text-center py-5 text-muted">
-                Votre panier est vide.
+    <div class="container">
+        <div class="card">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Votre panier</h4>
+                <a th:href="@{/client/ventes/catalogue}" class="text-decoration-none"
+                    style="color: white; font-weight: 500;">← Continuer mes achats</a>
             </div>
 
-            <div th:if="${lignes != null and not #lists.isEmpty(lignes)}" id="panierContent">
+            <div class="card-body p-4">
 
-                <div class="table-responsive">
+                <div th:if="${message != null}" class="alert alert-success" th:text="${message}"></div>
+
+                <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
+
+                <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}"
+                    class="text-center py-5 text-muted">
+                    Votre panier est vide.
+                </div>
+
+                <div th:if="${lignes != null and not #lists.isEmpty(lignes)}" id="panierContent">
+
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%">Produit</th>
+                                    <th style="width: 15%">Prix unitaire</th>
+                                    <th style="width: 20%">Quantité</th>
+                                    <th style="width: 15%">Sous-total</th>
+                                    <th style="width: 10%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="ligne : ${lignes}">
+                                    <td>
+                                        <div style="font-weight: 700;"
+                                            th:text="${ligne.produit.nom != null ? ligne.produit.nom : '-'}">Produit
+                                        </div>
+                                        <div class="text-muted" style="font-size:12px;"
+                                            th:text="${ligne.produit.categorie != null ? ligne.produit.categorie.nom : ''}">
+                                        </div>
+                                    </td>
+                                    <td class="prix-unitaire"
+                                        th:text="${ligne.prixUnitaire != null ? ligne.prixUnitaire : '-'}"
+                                        th:data-prix-unitaire="${ligne.prixUnitaire != null ? ligne.prixUnitaire : 0}">
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/client/panier/quantite}" method="post" class="ligneForm">
+                                            <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                            <label class="visually-hidden"
+                                                for="quantite-[[${ligne.idLigne}]]">Quantité</label>
+                                            <input type="number" id="quantite-[[${ligne.idLigne}]]" name="quantite"
+                                                min="1" step="1" class="form-control quantite-input"
+                                                onchange="updateQuantite(this)"
+                                                th:value="${ligne.quantite != null ? ligne.quantite : 1}" />
+                                        </form>
+                                    </td>
+                                    <td class="sous-total-cell"
+                                        th:text="${ligne.sousTotal != null ? ligne.sousTotal : '-'}"
+                                        th:data-sous-total="${ligne.sousTotal != null ? ligne.sousTotal : 0}">
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/client/panier/supprimer}" method="post"
+                                            onsubmit="return confirm('Supprimer cette ligne du panier ?');">
+                                            <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <div style="min-width: 320px;">
+                            <div class="d-flex justify-content-between">
+                                <div class="text-muted" style="font-weight: 600;">Montant total</div>
+                                <div style="font-weight: 800;">
+                                    <span id="montantTotal">0</span> AR
+                                </div>
+                            </div>
+
+                            <form th:action="@{/client/panier/cloturer}" method="post" class="mt-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Adresse de livraison</label>
+                                    <input class="form-control" name="adresseLivraison" required
+                                        title="Adresse de livraison" placeholder="Ex: 12 rue ..."
+                                        th:value="${commande != null ? commande.adresseLivraison : ''}" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mode de paiement</label>
+                                    <select name="modePaiement">
+                                        <option th:each="mode: ${modePaiements}" th:value="${mode.idModePaiement}"
+                                            th:text="${mode.libelle}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100" id="btnCloturer">Clôturer et
+                                    commander</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="table-responsive mt-4">
+                    <h6 class="mb-3">Machines réservées</h6>
                     <table class="table align-middle">
                         <thead>
-                        <tr>
-                            <th style="width: 40%">Produit</th>
-                            <th style="width: 15%">Prix unitaire</th>
-                            <th style="width: 20%">Quantité</th>
-                            <th style="width: 15%">Sous-total</th>
-                            <th style="width: 10%">Actions</th>
-                        </tr>
+                            <tr>
+                                <th style="width: 35%">Machine</th>
+                                <th style="width: 25%">Période</th>
+                                <th style="width: 15%">Lieu livraison</th>
+                                <th style="width: 15%">Prix total</th>
+                                <th style="width: 10%">Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="ligne : ${lignes}">
-                            <td>
-                                <div style="font-weight: 700;" th:text="${ligne.produit.nom != null ? ligne.produit.nom : '-'}">Produit</div>
-                                <div class="text-muted" style="font-size:12px;" th:text="${ligne.produit.categorie != null ? ligne.produit.categorie.nom : ''}"></div>
-                            </td>
-                            <td class="prix-unitaire"
-                                th:text="${ligne.prixUnitaire != null ? ligne.prixUnitaire : '-'}"
-                                th:data-prix-unitaire="${ligne.prixUnitaire != null ? ligne.prixUnitaire : 0}">
-                            </td>
-                            <td>
-                                <form th:action="@{/client/panier/quantite}" method="post" class="ligneForm">
-                                    <input type="hidden" name="ligneId" th:value="${ligne.idLigne}"/>
-                                    <label class="visually-hidden" for="quantite-[[${ligne.idLigne}]]">Quantité</label>
-                                    <input type="number"
-                                        id="quantite-[[${ligne.idLigne}]]"
-                                        name="quantite"
-                                        min="1"
-                                        step="1"
-                                        class="form-control quantite-input"
-                                        onchange="updateQuantite(this)"
-                                        th:value="${ligne.quantite != null ? ligne.quantite : 1}"/>
-                                </form>
-                            </td>
-                                <td class="sous-total-cell"
-                                    th:text="${ligne.sousTotal != null ? ligne.sousTotal : '-'}"
-                                    th:data-sous-total="${ligne.sousTotal != null ? ligne.sousTotal : 0}">
+                            <tr th:each="resa : ${reservations}">
+                                <td style="font-weight: 700;" th:text="${resa.machine.nom}">Machine</td>
+                                <td th:text="${resa.dateDebut} + ' au ' + ${resa.dateFin}"></td>
+                                <td th:text="${resa.lieuLivraison != null ? resa.lieuLivraison : '-'}"></td>
+                                <td class="sous-total-cell" th:text="${resa.prixTotal}"
+                                    th:data-sous-total="${resa.prixTotal}">
                                 </td>
-                            <td>
-                                <form th:action="@{/client/panier/supprimer}" method="post" onsubmit="return confirm('Supprimer cette ligne du panier ?');">
-                                    <input type="hidden" name="ligneId" th:value="${ligne.idLigne}"/>
-                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                                </form>
-                            </td>
-                        </tr>
+                                <td>
+                                    <form th:action="@{/client/panier/supprimer-reservation}" method="post"
+                                        onsubmit="return confirm('Retirer cette réservation du panier ?');">
+                                        <input type="hidden" name="reservationId" th:value="${resa.idReservation}" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-
-                <div class="d-flex justify-content-end mt-4">
-                    <div style="min-width: 320px;">
-                        <div class="d-flex justify-content-between">
-                            <div class="text-muted" style="font-weight: 600;">Montant total</div>
-                            <div style="font-weight: 800;">
-                                <span id="montantTotal">0</span> AR
-                            </div>
-                        </div>
-                        
-                        <form th:action="@{/client/panier/cloturer}" method="post" class="mt-3">
-                            <div class="mb-3">
-                                <label class="form-label">Adresse de livraison</label>
-                                <input class="form-control" name="adresseLivraison" required title="Adresse de livraison" placeholder="Ex: 12 rue ..." th:value="${commande != null ? commande.adresseLivraison : ''}"/>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Mode de paiement</label>
-                                <select name="modePaiement" >
-                                    <option th:each="mode: ${modePaiements}" 
-                                            th:value="${mode.idModePaiement}" 
-                                            th:text="${mode.libelle}"> 
-                                    </option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100" id="btnCloturer">Clôturer et commander</button>
-                        </form>     
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
-</div>
 
-<script>
-function updateQuantite(input) {
-    const row = input.closest('tr');
-    const prixUnitaireCell = row.querySelector('.prix-unitaire');
-    const sousTotalCell = row.querySelector('.sous-total-cell');
-    
-    const prixUnitaire = parseFloat(prixUnitaireCell.dataset.prixUnitaire) || 0;
-    const quantite = parseInt(input.value) || 1;
-    
-    const sousTotal = prixUnitaire * quantite;
-    // Mettre à jour l'attribut data
-    sousTotalCell.dataset.sousTotal = sousTotal;
-    // Mettre à jour l'affichage avec séparateur de milliers
-    sousTotalCell.textContent = formatNumber(sousTotal);
-    
-    calculerTotal();
-    
-    // Soumettre le formulaire pour mettre à jour côté serveur
-    input.form.submit();
-}
+    <script>
+        function updateQuantite(input) {
+            const row = input.closest('tr');
+            const prixUnitaireCell = row.querySelector('.prix-unitaire');
+            const sousTotalCell = row.querySelector('.sous-total-cell');
 
-function calculerTotal() {
-    let total = 0;
+            const prixUnitaire = parseFloat(prixUnitaireCell.dataset.prixUnitaire) || 0;
+            const quantite = parseInt(input.value) || 1;
 
-    document.querySelectorAll('.sous-total-cell').forEach(cell => {
-        const montant = parseFloat(cell.dataset.sousTotal) || 0;
-        total += montant;
-    });
+            const sousTotal = prixUnitaire * quantite;
+            // Mettre à jour l'attribut data
+            sousTotalCell.dataset.sousTotal = sousTotal;
+            // Mettre à jour l'affichage avec séparateur de milliers
+            sousTotalCell.textContent = formatNumber(sousTotal);
 
-    // Afficher le total avec séparateur de milliers et 2 décimales
-    document.getElementById('montantTotal').textContent = formatNumber(total);
-}
+            calculerTotal();
 
-// Fonction pour formater les nombres avec séparateur de milliers
-function formatNumber(number) {
-    // Arrondir à 2 décimales et formater avec espaces (format français)
-    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    
-    // Alternative : utiliser toLocaleString()
-    // return number.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // S'assurer que tous les sous-totaux ont des attributs data valides
-    const sousTotalCells = document.querySelectorAll('.sous-total-cell');
-    sousTotalCells.forEach(cell => {
-        // Si l'attribut data n'est pas défini, utiliser le texte affiché
-        if (!cell.dataset.sousTotal || cell.dataset.sousTotal === '0') {
-            const textValue = cell.textContent.trim();
-            if (textValue && textValue !== '-') {
-                // Nettoyer le texte des séparateurs avant de parser
-                const cleanValue = textValue.replace(/\s/g, '').replace(/,/g, '.');
-                const numValue = parseFloat(cleanValue);
-                if (!isNaN(numValue)) {
-                    cell.dataset.sousTotal = numValue;
-                }
-            }
+            // Soumettre le formulaire pour mettre à jour côté serveur
+            input.form.submit();
         }
-    });
-    
-    calculerTotal();
-});
-</script>
+
+        function calculerTotal() {
+            let total = 0;
+
+            document.querySelectorAll('.sous-total-cell').forEach(cell => {
+                const montant = parseFloat(cell.dataset.sousTotal) || 0;
+                total += montant;
+            });
+
+            // Afficher le total avec séparateur de milliers et 2 décimales
+            document.getElementById('montantTotal').textContent = formatNumber(total);
+        }
+
+        // Fonction pour formater les nombres avec séparateur de milliers
+        function formatNumber(number) {
+            // Arrondir à 2 décimales et formater avec espaces (format français)
+            return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+            // Alternative : utiliser toLocaleString()
+            // return number.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // S'assurer que tous les sous-totaux ont des attributs data valides
+            const sousTotalCells = document.querySelectorAll('.sous-total-cell');
+            sousTotalCells.forEach(cell => {
+                // Si l'attribut data n'est pas défini, utiliser le texte affiché
+                if (!cell.dataset.sousTotal || cell.dataset.sousTotal === '0') {
+                    const textValue = cell.textContent.trim();
+                    if (textValue && textValue !== '-') {
+                        // Nettoyer le texte des séparateurs avant de parser
+                        const cleanValue = textValue.replace(/\s/g, '').replace(/,/g, '.');
+                        const numValue = parseFloat(cleanValue);
+                        if (!isNaN(numValue)) {
+                            cell.dataset.sousTotal = numValue;
+                        }
+                    }
+                }
+            });
+
+            calculerTotal();
+        });
+    </script>
 </body>
+
 </html>

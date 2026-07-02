@@ -32,7 +32,7 @@ if (!typeId) {
                             <p><strong>Disponible:</strong> ${m.disponible ? '✅ Oui' : '❌ Non'}</p>
                             <button onclick="voirDetail(${m.idMachine})">Voir détails</button>
                             <button onclick="reserver(${m.idMachine})" ${!m.disponible ? 'disabled' : ''}>
-                                ${m.disponible ? '🛒 Ajouter au panier' : 'Indisponible'}
+                                ${m.disponible ? 'reservation' : 'Indisponible'}
                             </button>
                         </div>
                     `;

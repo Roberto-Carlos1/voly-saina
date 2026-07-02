@@ -65,7 +65,7 @@ document.getElementById('reservationForm').onsubmit = function (e) {
 
     console.log('📤 Envoi:', data);
 
-    fetch('/client/panier/api/ajouter-reservation', {
+    fetch('/client/reservations/api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

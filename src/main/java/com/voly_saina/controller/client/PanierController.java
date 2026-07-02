@@ -1,6 +1,7 @@
 package com.voly_saina.controller.client;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,7 @@ public class PanierController {
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
             @RequestParam(value = "clientId", required = false) Long clientId,
+            @RequestParam("reservationId") Long reservationId,
             Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
@@ -179,23 +181,24 @@ public class PanierController {
             Utilisateur client = utilisateurService.findById(clientId)
                     .orElseThrow(() -> new RuntimeException("Client non trouvé"));
 
-            Machine machine = machineService.findById(machineId)
-                    .orElseThrow(() -> new RuntimeException("Machine introuvable"));
+            Machine machine = machineService.findById(machineId);
 
             if (!Boolean.TRUE.equals(machine.getDisponible())) {
                 model.addAttribute("error", "Machine indisponible");
                 return "client/reservations/form";
             }
 
+            LocalDate debut = LocalDate.parse(dateDebut);
+            LocalDate fin = LocalDate.parse(dateFin);
             ReservationMachine reservation = new ReservationMachine();
-            reservation.setClient(client);
             reservation.setMachine(machine);
-            reservation.setDateDebut(dateDebut);
-            reservation.setDateFin(dateFin);
+            reservation.setClient(client);
+            reservation.setDateDebut(debut);
+            reservation.setDateFin(fin);
             reservation.setLieuLivraison(lieuLivraison);
 
             reservationMachineService.save(reservation);
-            PanierController.this.ajouterAuPanier(machineId, BigDecimal.ONE, clientId, model);
+            PanierController.this.ajouterAuPanier(null, BigDecimal.ONE, clientId,reservation.getIdReservation(), model);
 
             return "redirect:/client/panier";
 

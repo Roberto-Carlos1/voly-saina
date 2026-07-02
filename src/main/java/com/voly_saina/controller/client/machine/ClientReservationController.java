@@ -462,37 +462,37 @@ public class ClientReservationController {
         }
     }
 
-    // GET /client/reservations/api/client/{clientId}/statistiques
-    @GetMapping("/api/client/{clientId}/statistiques")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getStatistiques(@PathVariable Long clientId) {
-        List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
+    // // GET /client/reservations/api/client/{clientId}/statistiques
+    // @GetMapping("/api/client/{clientId}/statistiques")
+    // @ResponseBody
+    // public ResponseEntity<Map<String, Object>> getStatistiques(@PathVariable Long clientId) {
+    //     List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         
-        long total = reservations.size();
-        long enCours = reservations.stream()
-            .filter(r -> "en_cours".equals(r.getStatutReservation().getCode()))
-            .count();
-        long terminees = reservations.stream()
-            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
-            .count();
-        long annulees = reservations.stream()
-            .filter(r -> "annulee".equals(r.getStatutReservation().getCode()))
-            .count();
+    //     long total = reservations.size();
+    //     long enCours = reservations.stream()
+    //         .filter(r -> "en_cours".equals(r.getStatutReservation().getCode()))
+    //         .count();
+    //     long terminees = reservations.stream()
+    //         .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
+    //         .count();
+    //     long annulees = reservations.stream()
+    //         .filter(r -> "annulee".equals(r.getStatutReservation().getCode()))
+    //         .count();
         
-        BigDecimal totalDepenses = reservations.stream()
-            .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
-            .map(ReservationMachine::getPrixTotal)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    //     BigDecimal totalDepenses = reservations.stream()
+    //         .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
+    //         .map(ReservationMachine::getPrixTotal)
+    //         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalReservations", total);
-        stats.put("reservationsEnCours", enCours);
-        stats.put("reservationsTerminees", terminees);
-        stats.put("reservationsAnnulees", annulees);
-        stats.put("totalDepenses", totalDepenses);
+    //     Map<String, Object> stats = new HashMap<>();
+    //     stats.put("totalReservations", total);
+    //     stats.put("reservationsEnCours", enCours);
+    //     stats.put("reservationsTerminees", terminees);
+    //     stats.put("reservationsAnnulees", annulees);
+    //     stats.put("totalDepenses", totalDepenses);
         
-        return ResponseEntity.ok(stats);
-    }
+    //     return ResponseEntity.ok(stats);
+    // }
 
     // ========== MÉTHODES PRIVÉES ==========
 

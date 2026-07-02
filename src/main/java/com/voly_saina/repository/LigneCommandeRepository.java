@@ -19,4 +19,6 @@ public interface LigneCommandeRepository extends JpaRepository<LigneCommande, Lo
         @Param("debut") LocalDateTime debut,
         @Param("fin") LocalDateTime fin,
         @Param("statuts") List<String> statuts);
+
+    List<LigneCommande> findByCommandeIdCommande(Long idCommande);
 }

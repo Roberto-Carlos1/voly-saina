@@ -1,6 +1,7 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.StatutFacture;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.entity.dto.FactureDTO;
@@ -24,13 +25,15 @@ public class FactureService {
     private final UtilisateurService utilisateurService;
     private final StatutFactureService statutFactureService;
     private final PanierService panierService;
+    private final PanierDetailsService panierDetailsService;
 
     public FactureService(FactureRepository factureRepository, UtilisateurService utilisateurService,
-            StatutFactureService statutFactureService, PanierService panierService) {
+            StatutFactureService statutFactureService, PanierService panierService, PanierDetailsService panierDetailsService) {
         this.factureRepository = factureRepository;
         this.utilisateurService = utilisateurService;
         this.statutFactureService = statutFactureService;
         this.panierService = panierService;
+        this.panierDetailsService= panierDetailsService;
     }
 
     public List<Facture> findAll() {
@@ -98,14 +101,14 @@ public class FactureService {
         return prefix + year + "-" + id;
     }
 
-    public void genererFactureProformat(Long idUtilisateur) {
+    public void genererFactureProformat(Long idUtilisateur, Long idPanier) {
 
         Facture last = this.findIdByLast();
         String numero = this.generateNumeroFacture(last.getIdFacture());
         Utilisateur client = utilisateurService.findById(idUtilisateur).orElse(null);
 
-        BigDecimal montantReservation = panierService.montantReservation(client.getIdUtilisateur()),
-                montatCommande = panierService.montantCommande(client.getIdUtilisateur());
+        BigDecimal montantReservation = panierDetailsService.montantReservation(idPanier),
+                montatCommande = panierDetailsService.montantCommande(idPanier);
 
         LocalDateTime now = LocalDateTime.now();
         StatutFacture statutFacture = statutFactureService.findById((long) 1).orElse(null);
@@ -120,7 +123,6 @@ public class FactureService {
 
         factureNew.setTypeOperation("commande-reservation");
 
-        // date limite ??
         factureRepository.save(factureNew);
     }
 

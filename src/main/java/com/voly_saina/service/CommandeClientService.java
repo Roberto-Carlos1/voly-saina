@@ -150,7 +150,6 @@ public class CommandeClientService {
         facture.setNumero(numero);
 
         facture.setTypeOperation(TYPE_OPERATION_COMMANDE);
-        facture.setIdOperation(commande.getIdCommande());
         facture.setClient(commande.getClient());
         facture.setMontantTotal(montantTotal);
         facture.setMontantPaye(BigDecimal.ZERO);

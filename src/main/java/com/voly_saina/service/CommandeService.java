@@ -40,4 +40,8 @@ public class CommandeService {
         commandeRepository.deleteById(id);
     }
 
+    public List<Commande> findByClient(Long id){
+        return commandeRepository.findByClientIdUtilisateur(id);
+    }
+
 }

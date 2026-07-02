@@ -186,9 +186,6 @@ public class ClientReservationController {
 
             ReservationMachine saved = reservationService.save(reservation);
 
-            machine.setDisponible(false);
-            machineService.save(machine);
-
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Réservation créée avec succès");
             response.put("reservation", mapToDTO(saved));

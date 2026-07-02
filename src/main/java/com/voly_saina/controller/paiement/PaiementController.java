@@ -2,9 +2,12 @@ package com.voly_saina.controller.paiement;
 
 import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Paiement;
+import com.voly_saina.entity.StatutFacture;
 import com.voly_saina.entity.dto.PaiementDTO;
 import com.voly_saina.service.FactureService;
 import com.voly_saina.service.PaiementService;
+import com.voly_saina.service.StatutFactureService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +26,7 @@ public class PaiementController {
 
     private final PaiementService paiementService;
     private final FactureService factureService;
+    private final StatutFactureService statutFactureService;
 
     // GET /api/paiements
     // @GetMapping
@@ -30,9 +34,11 @@ public class PaiementController {
     // return ResponseEntity.ok(paiementService.findAll());
     // }
 
-    public PaiementController(PaiementService paiementService, FactureService factureService) {
+    public PaiementController(PaiementService paiementService, FactureService factureService,
+            StatutFactureService statutFactureService) {
         this.paiementService = paiementService;
         this.factureService = factureService;
+        this.statutFactureService = statutFactureService;
     }
 
     @GetMapping
@@ -69,6 +75,18 @@ public class PaiementController {
         String mode = paiementDTO.getMode();
 
         Facture f = factureService.findById(id);
+        f.setMontantPaye(f.getMontantPaye().add(m));
+
+        StatutFacture statutFacture = new StatutFacture();
+
+        if (f.getMontantPaye() == f.getMontantTotal()) {
+            statutFacture = statutFactureService.findById((long) 2).orElse(null);
+        } else {
+            statutFacture = statutFactureService.findById((long) 3).orElse(null);
+        }
+
+        f.setStatutFacture(statutFacture);
+        factureService.save(f);
 
         Paiement p = new Paiement();
         p.setFacture(f);
@@ -77,12 +95,6 @@ public class PaiementController {
         p.setModePaiement(mode);
 
         paiementService.save(p);
-
-        f.setMontantPaye(f.getMontantPaye().add(m));
-        if(f.getMontantPaye() == f.getMontantTotal()){
-            f.setIdFacture(2L);
-        }
-        factureService.save(f);
 
         return "redirect:/api/factures/" + id;
     }
@@ -123,7 +135,7 @@ public class PaiementController {
 
         model.addAttribute("paiements", paiements);
         model.addAttribute("facture", facture);
-        
+
         return "paiements/historique";
     }
 }

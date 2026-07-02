@@ -34,7 +34,7 @@ public class Panier {
     @ManyToOne
     @JoinColumn(name = "id_commande")
     private Commande commande;
-
+    
     @Column(name = "date_arret", nullable = true)
     private LocalDateTime dateArret;
     

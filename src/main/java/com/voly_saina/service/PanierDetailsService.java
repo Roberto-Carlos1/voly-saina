@@ -34,7 +34,7 @@ public class PanierDetailsService {
         panierDetailsRepository.deleteById(id);
     }
 
-        public BigDecimal montantReservation(Long idPanier) {
+    public BigDecimal montantReservation(Long idPanier) {
         return panierDetailsRepository.sommeMontantReservation(idPanier);
     }
 
@@ -42,4 +42,7 @@ public class PanierDetailsService {
         return panierDetailsRepository.sommeMontantCommande(idPanier);
     }
 
+    public List<PanierDetails> findByIdPanier(Long idPanier){
+        return panierDetailsRepository.findByPanierIdPanier(idPanier);
+    }
 }

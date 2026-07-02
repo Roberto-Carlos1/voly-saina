@@ -107,7 +107,6 @@ public class FactureService {
         String numero = this.generateNumeroFacture(last.getIdFacture());
         Utilisateur client = utilisateurService.findById(idUtilisateur).orElse(null);
 
-        Panier panier = panierService.findById(idPanier);      
         BigDecimal montantReservation = panierDetailsService.montantReservation(idPanier),
                 montatCommande = panierDetailsService.montantCommande(idPanier);
 

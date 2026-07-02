@@ -2,6 +2,8 @@ package com.voly_saina.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +31,11 @@ public class Panier {
     @JoinColumn(name = "id_client", nullable = false)
     private Utilisateur client;
 
-    @Column(name = "date_creation", nullable = true)
+    @Column(name = "actif")
+    private boolean actif;
+
+    @CreationTimestamp
+    @Column(name = "date_creation", nullable = false, updatable = false)
     private LocalDateTime dateCreation;
     
 }

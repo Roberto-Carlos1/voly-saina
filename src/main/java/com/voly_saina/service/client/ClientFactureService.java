@@ -103,7 +103,6 @@ public class ClientFactureService {
         dto.setIdFacture(facture.getIdFacture());
         dto.setNumero(facture.getNumero());
         dto.setTypeOperation(facture.getTypeOperation());
-        dto.setIdOperation(facture.getIdOperation());
         dto.setDateFacture(facture.getDateFacture());
         
         // Handle null montantTotal and montantPaye

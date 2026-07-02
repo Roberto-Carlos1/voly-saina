@@ -2,6 +2,9 @@ package com.voly_saina.controller.client;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,23 +14,30 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.ModePaiement;
+import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.Produit;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.StatutCommande;
+import com.voly_saina.entity.StatutReservation;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.CommandeClientService;
 import com.voly_saina.service.CommandeService;
 import com.voly_saina.service.LigneCommandeService;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.ModePaiementService;
+import com.voly_saina.service.PanierDetailsService;
+import com.voly_saina.service.PanierService;
 import com.voly_saina.service.ProduitService;
 import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutCommandeService;
+import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
 
 @Controller
@@ -58,9 +68,16 @@ public class PanierController {
     @Autowired
     private MachineService machineService;
 
-     @Autowired
+    @Autowired
     private ReservationMachineService reservationMachineService;
 
+    @Autowired
+    private StatutReservationService statutReservationService;
+
+    @Autowired
+    private PanierService panierService;
+    @Autowired
+    private PanierDetailsService panierDetailsService;
 
     private static final String STATUT_PANIER = "en_attente";
     private static final String STATUT_LIVRAISON = "preparee";
@@ -71,7 +88,6 @@ public class PanierController {
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            @RequestParam("reservationId") Long reservationId,
             Model model) {
         try {
             Long idClientFinal = clientId != null ? clientId : 1L;
@@ -179,35 +195,57 @@ public class PanierController {
             Model model) {
         try {
             Utilisateur client = utilisateurService.findById(clientId)
-                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+                .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+
+            LocalDate debut = LocalDate.parse(dateDebut);
+            LocalDate fin = LocalDate.parse(dateFin);
 
             Machine machine = machineService.findById(machineId);
-
-            if (!Boolean.TRUE.equals(machine.getDisponible())) {
+            if (machine == null || !Boolean.TRUE.equals(machine.getDisponible())) {
                 model.addAttribute("error", "Machine indisponible");
                 return "client/reservations/form";
             }
 
-            LocalDate debut = LocalDate.parse(dateDebut);
-            LocalDate fin = LocalDate.parse(dateFin);
+            List<ReservationMachine> conflits = reservationMachineService.findConfList(machineId, debut, fin);
+            if (!conflits.isEmpty()) {
+                model.addAttribute("error", "La machine est déjà réservée sur cette période");
+                return "client/reservations/form";
+            }
+
+            long jours = ChronoUnit.DAYS.between(debut, fin);
+            if (jours == 0) jours = 1;
+            BigDecimal prixTotal = machine.getPrixJour().multiply(BigDecimal.valueOf(jours));
+
             ReservationMachine reservation = new ReservationMachine();
             reservation.setMachine(machine);
             reservation.setClient(client);
             reservation.setDateDebut(debut);
             reservation.setDateFin(fin);
             reservation.setLieuLivraison(lieuLivraison);
+            reservation.setPrixTotal(prixTotal);
+            reservation.setStatutReservation(statutReservationService.findByCode("en_attente"));
+            ReservationMachine savedReservation = reservationMachineService.save(reservation);
 
-            reservationMachineService.save(reservation);
-            PanierController.this.ajouterAuPanier(null, BigDecimal.ONE, clientId,reservation.getIdReservation(), model);
+            Panier panier = panierService.findByClientId(clientId);
+            if (panier == null) {
+                panier = new Panier();
+                panier.setClient(client);
+                panier.setDateCreation(LocalDateTime.now());
+                panier = panierService.save(panier);
+            }
 
-            return "redirect:/client/panier";
+            PanierDetails panierDetail = new PanierDetails();
+            panierDetail.setPanier(panier);
+            panierDetail.setReservationMachine(savedReservation);
+            panierDetailsService.save(panierDetail);
+
+            return "redirect:/client/panier?clientId=" + clientId;
 
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "client/reservations/form";
         }
     }
-
 
     
     @GetMapping
@@ -221,38 +259,54 @@ public class PanierController {
             return "client/panier";
         }
 
+        Panier panier = panierService.findByClientId(idClientFinal);
+        List<ReservationMachine> reservations = new ArrayList<>();
+        BigDecimal totalReservations = BigDecimal.ZERO;
+
+        if (panier != null) {
+            List<PanierDetails> panierDetails = panierDetailsService.findByPanierId(panier.getIdPanier());
+            
+            reservations = panierDetails.stream()
+                .filter(pd -> pd.getReservationMachine() != null)
+                .map(PanierDetails::getReservationMachine)
+                .filter(r -> "en_attente".equals(r.getStatutReservation().getCode()))
+                .toList();
+            
+            totalReservations = reservations.stream()
+                .map(ReservationMachine::getPrixTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+
         Commande commandePanier = commandeService.findAll().stream()
-                .filter(c -> c != null && c.getClient() != null && c.getClient().getIdUtilisateur() != null)
+                .filter(c -> c != null && c.getClient() != null)
                 .filter(c -> c.getClient().getIdUtilisateur().equals(idClientFinal))
-                .filter(c -> c.getStatutCommande() != null && c.getStatutCommande().getCode() != null)
-                .filter(c -> STATUT_PANIER.equalsIgnoreCase(c.getStatutCommande().getCode()))
-                .sorted((a, b) -> {
-                    if (a.getDateCommande() == null && b.getDateCommande() == null)
-                        return 0;
-                    if (a.getDateCommande() == null)
-                        return 1;
-                    if (b.getDateCommande() == null)
-                        return -1;
-                    return b.getDateCommande().compareTo(a.getDateCommande());
-                })
+                .filter(c -> c.getStatutCommande() != null && "en_attente".equalsIgnoreCase(c.getStatutCommande().getCode()))
                 .findFirst()
                 .orElse(null);
 
-        if (commandePanier == null) {
-            model.addAttribute("lignes", List.of());
-            model.addAttribute("montantTotal", BigDecimal.ZERO);
-            return "client/panier";
-        }
+        List<LigneCommande> lignes = new ArrayList<>();
+        BigDecimal totalProduits = BigDecimal.ZERO;
 
-        var lignes = ligneCommandeService.findAll().stream()
-                .filter(lc -> lc != null && lc.getCommande() != null && lc.getCommande().getIdCommande() != null)
+        if (commandePanier != null) {
+            lignes = ligneCommandeService.findAll().stream()
+                .filter(lc -> lc != null && lc.getCommande() != null)
                 .filter(lc -> lc.getCommande().getIdCommande().equals(commandePanier.getIdCommande()))
                 .toList();
+            
+            totalProduits = lignes.stream()
+                .map(lc -> lc.getSousTotal() == null ? BigDecimal.ZERO : lc.getSousTotal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
 
-        model.addAttribute("commande", commandePanier);
+        BigDecimal totalGlobal = totalReservations.add(totalProduits);
+
+        model.addAttribute("panier", panier);
+        model.addAttribute("reservations", reservations);
         model.addAttribute("lignes", lignes);
-        model.addAttribute("montantTotal",
-                commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal());
+        model.addAttribute("commande", commandePanier);
+        model.addAttribute("totalReservations", totalReservations);
+        model.addAttribute("totalProduits", totalProduits);
+        model.addAttribute("montantTotal", totalGlobal);
 
         List<ModePaiement> modePaiements = modePaiementService.findAll();
         model.addAttribute("modePaiements", modePaiements);
@@ -288,6 +342,45 @@ public class PanierController {
 
         return "redirect:/client/panier";
     }
+
+    @PostMapping("/supprimer-reservation")
+public String supprimerReservation(
+        @RequestParam("reservationId") Long reservationId,
+        @RequestParam(value = "clientId", required = false) Long clientId,
+        RedirectAttributes redirectAttributes) {
+    Long idClientFinal = clientId != null ? clientId : 1L;
+    
+    try {
+
+        ReservationMachine reservation = reservationMachineService.findById(reservationId)
+            .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+        if (!reservation.getClient().getIdUtilisateur().equals(idClientFinal)) {
+            redirectAttributes.addFlashAttribute("error", "Accès non autorisé");
+            return "redirect:/client/panier";
+        }
+
+        if (!"en_attente".equals(reservation.getStatutReservation().getCode())) {
+            redirectAttributes.addFlashAttribute("error", "Impossible de supprimer une réservation déjà validée");
+            return "redirect:/client/panier";
+        }
+
+        PanierDetails panierDetail = panierDetailsService.findByReservationId(reservationId);
+        if (panierDetail != null) {
+            panierDetailsService.deleteById(panierDetail.getIdPanierDetails());
+        }
+
+        reservation.setStatutReservation(statutReservationService.findByCode("annulee"));
+        reservationMachineService.save(reservation);
+        
+        redirectAttributes.addFlashAttribute("success", "Réservation supprimée du panier");
+        
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", e.getMessage());
+    }
+    
+    return "redirect:/client/panier?clientId=" + idClientFinal;
+}
 
     @org.springframework.web.bind.annotation.PostMapping("/quantite")
     public String mettreAJourQuantite(
@@ -445,5 +538,113 @@ public class PanierController {
             model.addAttribute("error", e.getMessage());
             return "client/recu/recap-commande";
         }
+    }
+
+    @PostMapping("/modifier-reservation")
+    public String modifierDatesReservation(
+            @RequestParam("reservationId") Long reservationId,
+            @RequestParam("dateDebut") String dateDebut,
+            @RequestParam("dateFin") String dateFin,
+            @RequestParam(value = "clientId", required = false) Long clientId,
+            RedirectAttributes redirectAttributes) {
+        Long idClientFinal = clientId != null ? clientId : 1L;
+        
+        try {
+            ReservationMachine reservation = reservationMachineService.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+            
+            if (!reservation.getClient().getIdUtilisateur().equals(idClientFinal)) {
+                redirectAttributes.addFlashAttribute("error", "Accès non autorisé");
+                return "redirect:/client/panier";
+            }
+            
+            if (!"en_attente".equals(reservation.getStatutReservation().getCode())) {
+                redirectAttributes.addFlashAttribute("error", "Impossible de modifier une réservation déjà validée");
+                return "redirect:/client/panier";
+            }
+            
+            LocalDate debut = LocalDate.parse(dateDebut);
+            LocalDate fin = LocalDate.parse(dateFin);
+
+            List<ReservationMachine> conflits = reservationMachineService.findConfList(
+                reservation.getMachine().getIdMachine(), debut, fin);
+            conflits.removeIf(c -> c.getIdReservation().equals(reservationId));
+            
+            if (!conflits.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "La machine n'est plus disponible sur cette période");
+                return "redirect:/client/panier";
+            }
+
+            reservation.setDateDebut(debut);
+            reservation.setDateFin(fin);
+            
+            long jours = ChronoUnit.DAYS.between(debut, fin);
+            if (jours == 0) jours = 1;
+            reservation.setPrixTotal(reservation.getMachine().getPrixJour().multiply(BigDecimal.valueOf(jours)));
+            
+            reservationMachineService.save(reservation);
+            
+            redirectAttributes.addFlashAttribute("success", "Dates modifiées avec succès");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        
+        return "redirect:/client/panier?clientId=" + idClientFinal;
+    }
+
+    @PostMapping("/valider-reservations")
+    public String validerPanierReservations(
+            @RequestParam(value = "clientId", required = false) Long clientId,
+            RedirectAttributes redirectAttributes) {
+        Long idClientFinal = clientId != null ? clientId : 1L;
+        
+        try {
+            Panier panier = panierService.findByClientId(idClientFinal);
+            if (panier == null) {
+                redirectAttributes.addFlashAttribute("error", "Panier vide");
+                return "redirect:/client/panier";
+            }
+            List<PanierDetails> panierDetails = panierDetailsService.findByPanierId(panier.getIdPanier());
+            List<ReservationMachine> reservations = panierDetails.stream()
+                .filter(pd -> pd.getReservationMachine() != null)
+                .map(PanierDetails::getReservationMachine)
+                .filter(r -> "en_attente".equals(r.getStatutReservation().getCode()))
+                .toList();
+            
+            if (reservations.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Aucune réservation à valider");
+                return "redirect:/client/panier";
+            }
+
+            for (ReservationMachine r : reservations) {
+                List<ReservationMachine> conflits = reservationMachineService.findConfList(
+                    r.getMachine().getIdMachine(), 
+                    r.getDateDebut(), 
+                    r.getDateFin()
+                );
+                conflits.removeIf(c -> c.getIdReservation().equals(r.getIdReservation()));
+                if (!conflits.isEmpty()) {
+                    redirectAttributes.addFlashAttribute(
+                        "error", 
+                        "La machine " + r.getMachine().getNom() + " n'est plus disponible"
+                    );
+                    return "redirect:/client/panier";
+                }
+            }
+
+            StatutReservation statutValidee = statutReservationService.findByCode("validee");
+            for (ReservationMachine r : reservations) {
+                r.setStatutReservation(statutValidee);
+                reservationMachineService.save(r);
+            }
+            
+            redirectAttributes.addFlashAttribute("success", reservations.size() + " réservation(s) validée(s)");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        
+        return "redirect:/client/panier?clientId=" + idClientFinal;
     }
 }

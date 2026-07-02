@@ -42,4 +42,12 @@ public class PanierDetailsService {
         return panierDetailsRepository.sommeMontantCommande(idPanier);
     }
 
+    public List<PanierDetails> findByPanierId(Long panierId) {
+        return panierDetailsRepository.findByPanierIdPanier(panierId);
+    }
+
+    public PanierDetails findByReservationId(Long reservationId) {
+        return panierDetailsRepository.findByReservationMachineIdReservation(reservationId).orElse(null);
+    }
+
 }

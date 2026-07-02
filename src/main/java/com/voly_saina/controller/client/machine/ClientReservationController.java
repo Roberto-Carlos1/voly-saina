@@ -70,6 +70,7 @@ public class ClientReservationController {
     @Autowired
     private ModePaiementService modePaiementService;
 
+
     // GET /client/reservations/{machineId}/nouvelle
     @GetMapping("/{machineId}/nouvelle")
     public String formulaireReservation(@PathVariable Long machineId,

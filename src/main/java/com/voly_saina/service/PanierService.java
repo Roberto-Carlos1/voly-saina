@@ -36,4 +36,9 @@ public class PanierService {
         panierRepository.deleteById(id);
     }
 
+    public Panier findByClientId(Long clientId) {
+        return panierRepository.findByClientIdUtilisateur(clientId).orElse(null);
+    }
+
+
 }

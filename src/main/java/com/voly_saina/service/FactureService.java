@@ -1,22 +1,40 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.StatutFacture;
+import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.entity.dto.FactureDTO;
 import com.voly_saina.repository.FactureRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class FactureService {
 
-    @Autowired
-    private FactureRepository factureRepository;
+    private final FactureRepository factureRepository;
+    private final UtilisateurService utilisateurService;
+    private final StatutFactureService statutFactureService;
+    private final PanierService panierService;
+    private final PanierDetailsService panierDetailsService;
+
+    public FactureService(FactureRepository factureRepository, UtilisateurService utilisateurService,
+            StatutFactureService statutFactureService, PanierService panierService, PanierDetailsService panierDetailsService) {
+        this.factureRepository = factureRepository;
+        this.utilisateurService = utilisateurService;
+        this.statutFactureService = statutFactureService;
+        this.panierService = panierService;
+        this.panierDetailsService= panierDetailsService;
+    }
 
     public List<Facture> findAll() {
         return factureRepository.findAll();
@@ -38,6 +56,10 @@ public class FactureService {
         factureRepository.deleteById(id);
     }
 
+    public Facture findIdByLast() {
+        return factureRepository.findTopByOrderByIdFactureDesc().orElse(null);
+    }
+
     public Page<Facture> findByPage(Pageable pageable) {
         Page<Facture> page = factureRepository.findAll(pageable);
         List<Long> ids = new ArrayList<>();
@@ -51,14 +73,6 @@ public class FactureService {
         }
 
         List<Facture> result = new ArrayList<>();
-
-        // for (Long id : ids) {
-        // Facture verif = factureRepository.findById(id).orElse(null);
-        // if (verif != null) {
-        // result.add(verif);
-        // }
-        // }
-
         List<Facture> liste = factureRepository.findAll();
         for (Long id : ids) {
             for (Facture facture : liste) {
@@ -78,6 +92,39 @@ public class FactureService {
         }
 
         return factureRepository.filtrerFactures(facture.getNomClient(), idStatut, pageable);
+    }
+
+    // Numero de facture
+    public String generateNumeroFacture(long id) {
+        String prefix = "FAC-";
+        String year = String.valueOf(LocalDate.now().getYear());
+        return prefix + year + "-" + id;
+    }
+
+    public void genererFactureProformat(Long idUtilisateur, Long idPanier) {
+
+        Facture last = this.findIdByLast();
+        String numero = this.generateNumeroFacture(last.getIdFacture());
+        Utilisateur client = utilisateurService.findById(idUtilisateur).orElse(null);
+
+        Panier panier = panierService.findById(idPanier);      
+        BigDecimal montantReservation = panierDetailsService.montantReservation(idPanier),
+                montatCommande = panierDetailsService.montantCommande(idPanier);
+
+        LocalDateTime now = LocalDateTime.now();
+        StatutFacture statutFacture = statutFactureService.findById((long) 1).orElse(null);
+
+        Facture factureNew = new Facture();
+        factureNew.setNumero(numero);
+        factureNew.setClient(client);
+        factureNew.setStatutFacture(statutFacture);
+        factureNew.setDateFacture(now);
+        factureNew.setMontantPaye(BigDecimal.valueOf(0));
+        factureNew.setMontantTotal(montatCommande.add(montantReservation));
+
+        factureNew.setTypeOperation("commande-reservation");
+
+        factureRepository.save(factureNew);
     }
 
 }

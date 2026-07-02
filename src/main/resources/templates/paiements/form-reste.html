@@ -4,9 +4,11 @@
     <input type="hidden" name="idFacture" th:value="${facture.getIdFacture()}">
     <p> Montant à payer <input type="number" name="montant"> </p>
     <p> Date de paiement <input type="datetime-local" name="date"> </p>
-    <p> Mode de paiement: 
-        <label>Espèces <input type="radio" name="mode" value="Espèces" ></label>
-        <label>Carte bancaire <input type="radio" name="mode" value="Carte bancaire"></label>
+    <p> Mode de paiement:
+        <select name="modePaiement">
+            <option th:each="mode: ${modes}" th:value="${mode.idModePaiement}" th:text="${mode.libelle}">
+            </option>
+        </select>
     </p>
 
     <button type="submit">Valider le paiement</button>

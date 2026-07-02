@@ -1,9 +1,11 @@
 package com.voly_saina.controller.paiement;
 
 import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Paiement;
 import com.voly_saina.entity.dto.PaiementDTO;
 import com.voly_saina.service.FactureService;
+import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.PaiementService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ public class PaiementController {
 
     private final PaiementService paiementService;
     private final FactureService factureService;
+    private final ModePaiementService modePaiementService;
 
     // GET /api/paiements
     // @GetMapping
@@ -30,9 +33,11 @@ public class PaiementController {
     // return ResponseEntity.ok(paiementService.findAll());
     // }
 
-    public PaiementController(PaiementService paiementService, FactureService factureService) {
+    public PaiementController(PaiementService paiementService, FactureService factureService,
+            ModePaiementService modePaiementService) {
         this.paiementService = paiementService;
         this.factureService = factureService;
+        this.modePaiementService = modePaiementService;
     }
 
     @GetMapping
@@ -40,6 +45,7 @@ public class PaiementController {
         List<Paiement> liste = paiementService.findAll();
 
         model.addAttribute("paiements", liste);
+
         return "paiements/list";
     }
 
@@ -55,6 +61,10 @@ public class PaiementController {
     public String getResteById(@PathVariable Long id, Model model) {
         Facture facture = factureService.findById(id);
         model.addAttribute("facture", facture);
+
+        List<ModePaiement> listeMode = modePaiementService.findAll();
+        model.addAttribute("modes", listeMode);
+
         return "paiements/form-reste";
     }
 
@@ -66,7 +76,9 @@ public class PaiementController {
 
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         LocalDateTime date = LocalDateTime.parse(paiementDTO.getDate(), format);
-        String mode = paiementDTO.getMode();
+
+        String mode = paiementDTO.getModePaiement();
+        ModePaiement modePaiement = modePaiementService.findById(Long.parseLong(mode));
 
         Facture f = factureService.findById(id);
 
@@ -74,12 +86,12 @@ public class PaiementController {
         p.setFacture(f);
         p.setMontant(m);
         p.setDatePaiement(date);
-        p.setModePaiement(mode);
+        p.setModePaiement(modePaiement);
 
         paiementService.save(p);
 
         f.setMontantPaye(f.getMontantPaye().add(m));
-        if(f.getMontantPaye() == f.getMontantTotal()){
+        if (f.getMontantPaye() == f.getMontantTotal()) {
             f.setIdFacture(2L);
         }
         factureService.save(f);
@@ -123,7 +135,7 @@ public class PaiementController {
 
         model.addAttribute("paiements", paiements);
         model.addAttribute("facture", facture);
-        
+
         return "paiements/historique";
     }
 }

@@ -58,8 +58,8 @@ public class ReservationMachineService {
         if (dateFin.isBefore(dateDebut)) {
             throw new IllegalArgumentException("La date de fin ne peut pas etre avant la date de debut");
         }
-        
-        return reservationMachineRepository.findConflictingReservations(machineId, dateDebut, dateFin);
+        List<ReservationMachine> conflictingReservations = reservationMachineRepository.findConflictingReservations(machineId, dateDebut, dateFin);
+        return conflictingReservations;
     }
 
     public boolean isMachineAvailable(Long machineId, LocalDate dateDebut, LocalDate dateFin) {

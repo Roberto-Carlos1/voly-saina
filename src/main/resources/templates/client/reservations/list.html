@@ -10,6 +10,11 @@
     <a th:href="@{/client/machines/catalogue}">Catalogue</a>
     <a th:href="@{/client/accueil(clientId=${clientId})}">Accueil</a>
 
+    <script th:inline="javascript">
+        // Récupérer le clientId depuis le modèle Thymeleaf
+        const clientId = /*[[${clientId}]]*/ 1;
+        console.log('🔍 Client ID connecté:', clientId);
+    </script>
     <script src="/js/client/common.js"></script>
     <script src="/js/client/reservation-list.js"></script>
 </body>

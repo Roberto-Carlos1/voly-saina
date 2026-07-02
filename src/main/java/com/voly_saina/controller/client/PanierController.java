@@ -29,7 +29,6 @@ import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutCommandeService;
 import com.voly_saina.service.UtilisateurService;
 
-
 @Controller
 @RequestMapping("/client/panier")
 public class PanierController {

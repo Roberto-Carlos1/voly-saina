@@ -22,14 +22,16 @@ public interface ReservationMachineRepository extends JpaRepository<ReservationM
     List<ReservationMachine> findByStatutReservationCode(String code);
     
     // rechercher des reservation en conflit de dates
-    @Query("SELECT r FROM ReservationMachine r WHERE r.machine.idMachine = :machineId " +
-           "AND r.dateDebut <= :dateFin AND r.dateFin >= :dateDebut " +
-           "AND r.statutReservation.code NOT IN ('refusee', 'annulee', 'terminee')")
+    @Query("SELECT r FROM ReservationMachine r " +
+        "WHERE r.machine.idMachine = :machineId " +
+        "AND r.statutReservation.code NOT IN ('annulee', 'refusee') " +
+        "AND ((:dateDebut BETWEEN r.dateDebut AND r.dateFin) " +
+        "     OR (:dateFin BETWEEN r.dateDebut AND r.dateFin) " +
+        "     OR (r.dateDebut BETWEEN :dateDebut AND :dateFin))")
     List<ReservationMachine> findConflictingReservations(
         @Param("machineId") Long machineId,
         @Param("dateDebut") LocalDate dateDebut,
-        @Param("dateFin") LocalDate dateFin
-    );
+        @Param("dateFin") LocalDate dateFin);
     
     // rechercher par client et par status de reservation
     @Query("SELECT r FROM ReservationMachine r WHERE r.client.idUtilisateur = :clientId AND r.statutReservation.code = :code")

@@ -1,7 +1,6 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Facture;
-import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.StatutFacture;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.entity.dto.FactureDTO;
@@ -24,16 +23,13 @@ public class FactureService {
     private final FactureRepository factureRepository;
     private final UtilisateurService utilisateurService;
     private final StatutFactureService statutFactureService;
-    private final PanierService panierService;
     private final PanierDetailsService panierDetailsService;
 
     public FactureService(FactureRepository factureRepository, UtilisateurService utilisateurService,
-            StatutFactureService statutFactureService, PanierService panierService,
-            PanierDetailsService panierDetailsService) {
+            StatutFactureService statutFactureService, PanierDetailsService panierDetailsService) {
         this.factureRepository = factureRepository;
         this.utilisateurService = utilisateurService;
         this.statutFactureService = statutFactureService;
-        this.panierService = panierService;
         this.panierDetailsService = panierDetailsService;
     }
 

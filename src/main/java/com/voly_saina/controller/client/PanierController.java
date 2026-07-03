@@ -436,14 +436,15 @@ public class PanierController {
         commandePanier.setMontantTotal(total);
         commandeService.save(commandePanier);
 
-        // 3) vérifier stock + décrément + créer facture + opérations
-        commandeClientService.creerOperation("commande", commandePanier, lignes, null);
-
+        // factureService.genererFactureProformat(idClientFinal, idPanier);
         Panier panier = panierService.findById(idPanier);
         panier.setActif(false);
         panierService.save(panier);
+        
+        // 3) vérifier stock + décrément + créer facture + opérations
+        commandeClientService.creerOperation("commande", commandePanier, lignes, null,panier);
 
-        // factureService.genererFactureProformat(idClientFinal, idPanier);
+
 
         return "redirect:/client/factures?idClient=" +idClientFinal;
     }

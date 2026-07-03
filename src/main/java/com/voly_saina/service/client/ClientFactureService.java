@@ -87,9 +87,9 @@ public class ClientFactureService {
         List<PanierDetails> listeCommande = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
         List<PanierDetails> listeReservation = panierDetailsService.findReservationByPanier(panier.getIdPanier());
 
-        BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()),
-                montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()),
-                montantTotal = montantCommande.add(montantReservation);
+        BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null ? panierDetailsService.montantCommande(panier.getIdPanier()) : BigDecimal.ZERO;
+        BigDecimal montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null ? panierDetailsService.montantReservation(panier.getIdPanier()) : BigDecimal.ZERO;
+        BigDecimal montantTotal = montantCommande.add(montantReservation);
 
         try {
             Document document = new Document(PageSize.A4, 50, 50, 50, 50);

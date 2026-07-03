@@ -6,6 +6,7 @@ import com.voly_saina.entity.PanierDetails;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,5 +28,7 @@ public interface PanierDetailsRepository extends JpaRepository<PanierDetails, Lo
     public List<PanierDetails> findByPanierIdPanierAndReservationMachineIdReservationIsNotNull(Long idPanier);
 
     public Commande findByCommandeIdCommande(Long idCommande);
+
+    public Optional<PanierDetails> findByReservationMachineIdReservation(Long reservationId);
 
 }

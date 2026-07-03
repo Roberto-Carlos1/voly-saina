@@ -70,7 +70,7 @@ public class CommandeClientService {
      */
     @Transactional
     public Facture creerOperation(String typeOperation, Commande commande, List<LigneCommande> lignesCommande,
-                                    String numeroFacturePrefixeIfNeeded) {
+                                    String numeroFacturePrefixeIfNeeded,Panier panier) {
 
         if (commande == null || commande.getIdCommande() == null) {
             throw new IllegalArgumentException("Commande invalide");
@@ -154,7 +154,7 @@ public class CommandeClientService {
         facture.setMontantPaye(BigDecimal.ZERO);
         facture.setStatutFacture(statutFacture);
         facture.setDateLimite(LocalDate.now().plusDays(14));
-
+        facture.setPanier(panier);
         facture = factureService.save(facture);
 
         // 4) Créer OperationProduit

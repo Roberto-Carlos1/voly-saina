@@ -5,7 +5,7 @@ const clientId = document.querySelector('input[name="clientId"]').value;
 console.log('Machine ID:', machineId);
 console.log('Client ID:', clientId);
 
-// Charger la machine avec timeout
+// Charger la machine
 function chargerMachine() {
     console.log(' Appel API: /client/machines/api/' + machineId);
 
@@ -43,15 +43,22 @@ function chargerMachine() {
 // Lancer le chargement
 chargerMachine();
 
-// Soumettre le formulaire
-document.getElementById('reservationForm').onsubmit = function (e) {
-    e.preventDefault();
+// Fonction pour afficher le résultat
+function afficherResultat(message, estErreur = false) {
+    const style = estErreur 
+        ? 'border:1px solid red;padding:15px;background:#f8d7da;border-radius:5px;color:red;'
+        : 'border:1px solid green;padding:15px;background:#d4edda;border-radius:5px;';
+    
+    document.getElementById('resultat').innerHTML = `<div style="${style}">${message}</div>`;
+}
 
+// Fonction pour soumettre la réservation
+function soumettreReservation(ajouterAuPanier = false) {
     const dateDebut = document.getElementById('dateDebut').value;
     const dateFin = document.getElementById('dateFin').value;
 
     if (!dateDebut || !dateFin) {
-        document.getElementById('resultat').innerHTML = ' Veuillez remplir toutes les dates';
+        afficherResultat('Veuillez remplir toutes les dates', true);
         return;
     }
 
@@ -63,9 +70,14 @@ document.getElementById('reservationForm').onsubmit = function (e) {
         lieuLivraison: document.getElementById('lieuLivraison').value || ''
     };
 
-    console.log('📤 Envoi:', data);
+    // URL selon le bouton cliqué
+    const url = ajouterAuPanier 
+        ? '/client/panier/reservations/api/ajouter' 
+        : '/client/reservations/api';
 
-    fetch('/client/reservations/api', {
+    console.log(' Envoi' + (ajouterAuPanier ? ' au panier' : '') + ':', data);
+
+    fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -74,38 +86,57 @@ document.getElementById('reservationForm').onsubmit = function (e) {
             console.log(' Status POST:', r.status);
             return r.json();
         })
-        .then(data => {
-            console.log(' Réponse:', data);
-            if (data.error) {
-                document.getElementById('resultat').innerHTML = `
-                <div style="border:1px solid red;padding:10px;background:#f8d7da;color:red;">
-                     ${data.error}
-                </div>
-            `;
+        .then(response => {
+            console.log(' Réponse:', response);
+            if (response.error) {
+                afficherResultat(response.error, true);
             } else {
-                document.getElementById('resultat').innerHTML = `
-                    <div style="border:1px solid green;padding:15px;background:#d4edda;border-radius:5px;">
+                if (ajouterAuPanier) {
+                    // Réponse du panier
+                    afficherResultat(`
                         <h3 style="color:green;">Ajouté au panier</h3>
-                        <p><strong>Machine:</strong> ${data.reservation.machineNom}</p>
-                        <p><strong>Période:</strong> ${data.reservation.dateDebut} au ${data.reservation.dateFin}</p>
-                        <p><strong>Prix total:</strong> ${data.reservation.prixTotal} MGA</p>
+                        <p><strong>Machine:</strong> ${response.reservation.machineNom}</p>
+                        <p><strong>Période:</strong> ${response.reservation.dateDebut} au ${response.reservation.dateFin}</p>
+                        <p><strong>Prix total:</strong> ${response.reservation.prixTotal} MGA</p>
                         <p><em>Statut: en attente de validation (après paiement)</em></p>
                         <br>
                         <button onclick="window.location.href='/client/panier?clientId=${clientId}'"
                                 style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
                             Voir mon panier
                         </button>
-                    </div>
-                `;
+                    `);
+                } else {
+                    // Réponse de la réservation normale
+                    afficherResultat(`
+                        <h3 style="color:green;">Réservation créée avec succès</h3>
+                        <p><strong>Machine:</strong> ${response.reservation.machineNom}</p>
+                        <p><strong>Période:</strong> ${response.reservation.dateDebut} au ${response.reservation.dateFin}</p>
+                        <p><strong>Prix total:</strong> ${response.reservation.prixTotal} MGA</p>
+                        <br>
+                        <button onclick="window.location.href='/client/reservations/mes-reservations?clientId=${clientId}'"
+                                style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
+                            Voir mes réservations
+                        </button>
+                    `);
+                }
                 document.getElementById('reservationForm').style.display = 'none';
             }
         })
         .catch(err => {
             console.error('Erreur POST:', err);
-            document.getElementById('resultat').innerHTML = `
-            <div style="border:1px solid red;padding:10px;background:#f8d7da;color:red;">
-                Erreur: ${err.message}
-            </div>
-        `;
+            afficherResultat('Erreur: ' + err.message, true);
         });
-};
+}
+
+// Gestion du formulaire - distinguer les deux boutons
+document.getElementById('reservationForm').addEventListener('submit', function (e) {
+    const boutonClique = document.activeElement;
+    
+    if (boutonClique && boutonClique.id === 'ajouterPanier') {
+        e.preventDefault();
+        soumettreReservation(true);
+    } else {
+        e.preventDefault();
+        soumettreReservation(false);
+    }
+});

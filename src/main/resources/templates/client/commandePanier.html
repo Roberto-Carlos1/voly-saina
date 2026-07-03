@@ -73,11 +73,11 @@
 
                 <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
 
-                <div th:if="${lignes == null or #lists.isEmpty(lignes)}" class="text-center py-5 text-muted">
+                <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}" class="text-center py-5 text-muted">
                     Votre panier est vide.
                 </div>
 
-                <div th:if="${lignes != null and not #lists.isEmpty(lignes)}" id="panierContent">
+                <div th:if="${lignes != null and not #lists.isEmpty(lignes) or (reservations != null and not #lists.isEmpty(reservations))}" id="panierContent">
 
                     <div class="table-responsive">
                         <table class="table align-middle">
@@ -124,12 +124,56 @@
                         </table>
                     </div>
 
+                    <!-- Section Réservations de machines -->
+                    <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="mt-5">
+                        <h5 class="mb-3">Réservations de machines</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 30%">Machine</th>
+                                        <th style="width: 15%">Période</th>
+                                        <th style="width: 20%">Lieu livraison</th>
+                                        <th style="width: 15%">Prix total</th>
+                                        <th style="width: 10%">Statut</th>
+                                        <th style="width: 10%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="reservation : ${reservations}">
+                                        <td>
+                                            <div style="font-weight: 700;" th:text="${reservation.machine.nom}">Nom de la machine
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span> au
+                                            <span th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span>
+                                        </td>
+                                        <td th:text="${reservation.lieuLivraison}"></td>
+                                        <td th:text="${reservation.prixTotal}"></td>
+                                        <td>
+                                            <span class="badge badge-green" th:text="${reservation.statutReservation.libelle}">En attente</span>
+                                        </td>
+                                        <td>
+                                            <form th:action="@{/client/panier/reservations/supprimer}" method="post"
+                                                onsubmit="return confirm('Supprimer cette réservation du panier ?');">
+                                                <input type="hidden" name="reservationId" th:value="${reservation.idReservation}" />
+                                                <input type="hidden" name="clientId" th:value="${idClient}" />
+                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end mt-4">
                         <div style="min-width: 320px;">
                             <div class="d-flex justify-content-between">
                                 <div class="text-muted" style="font-weight: 600;">Montant total</div>
                                 <div style="font-weight: 800;">
-                                    <span id="montantTotal">0</span> AR
+                                    <span th:text="${montantTotal}">0</span> AR
                                 </div>
                             </div>
 
@@ -165,13 +209,13 @@
             sousTotalCell.dataset.sousTotal = sousTotal;
             sousTotalCell.textContent = formatNumber(sousTotal);
 
-            calculerTotal();
+            // Note: le total est maintenant calculé côté serveur et inclut les réservations
+            // Le calcul côté client est conservé pour la mise à jour dynamique
             input.form.submit();
         }
 
-        function calculerTotal() {
-            let total = 0;
-            document.querySelectorAll('.sous-total-cell').forEach(cell => {
+        function formatNumber(number) {
+            return number.toFixed(2).
                 const montant = parseFloat(cell.dataset.sousTotal) || 0;
                 total += montant;
             });

@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 @Service
@@ -180,9 +181,9 @@ public class ClientFactureService {
             } else {
                 PdfPTable tableCommande = new PdfPTable(5);
                 tableCommande.setWidthPercentage(100);
-                tableCommande.setWidths(new float[] { 35f, 15f, 20f, 20f, 10f });
+                tableCommande.setWidths(new float[] { 10f, 15f, 15f, 15f, 15f });
 
-                String[] titles = { "Désignation", "Quantité", "Prix Unitaire", "Prix total", "" };
+                String[] titles = { "Num", "Désignation", "Quantité", "Prix Unitaire", "Prix total" };
                 addTableHeader(tableCommande, titles, new Color(0, 102, 51));
                 addRowsCommande(tableCommande, listeCommande);
                 document.add(tableCommande);
@@ -207,11 +208,11 @@ public class ClientFactureService {
             if (listeReservation.isEmpty()) {
                 document.add(new Paragraph("Aucune réservation de machines", normalFont));
             } else {
-                PdfPTable tableReservation = new PdfPTable(5);
+                PdfPTable tableReservation = new PdfPTable(6);
                 tableReservation.setWidthPercentage(100);
-                tableReservation.setWidths(new float[] { 30f, 20f, 20f, 20f, 10f });
+                tableReservation.setWidths(new float[] { 10f, 15f, 15f, 15f, 10f, 15f });
 
-                String[] titles = { "Désignation", "Date début", "Date fin", "Prix total", "" };
+                String[] titles = { "Num", "Désignation", "Date début", "Date fin", "Duree (jours)", "Prix total" };
                 addTableHeader(tableReservation, titles, new Color(0, 102, 51));
                 addRowsReservation(tableReservation, listeReservation);
                 document.add(tableReservation);
@@ -312,11 +313,12 @@ public class ClientFactureService {
             Commande commande = detail.getCommande();
             List<LigneCommande> lignes = ligneCommandeService.findByIdCommande(commande.getIdCommande());
             for (LigneCommande line : lignes) {
+                table.addCell(String.valueOf(numero++));
                 table.addCell(line.getProduit().getNom());
                 table.addCell(String.valueOf(line.getQuantite()));
                 table.addCell(String.valueOf(line.getPrixUnitaire()) + " MGA");
                 table.addCell(String.valueOf(line.getSousTotal()) + " MGA");
-                table.addCell(String.valueOf(numero++));
+
             }
         }
     }
@@ -325,12 +327,16 @@ public class ClientFactureService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         int numero = 1;
         for (PanierDetails detail : paniers) {
+            table.addCell(String.valueOf(numero++));
             ReservationMachine reservation = detail.getReservationMachine();
             table.addCell(reservation.getMachine().getNom());
-            table.addCell(reservation.getDateCreation().format(formatter));
+            table.addCell(reservation.getDateDebut().format(formatter));
             table.addCell(reservation.getDateFin().format(formatter));
+
+            long dureeJour = ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin());
+            table.addCell(String.valueOf(dureeJour));
+
             table.addCell(String.valueOf(reservation.getPrixTotal()) + " MGA");
-            table.addCell(String.valueOf(numero++));
         }
     }
 

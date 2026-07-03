@@ -2,6 +2,7 @@ package com.voly_saina.controller.client;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +16,10 @@ import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.PanierDetails;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.Utilisateur;
+import com.voly_saina.service.PanierDetailsService;
 import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.PanierService;
 import com.voly_saina.service.UtilisateurService;
@@ -32,6 +36,9 @@ public class PanierController {
 
     @Autowired
     private ModePaiementService modePaiementService;
+
+    @Autowired
+    private PanierDetailsService panierDetailsService;
 
     private Long resolveClientId(Long clientId) {
         return clientId != null ? clientId : 1L;
@@ -61,19 +68,34 @@ public class PanierController {
         Commande commandePanier = panierService.findPendingCommande(idClientFinal);
         if (commandePanier == null) {
             model.addAttribute("lignes", List.of());
+            model.addAttribute("reservations", List.of());
             model.addAttribute("montantTotal", BigDecimal.ZERO);
             return "client/panier";
         }
 
         Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
         List<LigneCommande> lignes = panierService.getLignesFromPanier(panier);
+        
+        // Récupérer les réservations du panier
+        List<ReservationMachine> reservations = panierDetailsService.findReservationByPanier(panier.getIdPanier()).stream()
+                .map(PanierDetails::getReservationMachine)
+                .filter(r -> r != null)
+                .collect(Collectors.toList());
+
+        // Calculer le montant total incluant les réservations
+        BigDecimal totalCommandes = commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal();
+        BigDecimal totalReservations = reservations.stream()
+                .map(ReservationMachine::getPrixTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal montantTotal = totalCommandes.add(totalReservations);
 
         model.addAttribute("commande", commandePanier);
         model.addAttribute("lignes", lignes);
-        model.addAttribute("montantTotal",
-                commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal());
+        model.addAttribute("reservations", reservations);
+        model.addAttribute("montantTotal", montantTotal);
         model.addAttribute("modePaiements", modePaiementService.findAll());
         model.addAttribute("idPanier", panier.getIdPanier());
+        model.addAttribute("idClient", idClientFinal);
 
         return "client/commandePanier";
     }

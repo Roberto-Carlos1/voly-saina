@@ -298,11 +298,15 @@ public class PanierReservationController {
             }
 
             List<PanierDetails> panierDetails = panierDetailsService.findByPanierId(panier.getIdPanier());
-            List<ReservationMachine> reservations = panierDetails.stream()
-                    .filter(pd -> pd.getReservationMachine() != null)
-                    .map(PanierDetails::getReservationMachine)
-                    .filter(r -> "en_attente".equals(r.getStatutReservation().getCode()))
-                    .toList();
+            List<ReservationMachine> reservations = new ArrayList<>();
+                    for(PanierDetails pd : panierDetails) {
+                        if (pd.getReservationMachine() != null) {
+                            ReservationMachine r = pd.getReservationMachine();
+                            if ("en_attente".equals(r.getStatutReservation().getCode())) {
+                                reservations.add(r);
+                            }
+                        }
+                    }
 
             if (reservations.isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Aucune réservation à valider");

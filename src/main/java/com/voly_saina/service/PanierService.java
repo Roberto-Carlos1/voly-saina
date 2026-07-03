@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.voly_saina.entity.Commande;
+import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.ReservationMachine;
@@ -16,6 +17,9 @@ import com.voly_saina.repository.PanierRepository;
 
 @Service
 public class PanierService {
+
+    @Autowired
+    private FactureService factureService;
 
     @Autowired
     private PanierRepository panierRepository;
@@ -132,7 +136,7 @@ public class PanierService {
     }
 
     public int validerReservationsDuPanier(Long clientId) {
-        return panierReservationService.validerReservationsDuPanier(clientId);
+        return panierReservationService.validerReservationsDuPanier(clientId ,null);
     }
 
     public int viderReservationsDuPanier(Long clientId) {
@@ -146,7 +150,10 @@ public class PanierService {
     // ============ VALIDATION GLOBALE ============
 
     public void cloturerPanier(Long clientId, Long idPanier, String adresseLivraison) {
-        panierCommandeService.cloturerPanier(clientId, idPanier, adresseLivraison);
-        panierReservationService.validerReservationsDuPanier(clientId);
+        utilisateurService.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+        Facture facture = factureService.genererFactureProformat(clientId, idPanier);
+        panierCommandeService.cloturerPanier(clientId, idPanier, adresseLivraison, facture);
+        panierReservationService.validerReservationsDuPanier(clientId, facture);
     }
 }

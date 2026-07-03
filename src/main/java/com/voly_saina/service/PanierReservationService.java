@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.PanierDetails;
@@ -19,6 +20,9 @@ import com.voly_saina.entity.Utilisateur;
 
 @Service
 public class PanierReservationService {
+
+    @Autowired
+    private FactureService factureService;
 
     @Autowired
     private UtilisateurService utilisateurService;
@@ -38,6 +42,8 @@ public class PanierReservationService {
     @Autowired
     @Lazy
     private PanierService panierService;
+
+
 
     public ReservationMachine ajouterReservationAuPanier(Long clientId, Long machineId,
             LocalDate dateDebut, LocalDate dateFin, String lieuLivraison) {
@@ -127,7 +133,7 @@ public class PanierReservationService {
         reservationMachineService.save(reservation);
     }
 
-    public int validerReservationsDuPanier(Long clientId) {
+    public int validerReservationsDuPanier(Long clientId, Facture facture) {
         Panier panier = panierService.findByClientId(clientId);
         if (panier == null) {
             throw new RuntimeException("Panier vide");
@@ -145,7 +151,8 @@ public class PanierReservationService {
         }
 
         if (reservations.isEmpty()) {
-            throw new RuntimeException("Aucune réservation à valider");
+            return 0; // No reservations to validate
+            // throw new RuntimeException("Aucune réservation à valider");
         }
 
         for (ReservationMachine r : reservations) {
@@ -164,6 +171,7 @@ public class PanierReservationService {
             reservationMachineService.save(r);
             count++;
         }
+        factureService.creerOperationReservation(facture, panier);
         panierService.cloturePanier(clientId);
         return count;
     }

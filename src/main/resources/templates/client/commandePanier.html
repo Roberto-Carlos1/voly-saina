@@ -79,49 +79,52 @@
 
                 <div th:if="${lignes != null and not #lists.isEmpty(lignes) or (reservations != null and not #lists.isEmpty(reservations))}" id="panierContent">
 
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40%">Produit</th>
-                                    <th style="width: 15%">Prix unitaire</th>
-                                    <th style="width: 20%">Quantité</th>
-                                    <th style="width: 15%">Sous-total</th>
-                                    <th style="width: 10%">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="ligne : ${lignes}">
-                                    <td>
-                                        <div style="font-weight: 700;" th:text="${ligne.produit.nom}">Nom du produit
-                                        </div>
-                                    </td>
-                                    <td class="prix-unitaire" th:text="${ligne.prixUnitaire}"
-                                        th:data-prix-unitaire="${ligne.prixUnitaire}">
-                                    </td>
-                                    <td>
-                                        <form th:action="@{/client/panier/quantite}" method="post" class="ligneForm">
-                                            <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
-                                            <label class="visually-hidden"
-                                                for="quantite-[[${ligne.idLigne}]]">Quantité</label>
-                                            <input type="number" id="quantite-[[${ligne.idLigne}]]" name="quantite"
-                                                min="1" step="1" class="form-control quantite-input"
-                                                onchange="updateQuantite(this)" th:value="${ligne.quantite}" />
-                                        </form>
-                                    </td>
-                                    <td class="sous-total-cell" th:text="${ligne.sousTotal}"
-                                        th:data-sous-total="${ligne.sousTotal}">
-                                    </td>
-                                    <td>
-                                        <form th:action="@{/client/panier/supprimer}" method="post"
-                                            onsubmit="return confirm('Supprimer cette ligne du panier ?');">
-                                            <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
-                                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <!-- Section Produits -->
+                    <div th:if="${lignes != null and not #lists.isEmpty(lignes)}">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40%">Produit</th>
+                                        <th style="width: 15%">Prix unitaire</th>
+                                        <th style="width: 20%">Quantité</th>
+                                        <th style="width: 15%">Sous-total</th>
+                                        <th style="width: 10%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="ligne : ${lignes}">
+                                        <td>
+                                            <div style="font-weight: 700;" th:text="${ligne.produit.nom}">Nom du produit
+                                            </div>
+                                        </td>
+                                        <td class="prix-unitaire" th:text="${ligne.prixUnitaire}"
+                                            th:data-prix-unitaire="${ligne.prixUnitaire}">
+                                        </td>
+                                        <td>
+                                            <form th:action="@{/client/panier/quantite}" method="post" class="ligneForm">
+                                                <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                                <label class="visually-hidden"
+                                                    for="quantite-[[${ligne.idLigne}]]">Quantité</label>
+                                                <input type="number" id="quantite-[[${ligne.idLigne}]]" name="quantite"
+                                                    min="1" step="1" class="form-control quantite-input"
+                                                    onchange="updateQuantite(this)" th:value="${ligne.quantite}" />
+                                            </form>
+                                        </td>
+                                        <td class="sous-total-cell" th:text="${ligne.sousTotal}"
+                                            th:data-sous-total="${ligne.sousTotal}">
+                                        </td>
+                                        <td>
+                                            <form th:action="@{/client/panier/supprimer}" method="post"
+                                                onsubmit="return confirm('Supprimer cette ligne du panier ?');">
+                                                <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <!-- Section Réservations de machines -->
@@ -173,7 +176,7 @@
                             <div class="d-flex justify-content-between">
                                 <div class="text-muted" style="font-weight: 600;">Montant total</div>
                                 <div style="font-weight: 800;">
-                                    <span th:text="${montantTotal}">0</span> AR
+                                    <span th:text="${#numbers.formatDecimal(montantTotal, 0, 'POINT', 2, 'COMMA')}">0</span> AR
                                 </div>
                             </div>
 
@@ -209,39 +212,13 @@
             sousTotalCell.dataset.sousTotal = sousTotal;
             sousTotalCell.textContent = formatNumber(sousTotal);
 
-            // Note: le total est maintenant calculé côté serveur et inclut les réservations
-            // Le calcul côté client est conservé pour la mise à jour dynamique
+           
             input.form.submit();
-        }
-
-        function formatNumber(number) {
-            return number.toFixed(2).
-                const montant = parseFloat(cell.dataset.sousTotal) || 0;
-                total += montant;
-            });
-            document.getElementById('montantTotal').textContent = formatNumber(total);
         }
 
         function formatNumber(number) {
             return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
         }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const sousTotalCells = document.querySelectorAll('.sous-total-cell');
-            sousTotalCells.forEach(cell => {
-                if (!cell.dataset.sousTotal || cell.dataset.sousTotal === '0') {
-                    const textValue = cell.textContent.trim();
-                    if (textValue && textValue !== '-') {
-                        const cleanValue = textValue.replace(/\s/g, '').replace(/,/g, '.');
-                        const numValue = parseFloat(cleanValue);
-                        if (!isNaN(numValue)) {
-                            cell.dataset.sousTotal = numValue;
-                        }
-                    }
-                }
-            });
-            calculerTotal();
-        });
     </script>
 </body>
 

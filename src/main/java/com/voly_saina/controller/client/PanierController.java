@@ -65,25 +65,23 @@ public class PanierController {
             return "client/panier";
         }
 
-        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
-        if (commandePanier == null) {
-            model.addAttribute("lignes", List.of());
-            model.addAttribute("reservations", List.of());
-            model.addAttribute("montantTotal", BigDecimal.ZERO);
-            return "client/panier";
-        }
-
         Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
-        List<LigneCommande> lignes = panierService.getLignesFromPanier(panier);
         
-        // Récupérer les réservations du panier
         List<ReservationMachine> reservations = panierDetailsService.findReservationByPanier(panier.getIdPanier()).stream()
                 .map(PanierDetails::getReservationMachine)
                 .filter(r -> r != null)
                 .collect(Collectors.toList());
 
-        // Calculer le montant total incluant les réservations
-        BigDecimal totalCommandes = commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal();
+        // Récupérer la commande en attente
+        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
+        List<LigneCommande> lignes = List.of();
+        BigDecimal totalCommandes = BigDecimal.ZERO;
+        
+        if (commandePanier != null) {
+            lignes = panierService.getLignesFromPanier(panier);
+            totalCommandes = commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal();
+        }
+
         BigDecimal totalReservations = reservations.stream()
                 .map(ReservationMachine::getPrixTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

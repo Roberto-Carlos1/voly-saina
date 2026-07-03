@@ -1,15 +1,26 @@
 package com.voly_saina.service;
 
-import com.voly_saina.entity.*;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
+import com.voly_saina.entity.Commande;
+import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.LigneCommande;
+import com.voly_saina.entity.MouvementStock;
+import com.voly_saina.entity.OperationProduit;
+import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.Produit;
+import com.voly_saina.entity.StatutFacture;
+import com.voly_saina.entity.TypeMouvementStock;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CommandeClientService {
@@ -24,6 +35,7 @@ public class CommandeClientService {
     private ProduitService produitService;
 
     @Autowired
+    @Lazy
     private FactureService factureService;
 
     @Autowired

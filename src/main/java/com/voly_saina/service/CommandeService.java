@@ -2,10 +2,14 @@ package com.voly_saina.service;
 
 import com.voly_saina.entity.Commande;
 import com.voly_saina.repository.CommandeRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.voly_saina.entity.Commande;
+import com.voly_saina.repository.CommandeRepository;
 
 @Service
 public class CommandeService {

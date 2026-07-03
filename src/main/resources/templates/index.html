@@ -41,7 +41,7 @@
                 <div class="card-description">Liste des produits en stock et valides</div>
             </a>
 
-            <a th:href="@{/client/panier(clientId=1)}" class="card">
+            <a th:href="@{/client/panier(idClient=1)}" class="card">
                 <div class="card-icon">🛒</div>
                 <div class="card-title">Mon panier</div>
                 <div class="card-description">Consultez et gérez votre panier</div>
@@ -118,6 +118,11 @@
                 <div class="card-icon">📅</div>
                 <div class="card-title">Gestion reservations</div>
                 <div class="card-description">Liste et suivi des reservations</div>
+            </a>
+             <a th:href="@{/api/reservations-machine/calendrier}" class="card">
+                <div class="card-icon">📅</div>
+                <div class="card-title">Calendrier des machines</div>
+                <div class="card-description">Visualisez les disponibilités des machines</div>
             </a>
         </div>
     </div>

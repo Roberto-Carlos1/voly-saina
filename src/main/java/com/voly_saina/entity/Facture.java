@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.query.common.FetchClauseType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,9 +31,6 @@ public class Facture {
     @Column(name = "type_operation", nullable = false, length = 30)
     private String typeOperation; // Valeurs: location, commande
 
-    @Column(name = "id_operation")
-    private Long idOperation; // id de la réservation ou commande liée
-
     @OneToMany(mappedBy = "idFacture")
     private List<OperationMachine> operationMachine;
 
@@ -56,6 +54,10 @@ public class Facture {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_statut_facture", nullable = false)
     private StatutFacture statutFacture;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id_panier", nullable = true)
+    private Panier panier;
 
     @Column(name = "date_limite")
     private LocalDate dateLimite;

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.ui.Model;
 
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.service.ReservationMachineService;
@@ -30,7 +30,7 @@ public class ReservationMachineController {
     public String getAllReservations(Model model) {
         List<ReservationMachine> reservations = reservationMachineService.findAll();
         model.addAttribute("reservations", reservations);
-        return "reservation/list"; 
+        return "reservation/list";
     }
 
     // GET /api/reservations-machine/{id}

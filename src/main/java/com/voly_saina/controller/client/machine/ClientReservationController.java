@@ -27,6 +27,7 @@ import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.OperationMachine;
 import com.voly_saina.entity.Paiement;
+import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.FactureService;

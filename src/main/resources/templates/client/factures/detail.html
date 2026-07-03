@@ -106,6 +106,7 @@
                             <div class="col-7 col-md-8 detail-value highlight-amount" 
                                   th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></div>
                         </div>
+                        <a th:if="${facture.montantPaye != facture.montantTotal}" th:href="@{/client/factures/paiement(idFacture=${facture.idFacture}, idClient=${idClient})}">Procéder au paiement</a>
                     </div>
                 </div>
                 

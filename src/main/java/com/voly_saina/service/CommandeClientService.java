@@ -1,15 +1,26 @@
 package com.voly_saina.service;
 
-import com.voly_saina.entity.*;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
+import com.voly_saina.entity.Commande;
+import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.LigneCommande;
+import com.voly_saina.entity.MouvementStock;
+import com.voly_saina.entity.OperationProduit;
+import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.Produit;
+import com.voly_saina.entity.StatutFacture;
+import com.voly_saina.entity.TypeMouvementStock;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class CommandeClientService {
@@ -24,6 +35,7 @@ public class CommandeClientService {
     private ProduitService produitService;
 
     @Autowired
+    @Lazy
     private FactureService factureService;
 
     @Autowired
@@ -70,7 +82,7 @@ public class CommandeClientService {
      */
     @Transactional
     public Facture creerOperation(String typeOperation, Commande commande, List<LigneCommande> lignesCommande,
-                                    String numeroFacturePrefixeIfNeeded) {
+                                    String numeroFacturePrefixeIfNeeded,Panier panier) {
 
         if (commande == null || commande.getIdCommande() == null) {
             throw new IllegalArgumentException("Commande invalide");
@@ -128,7 +140,6 @@ public class CommandeClientService {
             mouvementStockService.save(ms);
         }
 
-
         // 3) Calcul montant + créer facture (uniquement quand cloture => en_livraison)
         BigDecimal montantTotal = calculerMontant(commande, lignesCommande);
         StatutFacture statutFacture = statutFactureService.findAll().stream()
@@ -150,13 +161,12 @@ public class CommandeClientService {
         facture.setNumero(numero);
 
         facture.setTypeOperation(TYPE_OPERATION_COMMANDE);
-        facture.setIdOperation(commande.getIdCommande());
         facture.setClient(commande.getClient());
         facture.setMontantTotal(montantTotal);
         facture.setMontantPaye(BigDecimal.ZERO);
         facture.setStatutFacture(statutFacture);
         facture.setDateLimite(LocalDate.now().plusDays(14));
-
+        facture.setPanier(panier);
         facture = factureService.save(facture);
 
         // 4) Créer OperationProduit

@@ -1,0 +1,21 @@
+<h2 th:text="${facture.numero}"></h2>
+<ul>
+    <li th:text=" 'Montant total à payer : ' + ${facture.montantTotal} + ' Ar'"></li>
+    <li th:text=" 'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar'"></li>
+</ul>
+
+<h3> Formulaire de paiement </h3>
+
+<form action="/client/factures/achat" method="post">
+    <input type="hidden" name="idFacture" th:value="${facture.getIdFacture()}">
+    <p> Montant à payer <input type="number" name="montant" min="1" max="${facture.montantTotal}"> </p>
+    <p> Date de paiement <input type="datetime-local" name="date"> </p>
+    <p> Mode de paiement:
+        <select name="modePaiement">
+            <option th:each="mode: ${modes}" th:value="${mode.idModePaiement}" th:text="${mode.libelle}">
+            </option>
+        </select>
+    </p>
+
+    <button type="submit">Valider le paiement</button>
+</form>

@@ -122,6 +122,7 @@ INSERT INTO statut_pret(code, libelle) VALUES
 -- =========================
 -- 2. Tables utilisateurs et profils
 -- =========================
+
 CREATE TABLE utilisateur (
     id_utilisateur SERIAL PRIMARY KEY,
     nom VARCHAR(150) NOT NULL,

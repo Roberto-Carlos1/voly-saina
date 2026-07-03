@@ -1,7 +1,5 @@
 package com.voly_saina.service;
 
-import java.math.BigDecimal;
-import java.sql.ClientInfoStatus;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +38,7 @@ public class PanierService {
     }
 
     public Panier findCurrentPanierByIdClient(Long idClient) {
-        Panier retour = panierRepository.findFirstByClientIdUtilisateurOrderByIdPanierDesc(idClient);
+        Panier retour = panierRepository.findPanierActifPlusRecent(idClient);
 
         if (retour == null) {
             Utilisateur u = utilisateurService.findById(idClient).orElse(null);

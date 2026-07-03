@@ -1,5 +1,6 @@
 package com.voly_saina.repository;
 
+import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.PanierDetails;
 
@@ -20,4 +21,11 @@ public interface PanierDetailsRepository extends JpaRepository<PanierDetails, Lo
     public BigDecimal sommeMontantReservation(@Param("id_panier") Long idPanier);
 
     public List<PanierDetails> findByPanierIdPanier(Long idPanier);
+
+    public List<PanierDetails> findByPanierIdPanierAndCommandeIdCommandeIsNotNull(Long idPanier);
+
+    public List<PanierDetails> findByPanierIdPanierAndReservationMachineIdReservationIsNotNull(Long idPanier);
+
+    public Commande findByCommandeIdCommande(Long idCommande);
+
 }

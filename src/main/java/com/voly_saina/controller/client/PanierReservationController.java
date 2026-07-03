@@ -5,15 +5,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.voly_saina.entity.Machine;
@@ -114,6 +118,78 @@ public class PanierReservationController {
         }
 
         return "redirect:/client/panier?clientId=" + clientId;
+    }
+
+ 
+    @PostMapping("/api/ajouter")
+    @ResponseBody
+    public Map<String, Object> ajouterReservationAuPanierAPI(
+            @RequestBody Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Long clientId = Long.valueOf(payload.get("clientId").toString());
+            Long machineId = Long.valueOf(payload.get("machineId").toString());
+            LocalDate dateDebut = LocalDate.parse(payload.get("dateDebut").toString());
+            LocalDate dateFin = LocalDate.parse(payload.get("dateFin").toString());
+            String lieuLivraison = payload.containsKey("lieuLivraison") ? payload.get("lieuLivraison").toString() : null;
+
+            Utilisateur client = utilisateurService.findById(clientId)
+                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+
+            Machine machine = machineService.findById(machineId);
+            if (machine == null || !Boolean.TRUE.equals(machine.getDisponible())) {
+                response.put("error", "Machine indisponible");
+                return response;
+            }
+
+            List<ReservationMachine> conflits = reservationMachineService.findConfList(machineId, dateDebut, dateFin);
+            if (!conflits.isEmpty()) {
+                response.put("error", "La machine est déjà réservée sur cette période");
+                return response;
+            }
+
+            long jours = ChronoUnit.DAYS.between(dateDebut, dateFin);
+            if (jours == 0)
+                jours = 1;
+            BigDecimal prixTotal = machine.getPrixJour().multiply(BigDecimal.valueOf(jours));
+
+            ReservationMachine reservation = new ReservationMachine();
+            reservation.setMachine(machine);
+            reservation.setClient(client);
+            reservation.setDateDebut(dateDebut);
+            reservation.setDateFin(dateFin);
+            reservation.setLieuLivraison(lieuLivraison);
+            reservation.setPrixTotal(prixTotal);
+            reservation.setStatutReservation(statutReservationService.findByCode("en_attente"));
+            ReservationMachine savedReservation = reservationMachineService.save(reservation);
+
+            Panier panier = panierService.findByClientId(clientId);
+            if (panier == null) {
+                panier = new Panier();
+                panier.setClient(client);
+                panier.setDateCreation(LocalDateTime.now());
+                panier = panierService.save(panier);
+            }
+
+            PanierDetails panierDetail = new PanierDetails();
+            panierDetail.setPanier(panier);
+            panierDetail.setReservationMachine(savedReservation);
+            panierDetailsService.save(panierDetail);
+
+            response.put("message", "Réservation ajoutée au panier avec succès");
+            response.put("reservation", Map.of(
+                "idReservation", savedReservation.getIdReservation(),
+                "machineNom", machine.getNom(),
+                "dateDebut", savedReservation.getDateDebut(),
+                "dateFin", savedReservation.getDateFin(),
+                "prixTotal", savedReservation.getPrixTotal()
+            ));
+
+        } catch (Exception e) {
+            response.put("error", e.getMessage());
+        }
+
+        return response;
     }
 
     @PostMapping("/supprimer")

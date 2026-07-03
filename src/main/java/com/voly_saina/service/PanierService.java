@@ -1,6 +1,7 @@
 package com.voly_saina.service;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,15 @@ import org.springframework.stereotype.Service;
 
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
+import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.Produit;
+import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.StatutCommande;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.repository.PanierRepository;
+import com.voly_saina.service.MachineService;
 
 @Service
 public class PanierService {
@@ -46,6 +50,9 @@ public class PanierService {
     @Autowired
     @Lazy
     private CommandeClientService commandeClientService;
+
+    @Autowired
+    private MachineService machineService;
 
     public List<Panier> findAll() {
         return panierRepository.findAll();

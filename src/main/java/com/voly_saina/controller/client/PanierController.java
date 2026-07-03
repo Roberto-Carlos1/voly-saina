@@ -2,7 +2,6 @@ package com.voly_saina.controller.client;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,12 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
-import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Panier;
-import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.Utilisateur;
-import com.voly_saina.service.PanierDetailsService;
 import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.PanierService;
 import com.voly_saina.service.UtilisateurService;
@@ -37,9 +33,6 @@ public class PanierController {
     @Autowired
     private ModePaiementService modePaiementService;
 
-    @Autowired
-    private PanierDetailsService panierDetailsService;
-
     private Long resolveClientId(Long clientId) {
         return clientId != null ? clientId : 1L;
     }
@@ -49,8 +42,7 @@ public class PanierController {
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
             @RequestParam(value = "idClient", required = false) Long clientId) {
-        Long idClientFinal = resolveClientId(clientId);
-        panierService.ajouterAuPanier(idClientFinal, produitId, quantite);
+        panierService.ajouterAuPanier(resolveClientId(clientId), produitId, quantite);
         return "redirect:/client/panier";
     }
 
@@ -66,31 +58,25 @@ public class PanierController {
         }
 
         Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
-        
-        List<ReservationMachine> reservations = panierDetailsService.findReservationByPanier(panier.getIdPanier()).stream()
-                .map(PanierDetails::getReservationMachine)
-                .filter(r -> r != null)
-                .collect(Collectors.toList());
-
-        // Récupérer la commande en attente
-        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
-        List<LigneCommande> lignes = List.of();
-        BigDecimal totalCommandes = BigDecimal.ZERO;
-        
-        if (commandePanier != null) {
-            lignes = panierService.getLignesFromPanier(panier);
-            totalCommandes = commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal();
-        }
-
+        List<ReservationMachine> reservations = panierService.getReservationsEnAttente(idClientFinal);
         BigDecimal totalReservations = reservations.stream()
                 .map(ReservationMachine::getPrixTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal montantTotal = totalCommandes.add(totalReservations);
+
+        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
+        List<LigneCommande> lignes = List.of();
+        BigDecimal totalCommandes = BigDecimal.ZERO;
+
+        if (commandePanier != null) {
+            lignes = panierService.getLignesFromPanier(panier);
+            totalCommandes = commandePanier.getMontantTotal() != null
+                    ? commandePanier.getMontantTotal() : BigDecimal.ZERO;
+        }
 
         model.addAttribute("commande", commandePanier);
         model.addAttribute("lignes", lignes);
         model.addAttribute("reservations", reservations);
-        model.addAttribute("montantTotal", montantTotal);
+        model.addAttribute("montantTotal", totalCommandes.add(totalReservations));
         model.addAttribute("modePaiements", modePaiementService.findAll());
         model.addAttribute("idPanier", panier.getIdPanier());
         model.addAttribute("idClient", idClientFinal);
@@ -116,8 +102,7 @@ public class PanierController {
             return "client/panier";
         }
 
-        Long idPanier = 1L;
-        List<LigneCommande> lignes = panierService.getLignesByPanierId(idPanier);
+        List<LigneCommande> lignes = panierService.getLignesByPanierId(1L);
 
         model.addAttribute("commande", commandePanier);
         model.addAttribute("lignes", lignes);

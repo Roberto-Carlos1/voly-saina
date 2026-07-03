@@ -168,6 +168,7 @@ public class PanierReservationService {
         int count = 0;
         for (ReservationMachine r : reservations) {
             r.setStatutReservation(statutValidee);
+            r.setFacture(facture);
             reservationMachineService.save(r);
             count++;
         }

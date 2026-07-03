@@ -1,8 +1,10 @@
-const clientId = getUrlParam('clientId') || 1;
+// clientId est maintenant défini dans le template HTML via Thymeleaf
+// Si clientId n'est pas défini (page chargée sans le template), on utilise 1 par défaut
+const currentClientId = (typeof clientId !== 'undefined') ? clientId : 1;
 
-console.log('🔍 Client ID:', clientId);
+console.log('🔍 Client ID:', currentClientId);
 
-fetch('/client/reservations/api/client/' + clientId)
+fetch('/client/reservations/api/client/' + currentClientId)
     .then(r => r.json())
     .then(data => {
         console.log('📦 Données reçues:', data);
@@ -59,7 +61,7 @@ fetch('/client/reservations/api/client/' + clientId)
     });
 
 function voirDetail(id) {
-    window.location.href = '/client/reservations/' + id + '?clientId=' + clientId;
+    window.location.href = '/client/reservations/' + id + '?clientId=' + currentClientId;
 }
 
 function annuler(id) {
@@ -81,5 +83,5 @@ function annuler(id) {
 function retourner(id) {
     // ✅ L'ID est passé correctement ici
     console.log('🔍 Retour pour la réservation ID:', id);
-    window.location.href = '/client/retours/' + id + '/nouveau?clientId=' + clientId;
+    window.location.href = '/client/retours/' + id + '/nouveau?clientId=' + currentClientId;
 }

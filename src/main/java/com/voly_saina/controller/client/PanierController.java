@@ -1,5 +1,16 @@
 package com.voly_saina.controller.client;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.ModePaiement;
@@ -67,7 +78,6 @@ public class PanierController {
     private static final String STATUT_LIVRAISON = "preparee";
     private Panier panier;
 
-    // Ajoute/actualise une ligne dans le panier (1 panier unique par client)
     @GetMapping("/ajouter")
     public String ajouterAuPanier(
             @RequestParam("produitId") Long produitId,
@@ -303,7 +313,7 @@ public class PanierController {
         return "client/commandePanier";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/supprimer")
+    @PostMapping("/supprimer")
     public String supprimerLigne(
             @RequestParam("ligneId") Long ligneId,
             @RequestParam(value = "clientId", required = false) Long clientId,
@@ -320,19 +330,12 @@ public class PanierController {
         }
 
         ligneCommandeService.deleteById(ligneId);
-
-        BigDecimal total = ligneCommandeService.findAll().stream()
-                .filter(lc -> lc != null && lc.getCommande() != null && lc.getCommande().getIdCommande() != null)
-                .filter(lc -> lc.getCommande().getIdCommande().equals(commande.getIdCommande()))
-                .map(lc -> lc.getSousTotal() == null ? BigDecimal.ZERO : lc.getSousTotal())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        commande.setMontantTotal(total);
-        commandeService.save(commande);
+        updatePanierTotal(commande);
 
         return "redirect:/client/panier";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/quantite")
+    @PostMapping("/quantite")
     public String mettreAJourQuantite(
             @RequestParam("ligneId") Long ligneId,
             @RequestParam("quantite") BigDecimal quantite,
@@ -357,14 +360,7 @@ public class PanierController {
             ligne.setSousTotal(ligne.getPrixUnitaire().multiply(quantite));
         }
         ligneCommandeService.save(ligne);
-
-        BigDecimal total = ligneCommandeService.findAll().stream()
-                .filter(lc -> lc != null && lc.getCommande() != null && lc.getCommande().getIdCommande() != null)
-                .filter(lc -> lc.getCommande().getIdCommande().equals(commande.getIdCommande()))
-                .map(lc -> lc.getSousTotal() == null ? BigDecimal.ZERO : lc.getSousTotal())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        commande.setMontantTotal(total);
-        commandeService.save(commande);
+        updatePanierTotal(commande);
 
         return "redirect:/client/panier";
     }
@@ -498,5 +494,42 @@ public class PanierController {
             model.addAttribute("error", e.getMessage());
             return "client/recu/recap-commande";
         }
+    }
+
+    private Commande getOrCreatePanier(Utilisateur client, Long idClientFinal, StatutCommande statutPanier) {
+        return commandeService.findAll().stream()
+                .filter(c -> c != null && c.getClient() != null)
+                .filter(c -> c.getClient().getIdUtilisateur() != null
+                        && c.getClient().getIdUtilisateur().equals(idClientFinal))
+                .filter(c -> c.getStatutCommande() != null && c.getStatutCommande().getCode() != null)
+                .filter(c -> STATUT_PANIER.equalsIgnoreCase(c.getStatutCommande().getCode()))
+                .sorted((a, b) -> {
+                    if (a.getDateCommande() == null && b.getDateCommande() == null)
+                        return 0;
+                    if (a.getDateCommande() == null)
+                        return 1;
+                    if (b.getDateCommande() == null)
+                        return -1;
+                    return b.getDateCommande().compareTo(a.getDateCommande());
+                })
+                .findFirst()
+                .orElseGet(() -> {
+                    Commande c = new Commande();
+                    c.setClient(client);
+                    c.setStatutCommande(statutPanier);
+                    c.setMontantTotal(BigDecimal.ZERO);
+                    return commandeService.save(c);
+                });
+    }
+
+    private void updatePanierTotal(Commande commande) {
+        BigDecimal total = ligneCommandeService.findAll().stream()
+                .filter(lc -> lc != null && lc.getCommande() != null)
+                .filter(lc -> lc.getCommande().getIdCommande() != null
+                        && lc.getCommande().getIdCommande().equals(commande.getIdCommande()))
+                .map(lc -> lc.getSousTotal() == null ? BigDecimal.ZERO : lc.getSousTotal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        commande.setMontantTotal(total);
+        commandeService.save(commande);
     }
 }

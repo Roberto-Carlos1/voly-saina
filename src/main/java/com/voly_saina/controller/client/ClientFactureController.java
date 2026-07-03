@@ -10,11 +10,15 @@ import com.voly_saina.service.FactureService;
 import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.PaiementService;
 import com.voly_saina.service.StatutFactureService;
+import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.client.ClientFactureService;
+import com.voly_saina.service.client.ClientProfilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,31 +44,38 @@ public class ClientFactureController {
     private final PaiementService paiementService;
 
     private final StatutFactureService statutFactureService;
+    private final ClientProfilService clientProfilService;
+
+    private Utilisateur getUtilisateurConnecte(@AuthenticationPrincipal User user) {
+        return clientProfilService.getUtilisateurByEmail(user.getUsername());
+    }
 
     @GetMapping("/client/factures")
     public String listerFactures(
-            @RequestParam Long idClient,
+            @AuthenticationPrincipal User user,
             @RequestParam(required = false) String statut,
             Model model) {
-        List<FactureClientDTO> factures = clientFactureService.listerFacturesClient(idClient, statut);
-
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        List<FactureClientDTO> factures = clientFactureService.listerFacturesClient(utilisateur.getIdUtilisateur(), statut);
+        
         model.addAttribute("factures", factures);
         model.addAttribute("filtreStatut", statut);
-        model.addAttribute("idClient", idClient);
-
+        model.addAttribute("idClient", utilisateur.getIdUtilisateur());
+        
         return "client/factures/list";
     }
 
     @GetMapping("/client/factures/{idFacture}")
     public String voirDetailFacture(
             @PathVariable Long idFacture,
-            @RequestParam Long idClient,
+            @AuthenticationPrincipal User user,
             Model model) {
-        FactureClientDTO facture = clientFactureService.voirDetailFacture(idFacture, idClient);
-
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        FactureClientDTO facture = clientFactureService.voirDetailFacture(idFacture, utilisateur.getIdUtilisateur());
+        
         model.addAttribute("facture", facture);
-        model.addAttribute("idClient", idClient);
-
+        model.addAttribute("idClient", utilisateur.getIdUtilisateur());
+        
         return "client/factures/detail";
     }
 
@@ -125,10 +136,11 @@ public class ClientFactureController {
     public ResponseEntity<byte[]> exporterFacturePDF(
             @PathVariable Long idFacture,
             @RequestParam Long idClient) {
+        // TODO: remplacer par l'utilisateur connecté via Spring Security
         byte[] pdfBytes = clientFactureService.exporterFacturePDF(idFacture, idClient);
-
+        
         FactureClientDTO facture = clientFactureService.voirDetailFacture(idFacture, idClient);
-
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
         headers.setContentDispositionFormData("attachment", "facture-" + facture.getNumero() + ".pdf");

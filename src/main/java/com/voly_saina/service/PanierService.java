@@ -54,4 +54,9 @@ public class PanierService {
 
     }
 
+    public Panier findByClientId(Long clientId) {
+        return panierRepository.findByClientIdUtilisateur(clientId).orElse(null);
+    }
+
+
 }

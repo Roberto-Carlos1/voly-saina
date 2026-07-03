@@ -35,7 +35,7 @@ public class FactureController {
     private final FactureFilleRepository factureFilleRepository;
 
     public FactureController(PageService pageService, StatutFactureService statutFacture,
-                             FactureFilleRepository factureFilleRepository) {
+            FactureFilleRepository factureFilleRepository) {
         this.pageService = pageService;
         this.statutFactureService = statutFacture;
         this.factureFilleRepository = factureFilleRepository;
@@ -50,6 +50,28 @@ public class FactureController {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Facture> facturePage = factureService.findByPage(pageable);
+        List<Facture> factures = facturePage.getContent();
+
+        model.addAttribute("factures", factures);
+        model.addAttribute("statuts", status);
+        model.addAttribute("totalPages", facturePage.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("nombreParPage", size);
+
+        return "facturation/list";
+    }
+
+    @GetMapping("/client/{id}")
+    public String getAllbyClient(@RequestParam(defaultValue = "0") int page,
+            @PathVariable Long idClient,
+            Model model) {
+        List<StatutFacture> status = statutFactureService.findAll();
+
+        Pages config = pageService.getConfiguration();
+        int size = config.getNombre();
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Facture> facturePage = factureService.findFactureClientByPage(pageable, idClient);
         List<Facture> factures = facturePage.getContent();
 
         model.addAttribute("factures", factures);

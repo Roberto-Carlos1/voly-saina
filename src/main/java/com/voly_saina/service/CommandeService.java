@@ -1,12 +1,12 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Commande;
+import com.voly_saina.entity.Facture;
 import com.voly_saina.repository.CommandeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CommandeService {
@@ -14,12 +14,18 @@ public class CommandeService {
     @Autowired
     private CommandeRepository commandeRepository;
 
+    private final FactureService factureService;
+
+    public CommandeService(FactureService factureService) {
+        this.factureService = factureService;
+    }
+
     public List<Commande> findAll() {
         return commandeRepository.findAll();
     }
 
-    public Optional<Commande> findById(Long id) {
-        return commandeRepository.findById(id);
+    public Commande findById(Long id) {
+        return commandeRepository.findById(id).orElse(null);
     }
 
     public Commande save(Commande commande) {
@@ -33,4 +39,9 @@ public class CommandeService {
     public void deleteById(Long id) {
         commandeRepository.deleteById(id);
     }
+
+    public List<Commande> findByClient(Long id){
+        return commandeRepository.findByClientIdUtilisateur(id);
+    }
+
 }

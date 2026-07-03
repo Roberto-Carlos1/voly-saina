@@ -4,13 +4,13 @@ public class PaiementDTO {
     private String idFacture;
     private String montant;
     private String date;
-    private String mode;
+    private String modePaiement;
 
-    public PaiementDTO(String idFacture, String montant, String date, String mode) {
+    public PaiementDTO(String idFacture, String montant, String date, String modePaiement) {
         this.idFacture = idFacture;
         this.montant = montant;
         this.date = date;
-        this.mode = mode;
+        this.modePaiement = modePaiement;
     }
 
     public String getIdFacture() {
@@ -37,12 +37,12 @@ public class PaiementDTO {
         this.date = date;
     }
 
-    public String getMode() {
-        return mode;
+    public String getModePaiement() {
+        return modePaiement;
     }
 
-    public void setMode(String mode) {
-        this.mode = mode;
+    public void setModePaiement(String modePaiement) {
+        this.modePaiement = modePaiement;
     }
 
 }

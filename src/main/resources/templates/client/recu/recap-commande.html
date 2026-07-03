@@ -33,7 +33,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="fw-semibold text-muted">Mode de paiement</div>
-                        <div class="fs-5" th:text="${commande.modePaiement != null ? commande.modePaiement : '-'}">-</div>
+                        <div class="fs-5" th:text="${commande.modePaiement.libelle != null ? commande.modePaiement.libelle : '-'}">-</div>
                     </div>
                 </div>
 

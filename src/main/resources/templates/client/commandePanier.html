@@ -133,6 +133,17 @@
                                 </div>
                             </div>
 
+                            <form th:action="@{/client/panier/valider}" method="post" class="mt-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Adresse de livraison</label>
+                                    <input class="form-control" name="adresseLivraison" required
+                                        title="Adresse de livraison" placeholder="Ex: 12 rue ..."
+                                        th:value="${commande != null ? commande.adresseLivraison : ''}" />
+                                    <input type="hidden" name="idPanier" th:value="${idPanier}">
+                                </div>
+                                <button type="submit" class="btn btn-success w-100" id="btnCloturer">Valider panier
+                                </button>
+                            </form>
                         </div>
                     </div>
 

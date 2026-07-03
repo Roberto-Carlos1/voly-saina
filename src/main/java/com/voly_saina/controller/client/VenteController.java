@@ -1,9 +1,10 @@
 package com.voly_saina.controller.client;
 
+import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Produit;
 import com.voly_saina.service.ProduitService;
 import com.voly_saina.service.CategorieProduitService;
-
+import com.voly_saina.service.ModePaiementService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,8 @@ public class VenteController {
     @Autowired
     private CategorieProduitService categorieProduitService;
 
+    @Autowired
+    private ModePaiementService modePaiementService;
 
     // ==================== CATALOGUE (HTML) ====================
 

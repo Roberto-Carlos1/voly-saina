@@ -1,8 +1,14 @@
-<h1> Formulaire de reste à payer </h1>
+<h2 th:text="${facture.numero}"></h2>
+<ul>
+    <li th:text=" 'Montant total à payer : ' + ${facture.montantTotal} + ' Ar'"></li>
+    <li th:text=" 'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar'"></li>
+</ul>
 
-<form action="/api/paiements/restePayee" method="post">
+<h3> Formulaire de paiement </h3>
+
+<form action="/client/factures/achat" method="post">
     <input type="hidden" name="idFacture" th:value="${facture.getIdFacture()}">
-    <p> Montant à payer <input type="number" name="montant"> </p>
+    <p> Montant à payer <input type="number" name="montant" min="1" max="${facture.montantTotal}"> </p>
     <p> Date de paiement <input type="datetime-local" name="date"> </p>
     <p> Mode de paiement:
         <select name="modePaiement">

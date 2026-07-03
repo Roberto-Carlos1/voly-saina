@@ -35,6 +35,7 @@ public class Paiement {
     @Column(name = "reference", length = 120)
     private String reference;
     
-    @Column(name = "mode_paiement", length = 80)
-    private String modePaiement;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_mode_paiement")
+    private ModePaiement modePaiement;
 }

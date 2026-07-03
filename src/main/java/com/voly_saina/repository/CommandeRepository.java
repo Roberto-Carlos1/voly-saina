@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface CommandeRepository extends JpaRepository<Commande, Long> {
     List<Commande> findByClientIdUtilisateurAndDateCommandeBetweenAndStatutCommandeCodeIn(Long idClient, LocalDateTime debut, LocalDateTime fin, List<String> statuts);
+
+    List<Commande> findByClientIdUtilisateur(Long idCLient);
+
 }

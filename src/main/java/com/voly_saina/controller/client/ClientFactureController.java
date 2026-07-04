@@ -76,6 +76,8 @@ public class ClientFactureController {
         model.addAttribute("facture", facture);
         model.addAttribute("idClient", utilisateur.getIdUtilisateur());
         
+        clientFactureService.detailsFacture(idFacture, utilisateur.getIdUtilisateur(), model);
+
         return "client/factures/detail";
     }
 

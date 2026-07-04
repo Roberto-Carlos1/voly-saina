@@ -90,10 +90,26 @@ public class PanierCommandeService {
         recalculerTotal(commandePanier);
 
         Panier panier = panierService.findCurrentPanierByIdClient(clientId);
-        PanierDetails panierDetails = new PanierDetails();
-        panierDetails.setPanier(panier);
-        panierDetails.setCommande(commandePanier);
-        panierDetailsService.save(panierDetails);
+
+        List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
+
+        boolean present = false;
+
+        if (panierDetails != null) {
+            for (PanierDetails p : panierDetails) {
+                if (p.getCommande().getIdCommande().equals(commandePanier.getIdCommande())) {
+                    present = true;
+                    break; 
+                }
+            }
+        }
+
+        if (!present) {
+            PanierDetails panierDetail = new PanierDetails();
+            panierDetail.setPanier(panier);
+            panierDetail.setCommande(commandePanier);
+            panierDetailsService.save(panierDetail);
+        }
 
         return commandePanier;
     }

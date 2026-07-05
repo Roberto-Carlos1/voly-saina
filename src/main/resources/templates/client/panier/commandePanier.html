@@ -55,7 +55,7 @@
     <div class="container">
         <div class="card">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Votre panier</h4>
+                <h4 class="mb-0">Mon panier</h4>
                 <a th:href="@{/client/ventes/catalogue}" class="text-decoration-none"
                     style="color: white; font-weight: 500;">← Continuer mes achats</a>
             </div>
@@ -66,7 +66,7 @@
 
                 <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}"
                     class="text-center py-5 text-muted">
-                    Votre panier est vide.
+                    Le panier est vide.
                 </div>
 
                 <div th:if="${(lignes != null and not #lists.isEmpty(lignes)) or (reservations != null and not #lists.isEmpty(reservations))}"

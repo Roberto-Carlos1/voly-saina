@@ -16,6 +16,7 @@ import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.Utilisateur;
+import com.voly_saina.exception.PanierException;
 import com.voly_saina.service.ModePaiementService;
 import com.voly_saina.service.PanierService;
 import com.voly_saina.service.UtilisateurService;
@@ -41,103 +42,162 @@ public class PanierController {
     public String ajouterAuPanier(
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
-            @RequestParam(value = "idClient", required = false) Long clientId) {
-        panierService.ajouterAuPanier(resolveClientId(clientId), produitId, quantite);
-        return "redirect:/client/panier";
+            @RequestParam(value = "idClient", required = false) Long clientId,
+            Model model) {
+
+        try {
+            panierService.ajouterAuPanier(resolveClientId(clientId), produitId, quantite);
+            return "redirect:/client/panier";
+        } catch (PanierException e) {
+            model.addAttribute("error", e.getMessage());
+            return "client/panier";
+        }
     }
 
     @GetMapping
     public String voirProduitsPanier(
             @RequestParam(value = "idClient", required = false) Long clientId,
             Model model) {
-        Long idClientFinal = resolveClientId(clientId);
-        Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
-        if (client == null) {
-            model.addAttribute("error", "Client non trouvé");
+
+        try {
+            Long idClientFinal = resolveClientId(clientId);
+
+            Utilisateur client = utilisateurService.findById(idClientFinal)
+                    .orElseThrow(() -> new PanierException("Client introuvable."));
+
+            Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
+
+            List<ReservationMachine> reservations = panierService.getReservationsEnAttente(idClientFinal);
+
+            BigDecimal totalReservations = reservations.stream()
+                    .map(ReservationMachine::getPrixTotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            Commande commandePanier = panierService.findPendingCommande(idClientFinal);
+
+            List<LigneCommande> lignes = List.of();
+            BigDecimal totalCommandes = BigDecimal.ZERO;
+
+            if (commandePanier != null) {
+                lignes = panierService.getLignesFromPanier(panier);
+                totalCommandes = commandePanier.getMontantTotal() != null
+                        ? commandePanier.getMontantTotal()
+                        : BigDecimal.ZERO;
+            }
+
+            model.addAttribute("commande", commandePanier);
+            model.addAttribute("lignes", lignes);
+            model.addAttribute("reservations", reservations);
+            model.addAttribute("montantTotal", totalCommandes.add(totalReservations));
+            model.addAttribute("modePaiements", modePaiementService.findAll());
+            model.addAttribute("idPanier", panier.getIdPanier());
+            model.addAttribute("idClient", idClientFinal);
+
+            return "client/commandePanier";
+
+        } catch (PanierException e) {
+            model.addAttribute("error", e.getMessage());
             return "client/panier";
         }
-
-        Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
-        List<ReservationMachine> reservations = panierService.getReservationsEnAttente(idClientFinal);
-        BigDecimal totalReservations = reservations.stream()
-                .map(ReservationMachine::getPrixTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
-        List<LigneCommande> lignes = List.of();
-        BigDecimal totalCommandes = BigDecimal.ZERO;
-
-        if (commandePanier != null) {
-            lignes = panierService.getLignesFromPanier(panier);
-            totalCommandes = commandePanier.getMontantTotal() != null
-                    ? commandePanier.getMontantTotal() : BigDecimal.ZERO;
-        }
-
-        model.addAttribute("commande", commandePanier);
-        model.addAttribute("lignes", lignes);
-        model.addAttribute("reservations", reservations);
-        model.addAttribute("montantTotal", totalCommandes.add(totalReservations));
-        model.addAttribute("modePaiements", modePaiementService.findAll());
-        model.addAttribute("idPanier", panier.getIdPanier());
-        model.addAttribute("idClient", idClientFinal);
-
-        return "client/commandePanier";
     }
 
     @GetMapping("/details")
     public String voirPanier(
             @RequestParam(value = "clientId", required = false) Long clientId,
             Model model) {
-        Long idClientFinal = resolveClientId(clientId);
-        Utilisateur client = utilisateurService.findById(idClientFinal).orElse(null);
-        if (client == null) {
-            model.addAttribute("error", "Client non trouvé");
+
+        try {
+            Long idClientFinal = resolveClientId(clientId);
+
+            utilisateurService.findById(idClientFinal)
+                    .orElseThrow(() -> new PanierException("Client introuvable."));
+
+            Commande commandePanier = panierService.findPendingCommande(idClientFinal);
+
+            if (commandePanier == null) {
+                throw new PanierException("Aucune commande en attente.");
+            }
+
+            List<LigneCommande> lignes = panierService.getLignesByPanierId(1L);
+
+            model.addAttribute("commande", commandePanier);
+            model.addAttribute("lignes", lignes);
+            model.addAttribute("montantTotal",
+                    commandePanier.getMontantTotal() == null
+                            ? BigDecimal.ZERO
+                            : commandePanier.getMontantTotal());
+            model.addAttribute("modePaiements", modePaiementService.findAll());
+
+            return "client/commandePanier";
+
+        } catch (PanierException e) {
+            model.addAttribute("error", e.getMessage());
             return "client/panier";
         }
-
-        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
-        if (commandePanier == null) {
-            model.addAttribute("lignes", List.of());
-            model.addAttribute("montantTotal", BigDecimal.ZERO);
-            return "client/panier";
-        }
-
-        List<LigneCommande> lignes = panierService.getLignesByPanierId(1L);
-
-        model.addAttribute("commande", commandePanier);
-        model.addAttribute("lignes", lignes);
-        model.addAttribute("montantTotal",
-                commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal());
-        model.addAttribute("modePaiements", modePaiementService.findAll());
-
-        return "client/commandePanier";
     }
 
     @PostMapping("/supprimer")
     public String supprimerLigne(
             @RequestParam("ligneId") Long ligneId,
-            @RequestParam(value = "clientId", required = false) Long clientId) {
-        panierService.supprimerLigne(ligneId, resolveClientId(clientId));
-        return "redirect:/client/panier";
+            @RequestParam(value = "clientId", required = false) Long clientId,
+            Model model) {
+
+        try {
+            Long idClientFinal = resolveClientId(clientId);
+
+            panierService.supprimerLigne(ligneId, idClientFinal);
+
+            Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
+
+            if (panier == null) {
+                throw new PanierException("Panier introuvable.");
+            }
+
+            panierService.deleteById(panier.getIdPanier());
+
+            return "redirect:/client/panier";
+
+        } catch (PanierException e) {
+            model.addAttribute("error", e.getMessage());
+            return "client/panier";
+        }
     }
 
     @PostMapping("/quantite")
     public String mettreAJourQuantite(
             @RequestParam("ligneId") Long ligneId,
             @RequestParam("quantite") BigDecimal quantite,
-            @RequestParam(value = "clientId", required = false) Long clientId) {
-        panierService.mettreAJourQuantite(ligneId, quantite, resolveClientId(clientId));
-        return "redirect:/client/panier";
+            @RequestParam(value = "clientId", required = false) Long clientId,
+            Model model) {
+
+        try {
+            panierService.mettreAJourQuantite(ligneId, quantite, resolveClientId(clientId));
+            return "redirect:/client/panier";
+
+        } catch (PanierException e) {
+            model.addAttribute("error", e.getMessage());
+            return "client/panier";
+        }
     }
 
     @PostMapping("/valider")
     public String cloturerPanier(
             @RequestParam("adresseLivraison") String adresseLivraison,
             @RequestParam(value = "clientId", required = false) Long clientId,
-            @RequestParam(value = "idPanier", required = false) Long idPanier) {
-        Long idClientFinal = resolveClientId(clientId);
-        panierService.cloturerPanier(idClientFinal, idPanier, adresseLivraison);
-        return "redirect:/client/factures?idClient=" + idClientFinal;
+            @RequestParam(value = "idPanier", required = false) Long idPanier,
+            Model model) {
+
+        try {
+            Long idClientFinal = resolveClientId(clientId);
+
+            panierService.cloturerPanier(idClientFinal, idPanier, adresseLivraison);
+
+            return "redirect:/client/factures?idClient=" + idClientFinal;
+
+        } catch (PanierException e) {
+            model.addAttribute("error", e.getMessage());
+            return "client/panier";
+        }
     }
 
     @GetMapping("/recap")
@@ -145,24 +205,29 @@ public class PanierController {
             @RequestParam("commandeId") Long commandeId,
             @RequestParam(value = "clientId", required = false) Long clientId,
             Model model) {
+
         try {
             Long idClientFinal = resolveClientId(clientId);
+
             Commande commande = panierService.findCommandeById(commandeId, idClientFinal);
+
             if (commande == null) {
-                model.addAttribute("error", "Commande introuvable");
-                return "client/recu/recap-commande";
+                throw new PanierException("Commande introuvable.");
             }
 
             List<LigneCommande> lignes = panierService.getLignesByCommande(commande);
+
             BigDecimal montantTotal = commande.getMontantTotal() != null
-                    ? commande.getMontantTotal() : BigDecimal.ZERO;
+                    ? commande.getMontantTotal()
+                    : BigDecimal.ZERO;
 
             model.addAttribute("commande", commande);
             model.addAttribute("lignes", lignes);
             model.addAttribute("montantTotal", montantTotal);
 
             return "client/recu/recap-commande";
-        } catch (Exception e) {
+
+        } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());
             return "client/recu/recap-commande";
         }

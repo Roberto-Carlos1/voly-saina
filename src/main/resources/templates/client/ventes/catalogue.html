@@ -91,8 +91,6 @@
                     <tr>
                         <th style="width: 32%;">Produit</th>
                         <th style="width: 18%;">Catégorie</th>
-                        <th style="width: 12%;">Stock</th>
-                        <th style="width: 18%;">Expiration</th>
                         <th style="width: 10%;">Statut</th>
                         <th style="width: 10%;">Actions</th>
                     </tr>
@@ -109,8 +107,6 @@
                         </td>
                         <td th:text="${produit.categorie != null ? produit.categorie.nom : '-'}"></td>
 
-                        <td th:text="${produit.stock != null ? produit.stock : '-'}"></td>
-                        <td th:text="${produit.dateExpiration != null ? #temporals.format(produit.dateExpiration, 'dd/MM/yyyy') : '-'}"></td>
                         <td>
                             <span class="badge"
                                   th:classappend="${produit != null and (produit.stock != null ? produit.stock : 0) > (produit.seuilStock != null ? produit.seuilStock : 0)

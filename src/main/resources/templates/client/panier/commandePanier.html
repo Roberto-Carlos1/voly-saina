@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panier - Voly Saina+</title>
+    <title>Recapitulatif Commande - Voly Saina+</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -33,18 +33,11 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
-            white-space: nowrap;
-            display: inline-block;
         }
 
         .badge-green {
             background: #dcfce7;
             color: #166534;
-        }
-
-        .badge-gray {
-            background: #f3f4f6;
-            color: #4b5563;
         }
 
         .btn {
@@ -68,20 +61,20 @@
             </div>
 
             <div class="card-body p-4">
-
                 <div th:if="${message != null}" class="alert alert-success" th:text="${message}"></div>
-
                 <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
 
-                <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}" class="text-center py-5 text-muted">
+                <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}"
+                    class="text-center py-5 text-muted">
                     Votre panier est vide.
                 </div>
 
-                <div th:if="${lignes != null and not #lists.isEmpty(lignes) or (reservations != null and not #lists.isEmpty(reservations))}" id="panierContent">
+                <div th:if="${(lignes != null and not #lists.isEmpty(lignes)) or (reservations != null and not #lists.isEmpty(reservations))}"
+                    id="panierContent">
 
-                    <!-- Section Produits -->
                     <div th:if="${lignes != null and not #lists.isEmpty(lignes)}">
-                        <div class="table-responsive">
+                        <h5 class="mb-3">🛒 Articles commandés</h5>
+                        <div class="table-responsive mb-4">
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
@@ -98,25 +91,28 @@
                                             <div style="font-weight: 700;" th:text="${ligne.produit.nom}">Nom du produit
                                             </div>
                                         </td>
-                                        <td class="prix-unitaire" th:text="${ligne.prixUnitaire}"
+                                        <td class="prix-unitaire"
+                                            th:text="${#numbers.formatDecimal(ligne.prixUnitaire, 0, 'COMMA', 2, 'POINT')} + ' AR'"
                                             th:data-prix-unitaire="${ligne.prixUnitaire}">
                                         </td>
                                         <td>
-                                            <form th:action="@{/client/panier/quantite}" method="post" class="ligneForm">
+                                            <form th:action="@{/client/panier/quantite}" method="post">
                                                 <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
-                                                <label class="visually-hidden"
-                                                    for="quantite-[[${ligne.idLigne}]]">Quantité</label>
-                                                <input type="number" id="quantite-[[${ligne.idLigne}]]" name="quantite"
-                                                    min="1" step="1" class="form-control quantite-input"
-                                                    onchange="updateQuantite(this)" th:value="${ligne.quantite}" />
+
+                                                <input type="text" name="quantite" class="form-control form-control-sm"
+                                                    onchange="this.form.submit()" th:value="${ligne.quantite}" />
+
+                                                <div th:if="${idLigneEnErreur == ligne.idLigne and error != null}"
+                                                    class="text-danger small mt-1" th:text="${error}">
+                                                </div>
                                             </form>
                                         </td>
-                                        <td class="sous-total-cell" th:text="${ligne.sousTotal}"
-                                            th:data-sous-total="${ligne.sousTotal}">
+                                        <td
+                                            th:text="${#numbers.formatDecimal(ligne.sousTotal, 0, 'COMMA', 2, 'POINT')} + ' AR'">
                                         </td>
                                         <td>
                                             <form th:action="@{/client/panier/supprimer}" method="post"
-                                                onsubmit="return confirm('Supprimer cette ligne du panier ?');">
+                                                onsubmit="return confirm('Supprimer cet article ?');">
                                                 <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
                                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                                             </form>
@@ -127,41 +123,43 @@
                         </div>
                     </div>
 
-                    <!-- Section Réservations de machines -->
-                    <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="mt-5">
-                        <h5 class="mb-3">Réservations de machines</h5>
-                        <div class="table-responsive">
+                    <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="mt-4">
+                        <h5 class="mb-3">📆 Machines réservées</h5>
+                        <div class="table-responsive mb-4">
                             <table class="table align-middle">
                                 <thead>
                                     <tr>
                                         <th style="width: 30%">Machine</th>
-                                        <th style="width: 15%">Période</th>
+                                        <th style="width: 20%">Période</th>
                                         <th style="width: 20%">Lieu livraison</th>
                                         <th style="width: 15%">Prix total</th>
-                                        <th style="width: 10%">Statut</th>
-                                        <th style="width: 10%">Actions</th>
+                                        <th style="width: 15%">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="reservation : ${reservations}">
                                         <td>
-                                            <div style="font-weight: 700;" th:text="${reservation.machine.nom}">Nom de la machine
+                                            <div style="font-weight: 700;" th:text="${reservation.machine.nom}">Machine
                                             </div>
                                         </td>
                                         <td>
-                                            <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span> au
-                                            <span th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span>
+                                            <span
+                                                th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span>
+                                            au
+                                            <span
+                                                th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span>
                                         </td>
-                                        <td th:text="${reservation.lieuLivraison}"></td>
-                                        <td th:text="${reservation.prixTotal}"></td>
-                                        <td>
-                                            <span class="badge badge-green" th:text="${reservation.statutReservation.libelle}">En attente</span>
+                                        <td
+                                            th:text="${reservation.lieuLivraison != null ? reservation.lieuLivraison : '-'}">
+                                        </td>
+                                        <td class="fw-bold text-success"
+                                            th:text="${reservation.prixTotal != null ? #numbers.formatDecimal(reservation.prixTotal, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">
                                         </td>
                                         <td>
                                             <form th:action="@{/client/panier/reservations/supprimer}" method="post"
-                                                onsubmit="return confirm('Supprimer cette réservation du panier ?');">
-                                                <input type="hidden" name="reservationId" th:value="${reservation.idReservation}" />
-                                                <input type="hidden" name="clientId" th:value="${idClient}" />
+                                                onsubmit="return confirm('Supprimer cette réservation ?');">
+                                                <input type="hidden" name="reservationId"
+                                                    th:value="${reservation.idReservation}" />
                                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                                             </form>
                                         </td>
@@ -171,25 +169,27 @@
                         </div>
                     </div>
 
+                    <!-- Validation Finale -->
                     <div class="d-flex justify-content-end mt-4">
                         <div style="min-width: 320px;">
-                            <div class="d-flex justify-content-between">
-                                <div class="text-muted" style="font-weight: 600;">Montant total</div>
-                                <div style="font-weight: 800;">
-                                    <span th:text="${#numbers.formatDecimal(montantTotal, 0, 'POINT', 2, 'COMMA')}">0</span> AR
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <div class="text-muted" style="font-weight: 600;">Montant global</div>
+                                <div style="font-weight: 800; font-size: 1.3rem;">
+                                    <span
+                                        th:text="${#numbers.formatDecimal(montantTotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
+                                    AR
                                 </div>
                             </div>
 
                             <form th:action="@{/client/panier/valider}" method="post" class="mt-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Adresse de livraison</label>
+                                    <label class="form-label fw-bold">Adresse de livraison effective</label>
                                     <input class="form-control" name="adresseLivraison" required
-                                        title="Adresse de livraison" placeholder="Ex: 12 rue ..."
+                                        placeholder="Ex: Lot II M 45 Antananarivo"
                                         th:value="${commande != null ? commande.adresseLivraison : ''}" />
                                     <input type="hidden" name="idPanier" th:value="${idPanier}">
                                 </div>
-                                <button type="submit" class="btn btn-success w-100" id="btnCloturer">Valider panier
-                                </button>
+                                <button type="submit" class="btn btn-success w-100 py-2">Valider le panier</button>
                             </form>
                         </div>
                     </div>
@@ -198,28 +198,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function updateQuantite(input) {
-            const row = input.closest('tr');
-            const prixUnitaireCell = row.querySelector('.prix-unitaire');
-            const sousTotalCell = row.querySelector('.sous-total-cell');
-
-            const prixUnitaire = parseFloat(prixUnitaireCell.dataset.prixUnitaire) || 0;
-            const quantite = parseInt(input.value) || 1;
-
-            const sousTotal = prixUnitaire * quantite;
-            sousTotalCell.dataset.sousTotal = sousTotal;
-            sousTotalCell.textContent = formatNumber(sousTotal);
-
-           
-            input.form.submit();
-        }
-
-        function formatNumber(number) {
-            return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-        }
-    </script>
 </body>
 
 </html>

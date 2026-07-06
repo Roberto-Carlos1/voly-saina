@@ -8,7 +8,7 @@
 
 <form action="/client/factures/achat" method="post">
     <input type="hidden" name="idFacture" th:value="${facture.getIdFacture()}">
-    <p> Montant à payer <input type="number" name="montant" min="1" max="${facture.montantTotal}"> </p>
+    <p> Montant à payer <input type="number" name="montant" min="1" max="${facture.montantTotal}" required> </p>
     <p> Date de paiement <input type="datetime-local" name="date"> </p>
     <p> Mode de paiement:
         <select name="modePaiement">
@@ -16,6 +16,8 @@
             </option>
         </select>
     </p>
+    <input type="hidden" th:value="${idClient}" th:name="idClient">
 
+    <p th:if="${erreur != null}" th:text="${erreur}" style="color: red;"></p>
     <button type="submit">Valider le paiement</button>
 </form>

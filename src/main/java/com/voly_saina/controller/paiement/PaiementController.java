@@ -44,7 +44,7 @@ public class PaiementController {
         this.statutFactureService = statutFactureService;
         this.modePaiementService = modePaiementService;
     }
-
+    
     @GetMapping
     public String getAll(Model model) {
         List<Paiement> liste = paiementService.findAll();

@@ -114,6 +114,7 @@
                                             <form th:action="@{/client/panier/supprimer}" method="post"
                                                 onsubmit="return confirm('Supprimer cet article ?');">
                                                 <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                                <input type="hidden" name="clientId" th:value="1" />
                                                 <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                                             </form>
                                         </td>

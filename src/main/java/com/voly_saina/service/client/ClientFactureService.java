@@ -106,14 +106,19 @@ public class ClientFactureService {
 
         for (LigneCommande ligne : ligneCommande) {
             for (PanierDetails panierDet : panierDetails) {
-                if (panierDet.getCommande().getIdCommande() == ligne.getCommande().getIdCommande()) {
-                    if (!lignes.contains(ligne)) {
+                if (panierDet.getCommande() != null && (panierDet.getCommande().getIdCommande() == ligne.getCommande().getIdCommande())) {
                         lignes.add(ligne);
-                    }
                 }
             }
         }
 
+        for(ReservationMachine reserve: reservationMachines){
+            if(reserve.getFacture().getIdFacture() == facture.getIdFacture()){
+                ligneReservation.add(reserve);
+            }
+        }
+
+        m.addAttribute("reservations", ligneReservation);
         m.addAttribute("commandes", listeCommande);
         m.addAttribute("lignes", lignes);
 

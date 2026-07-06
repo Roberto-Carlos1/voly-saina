@@ -89,23 +89,25 @@ public class PanierController {
                     .map(ReservationMachine::getPrixTotal)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Commande commandePanier = panierService.findPendingCommande(idClientFinal);
-        List<LigneCommande> lignes = List.of();
-        BigDecimal totalCommandes = BigDecimal.ZERO;
+            Commande commandePanier = panierService.findPendingCommande(idClientFinal);
 
-        if (commandePanier != null) {
-            lignes = panierService.getLignesFromPanier(panier);
-            totalCommandes = commandePanier.getMontantTotal() != null
-                    ? commandePanier.getMontantTotal() : BigDecimal.ZERO;
-        }
+            List<LigneCommande> lignes = List.of();
+            BigDecimal totalCommandes = BigDecimal.ZERO;
 
-        model.addAttribute("commande", commandePanier);
-        model.addAttribute("lignes", lignes);
-        model.addAttribute("reservations", reservations);
-        model.addAttribute("montantTotal", totalCommandes.add(totalReservations));
-        model.addAttribute("modePaiements", modePaiementService.findAll());
-        model.addAttribute("idPanier", panier.getIdPanier());
-        model.addAttribute("idClient", idClientFinal);
+            if (commandePanier != null) {
+                lignes = panierService.getLignesFromPanier(panier);
+                totalCommandes = commandePanier.getMontantTotal() != null
+                        ? commandePanier.getMontantTotal()
+                        : BigDecimal.ZERO;
+            }
+
+            model.addAttribute("commande", commandePanier);
+            model.addAttribute("lignes", lignes);
+            model.addAttribute("reservations", reservations);
+            model.addAttribute("montantTotal", totalCommandes.add(totalReservations));
+            model.addAttribute("modePaiements", modePaiementService.findAll());
+            model.addAttribute("idPanier", panier.getIdPanier());
+            model.addAttribute("idClient", idClientFinal);
 
             return "client/panier/commandePanier";
 
@@ -135,11 +137,13 @@ public class PanierController {
             List<LigneCommande> lignes = panierService
                     .getLignesByPanierId(panierService.findCurrentPanierByIdClient(idClientFinal).getIdPanier());
 
-        model.addAttribute("commande", commandePanier);
-        model.addAttribute("lignes", lignes);
-        model.addAttribute("montantTotal",
-                commandePanier.getMontantTotal() == null ? BigDecimal.ZERO : commandePanier.getMontantTotal());
-        model.addAttribute("modePaiements", modePaiementService.findAll());
+            model.addAttribute("commande", commandePanier);
+            model.addAttribute("lignes", lignes);
+            model.addAttribute("montantTotal",
+                    commandePanier.getMontantTotal() == null
+                            ? BigDecimal.ZERO
+                            : commandePanier.getMontantTotal());
+            model.addAttribute("modePaiements", modePaiementService.findAll());
 
             return "client/panier/commandePanier";
 
@@ -245,23 +249,29 @@ public class PanierController {
             @RequestParam("commandeId") Long commandeId,
             @RequestParam(value = "clientId", required = false) Long clientId,
             Model model) {
+
         try {
             Long idClientFinal = resolveClientId(clientId);
+
             Commande commande = panierService.findCommandeById(commandeId, idClientFinal);
+
             if (commande == null) {
                 throw new PanierException(PanierException.COMMANDE_INTROUVABLE);
             }
 
             List<LigneCommande> lignes = panierService.getLignesByCommande(commande);
+
             BigDecimal montantTotal = commande.getMontantTotal() != null
-                    ? commande.getMontantTotal() : BigDecimal.ZERO;
+                    ? commande.getMontantTotal()
+                    : BigDecimal.ZERO;
 
             model.addAttribute("commande", commande);
             model.addAttribute("lignes", lignes);
             model.addAttribute("montantTotal", montantTotal);
 
             return "client/recu/recap-commande";
-        } catch (Exception e) {
+
+        } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());
             return "client/recu/recap-commande";
         }

@@ -32,7 +32,7 @@
                     </h3>
                 </div>
 
-                <form th:action="@{/client/panier/payer}" method="post">
+                <form th:action="@{/panier/payer}" method="post">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Saisir le montant du versement (AR)</label>
                         <input class="form-control" type="number" step="0.01" name="montant" required th:max="${montantTotal}" placeholder="Ex: 50000">
@@ -51,7 +51,7 @@
                 </form>
                 
                 <div class="text-center mt-3">
-                    <a th:href="@{/client/panier}" class="text-muted text-decoration-none small">← Retourner à la modification du panier</a>
+                    <a th:href="@{/panier}" class="text-muted text-decoration-none small">← Retourner à la modification du panier</a>
                 </div>
             </div>
         </div>

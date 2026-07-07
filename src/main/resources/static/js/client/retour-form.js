@@ -72,7 +72,7 @@ document.getElementById('formRetour').onsubmit = function(e) {
 
     console.log('📤 Envoi:', data);
 
-    fetch('/client/retours/api', {
+    fetch('/catalogue/retours/api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -98,7 +98,7 @@ document.getElementById('formRetour').onsubmit = function(e) {
                 <p><strong>Pénalité:</strong> ${penalite} MGA</p>
                 <p><strong>Total à payer:</strong> ${montantTotal} MGA</p>
                 <br>
-                <button onclick="window.location.href='/client/reservations/mes-reservations?clientId=${clientId}'" 
+                <button onclick="window.location.href='/catalogue/reservations/mes-reservations?clientId=${clientId}'" 
                         style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
                     Voir mes réservations
                 </button>

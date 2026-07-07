@@ -56,7 +56,7 @@
         <div class="card">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Mon panier</h4>
-                <a th:href="@{/client/ventes/catalogue}" class="text-decoration-none"
+                <a th:href="@{/catalogue/produits/catalogue}" class="text-decoration-none"
                     style="color: white; font-weight: 500;">← Continuer mes achats</a>
             </div>
 
@@ -96,7 +96,7 @@
                                             th:data-prix-unitaire="${ligne.prixUnitaire}">
                                         </td>
                                         <td>
-                                            <form th:action="@{/client/panier/quantite}" method="post">
+                                            <form th:action="@{/panier/quantite}" method="post">
                                                 <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
 
                                                 <input type="text" name="quantite" class="form-control form-control-sm"
@@ -111,7 +111,7 @@
                                             th:text="${#numbers.formatDecimal(ligne.sousTotal, 0, 'COMMA', 2, 'POINT')} + ' AR'">
                                         </td>
                                         <td>
-                                            <form th:action="@{/client/panier/supprimer}" method="post"
+                                            <form th:action="@{/panier/supprimer}" method="post"
                                                 onsubmit="return confirm('Supprimer cet article ?');">
                                                 <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
                                                 <input type="hidden" name="clientId" th:value="1" />
@@ -157,7 +157,7 @@
                                             th:text="${reservation.prixTotal != null ? #numbers.formatDecimal(reservation.prixTotal, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">
                                         </td>
                                         <td>
-                                            <form th:action="@{/client/panier/reservations/supprimer}" method="post"
+                                            <form th:action="@{/panier/reservations/supprimer}" method="post"
                                                 onsubmit="return confirm('Supprimer cette réservation ?');">
                                                 <input type="hidden" name="reservationId"
                                                     th:value="${reservation.idReservation}" />
@@ -182,7 +182,7 @@
                                 </div>
                             </div>
 
-                            <form th:action="@{/client/panier/valider}" method="post" class="mt-3">
+                            <form th:action="@{/panier/valider}" method="post" class="mt-3">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Adresse de livraison effective</label>
                                     <input class="form-control" name="adresseLivraison" required

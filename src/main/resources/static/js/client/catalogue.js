@@ -24,5 +24,5 @@ fetch('/catalogue/machines/api/catalogue')
     });
 
 function reserver(id) {
-    window.location.href = '/client/reservations/' + id + '/nouvelle?clientId=1';
+    window.location.href = '/catalogue/reservations/' + id + '/nouvelle?clientId=1';
 }

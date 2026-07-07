@@ -61,13 +61,13 @@ fetch('/catalogue/reservations/api/client/' + currentClientId)
     });
 
 function voirDetail(id) {
-    window.location.href = '/client/reservations/' + id + '?clientId=' + currentClientId;
+    window.location.href = '/catalogue/reservations/' + id + '?clientId=' + currentClientId;
 }
 
 function annuler(id) {
     if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
         fetch('/catalogue/reservations/api/' + id + '/annuler', {
-            method: 'POST',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ motif: 'Annulé par le client' })
         })
@@ -83,5 +83,5 @@ function annuler(id) {
 function retourner(id) {
     // ✅ L'ID est passé correctement ici
     console.log('🔍 Retour pour la réservation ID:', id);
-    window.location.href = '/client/retours/' + id + '/nouveau?clientId=' + currentClientId;
+    window.location.href = '/catalogue/retours/' + id + '/nouveau?clientId=' + currentClientId;
 }

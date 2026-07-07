@@ -10,7 +10,8 @@ import com.voly_saina.properties.StorageProperties;
 import com.voly_saina.service.StorageService;
 
 @SpringBootApplication
-@EnableConfigurationProperties(StorageProperties.class)	
+@EnableConfigurationProperties(StorageProperties.class)
+@org.springframework.cache.annotation.EnableCaching
 public class VolySainaApplication {
 
 	public static void main(String[] args) {

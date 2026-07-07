@@ -14,15 +14,17 @@ public class EtatMachineService {
     @Autowired
     private EtatMachineRepository etatMachineRepository;
 
+    @org.springframework.cache.annotation.Cacheable("etatMachines")
     public List<EtatMachine> findAll() {
         return etatMachineRepository.findAll();
     }
 
+    @org.springframework.cache.annotation.Cacheable(value = "etatMachines", key = "#code")
     public Optional<EtatMachine> findByCode(String code) {
         return etatMachineRepository.findByCode(code);
     }
     
-
+    @org.springframework.cache.annotation.Cacheable(value = "etatMachines", key = "#id")
     public EtatMachine findById(Long id) {
         return etatMachineRepository.findById(id).orElse(null);
     }

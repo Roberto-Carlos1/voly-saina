@@ -17,4 +17,12 @@ public interface StatutMachineRepository extends JpaRepository<StatutMachine, Lo
             LIMIT 1
             """, nativeQuery = true)
     StatutMachine findCurrentMachine(@Param("idMachine") Long idMachine);
+
+    @Query(value = """
+            SELECT DISTINCT ON (id_machine) *
+            FROM voly_saina.statut_machine
+            WHERE id_machine IN :machineIds
+            ORDER BY id_machine, date_creation DESC, id DESC
+            """, nativeQuery = true)
+    java.util.List<StatutMachine> findCurrentStatutsForMachines(@Param("machineIds") java.util.List<Long> machineIds);
 }

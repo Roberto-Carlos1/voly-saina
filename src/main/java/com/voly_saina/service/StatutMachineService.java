@@ -28,6 +28,11 @@ public class StatutMachineService {
         return repository.findCurrentMachine(idMachine);
     }
 
+    public List<StatutMachine> findCurrentStatutsForMachines(List<Long> machineIds) {
+        if (machineIds == null || machineIds.isEmpty()) return java.util.Collections.emptyList();
+        return repository.findCurrentStatutsForMachines(machineIds);
+    }
+
     public void deleteById(Long id) {
         repository.deleteById(id);
     }

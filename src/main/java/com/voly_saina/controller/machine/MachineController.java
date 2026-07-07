@@ -81,11 +81,12 @@ public class MachineController {
         List<Machine> machines = machinePage.getContent();
 
         Map<Long, StatutMachine> derniersStatuts = new HashMap<>();
-
-        for (Machine m : machines) {
-            StatutMachine actuel = statutMachineService.findCurrentByMachineId(m.getIdMachine());
-            if (actuel != null) {
-                derniersStatuts.put(m.getIdMachine(), actuel);
+        
+        if (!machines.isEmpty()) {
+            java.util.List<Long> machineIds = machines.stream().map(Machine::getIdMachine).collect(java.util.stream.Collectors.toList());
+            java.util.List<StatutMachine> statuts = statutMachineService.findCurrentStatutsForMachines(machineIds);
+            for (StatutMachine s : statuts) {
+                derniersStatuts.put(s.getMachine().getIdMachine(), s);
             }
         }
 

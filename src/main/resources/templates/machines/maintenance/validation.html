@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <a href="/api/maintenances-machine">Retour à la liste</a>
+    <a href="/maintenances-machine">Retour à la liste</a>
     <h1>Validation de la maintenance</h1>
 
     <p th:if="${error}" th:text="${error}" style="color: red;"></p>
@@ -20,14 +20,14 @@
         <p><strong>Date retour prévue :</strong> <span th:text="${maintenance.getDateRetourPrevue()}"></span></p>
         <p><strong>Coût :</strong> <span th:text="${maintenance.getCout()}"></span> Ar</p>
 
-        <form th:action="@{/api/maintenances-machine/validate}" method="post">
+        <form th:action="@{/maintenances-machine/valider}" method="post">
             <input type="hidden" name="idMaintenance" th:value="${maintenance.idMaintenance}">
             <label for="dateRetourReelle">Date retour réelle *</label>
             <input type="date" id="dateRetourReelle" name="dateRetourReelle"
                    th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
             <br><br>
             <button type="submit">Valider la maintenance</button>
-            <a href="/api/maintenances-machine">Annuler</a>
+            <a href="/maintenances-machine">Annuler</a>
         </form>
     </div>
 </body>

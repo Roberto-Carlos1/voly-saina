@@ -10,13 +10,13 @@
 </head>
 
 <body>
-    <a href="/api/maintenances-machine">Retour à la liste</a>
+    <a href="/maintenances-machine">Retour à la liste</a>
     <h1 th:text="${action == 'update' ? 'Modifier la maintenance' : 'Nouvelle maintenance'}"></h1>
 
     <p th:if="${error}" th:text="${error}" style="color: red;"></p>
     <p th:if="${success}" th:text="${success}" style="color: green;"></p>
 
-    <form th:action="@{${action == 'update' ? '/api/maintenances-machine/update/' + maintenance.idMaintenance : '/api/maintenances-machine/insert'}}"
+    <form th:action="@{${action == 'update' ? '/maintenances-machine/modifier/' + maintenance.idMaintenance : '/maintenances-machine/ajouter'}}"
           method="post" onsubmit="return validerFormulaire()">
 
         <label for="idMachine">Machine *</label>

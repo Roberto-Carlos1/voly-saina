@@ -26,7 +26,7 @@ import com.voly_saina.service.ProduitService;
 import com.voly_saina.service.UtilisateurService;
 
 @Controller
-@RequestMapping("/client/panier")
+@RequestMapping("/panier")
 public class PanierController {
 
     @Autowired
@@ -60,7 +60,7 @@ public class PanierController {
                 throw new PanierException(PanierException.QUANTITE_INVALIDE);
             }
             panierService.ajouterAuPanier(resolveClientId(clientId), produitId, quantite);
-            return "redirect:/client/panier";
+            return "redirect:/panier";
         } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());
             return "client/panier";
@@ -170,7 +170,7 @@ public class PanierController {
                 throw new PanierException(PanierException.PANIER_INTROUVABLE);
             }
 
-            return "redirect:/client/panier";
+            return "redirect:/panier";
 
         } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());
@@ -212,7 +212,7 @@ public class PanierController {
             }
 
             panierService.mettreAJourQuantite(ligneId, quantite, idClientFinal);
-            return "redirect:/client/panier/details";
+            return "redirect:/panier/details";
 
         } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());

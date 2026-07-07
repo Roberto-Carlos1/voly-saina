@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/maintenances-machine")
+@RequestMapping("/maintenances-machine")
 public class MaintenanceMachineController {
 
     private final MachineRepository machineRepository;
@@ -43,7 +43,7 @@ public class MaintenanceMachineController {
         this.statutMaintenanceService = statutMaintenanceService;
     }
 
-    // GET /api/maintenances-machine
+    // GET /maintenances-machine
     @GetMapping
     public String getAll(@RequestParam(defaultValue = "0") int page, Model model) {
         Pages config = pageService.getConfiguration();
@@ -65,15 +65,15 @@ public class MaintenanceMachineController {
         Pages p = pageService.findById(1L);
         if (page <= 0) {
             attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
-            return "redirect:/api/maintenances-machine";
+            return "redirect:/maintenances-machine";
         } else {
             p.setNombre(page);
             pageService.save(p);
         }
-        return "redirect:/api/maintenances-machine";
+        return "redirect:/maintenances-machine";
     }
 
-    @PostMapping("/filtre")
+    @PostMapping("/api/filtre")
     public ResponseEntity<Page<MaintenanceMachine>> filtreMaintenance(
             @RequestParam(value = "idMachine", required = false) String idMachine,
             @RequestParam(value = "codeStatut", required = false) String codeStatut,
@@ -100,7 +100,7 @@ public class MaintenanceMachineController {
 
     // ==================== FORM VIEWS ====================
 
-    @GetMapping("/view/insert")
+    @GetMapping("/ajouter")
     public String insertForm(Model model) {
         List<Machine> machines = machineService.findAll();
         List<StatutMaintenance> statuts = statutMaintenanceService.findAll();
@@ -110,11 +110,11 @@ public class MaintenanceMachineController {
         return "/machines/maintenance/form";
     }
 
-    @GetMapping("/modify/{id}")
+    @GetMapping("/modifier/{id}")
     public String modifyForm(@PathVariable Long id, Model model) {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
         if (maintenance == null) {
-            return "redirect:/api/maintenances-machine";
+            return "redirect:/maintenances-machine";
         }
         List<Machine> machines = machineService.findAll();
         List<StatutMaintenance> statuts = statutMaintenanceService.findAll();
@@ -125,7 +125,7 @@ public class MaintenanceMachineController {
         return "/machines/maintenance/form";
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/ajouter")
     public String insert(@RequestParam("idMachine") Long idMachine,
                          @RequestParam("dateCreation") String dateCreation,
                          @RequestParam("travaux") String travaux,
@@ -135,11 +135,11 @@ public class MaintenanceMachineController {
                 || travaux == null || travaux.trim().isEmpty()
                 || cout == null || cout.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Tous les champs sont obligatoires");
-            return "redirect:/api/maintenances-machine/view/insert";
+            return "redirect:/maintenances-machine/ajouter";
         }
         if (!dateCreation.matches("\\d{4}-\\d{2}-\\d{2}")) {
             redirectAttributes.addFlashAttribute("error", "Format de date invalide (AAAA-MM-JJ)");
-            return "redirect:/api/maintenances-machine/view/insert";
+            return "redirect:/maintenances-machine/ajouter";
         }
         double coutVal;
         try {
@@ -147,20 +147,20 @@ public class MaintenanceMachineController {
             if (coutVal < 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
             redirectAttributes.addFlashAttribute("error", "Le coût doit être un nombre positif");
-            return "redirect:/api/maintenances-machine/view/insert";
+            return "redirect:/maintenances-machine/ajouter";
         }
         if (machineService.findById(idMachine) == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
-            return "redirect:/api/maintenances-machine/view/insert";
+            return "redirect:/maintenances-machine/ajouter";
         }
 
         MaintenanceMachine saved = maintenanceMachineService.createMaintenanceMachine(
                 idMachine, travaux.trim(), coutVal, LocalDate.parse(dateCreation));
         redirectAttributes.addFlashAttribute("success", "Maintenance créée avec succès");
-        return "redirect:/api/maintenances-machine";
+        return "redirect:/maintenances-machine";
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/modifier/{id}")
     public String update(@PathVariable Long id,
                          @RequestParam("idMachine") Long idMachine,
                          @RequestParam("dateDebut") String dateDebut,
@@ -172,12 +172,12 @@ public class MaintenanceMachineController {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
         if (maintenance == null) {
             redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
-            return "redirect:/api/maintenances-machine";
+            return "redirect:/maintenances-machine";
         }
 
         if (travaux == null || travaux.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Le champ travaux est obligatoire");
-            return "redirect:/api/maintenances-machine/modify/" + id;
+            return "redirect:/maintenances-machine/modifier/" + id;
         }
         double coutVal;
         try {
@@ -185,12 +185,12 @@ public class MaintenanceMachineController {
             if (coutVal < 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
             redirectAttributes.addFlashAttribute("error", "Le coût doit être un nombre positif");
-            return "redirect:/api/maintenances-machine/modify/" + id;
+            return "redirect:/maintenances-machine/modifier/" + id;
         }
         Machine machine = machineService.findById(idMachine);
         if (machine == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
-            return "redirect:/api/maintenances-machine/modify/" + id;
+            return "redirect:/maintenances-machine/modifier/" + id;
         }
 
         maintenance.setMachine(machine);
@@ -209,10 +209,10 @@ public class MaintenanceMachineController {
 
         maintenanceMachineService.save(maintenance);
         redirectAttributes.addFlashAttribute("success", "Maintenance modifiée avec succès");
-        return "redirect:/api/maintenances-machine";
+        return "redirect:/maintenances-machine";
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/supprimer/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         if (!maintenanceMachineService.existsById(id)) {
             redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
@@ -220,12 +220,12 @@ public class MaintenanceMachineController {
             maintenanceMachineService.deleteById(id);
             redirectAttributes.addFlashAttribute("success", "Maintenance supprimée avec succès");
         }
-        return "redirect:/api/maintenances-machine";
+        return "redirect:/maintenances-machine";
     }
 
     // ==================== API REST ====================
 
-    // GET /api/maintenances-machine/{id}
+    // GET /maintenances-machine/{id}
     @GetMapping("/{id}")
     public ResponseEntity<MaintenanceMachine> getById(@PathVariable Long id) {
         return maintenanceMachineService.findById(id)
@@ -233,7 +233,7 @@ public class MaintenanceMachineController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // POST /api/maintenances-machine
+    // POST /maintenances-machine
     @PostMapping
     public ResponseEntity<MaintenanceMachine> create(@RequestParam("idMachine") Long idMachine,
             @RequestParam("dateCreation") LocalDate dateCreation, @RequestParam("travaux") String travaux,
@@ -244,32 +244,32 @@ public class MaintenanceMachineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @GetMapping("/view/validate/{id}")
+    @GetMapping("/valider/{id}")
     public String validateForm(@PathVariable Long id, Model model) {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
         if (maintenance == null) {
-            return "redirect:/api/maintenances-machine";
+            return "redirect:/maintenances-machine";
         }
         model.addAttribute("maintenance", maintenance);
         return "/machines/maintenance/validation";
     }
 
-    @PostMapping("/validate")
+    @PostMapping("/valider")
     public String validate(@RequestParam("idMaintenance") Long idMaintenance,
                            @RequestParam("dateRetourReelle") String dateRetourReelle,
                            RedirectAttributes redirectAttributes) {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(idMaintenance).orElse(null);
         if (maintenance == null) {
             redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
-            return "redirect:/api/maintenances-machine";
+            return "redirect:/maintenances-machine";
         }
         if (dateRetourReelle == null || dateRetourReelle.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "La date de retour réelle est obligatoire");
-            return "redirect:/api/maintenances-machine/view/validate/" + idMaintenance;
+            return "redirect:/maintenances-machine/valider/" + idMaintenance;
         }
         if (!dateRetourReelle.matches("\\d{4}-\\d{2}-\\d{2}")) {
             redirectAttributes.addFlashAttribute("error", "Format de date invalide (AAAA-MM-JJ)");
-            return "redirect:/api/maintenances-machine/view/validate/" + idMaintenance;
+            return "redirect:/maintenances-machine/valider/" + idMaintenance;
         }
         try {
             maintenanceMachineService.validateMaintenanceMachine(
@@ -278,10 +278,10 @@ public class MaintenanceMachineController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur lors de la validation: " + e.getMessage());
         }
-        return "redirect:/api/maintenances-machine";
+        return "redirect:/maintenances-machine";
     }
 
-    // PUT /api/maintenances-machine/{id}
+    // PUT /maintenances-machine/{id}
     @PutMapping("/{id}")
     public ResponseEntity<MaintenanceMachine> update(@PathVariable Long id,
             @RequestBody MaintenanceMachine maintenanceMachine) {
@@ -293,7 +293,7 @@ public class MaintenanceMachineController {
         return ResponseEntity.ok(updated);
     }
 
-    // DELETE /api/maintenances-machine/{id}
+    // DELETE /maintenances-machine/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!maintenanceMachineService.existsById(id)) {

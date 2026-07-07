@@ -6,10 +6,10 @@ console.log('Machine ID:', machineId);
 console.log('Client ID:', clientId);
 
 // Charger la machine
-function chargerMachine() {
-    console.log(' Appel API: /client/machines/api/' + machineId);
+function loadMachineDetails(machineId) {
+    console.log(' Appel API: /catalogue/machines/api/' + machineId);
 
-    fetch('/client/machines/api/' + machineId)
+    fetch('/catalogue/machines/api/' + machineId)
         .then(r => {
             console.log(' Status:', r.status);
             if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -71,9 +71,9 @@ function soumettreReservation(ajouterAuPanier = false) {
     };
 
     // URL selon le bouton cliqué
-    const url = ajouterAuPanier 
-        ? '/client/panier/reservations/api/ajouter' 
-        : '/client/reservations/api';
+    const url = isModification 
+        ? '/panier/reservations/api/modifier' 
+        : '/panier/reservations/api/ajouter';
 
     console.log(' Envoi' + (ajouterAuPanier ? ' au panier' : '') + ':', data);
 

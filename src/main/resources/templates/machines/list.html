@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <a href="/api/machines/view/insert">Inserer une machine</a>
+    <a href="/machines/ajouter">Inserer une machine</a>
     <a href="/api/exel/template/Machine">Télécharger le template d'importation</a>
     <a href="/files">Allez a la page d'importation</a>
     <h1>Liste des machines</h1>
@@ -16,7 +16,7 @@
     <p th:if="${error}" th:text="${error}"></p>
 
     <h3>Filtre</h3>
-    <form action="/api/machines/pages" method="post">
+    <form action="/machines/pages" method="post">
         <p>
             Éléments par page
             <input type="number" name="pages" id="">
@@ -68,10 +68,10 @@
                     </span>
                 </td>
                 <td>
-                    <a th:href="@{/api/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a>
-                    <a th:href="@{/api/machines/modify/{id_machine}(id_machine=${machine.getIdMachine()})}">Modifier</a>
+                    <a th:href="@{/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a>
+                    <a th:href="@{/machines/modifier/{id_machine}(id_machine=${machine.getIdMachine()})}">Modifier</a>
                     <a
-                        th:href="@{/api/machines/delete/{id_machine}(id_machine=${machine.getIdMachine()})}">Supprimer</a>
+                        th:href="@{/machines/supprimer/{id_machine}(id_machine=${machine.getIdMachine()})}">Supprimer</a>
                 </td>
             </tr>
         </tbody>
@@ -98,7 +98,7 @@
         const data = new FormData(form);
         lines.innerHTML = ""; // Vider le tableau
 
-        fetch("/api/machines/filtre", {
+        fetch("/machines/api/filtre", {
             method: "POST",
             body: data
         })
@@ -114,9 +114,9 @@
                 <td>${libelleType}</td>
                 <td>${libelleEtat}</td>
                 <td>
-                    <a href="/api/machines/${machine.idMachine}">Voir plus</a> 
-                    <a href="/api/machines/modify/${machine.idMachine}">Modifier</a>
-                    <a href="/api/machines/delete/${machine.idMachine}">Supprimer</a>
+                    <a href="/machines/${machine.idMachine}">Voir plus</a> 
+                    <a href="/machines/modifier/${machine.idMachine}">Modifier</a>
+                    <a href="/machines/supprimer/${machine.idMachine}">Supprimer</a>
                 </td>`;
                     lines.appendChild(line);
                 });

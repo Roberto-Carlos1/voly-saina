@@ -2,13 +2,14 @@
 const reservationId = getUrlParam('id') || 1;
 
 // Charger les informations de la réservation
-fetch('/api/client/retours/form/' + reservationId)
-    .then(response => {
-        if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
-        return response.json();
-    })
-    .then(data => {
-        let html = `
+function checkExistingForm(reservationId) {
+    fetch('/catalogue/retours/api/form/' + reservationId)
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
+            return response.json();
+        })
+        .then(data => {
+            let html = `
             <div style="border:1px solid #ccc;padding:15px;margin:10px;">
                 <h3>${data.machineNom}</h3>
                 <p><strong>Type:</strong> ${data.machineType}</p>
@@ -36,7 +37,7 @@ document.getElementById('formRetour').addEventListener('submit', function(e) {
         remarque: formData.get('remarque') || ''
     };
 
-    fetch('/api/client/retours', {
+    fetch('/catalogue/retours/api', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

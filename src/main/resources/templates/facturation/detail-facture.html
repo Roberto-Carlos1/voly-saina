@@ -1,7 +1,7 @@
 <div class="container">
 
-    <a href="/api/factures" class="button"> Retour </a>
-    <a th:href="@{/api/paiements/facture/{id_facture}(id_facture=${facture.getIdFacture()})}" class="button"> Historique de paiement </a>
+    <a href="/factures" class="button"> Retour </a>
+    <a th:href="@{/paiements/facture/{id_facture}(id_facture=${facture.getIdFacture()})}" class="button"> Historique de paiement </a>
 
     <h2 th:text=" 'À propos du ' + ${facture.getNumero()}"></h2>
 
@@ -13,7 +13,7 @@
             <li th:text=" 'Montant total : ' + ${facture.getMontantTotal()} + ' Ar'"></li>
             <li>
                 <span th:text="'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar '"></span>
-                <a th:href="@{/api/paiements/reste/{id_facture}(id_facture=${facture.getIdFacture()})}" th:if="${(facture.montantTotal - facture.montantPaye) > 0}" th:text="'Payez le reste'"></a>
+                <a th:href="@{/paiements/reste/{id_facture}(id_facture=${facture.getIdFacture()})}" th:if="${(facture.montantTotal - facture.montantPaye) > 0}" th:text="'Payez le reste'"></a>
             </li>
         </ul>
 

@@ -10,7 +10,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
     <div class="container">
-        <a class="navbar-brand fw-bold" th:href="@{/page02}">VOLY SAINA+</a>
+        <a class="navbar-brand fw-bold" th:href="@{/profil}">VOLY SAINA+</a>
         <div class="d-flex gap-2">
             <a class="btn btn-outline-light btn-sm" th:href="@{/client/accueil(idClient=${idClient})}">Espace client</a>
             <a class="btn btn-light btn-sm" th:href="@{/deconnexion}">Déconnexion</a>
@@ -59,7 +59,7 @@
                     <h2 class="h5 mb-0">Profil agricole</h2>
                 </div>
                 <div class="card-body p-4">
-                    <form th:action="@{/page02/profil}" method="post">
+                    <form th:action="@{/profil/enregistrer}" method="post">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Genre</label>

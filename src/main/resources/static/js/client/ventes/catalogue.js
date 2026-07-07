@@ -44,7 +44,8 @@
     }
 
     async function fetchFilteredProducts(params) {
-        const url = '/client/ventes/api/catalogue?' + new URLSearchParams(params).toString();
+        // Construire l'URL avec les paramètres
+        const url = '/catalogue/produits/api/catalogue?' + new URLSearchParams(params).toString();
         const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
         if (!res.ok) throw new Error('Erreur chargement catalogue');
         return res.json();

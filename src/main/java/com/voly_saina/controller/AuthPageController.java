@@ -25,7 +25,7 @@ public class AuthPageController {
      * Page 01 : page officielle de connexion/inscription.
      * /login redirige ici pour éviter d'avoir deux pages de connexion différentes.
      */
-    @GetMapping({"/page01", "/login"})
+    @GetMapping({"/connexion", "/login"})
     public String afficherConnexion(Model model) {
         model.addAttribute("roles", roleUtilisateurRepository.findAll());
         return "auth/page01";
@@ -48,10 +48,10 @@ public class AuthPageController {
             Utilisateur utilisateur = utilisateurService.creerCompte(nom, telephone, email, motDePasse, idRole);
             redirectAttributes.addFlashAttribute("success",
                     "Compte créé avec succès pour " + utilisateur.getEmail() + ". Connecte-toi maintenant.");
-            return "redirect:/page01?inscription=success";
+            return "redirect:/connexion?inscription=success";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/page01";
+            return "redirect:/connexion";
         }
     }
 }

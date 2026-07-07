@@ -21,7 +21,7 @@ import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.service.PanierService;
 
 @Controller
-@RequestMapping("/client/panier/reservations")
+@RequestMapping("/panier/reservations")
 public class PanierReservationController {
 
     @Autowired
@@ -48,7 +48,7 @@ public class PanierReservationController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/client/panier?clientId=" + clientId;
+        return "redirect:/panier?clientId=" + clientId;
     }
 
     @PostMapping("/api/ajouter")
@@ -91,7 +91,7 @@ public class PanierReservationController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/client/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier?clientId=" + resolveClientId(clientId);
     }
 
     @PostMapping("/modifier-dates")
@@ -109,7 +109,7 @@ public class PanierReservationController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/client/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier?clientId=" + resolveClientId(clientId);
     }
 
     @PostMapping("/valider-tout")
@@ -122,7 +122,7 @@ public class PanierReservationController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/client/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier?clientId=" + resolveClientId(clientId);
     }
 
     @PostMapping("/vider")
@@ -135,7 +135,7 @@ public class PanierReservationController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/client/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier?clientId=" + resolveClientId(clientId);
     }
 
     @GetMapping("/api/liste")

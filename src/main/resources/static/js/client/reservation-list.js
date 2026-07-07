@@ -4,7 +4,7 @@ const currentClientId = (typeof clientId !== 'undefined') ? clientId : 1;
 
 console.log('🔍 Client ID:', currentClientId);
 
-fetch('/client/reservations/api/client/' + currentClientId)
+fetch('/catalogue/reservations/api/client/' + currentClientId)
     .then(r => r.json())
     .then(data => {
         console.log('📦 Données reçues:', data);
@@ -65,9 +65,9 @@ function voirDetail(id) {
 }
 
 function annuler(id) {
-    if (confirm('Annuler cette réservation ?')) {
-        fetch('/client/reservations/api/' + id + '/annuler', {
-            method: 'PUT',
+    if (confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) {
+        fetch('/catalogue/reservations/api/' + id + '/annuler', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ motif: 'Annulé par le client' })
         })

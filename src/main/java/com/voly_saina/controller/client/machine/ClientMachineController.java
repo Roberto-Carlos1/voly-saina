@@ -18,7 +18,7 @@ import com.voly_saina.service.MachineService;
 import com.voly_saina.service.TypeMachineService;
 
 @Controller
-@RequestMapping("/client/machines")
+@RequestMapping("/catalogue/machines")
 public class ClientMachineController {
 
     @Autowired

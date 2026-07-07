@@ -4,7 +4,7 @@ if (!typeId) {
     document.getElementById('infoType').innerHTML = '<p style="color:red;">Aucun type sélectionné.</p>';
     document.getElementById('listeMachines').innerHTML = '';
 } else {
-    fetch('/client/machines/api/type/' + typeId)
+    fetch('/catalogue/machines/api/type/' + typeId)
         .then(r => {
             if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
             return r.json();

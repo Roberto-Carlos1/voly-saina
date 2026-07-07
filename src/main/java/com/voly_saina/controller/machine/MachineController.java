@@ -35,7 +35,7 @@ import com.voly_saina.service.StatutMachineService;
 import com.voly_saina.service.TypeMachineService;
 
 @Controller
-@RequestMapping("/api/machines")
+@RequestMapping("/machines")
 public class MachineController {
     private final EtatMachineService etatMachineService;
     private final MachineService machineService;
@@ -64,7 +64,7 @@ public class MachineController {
         return "index";
     }
 
-    // GET /api/machines
+    // GET /machines
     @GetMapping
     public String getAll(@RequestParam(defaultValue = "0") int page, Model model) {
         List<EtatMachine> etats = etatMachineService.findAll();
@@ -104,15 +104,15 @@ public class MachineController {
         Pages p = pageService.findById(1L);
         if (page <= 0) {
             attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
-            return "redirect:/api/machines";
+            return "redirect:/machines";
         } else {
             p.setNombre(page);
             pageService.save(p);
         }
-        return "redirect:/api/machines";
+        return "redirect:/machines";
     }
 
-    @GetMapping("/view/insert")
+    @GetMapping("/ajouter")
     public String insertMachine(Model model) {
         List<EtatMachine> etats = etatMachineService.findAll();
         List<TypeMachine> types = typeMachineService.findAll();
@@ -121,7 +121,7 @@ public class MachineController {
         return "machines/insert-machine";
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/ajouter")
     public String insertMachine(@RequestParam("nom") String nom,
             @RequestParam("typeMachine") Long typeMachineId,
             @RequestParam("description") String description,
@@ -147,16 +147,16 @@ public class MachineController {
         statutMachineService.save(statutMachine);
 
         redirectAttributes.addFlashAttribute("success", "Machine insérée avec succès");
-        return "redirect:/api/machines";
+        return "redirect:/machines";
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/supprimer/{id}")
     public String deleteMachine(@PathVariable Long id, Model model) {
         machineService.deleteById(id);
-        return "redirect:/api/machines";
+        return "redirect:/machines";
     }
 
-    @GetMapping("/modify/{id}")
+    @GetMapping("/modifier/{id}")
     public String modifyMachine(@PathVariable Long id, Model model) {
         Machine m = machineService.findById(id);
         List<EtatMachine> etats = etatMachineService.findAll();
@@ -167,7 +167,7 @@ public class MachineController {
         return "machines/modify-machine";
     }
 
-    @PostMapping("/modify/{id}")
+    @PostMapping("/modifier/{id}")
     public String updateMachine(@PathVariable Long id,
             @RequestParam("nom") String nom,
             @RequestParam("typeMachine") Long typeMachineId,
@@ -181,7 +181,7 @@ public class MachineController {
         Machine machine = machineService.findById(id);
         if (machine == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
-            return "redirect:/api/machines";
+            return "redirect:/machines";
         }
 
         machine.setNom(nom);
@@ -203,10 +203,10 @@ public class MachineController {
         }
 
         redirectAttributes.addFlashAttribute("success", "Machine modifiée avec succès");
-        return "redirect:/api/machines";
+        return "redirect:/machines";
     }
 
-    // GET /api/machines/{id}
+    // GET /machines/{id}
     @GetMapping("/{id}")
     public String getMachinebyId(@PathVariable Long id, Model model) {
         Machine m = machineService.findById(id);
@@ -219,7 +219,7 @@ public class MachineController {
         return "machines/detail-machine";
     }
 
-    @PostMapping("/filtre")
+    @PostMapping("/api/filtre")
     public ResponseEntity<Page<Machine>> filtreMachine(@RequestParam("nomMachine") String name,
             @RequestParam("typeMachine") String typeID,
             @RequestParam("etatMachine") String etatID,

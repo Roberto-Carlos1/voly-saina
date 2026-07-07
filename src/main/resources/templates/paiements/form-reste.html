@@ -1,6 +1,6 @@
 <h1> Formulaire de reste à payer </h1>
 
-<form action="/api/paiements/restePayee" method="post">
+<form action="/paiements/restePayee" method="post">
     <input type="hidden" name="idFacture" th:value="${facture.getIdFacture()}">
     <p> Montant à payer <input type="number" name="montant"> </p>
     <p> Date de paiement <input type="datetime-local" name="date"> </p>

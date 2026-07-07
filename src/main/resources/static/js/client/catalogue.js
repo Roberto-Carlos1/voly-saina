@@ -1,4 +1,4 @@
-fetch('/api/client/machines/catalogue')
+fetch('/catalogue/machines/api/catalogue')
     .then(r => r.json())
     .then(machines => {
         let html = '';

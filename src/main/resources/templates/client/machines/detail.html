@@ -1,24 +1,164 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Détail machine</title>
+<head th:replace="~{fragments/header :: head(pageTitle='Détail Machine - AgriElite')}">
 </head>
 <body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
 
-    <h1>🔧 Détail de la machine</h1>
-    <hr>
+    <main class="pt-20">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
+                <a href="/client/accueil" class="hover:text-primary">Accueil</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <a href="/catalogue/machines/catalogue" class="hover:text-primary">Catalogue</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="text-on-surface font-semibold" th:text="${machine != null ? machine.nom : 'Machine introuvable'}">Détail</span>
+            </nav>
 
-    <div id="detailMachine">
-        <p>Chargement...</p>
-    </div>
+            <!-- Vérification si machine existe -->
+            <div th:if="${machine == null}" class="text-center py-20">
+                <span class="material-symbols-outlined text-outline text-[64px]">search_off</span>
+                <h3 class="font-headline-md text-headline-md text-on-surface mt-4">Machine introuvable</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">
+                    La machine que vous recherchez n'existe pas ou a été supprimée.
+                </p>
+                <a href="/catalogue/machines/catalogue" 
+                   class="inline-block mt-4 bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md hover:opacity-90 transition">
+                    Retour au catalogue
+                </a>
+            </div>
 
-    <br>
-    <a href="javascript:history.back()">← Retour</a> |
-    <a href="/catalogue/machines/types">Types</a> |
-    <a th:href="@{/client/accueil(clientId=1)}">Accueil</a>
+            <!-- Contenu si machine trouvée -->
+            <div th:if="${machine != null}" class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop">
+                <!-- Left Column -->
+                <div class="lg:col-span-8">
+                    <!-- Image placeholder -->
+                    <div class="relative group aspect-video rounded-xl overflow-hidden border border-outline-variant mb-stack-md bg-gradient-to-br from-surface-container-high to-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-outline text-[100px]">agriculture</span>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                            <span class="text-white font-label-md" th:text="'Vue principale : ' + ${machine.nom}">Vue principale</span>
+                        </div>
+                    </div>
 
-    <script src="/js/client/common.js"></script>
-    <script src="/js/client/detail.js"></script>
+                    <!-- Status et infos -->
+                    <div class="flex flex-wrap gap-4 items-center mb-stack-lg">
+                        <span th:if="${machine.disponible}" 
+                              class="bg-green-100 text-green-800 px-4 py-2 rounded-full font-label-md flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                            Disponible
+                        </span>
+                        <span th:unless="${machine.disponible}" 
+                              class="bg-red-100 text-red-800 px-4 py-2 rounded-full font-label-md flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">block</span>
+                            Indisponible
+                        </span>
+                        <span class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md">
+                            Type: <span th:text="${machine.typeMachine != null ? machine.typeMachine.libelle : 'Non défini'}">Type</span>
+                        </span>
+                        <span class="px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full font-label-md">
+                            📍 <span th:text="${machine.localisation != null and !machine.localisation.isEmpty() ? machine.localisation : 'Non spécifiée'}">Localisation</span>
+                        </span>
+                    </div>
 
+                    <!-- Description -->
+                    <div class="bg-surface-container-low p-stack-lg rounded-xl border border-outline-variant">
+                        <h2 class="font-headline-lg text-headline-lg text-primary mb-stack-md" th:text="${machine.nom}">Nom Machine</h2>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg" 
+                           th:text="${machine.description != null ? machine.description : 'Aucune description disponible pour cette machine.'}">
+                            Description
+                        </p>
+
+                        <!-- Technical Specs -->
+                        <div class="overflow-hidden rounded-lg border border-outline-variant">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-surface-container-high border-b border-outline-variant">
+                                    <tr>
+                                        <th class="p-4 font-label-md text-on-surface">Spécification</th>
+                                        <th class="p-4 font-label-md text-on-surface">Valeur</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-outline-variant">
+                                    <tr class="bg-white">
+                                        <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Prix / Jour</td>
+                                        <td class="p-4 font-body-md" th:text="${machine.prixJour} + ' €'">0 €</td>
+                                    </tr>
+                                    <tr class="bg-surface-container-lowest">
+                                        <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Type</td>
+                                        <td class="p-4 font-body-md" th:text="${machine.typeMachine != null ? machine.typeMachine.libelle : 'Non défini'}">Non défini</td>
+                                    </tr>
+                                    <tr class="bg-white">
+                                        <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Localisation</td>
+                                        <td class="p-4 font-body-md" th:text="${machine.localisation != null and !machine.localisation.isEmpty() ? machine.localisation : 'Non spécifiée'}">Non spécifiée</td>
+                                    </tr>
+                                    <tr class="bg-surface-container-lowest">
+                                        <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Kilométrage</td>
+                                        <td class="p-4 font-body-md" th:text="${machine.kilometrage != null ? machine.kilometrage + ' km' : 'Non spécifié'}">Non spécifié</td>
+                                    </tr>
+                                    <tr class="bg-white">
+                                        <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Disponibilité</td>
+                                        <td class="p-4 font-body-md" th:text="${machine.disponible} ? '✅ Disponible' : '❌ Indisponible'">Disponible</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Booking Widget -->
+                <div class="lg:col-span-4">
+                    <div class="sticky top-24 bg-white border-2 border-primary/10 rounded-xl shadow-lg p-stack-lg">
+                        <div class="flex justify-between items-start mb-stack-md">
+                            <div>
+                                <div class="font-label-sm text-secondary uppercase mb-1">Tarif de Location</div>
+                                <div class="font-headline-md text-headline-md text-primary">
+                                    <span th:text="${machine.prixJour}">0</span> € 
+                                    <span class="text-body-md font-normal text-on-surface-variant">/ jour</span>
+                                </div>
+                            </div>
+                            <div class="bg-secondary-container/20 text-on-secondary-container px-3 py-1 rounded-full font-label-sm"
+                                 th:text="${machine.disponible} ? 'Disponible' : 'Indisponible'">
+                                Disponible
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex flex-col gap-3">
+                            <a th:if="${machine.disponible}" 
+                               th:href="@{/catalogue/reservations/{machineId}/nouvelle(machineId=${machine.idMachine})}" 
+                               class="bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all flex items-center justify-center gap-3 btn-primary text-center">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+                                Réserver
+                            </a>
+                            <span th:unless="${machine.disponible}" 
+                                  class="bg-gray-300 text-gray-500 py-4 rounded-lg font-headline-md text-center cursor-not-allowed flex items-center justify-center gap-3">
+                                <span class="material-symbols-outlined">block</span>
+                                Indisponible
+                            </span>
+                            
+                            <a th:href="@{/catalogue/machines/catalogue}" 
+                               class="border border-outline-variant text-on-surface-variant py-3 rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                                Retour au catalogue
+                            </a>
+                        </div>
+                        <p class="mt-4 text-center text-label-sm text-on-surface-variant italic">
+                            * Assurance technique et maintenance incluse.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        console.log('🔍 Machine ID:', /*[[${machine != null ? machine.idMachine : 'null'}]]*/);
+        console.log('🔍 Machine Nom:', /*[[${machine != null ? machine.nom : 'null'}]]*/);
+        console.log('🔍 Client ID:', /*[[${clientId != null ? clientId : 'null'}]]*/);
+    </script>
 </body>
 </html>

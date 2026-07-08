@@ -11,6 +11,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +20,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.voly_saina.dto.dtoMacine.FormulaireRetourDTO;
 import com.voly_saina.dto.dtoMacine.RetourClientDTO;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.RetourMachine;
+import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.RetourMachineService;
 import com.voly_saina.service.UtilisateurService;
@@ -42,27 +44,73 @@ public class ClientRetourController {
     @Autowired
     private UtilisateurService utilisateurService;
 
+    // ========== MÉTHODES D'AUTHENTIFICATION ==========
+
+    private Utilisateur getUtilisateurConnecte(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return null;
+        }
+        return utilisateurService.findByEmail(user.getUsername());
+    }
+
+    private Long getClientId(@AuthenticationPrincipal User user) {
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur == null) {
+            return null;
+        }
+        return utilisateur.getIdUtilisateur();
+    }
+
+    private void addUtilisateurConnecte(Model model, @AuthenticationPrincipal User user) {
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur != null) {
+            model.addAttribute("utilisateur", utilisateur);
+            model.addAttribute("clientId", utilisateur.getIdUtilisateur());
+            model.addAttribute("idClient", utilisateur.getIdUtilisateur());
+            model.addAttribute("isAuthenticated", true);
+        } else {
+            model.addAttribute("isAuthenticated", false);
+            model.addAttribute("clientId", null);
+        }
+    }
+
     // ========== PAGES HTML ==========
 
-    // Page formulaire de retour
     @GetMapping("/{reservationId}/nouveau")
-    public String formulaireRetour(@PathVariable Long reservationId,
-                                   @RequestParam(required = false) Long clientId,
-                                   Model model) {
+    public String formulaireRetour(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal User user,
+            Model model) {
+        
+        addUtilisateurConnecte(model, user);
         model.addAttribute("reservationId", reservationId);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
         return "client/retours/form";
     }
 
     // ========== API REST ==========
 
-    // GET /client/retours/api/form/{reservationId}
     @GetMapping("/api/form/{reservationId}")
     @ResponseBody
-    public ResponseEntity<?> getFormulaireRetour(@PathVariable Long reservationId) {
+    public ResponseEntity<?> getFormulaireRetour(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             ReservationMachine reservation = reservationService.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+            if (reservation.getClient() == null || !reservation.getClient().getIdUtilisateur().equals(clientId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
 
             FormulaireRetourDTO dto = prepareFormulaireRetour(reservation);
             return ResponseEntity.ok(dto);
@@ -74,16 +122,35 @@ public class ClientRetourController {
         }
     }
 
-    // GET /client/retours/api/reservation/{reservationId}
     @GetMapping("/api/reservation/{reservationId}")
     @ResponseBody
-    public ResponseEntity<?> getRetourByReservation(@PathVariable Long reservationId) {
+    public ResponseEntity<?> getRetourByReservation(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
+            ReservationMachine reservation = reservationService.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+            if (reservation.getClient() == null || !reservation.getClient().getIdUtilisateur().equals(clientId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+
             RetourMachine retour = retourService.findByReservation(reservationId);
             if (retour == null) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok(mapToRetourDTO(retour));
+            
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
@@ -91,10 +158,17 @@ public class ClientRetourController {
         }
     }
 
-    // GET /client/retours/api/client/{clientId}
     @GetMapping("/api/client/{clientId}")
     @ResponseBody
-    public ResponseEntity<List<RetourClientDTO>> getRetoursByClient(@PathVariable Long clientId) {
+    public ResponseEntity<List<RetourClientDTO>> getRetoursByClient(
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User user) {
+        
+        Long clientIdConnecte = getClientId(user);
+        if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         List<RetourMachine> retours = new ArrayList<>();
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         
@@ -112,11 +186,20 @@ public class ClientRetourController {
         return ResponseEntity.ok(response);
     }
 
-    // POST /client/retours/api
     @PostMapping("/api")
     @ResponseBody
-    public ResponseEntity<?> enregistrerRetour(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> enregistrerRetour(
+            @RequestBody Map<String, Object> payload,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             Long reservationId = Long.valueOf(payload.get("reservationId").toString());
             String etatRetour = payload.get("etatRetour").toString();
             String remarque = payload.containsKey("remarque") ? 
@@ -124,6 +207,12 @@ public class ClientRetourController {
 
             ReservationMachine reservation = reservationService.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+            if (reservation.getClient() == null || !reservation.getClient().getIdUtilisateur().equals(clientId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
 
             if (reservation.getRetour() != null) {
                 Map<String, String> error = new HashMap<>();
@@ -159,13 +248,28 @@ public class ClientRetourController {
         }
     }
 
-    // GET /client/retours/api/penalite/{reservationId}
     @GetMapping("/api/penalite/{reservationId}")
     @ResponseBody
-    public ResponseEntity<?> getPenalite(@PathVariable Long reservationId) {
+    public ResponseEntity<?> getPenalite(
+            @PathVariable Long reservationId,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             ReservationMachine reservation = reservationService.findById(reservationId)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+            if (reservation.getClient() == null || !reservation.getClient().getIdUtilisateur().equals(clientId)) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
 
             LocalDate dateRetour = LocalDate.now();
             long joursRetard = ChronoUnit.DAYS.between(reservation.getDateFin(), dateRetour);
@@ -193,7 +297,7 @@ public class ClientRetourController {
         }
     }
 
-    // ========== Méthodes privées ==========
+    // ========== MÉTHODES PRIVÉES ==========
 
     private FormulaireRetourDTO prepareFormulaireRetour(ReservationMachine reservation) {
         LocalDate dateRetour = LocalDate.now();

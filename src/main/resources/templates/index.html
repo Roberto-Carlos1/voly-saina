@@ -179,16 +179,18 @@
             class="hidden md:flex gap-gutter-desktop items-center h-full pt-1"
           >
             <a
-              class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1"
-              href="#"
-              >Location</a
-            ><a
               class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+              href="/catalogue/machines/catalogue"
+              >Location</a
+            >
+            <a
+              class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1"
               href="client/ventes/catalogue"
               >Achat</a
-            ><a
+            >
+            <a
               class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
-              href="#"
+              href="guide-plantation/cultures"
               >Encyclopédie</a
             >
           </nav>
@@ -322,8 +324,9 @@
           class="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop h-[400px]"
         >
           <!-- Location -->
-          <div
-            class="group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low cursor-pointer transition-all hover:border-primary"
+          <a
+            href="/catalogue/machines/catalogue"
+            class="group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low cursor-pointer transition-all hover:border-primary block"
           >
             <div
               class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
@@ -345,7 +348,7 @@
                 Location de machinerie
               </p>
             </div>
-          </div>
+          </a>
           <!-- Achat -->
           <a
             href="client/ventes/catalogue"
@@ -373,8 +376,9 @@
             </div>
           </a>
           <!-- Encyclopédie -->
-          <div
-            class="group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low cursor-pointer transition-all hover:border-primary"
+          <a
+            href="guide-plantation/cultures"
+            class="group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low cursor-pointer transition-all hover:border-primary block"
           >
             <div
               class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
@@ -392,7 +396,7 @@
                 Conseils &amp; Guides
               </p>
             </div>
-          </div>
+          </a>
         </div>
       </section>
       <!-- Featured Machinery -->

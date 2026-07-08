@@ -1,159 +1,273 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Réserver</title>
+<head th:replace="~{fragments/header :: head(pageTitle='Nouvelle Réservation - AgriElite')}">
 </head>
 <body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
 
-    <h2>Réserver une machine</h2>
+    <main class="pt-20">
+        <div class="max-w-[768px] mx-auto px-margin-desktop py-stack-lg">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
+                <a href="/client/accueil" class="hover:text-primary">Accueil</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <a href="/catalogue/machines/catalogue" class="hover:text-primary">Catalogue</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="text-on-surface font-semibold">Nouvelle réservation</span>
+            </nav>
 
-    <div id="machineInfo">
-        <p>Chargement des informations...</p>
-    </div>
+            <!-- Machine Info -->
+            <div id="machineInfo" class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-20 h-20 rounded-xl bg-surface-container-high flex items-center justify-center overflow-hidden">
+                        <span class="material-symbols-outlined text-outline text-[40px]">agriculture</span>
+                    </div>
+                    <div>
+                        <h2 class="font-headline-md text-headline-md text-on-surface" id="nomMachine">Chargement...</h2>
+                        <p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest" id="typeMachine">Type</p>
+                        <p class="font-headline-md text-headline-md text-primary mt-1" id="prixMachine">0 € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+                    </div>
+                </div>
+            </div>
 
-    <form id="reservationForm">
-        <input type="hidden" name="clientId" th:value="${clientId}">
-        <input type="hidden" name="machineId" th:value="${machineId}">
-        
-        <div>
-            <label>Date début:</label><br>
-            <input type="date" id="dateDebut" required>
+            <!-- Formulaire -->
+            <div class="bg-white border-2 border-primary/10 rounded-xl shadow-lg p-6">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-6">Informations de réservation</h2>
+
+                <form id="reservationForm" action="/catalogue/reservations/api" method="POST">
+                    <input type="hidden" name="clientId" th:value="${clientId != null ? clientId : 1}">
+                    <input type="hidden" name="machineId" th:value="${machineId}">
+
+                    <!-- Dates -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block font-label-sm text-on-surface-variant mb-2">Date de début *</label>
+                            <input type="date" id="dateDebut" name="dateDebut" 
+                                   class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" 
+                                   required>
+                        </div>
+                        <div>
+                            <label class="block font-label-sm text-on-surface-variant mb-2">Date de fin *</label>
+                            <input type="date" id="dateFin" name="dateFin" 
+                                   class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" 
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Lieu de livraison -->
+                    <div class="mb-4">
+                        <label class="block font-label-sm text-on-surface-variant mb-2">Lieu de livraison</label>
+                        <input type="text" id="lieuLivraison" name="lieuLivraison" 
+                               placeholder="Ex: Antananarivo, Ambohimanga..." 
+                               class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+                    </div>
+
+                    <!-- Résumé -->
+                    <div id="resumeContainer" class="bg-surface-container-low p-4 rounded-lg mb-4" style="display:none;">
+                        <h4 class="font-label-md text-label-md text-on-surface mb-2">Résumé</h4>
+                        <div class="flex justify-between">
+                            <span class="font-body-md text-body-md text-on-surface-variant">Nombre de jours</span>
+                            <span class="font-body-md text-body-md font-bold" id="nbJours">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-body-md text-body-md text-on-surface-variant">Total</span>
+                            <span class="font-headline-md text-headline-md text-primary" id="totalEstime">0 €</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button type="submit" class="flex-1 bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all btn-primary">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+                            Réserver
+                        </button>
+                        <button type="button" id="ajouterPanierBtn" 
+                                class="flex-1 bg-secondary text-on-secondary py-4 rounded-lg font-headline-md hover:opacity-90 transition-all btn-primary">
+                            <span class="material-symbols-outlined">add_shopping_cart</span>
+                            Ajouter au panier
+                        </button>
+                        <a href="/catalogue/machines/catalogue" class="px-6 py-4 border border-outline-variant rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Message -->
+                <div id="message" class="mt-4"></div>
+            </div>
         </div>
-        <br>
-        
-        <div>
-            <label>Date fin:</label><br>
-            <input type="date" id="dateFin" required>
-        </div>
-        <br>
-        
-        <div>
-            <label>Lieu livraison:</label><br>
-            <input type="text" id="lieuLivraison" placeholder="Ex: Antananarivo">
-        </div>
-        <br>
-        
-        <button type="submit">Réserver</button>
-        <button type="submit" id="ajouterPanier">Ajouter au panier</button>
-        <a th:href="@{/catalogue/machines/catalogue}">Annuler</a>
-    </form>
+    </main>
 
-    <div id="resultat"></div>
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <script>
-        // // Récupérer les valeurs
-        // const machineId = document.querySelector('input[name="machineId"]').value;
-        // const clientId = document.querySelector('input[name="clientId"]').value;
+    <script th:inline="javascript">
+        const machineId = /*[[${machineId}]]*/ 1;
+        const clientId = /*[[${clientId != null ? clientId : 1}]]*/ 1;
+        let prixJour = 0;
 
-        // console.log(' Machine ID:', machineId);
-        // console.log(' Client ID:', clientId);
+        // Charger les infos de la machine
+        function loadMachine() {
+            fetch('/catalogue/machines/api/' + machineId)
+                .then(r => {
+                    if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(data => {
+                    document.getElementById('nomMachine').textContent = data.nom || 'Machine inconnue';
+                    document.getElementById('typeMachine').textContent = data.typeMachine || 'Type inconnu';
+                    prixJour = data.prixJour || 0;
+                    document.getElementById('prixMachine').innerHTML = prixJour + ' € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span>';
+                })
+                .catch(err => {
+                    console.error('❌ Erreur:', err);
+                    document.getElementById('machineInfo').innerHTML = `
+                        <div class="border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container">
+                            ❌ ${err.message}
+                            <button onclick="loadMachine()" class="ml-4 bg-primary text-on-primary px-4 py-2 rounded-lg btn-primary">
+                                Réessayer
+                            </button>
+                        </div>
+                    `;
+                });
+        }
 
-        // // Charger la machine avec timeout
-        // function chargerMachine() {
-        //     console.log(' Appel API: /client/machines/api/' + machineId);
+        // Calculer le total
+        function calculerTotal() {
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+            const resumeContainer = document.getElementById('resumeContainer');
+
+            if (!dateDebut || !dateFin || prixJour === 0) {
+                resumeContainer.style.display = 'none';
+                return;
+            }
+
+            const debut = new Date(dateDebut);
+            const fin = new Date(dateFin);
             
-        //     fetch('/client/machines/api/' + machineId)
-        //         .then(r => {
-        //             console.log(' Status:', r.status);
-        //             if (!r.ok) throw new Error('HTTP ' + r.status);
-        //             return r.json();
-        //         })
-        //         .then(m => {
-        //             console.log(' Machine reçue:', m);
-        //             document.getElementById('machineInfo').innerHTML = `
-        //                 <div style="border:1px solid #28a745;padding:15px;margin:10px;border-radius:5px;background:#d4edda;">
-        //                     <h3>${m.nom}</h3>
-        //                     <p>${m.description || ''}</p>
-        //                     <p><strong>Prix:</strong> ${m.prixJour} MGA/jour</p>
-        //                     <p><strong>Type:</strong> ${m.typeMachine}</p>
-        //                     <p><strong>État:</strong> ${m.etatMachine}</p>
-        //                     <p><strong>Disponible:</strong> ${m.disponible ? ' Oui' : ' Non'}</p>
-        //                 </div>
-        //             `;
-        //         })
-        //         .catch(err => {
-        //             console.error(' Erreur:', err);
-        //             document.getElementById('machineInfo').innerHTML = `
-        //                 <div style="border:1px solid red;padding:15px;margin:10px;border-radius:5px;background:#f8d7da;">
-        //                     <h3> Erreur</h3>
-        //                     <p>${err.message}</p>
-        //                     <button onclick="chargerMachine()">🔄 Réessayer</button>
-        //                 </div>
-        //             `;
-        //         });
-        // }
+            if (fin <= debut) {
+                document.getElementById('message').innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
+                        La date de fin doit être postérieure à la date de début.
+                    </div>
+                `;
+                resumeContainer.style.display = 'none';
+                return;
+            }
 
-        // // Lancer le chargement
-        // chargerMachine();
+            const jours = Math.ceil((fin - debut) / (1000 * 60 * 60 * 24));
+            const total = jours * prixJour;
 
-        // // Soumettre le formulaire
-        // document.getElementById('reservationForm').onsubmit = function(e) {
-        //     e.preventDefault();
-            
-        //     const dateDebut = document.getElementById('dateDebut').value;
-        //     const dateFin = document.getElementById('dateFin').value;
-            
-        //     if (!dateDebut || !dateFin) {
-        //         document.getElementById('resultat').innerHTML = ' Veuillez remplir toutes les dates';
-        //         return;
-        //     }
-            
-        //     const data = {
-        //         clientId: Number(clientId),
-        //         machineId: Number(machineId),
-        //         dateDebut: dateDebut,
-        //         dateFin: dateFin,
-        //         lieuLivraison: document.getElementById('lieuLivraison').value || ''
-        //     };
+            document.getElementById('nbJours').textContent = jours;
+            document.getElementById('totalEstime').textContent = total + ' €';
+            resumeContainer.style.display = 'block';
+            document.getElementById('message').innerHTML = '';
+        }
 
-        //     console.log('📤 Envoi:', data);
+        // Événements pour le calcul
+        document.getElementById('dateDebut').addEventListener('change', function() {
+            document.getElementById('dateFin').min = this.value;
+            calculerTotal();
+        });
+        document.getElementById('dateFin').addEventListener('change', calculerTotal);
 
-        //     fetch('/client/reservations/api', {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify(data)
-        //     })
-        //     .then(r => {
-        //         console.log(' Status POST:', r.status);
-        //         return r.json();
-        //     })
-        //     .then(data => {
-        //         console.log(' Réponse:', data);
-        //         if (data.error) {
-        //             document.getElementById('resultat').innerHTML = `
-        //                 <div style="border:1px solid red;padding:10px;background:#f8d7da;color:red;">
-        //                      ${data.error}
-        //                 </div>
-        //             `;
-        //         } else {
-        //             document.getElementById('resultat').innerHTML = `
-        //                 <div style="border:1px solid green;padding:15px;background:#d4edda;border-radius:5px;">
-        //                     <h3 style="color:green;"> ${data.message}</h3>
-        //                     <p><strong>Machine:</strong> ${data.reservation.machineNom}</p>
-        //                     <p><strong>Période:</strong> ${data.reservation.dateDebut} au ${data.reservation.dateFin}</p>
-        //                     <p><strong>Prix total:</strong> ${data.reservation.prixTotal} MGA</p>
-        //                     <br>
-        //                     <button onclick="window.location.href='/client/reservations/mes-reservations?clientId=${clientId}'" 
-        //                             style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
-        //                         Voir mes réservations
-        //                     </button>
-        //                 </div>
-        //             `;
-        //             document.getElementById('reservationForm').style.display = 'none';
-        //         }
-        //     })
-        //     .catch(err => {
-        //         console.error(' Erreur POST:', err);
-        //         document.getElementById('resultat').innerHTML = `
-        //             <div style="border:1px solid red;padding:10px;background:#f8d7da;color:red;">
-        //                  Erreur: ${err.message}
-        //             </div>
-        //         `;
-        //     });
-        // };
-        // src="/js/client/common.js"
+        // Définir date min
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dateDebut').min = today;
+        document.getElementById('dateFin').min = today;
+
+        // Soumettre le formulaire
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+
+            if (!dateDebut || !dateFin) {
+                document.getElementById('message').innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
+                        Veuillez sélectionner les dates de location.
+                    </div>
+                `;
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = {
+                clientId: Number(formData.get('clientId')),
+                machineId: Number(formData.get('machineId')),
+                dateDebut: dateDebut,
+                dateFin: dateFin,
+                lieuLivraison: formData.get('lieuLivraison') || ''
+            };
+
+            document.getElementById('message').innerHTML = '<div class="text-primary">⏳ Envoi en cours...</div>';
+
+            fetch('/catalogue/reservations/api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('message').innerHTML = `
+                        <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
+                            ❌ ${data.error}
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('message').innerHTML = `
+                        <div class="border border-primary-container bg-primary-container/10 p-3 rounded-lg text-primary">
+                            ✅ ${data.message}
+                            <br>
+                            <a href="/catalogue/reservations/mes-reservations?clientId=${clientId}" 
+                               class="text-primary font-bold underline mt-2 inline-block">
+                                Voir mes réservations
+                            </a>
+                        </div>
+                    `;
+                    document.getElementById('reservationForm').style.opacity = '0.7';
+                }
+            })
+            .catch(err => {
+                document.getElementById('message').innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
+                        ❌ Erreur: ${err.message}
+                    </div>
+                `;
+            });
+        });
+
+        // Ajouter au panier
+        document.getElementById('ajouterPanierBtn')?.addEventListener('click', function() {
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+
+            if (!dateDebut || !dateFin) {
+                document.getElementById('message').innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
+                        Veuillez sélectionner les dates de location.
+                    </div>
+                `;
+                return;
+            }
+
+            const form = document.getElementById('reservationForm');
+            const formData = new FormData(form);
+            formData.append('dateDebut', dateDebut);
+            formData.append('dateFin', dateFin);
+
+            const url = new URL('/panier/reservations/ajouter', window.location.origin);
+            formData.forEach((value, key) => url.searchParams.append(key, value));
+
+            window.location.href = url.toString();
+        });
+
+        // Charger au démarrage
+        loadMachine();
     </script>
-    <script src="/js/client/reservation-form_pannier.js"></script>
-
 </body>
 </html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AgriElite | Moissonneuse-Batteuse Haute Performance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f7efe9",
+                        "on-primary-fixed": "#00210b",
+                        "secondary-fixed": "#ffdbcb",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "error-container": "#ffdad6",
+                        "surface": "#fff8f2",
+                        "surface-container": "#f4ede6",
+                        "surface-bright": "#fff8f2",
+                        "on-primary-container": "#93e0a2",
+                        "on-secondary-fixed": "#341000",
+                        "on-primary-fixed-variant": "#005226",
+                        "on-error": "#ffffff",
+                        "on-surface": "#1e1b17",
+                        "on-tertiary-container": "#ffc1a4",
+                        "primary-fixed-dim": "#8bd79b",
+                        "surface-variant": "#e8e1db",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#e0d9d2",
+                        "on-secondary": "#ffffff",
+                        "primary": "#004c22",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#1f6c3a",
+                        "surface-container-high": "#eee7e0",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "inverse-primary": "#8bd79b",
+                        "tertiary-container": "#81492d",
+                        "on-secondary-container": "#712c00",
+                        "inverse-surface": "#33302c",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-container": "#166534",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "tertiary": "#653319",
+                        "primary-fixed": "#a6f4b5",
+                        "on-surface-variant": "#404940",
+                        "outline": "#707a6f",
+                        "surface-container-low": "#faf2eb",
+                        "outline-variant": "#bfc9bd",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "background": "#fff8f2",
+                        "secondary": "#9a4614",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-background": "#1e1b17",
+                        "surface-container-highest": "#e8e1db",
+                        "secondary-container": "#fd925b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "gutter-mobile": "16px",
+                        "gutter-desktop": "24px",
+                        "base": "4px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "48px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm h-20">
+<nav class="max-w-[1280px] mx-auto px-margin-desktop flex justify-between items-center h-full">
+<div class="font-headline-md text-headline-md text-primary tracking-tight">AgriElite</div>
+<div class="hidden md:flex gap-8 items-center h-full">
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1" href="#">Matériel Agricole</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Équipements &amp; Pièces</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Mes Réservations</a>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container rounded-lg px-3 py-1.5 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-48" placeholder="Rechercher..." type="text">
+</div>
+<button class="bg-primary text-on-primary px-5 py-2.5 rounded-lg font-label-md hover:opacity-90 active:scale-95 transition-all">
+                    Mon Compte
+                </button>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Content Wrapper -->
+<div class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
+<!-- Breadcrumb -->
+<nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
+<a class="hover:text-primary" href="#">Accueil</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary" href="#">Moissonneuses</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Ceres High-Capacity 9000</span>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop">
+<!-- Left Column: Image Gallery -->
+<div class="lg:col-span-8">
+<div class="relative group aspect-video rounded-xl overflow-hidden border border-outline-variant mb-stack-md bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="A powerful, high-capacity combine harvester operating in a golden wheat field under a clear blue sky. The machinery is finished in professional forest green and deep black, showcasing heavy-duty mechanical details and a massive front cutter bar. Dust rises behind the machine as it works in a bright, high-contrast industrial farm setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4c1Co6OtSVeY_-Nm5IlblZyF8mhKjleyKRUs8Gw--16njBSky33jAjNq9LhDfMYm-iOOCMwyCf32cJqrtguP4ObDm4vyT09_2vM3cO02um0E0G16wGkg6wuB_oE-pFaF2N-1BnFHIq1_pmSFBV4NgSAIK-R7MHExhcigbTBwvabiuVjG-ZA73aYKFmzf1Q77D_RZcjxK2rpIh6pigX-dNrA1fAB_xcLfkLMOGpDyKjPWBi6d8520s">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+<span class="text-white font-label-md">Vue principale : Opération de récolte</span>
+</div>
+</div>
+<!-- Thumbnails Bento-style -->
+<div class="grid grid-cols-4 gap-stack-md h-32">
+<div class="rounded-lg overflow-hidden border border-outline-variant cursor-pointer hover:border-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Close-up technical shot of a combine harvester grain tank being filled with golden grain. The lighting is crisp and natural, highlighting the metallic textures and the volume of the harvest. Industrial rugged aesthetic with forest green accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3QEvYG8lmEalpT4dhYvq3HvQMfCyNLpQimgTEvCB31hEqR-eHfpyyr0XjK0IVf3G-NFcsurhaenAJ8jQ6G2uEdYAfJfdv25q3riyofG8iHFF4oEkU_YZ6_PwXz_ZhRjoZxGF_3wB7vDZRj9iD2SoYsgvgVoPw6OiXe49AU-hnPkhU-7gepO4Rd4K6hA-s1RRw-FB2rUseVFzvg-M5KgkNK_psIiyLgrpPoMlTlN5DVev8y6-pxjIf">
+</div>
+<div class="rounded-lg overflow-hidden border border-outline-variant cursor-pointer hover:border-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Detailed view of the ergonomic operator's cabin in a modern harvester. Features high-tech digital displays, multiple joysticks, and large wrap-around windows overlooking a field at sunset. Warm lighting, clean professional interior." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAut4S9BB7SqZ6YWUqelk42boY904egiE3T1taxIbZqZeIPnzieDORnm1VKcpT6mk13upv-9Jproyo52_x97J3xS5ii5BEdGmc4PHZNtX6OIVjMobyDwqNcYSw3KpSs7MJW_aXx_uUabVwW62Vb5F7uRIWCNRm2N9Se7ztXQiqY_lXXkoEKH57r47ozZuxpInT3-BSwFe7FQbeErUYmvx07S8ijoUJ3EJ7oWjCMp2WYjQub-W2tFRD3">
+</div>
+<div class="rounded-lg overflow-hidden border border-outline-variant cursor-pointer hover:border-primary transition-all">
+<img class="w-full h-full object-cover" data-alt="Macro photography of the harvester's cutting blades and mechanical feed system. Polished steel surfaces reflecting the sun, emphasizing precision engineering and high-strength construction in an outdoor field environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbAChNBgmeYkLEBreu5QnVM5qGgQHy-amql1ZezsC63EEf4njwd2A22XCuiKSDsu4M-lRL_yI6eBSIQaFu-3b_3WGMdLLeLT69jM29sJOh4FPDJW17PjUEGhBabRkAW-SCFQwjbWoWizG5GMBIpsfq6WPj4BO41keIExSwC3pUuOWpnUoM1zaGHybAiQSx74kI-WogRwuu1GH6XXLv9AMrDyinROxwyDd1nuRgElcvJL_8_dBp7hZL">
+</div>
+<div class="relative rounded-lg overflow-hidden border border-outline-variant bg-surface-container-highest flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined text-on-surface-variant text-[32px]">gallery_thumbnail</span>
+<span class="absolute bottom-2 text-label-sm">+12</span>
+</div>
+</div>
+<!-- Specs & Details -->
+<div class="mt-stack-lg bg-surface-container-low p-stack-lg rounded-xl border border-outline-variant">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-stack-md">Ceres High-Capacity 9000</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg">
+                            Conçue pour les exploitations de grande envergure, la Ceres 9000 redéfinit l'efficacité de la récolte. Avec son système de battage à flux axial et une gestion intelligente des résidus, elle garantit une qualité de grain exceptionnelle tout en minimisant les pertes.
+                        </p>
+<!-- Technical Specs Table -->
+<div class="overflow-hidden rounded-lg border border-outline-variant">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-high border-b border-outline-variant">
+<tr>
+<th class="p-4 font-label-md text-on-surface">Spécification</th>
+<th class="p-4 font-label-md text-on-surface">Valeur</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="bg-white">
+<td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Largeur de Coupe</td>
+<td class="p-4 font-body-md">12,50 Mètres</td>
+</tr>
+<tr class="bg-surface-container-lowest">
+<td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Puissance Moteur</td>
+<td class="p-4 font-body-md">650 CV (Stage V)</td>
+</tr>
+<tr class="bg-white">
+<td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Capacité Trémie</td>
+<td class="p-4 font-body-md">14 500 Litres</td>
+</tr>
+<tr class="bg-surface-container-lowest">
+<td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Vitesse de Vidange</td>
+<td class="p-4 font-body-md">180 L / Seconde</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Booking Widget -->
+<div class="lg:col-span-4">
+<div class="sticky top-24 bg-white border-2 border-primary/10 rounded-xl shadow-lg p-stack-lg">
+<div class="flex justify-between items-start mb-stack-md">
+<div>
+<div class="font-label-sm text-secondary uppercase mb-1">Tarif de Location</div>
+<div class="font-headline-md text-headline-md text-primary">1 850 € <span class="text-body-md font-normal text-on-surface-variant">/ jour</span></div>
+</div>
+<div class="bg-secondary-container/20 text-on-secondary-container px-3 py-1 rounded-full font-label-sm">
+                                Stock : 2 dispos
+                            </div>
+</div>
+<!-- Date Picker Mockup -->
+<div class="space-y-stack-md mb-stack-lg">
+<div>
+<label class="block font-label-sm text-on-surface-variant mb-2">Période de Location</label>
+<div class="grid grid-cols-2 gap-2">
+<div class="border border-outline-variant p-3 rounded-lg flex items-center gap-2 bg-surface-container-lowest">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+<div class="text-label-sm">Début</div>
+</div>
+<div class="border border-outline-variant p-3 rounded-lg flex items-center gap-2 bg-surface-container-lowest">
+<span class="material-symbols-outlined text-primary">calendar_today</span>
+<div class="text-label-sm">Fin</div>
+</div>
+</div>
+</div>
+<!-- Seasonal Pricing Note -->
+<div class="bg-surface-container-low p-3 rounded-lg border-l-4 border-secondary">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-secondary">info</span>
+<div>
+<div class="font-label-md text-secondary">Tarification de Haute Saison</div>
+<p class="text-label-sm text-on-surface-variant">Tarif majoré de 15% pour les réservations entre Juillet et Septembre.</p>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all flex items-center justify-center gap-3 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
+                            Réserver la Location
+                        </button>
+<p class="mt-4 text-center text-label-sm text-on-surface-variant italic">
+                            * Assurance technique et maintenance incluse.
+                        </p>
+<div class="mt-stack-lg pt-stack-lg border-t border-outline-variant">
+<h3 class="font-label-md text-on-surface mb-3">Options Disponibles</h3>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-md text-label-sm border border-outline-variant">Guidage GPS</span>
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-md text-label-sm border border-outline-variant">Télémétrie</span>
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-md text-label-sm border border-outline-variant">Kit Colza</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Cross-selling section -->
+<section class="mt-20">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Pièces &amp; Maintenance</h2>
+<p class="font-body-md text-on-surface-variant">Optimisez les performances de votre Ceres 9000</p>
+</div>
+<a class="text-secondary font-label-md flex items-center gap-1 hover:underline" href="#">
+                        Tout le catalogue <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop">
+<!-- Part Card -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Professional studio photograph of a heavy-duty industrial air filter for agricultural machinery. The filter is made of high-quality pleated material with a sturdy steel frame. Bright clinical lighting, clean background, forest green branding on the packaging in the corner." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlY_WTDBD1bXHhElxJuftMQmql_GO4AdgcWo2gnSxH98jy2Ts6NXESCQKaVYfoLxvlBSD2O-420OWFFdYNK39ecjudVh8Qb9Ae4LOHKabgNnJLmL2O8FaA2oDUottDIqkVc7nQ9xPwBYn2_pTYEMHxtMD8iz-TCx-hQhMZVfaRMOY7dXpG-hzpgZM8PsmghOLp82fB1PmOvXUPV477PRxLt0r3UuZPzNt-NhfSjUX3s8v20IOttkqo">
+</div>
+<div class="p-stack-md">
+<div class="font-label-sm text-on-surface-variant mb-1">Filtration</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-2">Filtre à Air Haute Performance</h3>
+<div class="flex justify-between items-center mt-4">
+<span class="font-headline-md text-[20px] text-primary">89,00 €</span>
+<button class="p-2 bg-surface-container hover:bg-primary hover:text-white rounded-lg transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Part Card 2 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="High-strength drive belt for a combine harvester, displayed on a clean industrial workbench. The belt features reinforced threading and heavy-duty rubber texture. Sharp lighting, emphasizing the durability and mechanical reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXIs6fwQwKQg7jL_beJQ2HHrDM63FB3qeng5TI9zKEj-KGSRRUQvKcKBEL4ZH0u6RpR5MqrVjEzODScsbquE0yCbE3sghFFrHXMLFd23C80Ot0NooSreEC9XC6dXzf_0TPzm8_nZlScZAAlFvKDmSLNJbx4YnEtWMkmOj8OGm0xIZ4vrPStK1EwCnaelB9EOtunxedhj5sEuq_WnVx2fm_qC_qtOpudtiwiqlls7jb3IdZMEdSOjmE">
+</div>
+<div class="p-stack-md">
+<div class="font-label-sm text-on-surface-variant mb-1">Transmission</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-2">Courroie de Batteur Renforcée</h3>
+<div class="flex justify-between items-center mt-4">
+<span class="font-headline-md text-[20px] text-primary">245,50 €</span>
+<button class="p-2 bg-surface-container hover:bg-primary hover:text-white rounded-lg transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Part Card 3 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Replacement metal fingers for a combine harvester header, set of five heavy-duty steel components. Professional product photography with neutral lighting, highlighting the rugged metallic finish and technical drawing-like precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl8-DC7S7PiFaaBJNpA0IRjhKN67vjnX8H0syyiC16t_yVXjl9Ev1g_pEcjdrQRRCAjK2rffem0p00MwMRT80RodO5hSlbdE8dT1-hjxgz_f-8vrgxYKGDnYSv-bcBpfmj0CgBkGjQ4h4_X-arfwnSfotgmhT84t9AXbTIJ1h7nJiQwlnSNdqR_5LQnINkBq0bugI6tZpqvRDD51Mg9WRa3m9QUszg6CzwtU2mqxkx7_-LCZDRW8QN">
+</div>
+<div class="p-stack-md">
+<div class="font-label-sm text-on-surface-variant mb-1">Coupe</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-2">Kit de Doigts de Rabatteur (x10)</h3>
+<div class="flex justify-between items-center mt-4">
+<span class="font-headline-md text-[20px] text-primary">112,00 €</span>
+<button class="p-2 bg-surface-container hover:bg-primary hover:text-white rounded-lg transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Part Card 4 -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+<div class="h-48 overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A large 20-liter container of premium synthetic engine oil specifically formulated for heavy agricultural machinery. Clear branding in forest green and white, set against a clean industrial shop floor. Professional, trustworthy aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAIbsuAzc3mhiEh7CQ6JnfIc5Qj5Di4PxB_1lvjOV9xmd2__8j8u4-9NwwTY0BljZeBrsEq1hZLLnVibWGoV8tFcuk8Pu06B4SB34Kjzlb9Oe3Vp_Ae5Uh4c0blvGuhmGW-n_kUXnSIOeSeA5qF5gqTQ8lYNWZJVuCPN_VHkFmu14ty76WKbp5VBux4YIb_24Gzd4pweFRwZNqpDRw6McCLHq2zo9EC7_95RWUgYtwiMzhlTeTPDoY">
+</div>
+<div class="p-stack-md">
+<div class="font-label-sm text-on-surface-variant mb-1">Lubrifiant</div>
+<h3 class="font-headline-md text-[18px] text-on-surface mb-2">Huile Moteur Premium 10W40</h3>
+<div class="flex justify-between items-center mt-4">
+<span class="font-headline-md text-[20px] text-primary">158,00 €</span>
+<button class="p-2 bg-surface-container hover:bg-primary hover:text-white rounded-lg transition-colors">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant mt-20">
+<div class="max-w-[1280px] mx-auto px-margin-desktop py-16 grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop">
+<div class="col-span-1 md:col-span-1">
+<div class="font-headline-md text-headline-md text-primary mb-6">AgriElite</div>
+<p class="font-body-md text-on-surface-variant">© 2024 AgriElite. Excellence en Machinerie Agricole. Solutions professionnelles pour les agriculteurs exigeants.</p>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-6 uppercase tracking-wider">Services</h4>
+<ul class="space-y-4">
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Assistance Technique</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Maintenance Préventive</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Financement</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Documentation</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-6 uppercase tracking-wider">Réseau</h4>
+<ul class="space-y-4">
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Trouver une Agence</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Devenir Partenaire</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Carrières</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Événements</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-6 uppercase tracking-wider">Légal</h4>
+<ul class="space-y-4">
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Conditions de Location</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Confidentialité</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Mentions Légales</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Cookies</a></li>
+</ul>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="border-t border-outline-variant/30 py-6">
+<div class="max-w-[1280px] mx-auto px-margin-desktop flex justify-between items-center flex-wrap gap-4">
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">face_nod</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">public</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">smart_display</span>
+</div>
+<div class="text-label-sm text-on-surface-variant opacity-80">
+                    Propulsé par AgriTech Solutions S.A.
+                </div>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for the gallery
+        const thumbnails = document.querySelectorAll('.grid-cols-4 > div');
+        const mainImage = document.querySelector('.aspect-video img');
+
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('mouseenter', () => {
+                const newSrc = thumb.querySelector('img') ? thumb.querySelector('img').src : null;
+                const newAlt = thumb.querySelector('img') ? thumb.querySelector('img').dataset.alt : null;
+                
+                if (newSrc && newSrc !== 'placeholder') {
+                    // In a real app we'd swap images
+                    // mainImage.src = newSrc;
+                }
+            });
+        });
+
+        // Sticky button interaction
+        const bookingBtn = document.querySelector('button.bg-primary');
+        bookingBtn.addEventListener('mousedown', () => {
+            bookingBtn.classList.add('scale-95');
+        });
+        bookingBtn.addEventListener('mouseup', () => {
+            bookingBtn.classList.remove('scale-95');
+        });
+    </script>
+</body></html>

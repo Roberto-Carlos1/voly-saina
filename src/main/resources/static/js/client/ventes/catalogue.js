@@ -36,7 +36,7 @@
                     <span class="badge ${badgeClass}">${badgeText}</span>
                 </td>
                 <td>
-                    <a class="btn btn-primary" href="/client/ventes/${p.idProduit}">Voir</a>
+                    <a class="btn btn-primary" href="/catalogue/produits/${p.idProduit}">Voir</a>
                 </td>
             `;
             tbody.appendChild(tr);

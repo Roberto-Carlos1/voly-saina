@@ -41,7 +41,7 @@ function loadMachineDetails(machineId) {
 }
 
 // Lancer le chargement
-chargerMachine();
+loadMachineDetails(machineId);
 
 // Fonction pour afficher le résultat
 function afficherResultat(message, estErreur = false) {
@@ -71,9 +71,9 @@ function soumettreReservation(ajouterAuPanier = false) {
     };
 
     // URL selon le bouton cliqué
-    const url = isModification 
-        ? '/panier/reservations/api/modifier' 
-        : '/panier/reservations/api/ajouter';
+    const url = ajouterAuPanier 
+        ? '/panier/reservations/api/ajouter' 
+        : '/catalogue/reservations/api';
 
     console.log(' Envoi' + (ajouterAuPanier ? ' au panier' : '') + ':', data);
 
@@ -100,7 +100,7 @@ function soumettreReservation(ajouterAuPanier = false) {
                         <p><strong>Prix total:</strong> ${response.reservation.prixTotal} MGA</p>
                         <p><em>Statut: en attente de validation (après paiement)</em></p>
                         <br>
-                        <button onclick="window.location.href='/client/panier?clientId=${clientId}'"
+                        <button onclick="window.location.href='/panier?clientId=${clientId}'"
                                 style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
                             Voir mon panier
                         </button>
@@ -113,7 +113,7 @@ function soumettreReservation(ajouterAuPanier = false) {
                         <p><strong>Période:</strong> ${response.reservation.dateDebut} au ${response.reservation.dateFin}</p>
                         <p><strong>Prix total:</strong> ${response.reservation.prixTotal} MGA</p>
                         <br>
-                        <button onclick="window.location.href='/client/reservations/mes-reservations?clientId=${clientId}'"
+                        <button onclick="window.location.href='/catalogue/reservations/mes-reservations?clientId=${clientId}'"
                                 style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
                             Voir mes réservations
                         </button>

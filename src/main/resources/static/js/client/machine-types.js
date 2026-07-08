@@ -1,4 +1,4 @@
-fetch('/client/machines/api/types')
+fetch('/catalogue/machines/api/types')
     .then(r => {
         if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
         return r.json();
@@ -25,5 +25,5 @@ fetch('/client/machines/api/types')
     });
 
 function voirCatalogue(typeId) {
-    window.location.href = '/client/machines/catalogue?typeId=' + typeId;
+    window.location.href = '/catalogue/machines/catalogue?typeId=' + typeId;
 }

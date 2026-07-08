@@ -248,7 +248,7 @@
                                 th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT')} + ' MGA'">
                             </div>
                         </div>
-                        <div class="mt-3 text-end" th:if="${facture.montantPaye != facture.montantTotal}">
+                        <div class="mt-3 text-end" th:if="${facture.statutCode != 'payee'}">
                             <a th:href="@{/client/factures/paiement(idFacture=${facture.idFacture}, idClient=${idClient})}"
                                 class="btn btn-primary btn-pay">
                                 💳 Procéder au paiement

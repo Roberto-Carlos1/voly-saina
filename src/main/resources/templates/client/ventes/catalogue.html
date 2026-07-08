@@ -42,7 +42,7 @@
 
         <div class="card-body p-4">
             <!-- ==================== RECHERCHE + FILTRES ==================== -->
-            <form th:action="@{/client/ventes/catalogue}" method="get" class="row g-3 mb-4 filters-card" aria-label="Filtres catalogue" id="catalogueFilterForm">
+            <form th:action="@{/catalogue/produits/catalogue}" method="get" class="row g-3 mb-4 filters-card" aria-label="Filtres catalogue" id="catalogueFilterForm">
 
                 <div class="col-12">
                     <div class="row g-3 filter-row">
@@ -118,8 +118,8 @@
                         </td>
                         <td>
                             <div class="d-flex flex-column gap-2" style="min-width: 140px;">
-                                <a th:href="@{/client/ventes/{id}(id=${produit.idProduit})}" class="btn btn-primary">Voir</a>
-                                <a th:href="@{/client/panier/ajouter(produitId=${produit.idProduit})}" class="btn btn-success">Mettre dans panier</a>
+                                <a th:href="@{/catalogue/produits/{id}(id=${produit.idProduit})}" class="btn btn-primary">Voir</a>
+                                <a th:href="@{/panier/ajouter(produitId=${produit.idProduit})}" class="btn btn-success">Mettre dans panier</a>
                             </div>
                         </td>
                     </tr>
@@ -132,15 +132,15 @@
                 <nav aria-label="Pagination catalogue">
                     <ul class="pagination mb-0">
                         <li class="page-item" th:classappend="${page <= 0} ? 'disabled' : ''">
-                            <a class="page-link" th:href="@{/client/ventes/catalogue(page=${page-1},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" aria-label="Précédent">&laquo;</a>
+                            <a class="page-link" th:href="@{/catalogue/produits/catalogue(page=${page-1},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" aria-label="Précédent">&laquo;</a>
                         </li>
 
                         <li class="page-item" th:each="p : ${#numbers.sequence(0, totalPages-1)}" th:classappend="${p == page} ? 'active'">
-                            <a class="page-link" th:href="@{/client/ventes/catalogue(page=${p},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" th:text="${p+1}"></a>
+                            <a class="page-link" th:href="@{/catalogue/produits/catalogue(page=${p},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" th:text="${p+1}"></a>
                         </li>
 
                         <li class="page-item" th:classappend="${page >= totalPages-1} ? 'disabled' : ''">
-                            <a class="page-link" th:href="@{/client/ventes/catalogue(page=${page+1},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" aria-label="Suivant">&raquo;</a>
+                            <a class="page-link" th:href="@{/catalogue/produits/catalogue(page=${page+1},size=${size},q=${q},categorie=${categorie},disponible=${disponible})}" aria-label="Suivant">&raquo;</a>
                         </li>
                     </ul>
                 </nav>

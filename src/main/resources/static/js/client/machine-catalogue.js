@@ -47,9 +47,9 @@ if (!typeId) {
 }
 
 function voirDetail(id) {
-    window.location.href = '/client/machines/detail?id=' + id;
+    window.location.href = '/catalogue/machines/detail?id=' + id;
 }
 
 function reserver(id) {
-    window.location.href = '/client/reservations/' + id + '/nouvelle?clientId=1';
+    window.location.href = '/catalogue/reservations/' + id + '/nouvelle?clientId=1';
 }

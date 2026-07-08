@@ -25,7 +25,7 @@
     <div class="card">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Détails du produit</h4>
-            <a th:href="@{/client/ventes/catalogue}" class="text-decoration-none" style="color: white; font-weight: 500;">
+            <a th:href="@{/catalogue/produits/catalogue}" class="text-decoration-none" style="color: white; font-weight: 500;">
                 ← Retour
             </a>
         </div>
@@ -82,9 +82,9 @@
                             <div class="card-body">
                                 <div class="label-muted mb-3">Actions</div>
 
-                                <a th:href="@{/client/ventes/catalogue}" class="btn btn-secondary w-100">Retour au catalogue</a>
+                                <a th:href="@{/catalogue/produits/catalogue}" class="btn btn-secondary w-100">Retour au catalogue</a>
 
-                                <a th:href="@{/client/panier/ajouter(produitId=${produit.idProduit})}" class="btn btn-success w-100 mt-2">Mettre dans panier</a>
+                                <a th:href="@{/panier/ajouter(produitId=${produit.idProduit})}" class="btn btn-success w-100 mt-2">Mettre dans panier</a>
 
 
                                 <div class="mt-3">

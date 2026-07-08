@@ -10,4 +10,8 @@ public class IndexController {
     public String index() {
         return "index";
     }
+    @GetMapping("/route")
+    public String route() {
+        return "index_true";
+    }
 }

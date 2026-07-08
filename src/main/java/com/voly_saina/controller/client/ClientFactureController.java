@@ -71,7 +71,14 @@ public class ClientFactureController {
         model.addAttribute("facture", facture);
         model.addAttribute("idClient", utilisateur.getIdUtilisateur());
 
-        clientFactureService.detailsFacture(idFacture, utilisateur.getIdUtilisateur(), model);
+        Facture f = factureService.findById(idFacture);
+        if (f != null && f.getPanier() != null) {
+            clientFactureService.detailsFacture(idFacture, utilisateur.getIdUtilisateur(), model);
+        } else {
+            model.addAttribute("reservations", List.of());
+            model.addAttribute("commandes", List.of());
+            model.addAttribute("lignes", List.of());
+        }
 
         return "client/factures/detail";
     }
@@ -114,7 +121,7 @@ public class ClientFactureController {
             // 3. On redirige vers le mapping GET
             return "redirect:/client/factures/paiement";
         }
-        return "redirect:/client/factures?idClient=" + f.getClient().getIdUtilisateur();
+        return "redirect:/client/factures/" + f.getIdFacture() + "?idClient=" + f.getClient().getIdUtilisateur();
     }
 
     @GetMapping("/client/factures/{idFacture}/pdf")

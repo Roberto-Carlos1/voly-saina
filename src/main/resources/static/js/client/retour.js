@@ -1,30 +1,30 @@
-// Récupérer l'ID depuis l'URL
+// Récupérer les IDs depuis l'URL
 const reservationId = getUrlParam('id') || 1;
+const clientId = getUrlParam('clientId') || 1;
 
 // Charger les informations de la réservation
-function checkExistingForm(reservationId) {
-    fetch('/catalogue/retours/api/form/' + reservationId)
-        .then(response => {
-            if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
-            return response.json();
-        })
-        .then(data => {
-            let html = `
-            <div style="border:1px solid #ccc;padding:15px;margin:10px;">
-                <h3>${data.machineNom}</h3>
-                <p><strong>Type:</strong> ${data.machineType}</p>
-                <p><strong>Période:</strong> ${formatDate(data.dateDebut)} au ${formatDate(data.dateFin)}</p>
-                <p><strong>Prix total:</strong> ${formatNumber(data.prixTotal)} MGA</p>
-                ${data.estRetard ? `<p style="color:red;"><strong>⚠️ Retard:</strong> ${data.joursRetard} jour(s) - Pénalité: ${formatNumber(data.penaliteRetard)} MGA</p>` : ''}
-            </div>
-        `;
-        document.getElementById('infoReservation').innerHTML = html;
+fetch('/catalogue/retours/api/form/' + reservationId)
+    .then(response => {
+        if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
+        return response.json();
     })
-    .catch(error => {
-        document.getElementById('infoReservation').innerHTML = 
-            '<p style="color:red;">❌ Erreur: ' + error.message + '</p>';
-        console.error('Erreur:', error);
-    });
+    .then(data => {
+        let html = `
+        <div style="border:1px solid #ccc;padding:15px;margin:10px;">
+            <h3>${data.machineNom}</h3>
+            <p><strong>Type:</strong> ${data.machineType}</p>
+            <p><strong>Période:</strong> ${formatDate(data.dateDebut)} au ${formatDate(data.dateFin)}</p>
+            <p><strong>Prix total:</strong> ${formatNumber(data.prixTotal)} MGA</p>
+            ${data.estRetard ? `<p style="color:red;"><strong>⚠️ Retard:</strong> ${data.joursRetard} jour(s) - Pénalité: ${formatNumber(data.penaliteRetard)} MGA</p>` : ''}
+        </div>
+    `;
+    document.getElementById('infoReservation').innerHTML = html;
+})
+.catch(error => {
+    document.getElementById('infoReservation').innerHTML = 
+        '<p style="color:red;">❌ Erreur: ' + error.message + '</p>';
+    console.error('Erreur:', error);
+});
 
 // Envoyer le formulaire de retour
 document.getElementById('formRetour').addEventListener('submit', function(e) {
@@ -53,7 +53,7 @@ document.getElementById('formRetour').addEventListener('submit', function(e) {
                 <p><strong>Pénalité:</strong> ${formatNumber(data.retour.penalite || 0)} MGA</p>
                 <p><strong>Total à payer:</strong> ${formatNumber(data.montantTotal)} MGA</p>
                 <br>
-                <button onclick="window.location.href='/list.html'" 
+                <button onclick="window.location.href='/catalogue/reservations/mes-reservations?clientId=${clientId}'"
                         style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
                     Voir mes réservations
                 </button>

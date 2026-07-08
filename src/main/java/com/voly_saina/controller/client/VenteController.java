@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/client/ventes")
+@RequestMapping("/catalogue/produits")
 public class VenteController {
 
     @Autowired
@@ -35,7 +35,7 @@ public class VenteController {
 
     // ==================== CATALOGUE (HTML) ====================
 
-    // GET /client/ventes/catalogue
+    // GET /catalogue/produits/catalogue
     @GetMapping("/catalogue")
     public String catalogue(
             Model model,
@@ -104,7 +104,7 @@ public class VenteController {
         return "client/ventes/catalogue";
     }
 
-    // GET /client/ventes/disponibles
+    // GET /catalogue/produits/disponibles
     @GetMapping("/disponibles")
     public String produitsDisponibles(Model model) {
         List<Produit> produits = produitService.findAll();
@@ -120,7 +120,7 @@ public class VenteController {
         return "client/ventes/disponibles";
     }
 
-    // GET /client/ventes/{id}
+    // GET /catalogue/produits/{id}
     @GetMapping("/{id}")
     public String detailProduit(@PathVariable Long id, Model model) {
         Produit produit = produitService.findById(id).orElse(null);
@@ -142,11 +142,9 @@ public class VenteController {
         return true;
     }
 
-    // ==================== API JSON ====================
-
     // ==================== API JSON (CATALOGUE) ====================
 
-    // GET /client/ventes/api/catalogue
+    // GET /catalogue/produits/api/catalogue
     @GetMapping("/api/catalogue")
     @ResponseBody
     public ResponseEntity<List<com.voly_saina.dto.CatalogueProduitDTO>> apiCatalogue(
@@ -207,7 +205,7 @@ public class VenteController {
         return ResponseEntity.ok(result);
     }
 
-    // GET /client/ventes/api/produits
+    // GET /catalogue/produits/api/produits
     @GetMapping("/api/produits")
     @ResponseBody
     public ResponseEntity<List<Produit>> apiListeProduits() {
@@ -215,7 +213,7 @@ public class VenteController {
     }
 
 
-    // GET /client/ventes/api/produits/{id}
+    // GET /catalogue/produits/api/produits/{id}
     @GetMapping("/api/produits/{id}")
     @ResponseBody
     public ResponseEntity<Produit> apiDetailProduit(@PathVariable Long id) {
@@ -224,7 +222,7 @@ public class VenteController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // GET /client/ventes/api/produits/disponibles
+    // GET /catalogue/produits/api/produits/disponibles
     @GetMapping("/api/produits/disponibles")
     @ResponseBody
     public ResponseEntity<List<Produit>> apiProduitsDisponibles() {

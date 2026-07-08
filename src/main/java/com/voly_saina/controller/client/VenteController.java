@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/catalogue/produits")
+@RequestMapping("/client/ventes")
 public class VenteController {
 
     @Autowired

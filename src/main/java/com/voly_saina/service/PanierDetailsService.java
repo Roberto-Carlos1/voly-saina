@@ -1,9 +1,13 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Commande;
+import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.repository.PanierDetailsRepository;
+import com.voly_saina.repository.PanierRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -14,6 +18,9 @@ public class PanierDetailsService {
 
     @Autowired
     private PanierDetailsRepository panierDetailsRepository;
+    
+    @Autowired
+    private PanierRepository panierRepository;
 
     public List<PanierDetails> findAll() {
         return panierDetailsRepository.findAll();
@@ -58,6 +65,7 @@ public class PanierDetailsService {
     public Commande findByCommande(Long idCommande) {
         return panierDetailsRepository.findByCommandeIdCommande(idCommande);
     }
+
     public List<PanierDetails> findByPanierId(Long panierId) {
         return panierDetailsRepository.findByPanierIdPanier(panierId);
     }
@@ -66,5 +74,8 @@ public class PanierDetailsService {
         return panierDetailsRepository.findByReservationMachineIdReservation(reservationId).orElse(null);
     }
 
-}
+    public Panier findPanierById(Long idPanier) {
+        return panierRepository.findById(idPanier).orElse(null);
+    }
 
+}

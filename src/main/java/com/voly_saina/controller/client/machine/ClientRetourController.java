@@ -30,7 +30,7 @@ import com.voly_saina.service.RetourMachineService;
 import com.voly_saina.service.UtilisateurService;
 
 @Controller
-@RequestMapping("/client/retours")
+@RequestMapping("/catalogue/retours")
 public class ClientRetourController {
 
     @Autowired

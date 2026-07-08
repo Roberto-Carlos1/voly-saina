@@ -88,7 +88,7 @@ public class AuthController {
         profil.setUtilisateur(savedUser);
         profilUtilisateurRepository.save(profil);
 
-        return "redirect:/page01?inscription=success";
+        return "redirect:/connexion?inscription=success";
     }
 
     @GetMapping("/access-denied")

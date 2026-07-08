@@ -68,20 +68,6 @@
                                     <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Prix unitaire</div>
                                     <div class="col-12 col-md-8" th:text="${produit.prixUnitaire != null ? #strings.replace(#numbers.formatDecimal(produit.prixUnitaire, 0, 'COMMA', 2, 'POINT'), ',', ' ') : '-'}">-</div>
                                 </div>
-                                <div class="row kv-row py-2 align-items-center">
-                                    <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Stock</div>
-                                    <div class="col-12 col-md-8" th:text="${produit.stock != null ? #numbers.formatInteger(produit.stock, 0, 'POINT') : '-'}">-</div>
-                                </div>
-
-                                <div class="row kv-row py-2 align-items-center">
-                                    <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Seuil stock</div>
-                                    <div class="col-12 col-md-8" th:text="${produit.seuilStock != null ? produit.seuilStock : '-'}">-</div>
-                                </div>
-
-                                <div class="row kv-row py-2 align-items-center">
-                                    <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Date d'expiration</div>
-                                    <div class="col-12 col-md-8" th:text="${produit.dateExpiration != null ? #temporals.format(produit.dateExpiration, 'dd/MM/yyyy') : '-'}">-</div>
-                                </div>
 
                                 <div class="row kv-row py-2 align-items-center">
                                     <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Conseil d'utilisation</div>

@@ -27,14 +27,14 @@ public class ProfilPageController {
 
     /**
      * Page 02 : profil utilisateur.
-     * IMPORTANT : on garde seulement /page02 pour éviter le conflit avec ClientProfilController sur /client/profil.
+     * IMPORTANT : on garde seulement /profil pour éviter le conflit avec ClientProfilController sur /client/profil.
      */
-    @GetMapping("/page02")
+    @GetMapping("/profil")
     public String afficherProfil(@AuthenticationPrincipal User user, HttpSession session, Model model) {
         Utilisateur utilisateur = recupererUtilisateurConnecte(user, session);
 
         if (utilisateur == null) {
-            return "redirect:/page01";
+            return "redirect:/connexion";
         }
 
         session.setAttribute("idUtilisateur", utilisateur.getIdUtilisateur());
@@ -60,7 +60,7 @@ public class ProfilPageController {
         return "profil/page02";
     }
 
-    @PostMapping("/page02/profil")
+    @PostMapping("/profil/enregistrer")
     public String enregistrerProfil(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) String genre,
@@ -74,7 +74,7 @@ public class ProfilPageController {
         Utilisateur utilisateur = recupererUtilisateurConnecte(user, session);
 
         if (utilisateur == null) {
-            return "redirect:/page01";
+            return "redirect:/connexion";
         }
 
         profilUtilisateurService.enregistrerProfil(
@@ -87,7 +87,7 @@ public class ProfilPageController {
         );
 
         redirectAttributes.addFlashAttribute("success", "Profil enregistré avec succès.");
-        return "redirect:/page02";
+        return "redirect:/profil";
     }
 
     private Utilisateur recupererUtilisateurConnecte(User user, HttpSession session) {

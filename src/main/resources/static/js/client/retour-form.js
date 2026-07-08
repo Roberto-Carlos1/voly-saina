@@ -22,9 +22,10 @@ console.log('🔍 ID final:', reservationId);
 console.log('🔍 Client ID:', clientId);
 
 // Charger les informations
-fetch('/client/retours/api/form/' + reservationId)
+// Vérifier si le formulaire a déjà été soumis pour cette réservation
+fetch('/catalogue/retours/api/form/' + reservationId)
     .then(r => {
-        console.log('📡 Appel API:', '/client/retours/api/form/' + reservationId);
+        console.log('📡 Appel API:', '/catalogue/retours/api/form/' + reservationId);
         if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
         return r.json();
     })

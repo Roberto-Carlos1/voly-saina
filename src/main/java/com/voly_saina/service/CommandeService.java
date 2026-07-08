@@ -1,5 +1,7 @@
 package com.voly_saina.service;
 
+import com.voly_saina.entity.Commande;
+import com.voly_saina.repository.CommandeRepository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,6 @@ public class CommandeService {
 
     @Autowired
     private CommandeRepository commandeRepository;
-
-    private final FactureService factureService;
-
-    public CommandeService(@Lazy FactureService factureService) {
-        this.factureService = factureService;
-    }
 
     public List<Commande> findAll() {
         return commandeRepository.findAll();

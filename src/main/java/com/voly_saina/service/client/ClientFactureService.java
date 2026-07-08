@@ -10,6 +10,7 @@ import com.lowagie.text.Phrase;
 import java.awt.Color;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import com.lowagie.text.Chunk;
@@ -30,9 +31,11 @@ import com.voly_saina.service.FactureService;
 import com.voly_saina.service.LigneCommandeService;
 import com.voly_saina.service.PanierDetailsService;
 import com.voly_saina.service.PanierService;
+import com.voly_saina.service.ReservationMachineService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -49,12 +52,15 @@ public class ClientFactureService {
     private final FactureService factureService;
     private final PanierDetailsService panierDetailsService;
     private final LigneCommandeService ligneCommandeService;
+    private final ReservationMachineService reservationMachineService;
 
     public ClientFactureService(FactureService factureService, PanierService panierService,
-            PanierDetailsService panierDetailsService, LigneCommandeService ligneCommandeService) {
+            PanierDetailsService panierDetailsService, LigneCommandeService ligneCommandeService,
+        ReservationMachineService reservationMachineService) {
         this.factureService = factureService;
         this.panierDetailsService = panierDetailsService;
         this.ligneCommandeService = ligneCommandeService;
+        this.reservationMachineService= reservationMachineService;
     }
 
     public List<FactureClientDTO> listerFacturesClient(Long idClient, String filtreStatut) {
@@ -78,6 +84,44 @@ public class ClientFactureService {
         }
 
         return mapToDTO(factureOpt.get());
+    }
+
+    public void detailsFacture(Long idFacture, Long idClient, Model m){
+        Facture facture = factureService.findById(idFacture);
+        Panier panier = facture.getPanier();
+
+        List<PanierDetails> listeCommande = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
+        List<PanierDetails> listeReservation = panierDetailsService.findReservationByPanier(panier.getIdPanier());
+
+        // BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null ? panierDetailsService.montantCommande(panier.getIdPanier()) : BigDecimal.ZERO;
+        // BigDecimal montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null ? panierDetailsService.montantReservation(panier.getIdPanier()) : BigDecimal.ZERO;
+        // BigDecimal montantTotal = montantCommande.add(montantReservation);
+
+        List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
+        List<LigneCommande> ligneCommande = ligneCommandeService.findAll();
+        List<ReservationMachine> reservationMachines = reservationMachineService.findAll();
+
+        List<LigneCommande> lignes = new ArrayList<>();
+        List<ReservationMachine> ligneReservation= new ArrayList<>();
+
+        for (LigneCommande ligne : ligneCommande) {
+            for (PanierDetails panierDet : panierDetails) {
+                if (panierDet.getCommande() != null && (panierDet.getCommande().getIdCommande() == ligne.getCommande().getIdCommande())) {
+                        lignes.add(ligne);
+                }
+            }
+        }
+
+        for(ReservationMachine reserve: reservationMachines){
+            if(reserve.getFacture().getIdFacture() == facture.getIdFacture()){
+                ligneReservation.add(reserve);
+            }
+        }
+
+        m.addAttribute("reservations", ligneReservation);
+        m.addAttribute("commandes", listeCommande);
+        m.addAttribute("lignes", lignes);
+
     }
 
     public byte[] exporterFacturePDF(Long idFacture, Long idClient) {

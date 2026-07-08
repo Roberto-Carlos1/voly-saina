@@ -1,7 +1,12 @@
 package com.voly_saina.service;
 
+import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.Facture;
+import com.voly_saina.entity.LigneCommande;
+import com.voly_saina.entity.OperationMachine;
+import com.voly_saina.entity.OperationProduit;
 import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.StatutFacture;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.entity.dto.FactureDTO;
@@ -21,20 +26,22 @@ import java.util.List;
 @Service
 public class FactureService {
 
+    private final OperationMachineService operationMachineService;
     private final FactureRepository factureRepository;
     private final UtilisateurService utilisateurService;
     private final StatutFactureService statutFactureService;
-    private final PanierService panierService;
     private final PanierDetailsService panierDetailsService;
+    private final OperationProduitService operationProduitService;
 
     public FactureService(FactureRepository factureRepository, UtilisateurService utilisateurService,
-            StatutFactureService statutFactureService, PanierService panierService,
-            PanierDetailsService panierDetailsService) {
+            StatutFactureService statutFactureService, PanierDetailsService panierDetailsService,
+            OperationProduitService operationProduitService, OperationMachineService operationMachineService) {
         this.factureRepository = factureRepository;
         this.utilisateurService = utilisateurService;
         this.statutFactureService = statutFactureService;
-        this.panierService = panierService;
         this.panierDetailsService = panierDetailsService;
+        this.operationProduitService = operationProduitService;
+        this.operationMachineService = operationMachineService;
     }
 
     public List<Facture> findAll() {
@@ -91,7 +98,7 @@ public class FactureService {
         List<Long> ids = new ArrayList<>();
 
         for (Facture facture : page.getContent()) {
-            if (ids.equals(idClient)) {
+            if (facture.getClient().getIdUtilisateur().equals(idClient)) {
                 ids.add(facture.getIdFacture());
             }
         }
@@ -126,17 +133,18 @@ public class FactureService {
     public String generateNumeroFacture(long id) {
         String prefix = "FAC-";
         String year = String.valueOf(LocalDate.now().getYear());
-        return prefix + year + "-" + id;
+        String secondPart = String.format("%04d", id);
+        return prefix + year + "-" + id + "-" + secondPart;
     }
 
-    public void genererFactureProformat(Long idUtilisateur, Long idPanier) {
+    public Facture genererFactureProformat(Long idUtilisateur, Long idPanier) {
 
-        Facture last = this.findIdByLast();
-        String numero = this.generateNumeroFacture(last.getIdFacture());
+        long last = this.findIdByLast() == null ? 1L : this.findIdByLast().getIdFacture() + 1;
+        String numero = this.generateNumeroFacture(last);
         Utilisateur client = utilisateurService.findById(idUtilisateur).orElse(null);
 
-        BigDecimal montantReservation = panierDetailsService.montantReservation(idPanier),
-                montantCommande = panierDetailsService.montantCommande(idPanier);
+        BigDecimal montantReservation = panierDetailsService.montantReservation(idPanier) != null ? panierDetailsService.montantReservation(idPanier) : BigDecimal.ZERO;
+        BigDecimal montantCommande = panierDetailsService.montantCommande(idPanier) != null ? panierDetailsService.montantCommande(idPanier) : BigDecimal.ZERO;
 
         LocalDateTime now = LocalDateTime.now();
         StatutFacture statutFacture = statutFactureService.findById((long) 1).orElse(null);
@@ -146,18 +154,43 @@ public class FactureService {
         factureNew.setClient(client);
         factureNew.setStatutFacture(statutFacture);
         factureNew.setDateFacture(now);
+        factureNew.setDateLimite(now.plusDays(14).toLocalDate());
         factureNew.setMontantPaye(BigDecimal.valueOf(0));
-        if (montantCommande.equals(BigDecimal.valueOf(0)) && montantReservation.equals(BigDecimal.valueOf(0))) {
-            factureNew.setMontantTotal(montantCommande.add(montantReservation));
-        } else if (montantCommande != null && montantReservation == null) {
-            factureNew.setMontantTotal(montantCommande);
-        } else {
-            factureNew.setMontantTotal(montantReservation);
-        }
-
+        factureNew.setMontantTotal(montantCommande.add(montantReservation));
         factureNew.setTypeOperation("commande-reservation");
+        factureNew.setPanier(panierDetailsService.findPanierById(idPanier));
 
         factureRepository.save(factureNew);
+        return factureNew;
+    }
+
+    public void creerOperationCommande(Commande commande, Facture facture, List<LigneCommande> lignesCommande) {
+
+        for (LigneCommande lc : lignesCommande) {
+            OperationProduit op = new OperationProduit();
+            op.setIdProduit(lc.getProduit());
+            op.setIdFacture(facture);
+            BigDecimal q = lc.getQuantite() == null ? BigDecimal.ZERO : lc.getQuantite();
+            op.setQuantite(q.longValue());
+            operationProduitService.save(op);
+        }
+
+    }
+
+    public void creerOperationReservation(Facture facture, Panier panier) {
+
+        for (PanierDetails pd : panierDetailsService.findByPanierId(panier.getIdPanier())) {
+            if (pd.getReservationMachine() == null) {
+                continue;
+            }
+            OperationMachine om = new OperationMachine();
+            om.setIdMachine(pd.getReservationMachine().getMachine());
+            om.setIdFacture(facture);
+            BigDecimal q = BigDecimal.valueOf(1);
+            om.setQuantite(q.longValue());
+            operationMachineService.save(om);
+        }
+
     }
 
 }

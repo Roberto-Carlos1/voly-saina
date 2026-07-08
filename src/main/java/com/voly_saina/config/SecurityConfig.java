@@ -48,26 +48,26 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/page01", "/login", "/connexion", "/inscription", "/signup",
+                    "/connexion", "/login", "/inscription", "/signup",
                     "/access-denied", "/css/**", "/js/**", "/images/**", "/webjars/**"
                 ).permitAll()
-                .requestMatchers("/page02", "/page02/**").authenticated()
-                .requestMatchers("/client/**").hasAnyRole("CLIENT", "GESTIONNAIRE", "RESPONSABLE", "EMPLOYE")
+                .requestMatchers("/profil", "/profil/**").authenticated()
+                .requestMatchers("/client/**", "/catalogue/**", "/panier/**").hasAnyRole("CLIENT", "GESTIONNAIRE", "RESPONSABLE", "EMPLOYE")
                 .requestMatchers("/admin/**").hasRole("RESPONSABLE")
                 .anyRequest().permitAll()
             )
             .formLogin(login -> login
-                .loginPage("/page01")
+                .loginPage("/connexion")
                 .loginProcessingUrl("/connexion")
                 .usernameParameter("identifiant")
                 .passwordParameter("motDePasse")
-                .defaultSuccessUrl("/page02", true)
-                .failureUrl("/page01?error=true")
+                .defaultSuccessUrl("/profil", true)
+                .failureUrl("/connexion?error=true")
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/deconnexion")
-                .logoutSuccessUrl("/page01?logout=true")
+                .logoutSuccessUrl("/connexion?logout=true")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()

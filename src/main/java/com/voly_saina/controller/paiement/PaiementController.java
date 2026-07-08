@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/paiements")
+@RequestMapping("/paiements")
 public class PaiementController {
 
     private final PaiementService paiementService;
@@ -31,7 +31,7 @@ public class PaiementController {
     private final StatutFactureService statutFactureService;
     private final ModePaiementService modePaiementService;
 
-    // GET /api/paiements
+    // GET /paiements
     // @GetMapping
     // public ResponseEntity<List<Paiement>> getAll() {
     // return ResponseEntity.ok(paiementService.findAll());
@@ -44,7 +44,7 @@ public class PaiementController {
         this.statutFactureService = statutFactureService;
         this.modePaiementService = modePaiementService;
     }
-
+    
     @GetMapping
     public String getAll(Model model) {
         List<Paiement> liste = paiementService.findAll();
@@ -54,7 +54,7 @@ public class PaiementController {
         return "paiements/list";
     }
 
-    // GET /api/paiements/{id}
+    // GET /paiements/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Paiement> getById(@PathVariable Long id) {
         return paiementService.findById(id)
@@ -107,7 +107,7 @@ public class PaiementController {
 
         paiementService.save(p);
 
-        return "redirect:/api/factures/" + id;
+        return "redirect:/factures/" + id;
     }
 
     // POST /api/paiements

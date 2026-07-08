@@ -26,6 +26,6 @@ public class ClientController {
         model.addAttribute("idClient", utilisateur.getIdUtilisateur());
         model.addAttribute("clientId", utilisateur.getIdUtilisateur()); // Pour compatibilité
         model.addAttribute("utilisateur", utilisateur);
-        return "client/accueil";
+        return "index";
     }
 }

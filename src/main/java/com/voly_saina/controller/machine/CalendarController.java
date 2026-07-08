@@ -17,7 +17,7 @@ import com.voly_saina.service.MaintenanceMachineService;
 import com.voly_saina.service.ReservationMachineService;
 
 @Controller
-@RequestMapping("/api/reservations-machine")
+@RequestMapping("/reservations-machine")
 public class CalendarController {
 
     @Autowired
@@ -38,6 +38,9 @@ public class CalendarController {
         List<Map<String, Object>> events = new ArrayList<>();
 
         for (ReservationMachine r : reservationMachineService.findAll()) {
+            if (r.getFacture() == null) {
+                continue;
+            } // Skip reservations without a facture
             Map<String, Object> event = new HashMap<>();
             event.put("title", "Reservation: " + r.getMachine().getNom());
             event.put("start", r.getDateDebut());
@@ -57,7 +60,8 @@ public class CalendarController {
                 event.put("end", m.getDateDebut().plusDays(1));
             }
             // status color coding
-            String statusColor = m.getStatutMaintenance().getLibelle().equalsIgnoreCase("En cours") ? "#e74c3c" : "#2ecc71";
+            String statusColor = m.getStatutMaintenance().getLibelle().equalsIgnoreCase("En cours") ? "#e74c3c"
+                    : "#2ecc71";
             event.put("backgroundColor", statusColor);
             events.add(event);
         }

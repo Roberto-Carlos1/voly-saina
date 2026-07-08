@@ -41,7 +41,7 @@ import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
 
 @Controller
-@RequestMapping("/client/reservations")
+@RequestMapping("/catalogue/reservations")
 public class ClientReservationController {
 
     @Autowired

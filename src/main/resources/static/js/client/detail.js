@@ -4,7 +4,7 @@ if (!machineId) {
     document.getElementById('detailMachine').innerHTML = 
         '<p style="color:red;">Aucune machine sélectionnée.</p>';
 } else {
-    fetch('/client/machines/api/' + machineId)
+    fetch('/catalogue/machines/api/' + machineId)
         .then(r => {
             if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
             return r.json();

@@ -36,5 +36,10 @@ public class PanierDetails {
     @ManyToOne
     @JoinColumn(name = "id_reservation_machine", nullable = true)
     private ReservationMachine reservationMachine;
+
+    public PanierDetails orElse(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElse'");
+    }
     
 }

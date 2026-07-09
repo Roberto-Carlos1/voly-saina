@@ -103,7 +103,7 @@ public class PanierService {
     }
 
     public void supprimerLigne(Long ligneId, Long clientId) {
-        panierCommandeService.supprimerLigne(ligneId, clientId);
+        panierCommandeService.supprimerCommande(ligneId, clientId);
     }
 
     public void mettreAJourQuantite(Long ligneId, BigDecimal quantite, Long clientId) {

@@ -27,7 +27,7 @@ public interface PanierDetailsRepository extends JpaRepository<PanierDetails, Lo
 
     public List<PanierDetails> findByPanierIdPanierAndReservationMachineIdReservationIsNotNull(Long idPanier);
 
-    public Commande findByCommandeIdCommande(Long idCommande);
+    public PanierDetails findByCommandeIdCommande(Long idCommande);
 
     public Optional<PanierDetails> findByReservationMachineIdReservation(Long reservationId);
 

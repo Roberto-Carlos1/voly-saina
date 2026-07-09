@@ -99,7 +99,7 @@ public class PanierCommandeService {
             for (PanierDetails p : panierDetails) {
                 if (p.getCommande().getIdCommande().equals(commandePanier.getIdCommande())) {
                     present = true;
-                    break; 
+                    break;
                 }
             }
         }
@@ -173,6 +173,25 @@ public class PanierCommandeService {
         }
         ligneCommandeService.deleteById(ligneId);
         recalculerTotal(commande);
+    }
+
+    public void supprimerCommande(Long ligneId, Long clientId) {
+        Panier panier = panierService.findCurrentPanierByIdClient(clientId);
+        List<PanierDetails> details = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
+        LigneCommande ligne = ligneCommandeService.findById(ligneId).orElse(null);
+        Commande c = commandeService.findById(ligne.getCommande().getIdCommande());
+        List<LigneCommande> lignes = ligneCommandeService.findByIdCommande(c.getIdCommande());
+
+        if (lignes.size() == 1) {
+            Long idCommande= lignes.get(0).getCommande().getIdCommande();
+            PanierDetails det = panierDetailsService.findPanierDetailsbyCommande(idCommande);
+
+            panierDetailsService.deleteById(det.getIdPanierDetails());
+            supprimerLigne(ligneId, clientId);
+            commandeService.deleteById(c.getIdCommande());
+        } else {
+            supprimerLigne(ligneId, clientId);
+        }
     }
 
     public void mettreAJourQuantite(Long ligneId, BigDecimal quantite, Long clientId) {

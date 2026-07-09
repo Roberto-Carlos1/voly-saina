@@ -1,0 +1,475 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#f7efe9",
+                    "on-primary-fixed": "#00210b",
+                    "secondary-fixed": "#ffdbcb",
+                    "on-tertiary-fixed-variant": "#6d391e",
+                    "error-container": "#ffdad6",
+                    "surface": "#fff8f2",
+                    "surface-container": "#f4ede6",
+                    "surface-bright": "#fff8f2",
+                    "on-primary-container": "#93e0a2",
+                    "on-secondary-fixed": "#341000",
+                    "on-primary-fixed-variant": "#005226",
+                    "on-error": "#ffffff",
+                    "on-surface": "#1e1b17",
+                    "on-tertiary-container": "#ffc1a4",
+                    "primary-fixed-dim": "#8bd79b",
+                    "surface-variant": "#e8e1db",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#e0d9d2",
+                    "on-secondary": "#ffffff",
+                    "primary": "#004c22",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#1f6c3a",
+                    "surface-container-high": "#eee7e0",
+                    "on-tertiary-fixed": "#351000",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "inverse-primary": "#8bd79b",
+                    "tertiary-container": "#81492d",
+                    "on-secondary-container": "#712c00",
+                    "inverse-surface": "#33302c",
+                    "tertiary-fixed": "#ffdbcc",
+                    "primary-container": "#166534",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "tertiary": "#653319",
+                    "primary-fixed": "#a6f4b5",
+                    "on-surface-variant": "#404940",
+                    "outline": "#707a6f",
+                    "surface-container-low": "#faf2eb",
+                    "outline-variant": "#bfc9bd",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "background": "#fff8f2",
+                    "secondary": "#9a4614",
+                    "secondary-fixed-dim": "#ffb693",
+                    "on-background": "#1e1b17",
+                    "surface-container-highest": "#e8e1db",
+                    "secondary-container": "#fd925b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "base": "4px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "48px",
+                    "stack-lg": "32px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-xl-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff8f2;
+        }
+        /* Custom scrollbar for mechanical feel */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #faf2eb; }
+        ::-webkit-scrollbar-thumb { background: #707a6f; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #004c22; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm h-20">
+<div class="max-w-[1280px] mx-auto px-margin-desktop flex justify-between items-center h-full">
+<div class="flex items-center gap-8">
+<span class="font-display-lg text-display-lg text-primary tracking-tight font-extrabold text-[32px]">AgriElite</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1" href="#">Matériel Agricole</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Équipements &amp; Pièces</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Mes Réservations</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden lg:flex relative">
+<input class="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 w-64 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Rechercher une machine..." type="text">
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-outline">search</span>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">person</span>
+                    Mon Compte
+                </button>
+</div>
+</div>
+</nav>
+<div class="flex pt-20 min-h-screen">
+<!-- SideNavBar / Filters -->
+<aside class="h-[calc(100vh-80px)] w-72 fixed left-0 top-20 bg-surface-container-low border-r border-outline-variant overflow-y-auto hidden lg:block">
+<div class="p-6 flex flex-col gap-8">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-1">Catégories</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4">Équipements Spécialisés</p>
+<div class="flex flex-col">
+<a class="bg-secondary-container text-on-secondary-container rounded-lg flex items-center gap-3 p-3 transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+<span class="font-label-md text-label-md">Tracteurs</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 p-3 transition-all" href="#">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+<span class="font-label-md text-label-md">Moissonneuses</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 p-3 transition-all" href="#">
+<span class="material-symbols-outlined">landslide</span>
+<span class="font-label-md text-label-md">Travail du sol</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg flex items-center gap-3 p-3 transition-all" href="#">
+<span class="material-symbols-outlined">pets</span>
+<span class="font-label-md text-label-md">Élevage</span>
+</a>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Marque</label>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox">
+<span class="font-body-md text-body-md group-hover:text-primary">John Deere</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox">
+<span class="font-body-md text-body-md group-hover:text-primary">Fendt</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox">
+<span class="font-body-md text-body-md group-hover:text-primary">Case IH</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-outline-variant text-primary focus:ring-primary h-4 w-4" type="checkbox">
+<span class="font-body-md text-body-md group-hover:text-primary">Claas</span>
+</label>
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Puissance (ch)</label>
+<div class="grid grid-cols-2 gap-2">
+<input class="bg-white border border-outline-variant rounded-lg p-2 text-sm focus:ring-1 focus:ring-primary outline-none" placeholder="Min" type="number">
+<input class="bg-white border border-outline-variant rounded-lg p-2 text-sm focus:ring-1 focus:ring-primary outline-none" placeholder="Max" type="number">
+</div>
+</div>
+<div>
+<label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Prix / Jour (€)</label>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-primary" type="range">
+<div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<span>150 €</span>
+<span>2500 €</span>
+</div>
+</div>
+<button class="w-full bg-surface-container-highest text-on-surface py-3 rounded-lg font-label-md hover:bg-outline-variant transition-colors">
+                        Réinitialiser
+                    </button>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 lg:ml-72 p-gutter-desktop">
+<!-- Hero / Title Section -->
+<header class="mb-stack-lg">
+<div class="flex flex-col md:flex-row justify-between items-end gap-4 border-b border-outline-variant pb-6">
+<div>
+<nav class="flex gap-2 text-label-sm text-on-surface-variant mb-2">
+<span>Accueil</span>
+<span>/</span>
+<span class="text-primary font-bold">Catalogue Tracteurs</span>
+</nav>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Tracteurs Haute Puissance</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">Découvrez notre sélection de machines agricoles de pointe. Robustesse et performance au service de votre exploitation.</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md">Trier par :</span>
+<select class="bg-white border border-outline-variant rounded-lg py-2 px-4 font-label-md focus:ring-primary outline-none">
+<option>Plus récents</option>
+<option>Prix croissant</option>
+<option>Puissance</option>
+</select>
+</div>
+</div>
+</header>
+<!-- Machinery Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bg-white border border-outline-variant rounded-lg overflow-hidden group hover:border-primary transition-all duration-300">
+<div class="relative h-64 overflow-hidden">
+<div class="absolute top-4 left-4 z-10">
+<span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-3 py-1 rounded-full uppercase">Disponible</span>
+</div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="A massive modern green John Deere tractor operating in a vibrant sun-drenched wheat field during golden hour. The sunlight emphasizes the metallic textures and rugged tires of the machine. The style is highly professional and cinematic, showcasing agricultural power in a natural outdoor environment with deep greens and warm ambers." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCnr1AxIurW2ydzbtNlP8--wkBAJeOHI2p2_PljoMvF7WMfsHDwKqYQ1yrhzB3yl8UWbGwUrx5dlpT3PWriDwtn5TpfSu1zP5jD5E6kdZQRS2-hA43ftCPf744lj1RWkzYj6R_tohBTQyZwfJEkO_XmYU9XAA65hC39Z8DYNaQ4BZu6dmUFU03G8HMVixyswp_SJ_EoPqwBZ-saWV6Erryq1oOjI1AsSyDZ3y82-yZcGuRh4G7GKpXc')"></div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">John Deere</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">8R 410 Signature</h3>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary">850€ <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 py-4 my-4 border-y border-surface-container-high">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">bolt</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">410 ch</span>
+</div>
+<div class="flex flex-col items-center border-x border-surface-container-high">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">2023</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">local_gas_station</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">Diesel</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg font-label-md hover:opacity-95 transition-all">Louer maintenant</button>
+<button class="w-12 h-12 border-2 border-outline-variant flex items-center justify-center rounded-lg hover:border-secondary hover:text-secondary transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white border border-outline-variant rounded-lg overflow-hidden group hover:border-primary transition-all duration-300">
+<div class="relative h-64 overflow-hidden">
+<div class="absolute top-4 left-4 z-10">
+<span class="bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm px-3 py-1 rounded-full uppercase">Nouveauté</span>
+</div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="A powerful Fendt tractor in dark metallic green parked on a clean concrete floor in a modern high-tech farm facility. Dramatic directional lighting highlights the sophisticated engineering details and large tread of the tires. The atmosphere is industrial and premium, focusing on high-end agricultural technology and mechanical precision." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNZfndBHKJsEFKdB6KAwmiz6KMcwEbbaarVsPSMUuXVIbNInEW1ZdhZy1ZRYYKTezxysa0STYIyrOkfNDZ6Qo9s9z89a3rUWFKQCkTqn4JqYPw3hLkNO4hHddL91_d_tsUGiOunkTyc6b72fM9uSLh2bXuiEU4XF0ZXLqTzeRBiNVa8S8apyq0WooOzceye9o0Ww63hYoim_UwDtOqvK-qKAY8GvWi3XmUcQpDIo_nb9UnRAHCmwlA')"></div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Fendt</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">1050 Vario Gen3</h3>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary">1 200€ <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 py-4 my-4 border-y border-surface-container-high">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">bolt</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">517 ch</span>
+</div>
+<div class="flex flex-col items-center border-x border-surface-container-high">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">2024</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">local_gas_station</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">BioDiesel</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg font-label-md hover:opacity-95 transition-all">Louer maintenant</button>
+<button class="w-12 h-12 border-2 border-outline-variant flex items-center justify-center rounded-lg hover:border-secondary hover:text-secondary transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white border border-outline-variant rounded-lg overflow-hidden group hover:border-primary transition-all duration-300">
+<div class="relative h-64 overflow-hidden">
+<div class="absolute top-4 left-4 z-10">
+<span class="bg-outline text-white font-label-sm text-label-sm px-3 py-1 rounded-full uppercase">Indisponible</span>
+</div>
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500 grayscale opacity-80" data-alt="A bright red Case IH Magnum tractor stationed in a vast, flat agricultural landscape under an expansive blue sky with wispy white clouds. The machine is covered in a light layer of dust, suggesting recent heavy-duty work. The photographic style is crisp and documentary, emphasizing the scale of the machinery against the horizon." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA-1yrh95l9gJXGxJ2AhXGCKq8zy_r_D3M15WBT49k0LGMnRNL5eiDLpIVycobnrc6odAYiBtbh4lBfjQ2ILDIwmpmMmkEClZYwnD-XUkFbZE_N3p-WSf8mJ3EVF5VULHMRQZHgnllmPbM7ACWR7vbdYQn_534xIBTuMJGAJRo7Szf0gSMSTbwponnfCG79Akd7f60-hcTbw4y2pt5ncglMr9XY4-Agna1hFtblLx2zlKMHa2lApnYR')"></div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Case IH</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">Magnum 380 CVX</h3>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary">720€ <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 py-4 my-4 border-y border-surface-container-high">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">bolt</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">380 ch</span>
+</div>
+<div class="flex flex-col items-center border-x border-surface-container-high">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">2022</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">local_gas_station</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">Diesel</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-outline text-white py-3 rounded-lg font-label-md cursor-not-allowed">Prévenir du retour</button>
+<button class="w-12 h-12 border-2 border-outline-variant flex items-center justify-center rounded-lg hover:border-secondary hover:text-secondary transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-white border border-outline-variant rounded-lg overflow-hidden group hover:border-primary transition-all duration-300">
+<div class="relative h-64 overflow-hidden">
+<div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="A large Claas Xerion tractor with its distinctive four large equal-sized wheels, parked in a lush green pasture. The evening light creates long shadows and a rich, textured appearance on the mechanical components. High-contrast photography style that highlights the bright lime-green paint of the Claas brand against the deep earthy tones of the soil." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDw2QlidH3TerqLlNGKqQxU--wVdbvel8iZ-i6QO9ImY93sBiTeTZIZGYCV9HdabZfGAqFzz89dzE3NDwnBtQlvDxif9s1CUGnJaj0ZsS6EQe6nqqpIZj-b9VAvEIUcirIksEfu2BBrnVgh9Aae7fUWA1w4Yl0n37xhBgwOgEEUuHH9gxzRigoo5_uCCfaC6wiNg_JXcRvbrzCywyfTVOWff8JHJS1iIQedrbFiFCIjxGM74ENkGRz6')"></div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Claas</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">Xerion 5000 TRAC</h3>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-headline-md text-primary">1 100€ <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 py-4 my-4 border-y border-surface-container-high">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">bolt</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">530 ch</span>
+</div>
+<div class="flex flex-col items-center border-x border-surface-container-high">
+<span class="material-symbols-outlined text-outline">calendar_today</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">2023</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined text-outline">local_gas_station</span>
+<span class="font-label-sm text-label-sm mt-1 text-on-surface-variant">GNR</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-lg font-label-md hover:opacity-95 transition-all">Louer maintenant</button>
+<button class="w-12 h-12 border-2 border-outline-variant flex items-center justify-center rounded-lg hover:border-secondary hover:text-secondary transition-all">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-stack-lg flex justify-center items-center gap-2">
+<button class="w-10 h-10 border border-outline-variant rounded flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 bg-primary text-on-primary rounded font-label-md">1</button>
+<button class="w-10 h-10 border border-outline-variant rounded font-label-md hover:bg-surface-container-high transition-colors">2</button>
+<button class="w-10 h-10 border border-outline-variant rounded font-label-md hover:bg-surface-container-high transition-colors">3</button>
+<span class="px-2">...</span>
+<button class="w-10 h-10 border border-outline-variant rounded font-label-md hover:bg-surface-container-high transition-colors">12</button>
+<button class="w-10 h-10 border border-outline-variant rounded flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-highest border-t border-outline-variant">
+<div class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop">
+<div class="col-span-1 md:col-span-1">
+<span class="font-headline-md text-headline-md text-primary mb-4 block">AgriElite</span>
+<p class="font-body-md text-body-md text-on-surface-variant">L'excellence au service des agriculteurs. Leader européen de la location de machines agricoles haute performance.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-4 uppercase tracking-wider">Services</h4>
+<ul class="space-y-2">
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Assistance Technique</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Trouver une Agence</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Documentation</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Conditions de Location</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-4 uppercase tracking-wider">Contact</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">📞 0 800 123 456 (Gratuit)</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">✉️ contact@agrielite.fr</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">📍 42 Avenue des Champs, 75008 Paris</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-4 uppercase tracking-wider">Newsletter</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-4">Recevez nos dernières arrivées directement.</p>
+<div class="flex">
+<input class="flex-1 bg-surface-container-low border border-outline-variant rounded-l-lg px-4 py-2 outline-none focus:border-primary" placeholder="Votre email" type="email">
+<button class="bg-primary text-on-primary px-4 py-2 rounded-r-lg hover:opacity-90">OK</button>
+</div>
+</div>
+</div>
+<div class="max-w-[1280px] mx-auto px-margin-desktop py-6 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-80">© 2024 AgriElite. Excellence en Machinerie Agricole.</p>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Mentions légales</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Confidentialité</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for filter range
+        const priceRange = document.querySelector('input[type="range"]');
+        if (priceRange) {
+            priceRange.addEventListener('input', (e) => {
+                // Potential to update a label display if one was added
+            });
+        }
+
+        // Active state toggles for demo
+        document.querySelectorAll('aside a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('aside a').forEach(l => {
+                    l.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'translate-x-1');
+                    l.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+                    const icon = l.querySelector('.material-symbols-outlined');
+                    if(icon) icon.style.fontVariationSettings = "'FILL' 0";
+                });
+                link.classList.add('bg-secondary-container', 'text-on-secondary-container', 'translate-x-1');
+                link.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+                const icon = link.querySelector('.material-symbols-outlined');
+                if(icon) icon.style.fontVariationSettings = "'FILL' 1";
+            });
+        });
+    </script>
+</body></html>

@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +29,6 @@ import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.OperationMachine;
 import com.voly_saina.entity.Paiement;
-import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.FactureService;
@@ -71,104 +72,210 @@ public class ClientReservationController {
     @Autowired
     private ModePaiementService modePaiementService;
 
+    // ========== MÉTHODES D'AUTHENTIFICATION ==========
 
-    // GET /client/reservations/{machineId}/nouvelle
+    private Utilisateur getUtilisateurConnecte(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return null;
+        }
+        return utilisateurService.findByEmail(user.getUsername());
+    }
+
+    private Long getClientId(@AuthenticationPrincipal User user) {
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur == null) {
+            return null;
+        }
+        return utilisateur.getIdUtilisateur();
+    }
+
+    private void addUtilisateurConnecte(Model model, @AuthenticationPrincipal User user) {
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur != null) {
+            model.addAttribute("utilisateur", utilisateur);
+            model.addAttribute("clientId", utilisateur.getIdUtilisateur());
+            model.addAttribute("idClient", utilisateur.getIdUtilisateur());
+            model.addAttribute("isAuthenticated", true);
+        } else {
+            model.addAttribute("isAuthenticated", false);
+            model.addAttribute("clientId", null);
+        }
+    }
+
+    // ========== PAGES HTML ==========
+
     @GetMapping("/{machineId}/nouvelle")
-    public String formulaireReservation(@PathVariable Long machineId,
-                                        @RequestParam(required = false) Long clientId,
-                                        Model model) {
+    public String formulaireReservation(
+            @PathVariable Long machineId,
+            @AuthenticationPrincipal User user,
+            Model model) {
+        
+        addUtilisateurConnecte(model, user);
         model.addAttribute("machineId", machineId);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
         return "client/reservations/form";
     }
 
-    // GET /client/reservations/{id}/annuler
     @GetMapping("/{id}/annuler")
-    public String formulaireAnnulation(@PathVariable Long id,
-                                       @RequestParam(required = false) Long clientId,
-                                       Model model) {
+    public String formulaireAnnulation(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user,
+            Model model) {
+        
+        addUtilisateurConnecte(model, user);
         model.addAttribute("reservationId", id);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
         return "client/reservations/annuler-form";
     }
 
-    // GET /client/reservations/mes-reservations
     @GetMapping("/mes-reservations")
-    public String mesReservations(@RequestParam(required = false) Long clientId, Model model) {
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
+    public String mesReservations(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) String statut,
+            Model model) {
+        
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur == null) {
+            return "redirect:/connexion";
+        }
+        
+        addUtilisateurConnecte(model, user);
+        
+        // Récupérer les réservations du client connecté
+        List<ReservationMachine> reservations = reservationService.findByClientId(utilisateur.getIdUtilisateur());
+        
+        // Filtrer par statut si nécessaire
+        if (statut != null && !statut.isEmpty()) {
+            reservations = reservations.stream()
+                .filter(r -> r.getStatutReservation() != null && 
+                            statut.equals(r.getStatutReservation().getCode()))
+                .collect(Collectors.toList());
+        }
+        
+        List<ReservationClientDTO> reservationDTOs = reservations.stream()
+            .map(this::mapToDTO)
+            .collect(Collectors.toList());
+        
+        model.addAttribute("reservations", reservationDTOs);
+        model.addAttribute("filtreStatut", statut);
         return "client/reservations/list";
     }
 
-    // GET /client/reservations/{id}
     @GetMapping("/{id}")
-    public String detailReservation(@PathVariable Long id,
-                                    @RequestParam(required = false) Long clientId,
-                                    Model model) {
+    public String detailReservation(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user,
+            Model model) {
+        
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur == null) {
+            return "redirect:/connexion";
+        }
+        
+        addUtilisateurConnecte(model, user);
         model.addAttribute("reservationId", id);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
         return "client/reservations/detail";
     }
 
-    // GET /client/reservations/facture/{factureId}
     @GetMapping("/facture/{factureId}")
-    public String detailFacture(@PathVariable Long factureId,
-                                @RequestParam(required = false) Long clientId,
-                                Model model) {
+    public String detailFacture(
+            @PathVariable Long factureId,
+            @AuthenticationPrincipal User user,
+            Model model) {
+        
+        addUtilisateurConnecte(model, user);
         model.addAttribute("factureId", factureId);
-        model.addAttribute("clientId", clientId != null ? clientId : 1L);
         return "client/reservations/facture-detail";
     }
 
-    // GET /client/reservations/api/client/{clientId}
+    // ========== API REST ==========
+
     @GetMapping("/api/client/{clientId}")
     @ResponseBody
-    public ResponseEntity<List<ReservationClientDTO>> getReservationsByClient(@PathVariable Long clientId) {
+    public ResponseEntity<List<ReservationClientDTO>> getReservationsByClient(
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User user) {
+        
+        Long clientIdConnecte = getClientId(user);
+        if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
-    // GET /client/reservations/api/client/{clientId}/statut/{statut}
     @GetMapping("/api/client/{clientId}/statut/{statut}")
     @ResponseBody
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClientAndStatut(
             @PathVariable Long clientId,
-            @PathVariable String statut) {
+            @PathVariable String statut,
+            @AuthenticationPrincipal User user) {
+        
+        Long clientIdConnecte = getClientId(user);
+        if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId)
             .stream()
-            .filter(r -> r.getStatutReservation().getCode().equals(statut))
+            .filter(r -> r.getStatutReservation() != null && 
+                        statut.equals(r.getStatutReservation().getCode()))
             .collect(Collectors.toList());
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
-    // GET /client/reservations/api/{id}
     @GetMapping("/api/{id}")
     @ResponseBody
-    public ResponseEntity<ReservationClientDTO> getReservationById(@PathVariable Long id) {
+    public ResponseEntity<ReservationClientDTO> getReservationById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user) {
+        
         ReservationMachine reservation = reservationService.findById(id).orElse(null);
         if (reservation == null) {
             return ResponseEntity.notFound().build();
         }
+        
+        Long clientIdConnecte = getClientId(user);
+        if (clientIdConnecte == null || !clientIdConnecte.equals(reservation.getClient().getIdUtilisateur())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
         return ResponseEntity.ok(mapToDTO(reservation));
     }
 
-    // GET /client/reservations/api/client/{clientId}/active
     @GetMapping("/api/client/{clientId}/active")
     @ResponseBody
-    public ResponseEntity<List<ReservationClientDTO>> getActiveReservations(@PathVariable Long clientId) {
+    public ResponseEntity<List<ReservationClientDTO>> getActiveReservations(
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User user) {
+        
+        Long clientIdConnecte = getClientId(user);
+        if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
         List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientId);
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
-    // POST /client/reservations/api
     @PostMapping("/api")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> createReservation(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Map<String, Object>> createReservation(
+            @RequestBody Map<String, Object> payload,
+            @AuthenticationPrincipal User user) {
+        
         try {
-            Long clientId = Long.valueOf(payload.get("clientId").toString());
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté pour effectuer une réservation");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             Long machineId = Long.valueOf(payload.get("machineId").toString());
             LocalDate dateDebut = LocalDate.parse(payload.get("dateDebut").toString());
             LocalDate dateFin = LocalDate.parse(payload.get("dateFin").toString());
-            String lieuLivraison = payload.containsKey("lieuLivraison") ? payload.get("lieuLivraison").toString() : null;
+            String lieuLivraison = payload.containsKey("lieuLivraison") ? 
+                payload.get("lieuLivraison").toString() : null;
 
             Utilisateur client = utilisateurService.findById(clientId)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
@@ -222,13 +329,28 @@ public class ClientReservationController {
         }
     }
 
-    // POST /client/reservations/api/{id}/facturer
     @PostMapping("/api/{id}/facturer")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> facturerReservation(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> facturerReservation(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             ReservationMachine reservation = reservationService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+            if (!reservation.getClient().getIdUtilisateur().equals(clientId)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
 
             if (!"en_attente".equals(reservation.getStatutReservation().getCode())) {
                 Map<String, Object> error = new HashMap<>();
@@ -280,14 +402,21 @@ public class ClientReservationController {
         }
     }
 
-    // POST /client/reservations/api/facture/{factureId}/payer
     @PostMapping("/api/facture/{factureId}/payer")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> payerFacture(
             @PathVariable Long factureId,
-            @RequestBody Map<String, Object> payload) {
+            @RequestBody Map<String, Object> payload,
+            @AuthenticationPrincipal User user) {
+        
         try {
-            Long clientId = Long.valueOf(payload.get("clientId").toString());
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             Long modePaiementId = Long.valueOf(payload.get("modePaiementId").toString());
 
             Facture facture = factureService.findById(factureId);
@@ -346,17 +475,26 @@ public class ClientReservationController {
         }
     }
 
-    // GET /client/reservations/api/facture/{factureId}/reservations
     @GetMapping("/api/facture/{factureId}/reservations")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getReservationsByFacture(@PathVariable Long factureId) {
+    public ResponseEntity<Map<String, Object>> getReservationsByFacture(
+            @PathVariable Long factureId,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             Facture facture = factureService.findById(factureId);
             if (facture == null) {
                 return ResponseEntity.notFound().build();
             }
 
-            List<ReservationMachine> reservations = reservationService.findByClientId(facture.getClient().getIdUtilisateur())
+            List<ReservationMachine> reservations = reservationService.findByClientId(clientId)
                 .stream()
                 .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
                 .collect(Collectors.toList());
@@ -381,17 +519,31 @@ public class ClientReservationController {
         }
     }
 
-    // PUT /client/reservations/api/{id}/annuler
     @PutMapping("/api/{id}/annuler")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> annulerReservation(
             @PathVariable Long id,
-            @RequestBody(required = false) Map<String, String> payload) {
+            @RequestBody(required = false) Map<String, String> payload,
+            @AuthenticationPrincipal User user) {
+        
         try {
+            Long clientId = getClientId(user);
+            if (clientId == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous devez être connecté");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+            }
+
             String motif = payload != null ? payload.get("motif") : null;
             
             ReservationMachine reservation = reservationService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+
+            if (reservation.getClient() == null || !reservation.getClient().getIdUtilisateur().equals(clientId)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
 
             String statut = reservation.getStatutReservation().getCode();
             if ("terminee".equals(statut) || "annulee".equals(statut)) {
@@ -423,21 +575,27 @@ public class ClientReservationController {
         }
     }
 
-    // PUT /client/reservations/api/client/{clientId}/annuler-tout
     @PutMapping("/api/client/{clientId}/annuler-tout")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> annulerTout(@PathVariable Long clientId) {
+    public ResponseEntity<Map<String, Object>> annulerTout(
+            @PathVariable Long clientId,
+            @AuthenticationPrincipal User user) {
+        
         try {
-            List<ReservationMachine> reservations = reservationService
-                .findActiveReservationsByClient(clientId);
+            Long clientIdConnecte = getClientId(user);
+            if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Vous n'êtes pas autorisé");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+            }
+
+            List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientId);
 
             int annulees = 0;
             for (ReservationMachine r : reservations) {
                 String statut = r.getStatutReservation().getCode();
                 if (!"terminee".equals(statut) && !"annulee".equals(statut)) {
-                    r.setStatutReservation(
-                        statutReservationService.findByCode("annulee")
-                    );
+                    r.setStatutReservation(statutReservationService.findByCode("annulee"));
                     reservationService.save(r);
                     
                     if (r.getFacture() != null) {
@@ -463,38 +621,6 @@ public class ClientReservationController {
             return ResponseEntity.badRequest().body(error);
         }
     }
-
-    // // GET /client/reservations/api/client/{clientId}/statistiques
-    // @GetMapping("/api/client/{clientId}/statistiques")
-    // @ResponseBody
-    // public ResponseEntity<Map<String, Object>> getStatistiques(@PathVariable Long clientId) {
-    //     List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
-        
-    //     long total = reservations.size();
-    //     long enCours = reservations.stream()
-    //         .filter(r -> "en_cours".equals(r.getStatutReservation().getCode()))
-    //         .count();
-    //     long terminees = reservations.stream()
-    //         .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
-    //         .count();
-    //     long annulees = reservations.stream()
-    //         .filter(r -> "annulee".equals(r.getStatutReservation().getCode()))
-    //         .count();
-        
-    //     BigDecimal totalDepenses = reservations.stream()
-    //         .filter(r -> "terminee".equals(r.getStatutReservation().getCode()))
-    //         .map(ReservationMachine::getPrixTotal)
-    //         .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    //     Map<String, Object> stats = new HashMap<>();
-    //     stats.put("totalReservations", total);
-    //     stats.put("reservationsEnCours", enCours);
-    //     stats.put("reservationsTerminees", terminees);
-    //     stats.put("reservationsAnnulees", annulees);
-    //     stats.put("totalDepenses", totalDepenses);
-        
-    //     return ResponseEntity.ok(stats);
-    // }
 
     // ========== MÉTHODES PRIVÉES ==========
 

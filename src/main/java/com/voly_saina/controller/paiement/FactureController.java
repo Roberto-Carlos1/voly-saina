@@ -1,5 +1,6 @@
 package com.voly_saina.controller.paiement;
 
+import com.voly_saina.dto.FactureClientDTO;
 import com.voly_saina.entity.Facture;
 import com.voly_saina.entity.Pages;
 import com.voly_saina.entity.StatutFacture;
@@ -9,11 +10,14 @@ import com.voly_saina.repository.FactureFilleRepository;
 import com.voly_saina.service.FactureService;
 import com.voly_saina.service.PageService;
 import com.voly_saina.service.StatutFactureService;
+import com.voly_saina.service.client.ClientFactureService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,10 +37,12 @@ public class FactureController {
     private final PageService pageService;
     private final StatutFactureService statutFactureService;
     private final FactureFilleRepository factureFilleRepository;
+    private final ClientFactureService clientFactureService;
 
     public FactureController(PageService pageService, StatutFactureService statutFacture,
-            FactureFilleRepository factureFilleRepository) {
+            FactureFilleRepository factureFilleRepository, ClientFactureService clientFactureService) {
         this.pageService = pageService;
+        this.clientFactureService = clientFactureService;
         this.statutFactureService = statutFacture;
         this.factureFilleRepository = factureFilleRepository;
     }
@@ -144,5 +150,22 @@ public class FactureController {
 
         Page<Facture> factures = factureService.filtreFacture(facturedto, pageable);
         return ResponseEntity.ok(factures);
+    }
+
+    @GetMapping("/exportFacture/{idFacture}/{idClient}")
+    public ResponseEntity<byte[]> exportFacturePDF(@PathVariable("idFacture") Long idFacture,
+            @PathVariable("idClient") Long idClient) {
+        byte[] pdf = clientFactureService.exporterFacturePDF(idFacture, idClient);
+
+        FactureClientDTO facture = clientFactureService.voirDetailFacture(idFacture, idClient);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "facture-" +
+                facture.getNumero() + ".pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdf);
     }
 }

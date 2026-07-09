@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.voly_saina.dto.dtoMacine.ReservationClientDTO;
 import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.entity.StatutReservation;
 import com.voly_saina.repository.ReservationMachineRepository;
 import com.voly_saina.service.StatutReservationService;
 
@@ -81,4 +82,10 @@ public class ClientReservationService {
         
         return dto;
     }
-}
+    
+    public void annulerReservation(ReservationMachine reservation){
+        StatutReservation statut= statutReservationService.findByCode("annulee");
+        reservation.setStatutReservation(statut);
+        System.out.println("statut modifié: " +reservation.getStatutReservation().getLibelle());
+    }
+} 

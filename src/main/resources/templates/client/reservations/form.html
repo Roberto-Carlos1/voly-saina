@@ -257,15 +257,47 @@
 
             const form = document.getElementById('reservationForm');
             const formData = new FormData(form);
-            formData.append('dateDebut', dateDebut);
-            formData.append('dateFin', dateFin);
 
-            const url = new URL('/panier/reservations/ajouter', window.location.origin);
-            formData.forEach((value, key) => url.searchParams.append(key, value));
+    const data = {
+        clientId: Number(formData.get('clientId')),
+        machineId: Number(formData.get('machineId')),
+        dateDebut: dateDebut,
+        dateFin: dateFin,
+        lieuLivraison: formData.get('lieuLivraison') || ''
+    };
 
-            window.location.href = url.toString();
-        });
-
+    fetch('/panier/reservations/api/ajouter', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(response => {
+        if (response.error) {
+            document.getElementById('message').innerHTML = `
+                <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
+                     ${response.error}
+                </div>
+            `;
+        } else {
+            document.getElementById('message').innerHTML = `
+                <div class="border border-primary-container bg-primary-container/10 p-3 rounded-lg text-primary">
+                     ${response.message}
+                    <br>
+                    <a href="/panier?clientId=${data.clientId}" 
+                       class="text-primary font-bold underline mt-2 inline-block">
+                        Voir mon panier
+                    </a>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+});
         // Charger au démarrage
         loadMachine();
     </script>

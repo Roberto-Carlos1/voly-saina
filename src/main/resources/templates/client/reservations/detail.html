@@ -184,7 +184,8 @@
                 document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
                 document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
                 document.getElementById('factureStatut').textContent = 'Générée';
-                document.getElementById('voirFactureBtn').href = '/catalogue/reservations/facture/' + data.factureId;
+                // document.getElementById('voirFactureBtn').href = '/catalogue/reservations/facture/' + data.factureId;
+                document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId ;
             } else {
                 document.getElementById('factureCard').style.display = 'none';
             }

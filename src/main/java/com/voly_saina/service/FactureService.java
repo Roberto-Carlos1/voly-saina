@@ -183,12 +183,6 @@ public class FactureService {
             if (pd.getReservationMachine() == null) {
                 continue;
             }
-            OperationMachine om = new OperationMachine();
-            om.setIdMachine(pd.getReservationMachine().getMachine());
-            om.setIdFacture(facture);
-            BigDecimal q = BigDecimal.valueOf(1);
-            om.setQuantite(q.longValue());
-            operationMachineService.save(om);
         }
 
     }

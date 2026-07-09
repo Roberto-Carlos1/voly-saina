@@ -144,7 +144,14 @@
 
         <!-- Breadcrumb / Back Link -->
         <div class="max-w-[1280px] mx-auto px-margin-desktop py-stack-md">
-            <a class="inline-flex items-center gap-base font-label-md text-label-md text-primary hover:underline group" th:href="@{/guide-plantation/cultures}">
+            <a class="inline-flex items-center gap-base font-label-md text-label-md text-primary hover:underline group" th:href="@{/guide-plantation/cultures(
+                motCle=${filtres.motCle},
+                localisation=${filtres.localisation},
+                saison=${filtres.saison},
+                page=${page},
+                size=${size},
+                tri=${tri}
+            )}">
                 <span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
                 Retour à la liste
             </a>
@@ -227,7 +234,15 @@
                         <div class="w-full" th:if="${ficheCulture != null}">
                             <p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">Téléchargez le guide complet pour optimiser vos rendements.</p>
                             <a class="inline-flex w-full justify-center items-center px-stack-lg py-stack-md bg-primary text-white font-label-md text-label-md rounded-lg hover:bg-primary-container transition-all duration-150 active:scale-95 shadow-md" 
-                               th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}">
+                               th:href="@{/guide-plantation/cultures/{id}/fiche(
+                                   id=${culture.idCulture},
+                                   motCle=${filtres.motCle},
+                                   localisation=${filtres.localisation},
+                                   saison=${filtres.saison},
+                                   page=${page},
+                                   size=${size},
+                                   tri=${tri}
+                               )}">
                                 Voir la fiche détaillée
                             </a>
                         </div>

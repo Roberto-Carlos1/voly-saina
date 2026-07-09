@@ -1,114 +1,393 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détail produit - Voly Saina+</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title th:text="'AgriElite - ' + ${produit.nom}">AgriElite - Détails Produit</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-background": "#1e1b17",
+                        "tertiary-fixed": "#ffdbcc",
+                        "secondary-fixed-dim": "#ffb693",
+                        "surface-bright": "#fff8f2",
+                        "primary-container": "#166534",
+                        "on-surface": "#1e1b17",
+                        "on-error": "#ffffff",
+                        "on-secondary-container": "#712c00",
+                        "outline-variant": "#bfc9bd",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#1f6c3a",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fd925b",
+                        "on-surface-variant": "#404940",
+                        "on-primary-fixed-variant": "#005226",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "inverse-primary": "#8bd79b",
+                        "error": "#ba1a1a",
+                        "primary": "#004c22",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#00210b",
+                        "surface-dim": "#e0d9d2",
+                        "surface-container-low": "#faf2eb",
+                        "secondary": "#9a4614",
+                        "primary-fixed": "#a6f4b5",
+                        "tertiary": "#653319",
+                        "inverse-surface": "#33302c",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f7efe9",
+                        "primary-fixed-dim": "#8bd79b",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#351000",
+                        "background": "#fff8f2",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-primary-container": "#93e0a2",
+                        "outline": "#707a6f",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#ffc1a4",
+                        "surface-container": "#f4ede6",
+                        "tertiary-container": "#81492d",
+                        "surface-variant": "#e8e1db",
+                        "secondary-fixed": "#ffdbcb",
+                        "on-secondary-fixed": "#341000",
+                        "surface-container-highest": "#e8e1db",
+                        "surface-container-high": "#eee7e0",
+                        "surface": "#fff8f2"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "gutter-desktop": "24px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "20px",
+                        "base": "4px",
+                        "stack-md": "16px",
+                        "margin-desktop": "48px",
+                        "gutter-mobile": "16px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { background-color: #f5f5f5; padding: 20px 0; }
-        .container { max-width: 1100px; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0 !important; }
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-block; }
-        .badge-green { background: #dcfce7; color: #166534; }
-        .badge-gray { background: #f3f4f6; color: #4b5563; }
-        .label-muted { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        .kv-row { border-bottom: 1px solid #eef2f7; }
-        .kv-row:last-child { border-bottom: none; }
-        .kv-key { width: 220px; }
-        .btn { border-radius: 8px; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff8f2;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .bento-item {
+            border: 1px solid #bfc9bd;
+            background: #ffffff;
+            transition: all 150ms ease-in-out;
+        }
+        .btn-hover-effect:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
-<body>
-<div class="container">
-    <div class="card">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Détails du produit</h4>
-            <a th:href="@{/catalogue/produits/catalogue}" class="text-decoration-none" style="color: white; font-weight: 500;">
-                ← Retour
+
+<body class="text-on-surface">
+
+    <!-- Top Navigation Bar -->
+    <header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop h-20 flex justify-between items-center">
+            <div class="flex items-center gap-12">
+                <span class="font-headline-lg text-headline-lg font-bold text-primary">AgriElite</span>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Engrais</a>
+                    <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Outils</a>
+                    <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Semences</a>
+                    <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="#">Catalogue</a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-6">
+                <a th:href="@{/panier}" class="material-symbols-outlined text-primary text-2xl btn-hover-effect relative">
+                    shopping_cart
+                    <span class="absolute -top-1 -right-2 w-4 h-4 bg-secondary text-white text-[10px] flex items-center justify-center rounded-full">2</span>
+                </a>
+                <button class="material-symbols-outlined text-primary text-2xl btn-hover-effect">account_circle</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-stack-lg max-w-[1280px] mx-auto px-margin-desktop">
+
+        <!-- Breadcrumb & Back Button -->
+        <nav class="flex items-center justify-between mb-stack-md">
+            <div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+                <a class="hover:text-primary" href="#">Accueil</a>
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                <a class="hover:text-primary" th:href="@{/catalogue/produits/catalogue}">Catalogue</a>
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                <span class="text-primary font-bold">Détails Produit</span>
+            </div>
+            <a class="flex items-center gap-2 text-primary hover:underline font-label-md text-label-md group" th:href="@{/catalogue/produits/catalogue}">
+                <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                Retour au catalogue
             </a>
-        </div>
+        </nav>
 
-        <div class="card-body p-4">
+        <!-- Product Not Found State -->
+        <section class="flex flex-col items-center justify-center py-20 bento-item rounded-xl bg-surface-container" th:if="${produit == null}">
+            <span class="material-symbols-outlined text-6xl text-outline mb-4">inventory_2</span>
+            <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Produit introuvable</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-6 text-center max-w-md">Nous n'avons pas pu trouver l'équipement demandé. Il se peut qu'il ne soit plus disponible ou que le lien soit expiré.</p>
+            <a class="px-8 py-3 bg-primary text-on-primary rounded-lg font-bold btn-hover-effect" th:href="@{/catalogue/produits/catalogue}">Explorer le catalogue</a>
+        </section>
 
-            <div th:if="${produit == null}">
-                <div class="alert alert-warning mb-0">Produit introuvable.</div>
-            </div>
+        <!-- Product Detail Section -->
+        <div class="bento-grid" th:if="${produit != null}">
 
-            <div th:if="${produit != null}">
-                <div class="d-flex justify-content-between gap-3 flex-wrap align-items-start">
-                    <div>
-                        <div style="font-weight: 800; font-size: 22px;" th:text="${produit.nom != null ? produit.nom : ''}">Nom du produit</div>
-                        <div class="text-muted mt-2" th:text="${produit.description != null ? produit.description : ''}" style="max-width: 700px;">Description</div>
-                    </div>
-
-                    <div class="text-end">
-                        <div class="label-muted">Disponibilité</div>
-                        <div class="mt-1">
-                            <span class="badge"
-                                  th:classappend="${estDisponible} ? 'badge-green' : 'badge-gray'"
-                                  th:text="${estDisponible} ? 'Disponible' : 'Indisponible'">Indisponible</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-3 mt-4">
-                    <div class="col-lg-7">
-                        <div class="card" style="box-shadow:none; border: 1px solid #eef2f7;">
-                            <div class="card-body">
-                                <div class="label-muted mb-3">Informations</div>
-
-                                <div class="row kv-row py-2 align-items-center">
-                                    <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Catégorie</div>
-                                    <div class="col-12 col-md-8" th:text="${produit.categorie != null ? produit.categorie.nom : '-'}">-</div>
-                                </div>
-
-                                <div class="row kv-row py-2 align-items-center">
-                                    <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Prix unitaire</div>
-                                    <div class="col-12 col-md-8" th:text="${produit.prixUnitaire != null ? #strings.replace(#numbers.formatDecimal(produit.prixUnitaire, 0, 'COMMA', 2, 'POINT'), ',', ' ') : '-'}">-</div>
-                                </div>
-
-                                <div class="row kv-row py-2 align-items-center">
-                                    <div class="col-12 col-md-4 kv-key label-muted" style="text-transform:none;">Conseil d'utilisation</div>
-                                    <div class="col-12 col-md-8" th:text="${produit.conseilUsage != null ? produit.conseilUsage : '-'}">-</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-5">
-                        <div class="card" style="box-shadow:none; border: 1px solid #eef2f7;">
-                            <div class="card-body">
-                                <div class="label-muted mb-3">Actions</div>
-
-                                <a th:href="@{/catalogue/produits/catalogue}" class="btn btn-secondary w-100">Retour au catalogue</a>
-
-                                <a th:href="@{/panier/ajouter(produitId=${produit.idProduit})}" class="btn btn-success w-100 mt-2">Mettre dans panier</a>
-
-
-                                <div class="mt-3">
-                                    <div class="label-muted mb-1">Statut</div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge"
-                                              th:classappend="${produit.actif != null and produit.actif} ? 'badge-green' : 'badge-gray'"
-                                              th:text="${produit.actif != null and produit.actif} ? 'Actif' : 'Inactif'">Actif</span>
-                                    </div>
-                                    <div class="text-muted" style="font-size: 12px; margin-top: 8px;">
-                                        La disponibilité dépend aussi du stock et de la date d'expiration.
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
+            <!-- Hero Image Section (Left Column) -->
+            <div class="col-span-12 lg:col-span-7 flex flex-col gap-6">
+                <div class="bento-item rounded-xl overflow-hidden aspect-[4/3] relative group bg-primary-fixed flex items-center justify-center">
+                    <span class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
+                    <!-- Availability Chip -->
+                    <div class="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full font-label-md text-label-md bg-primary/90 text-white shadow-lg backdrop-blur-sm" 
+                         th:classappend="${estDisponible} ? 'bg-primary/90' : 'bg-error/90'">
+                        <span class="material-symbols-outlined text-sm" th:text="${estDisponible} ? 'check_circle' : 'block'">check_circle</span>
+                        <span th:text="${estDisponible} ? 'En Stock' : 'Rupture de Stock'">En Stock</span>
                     </div>
                 </div>
 
+                <!-- Secondary Images / Technical Drawings -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bento-item rounded-xl aspect-square overflow-hidden hover:border-primary transition-colors cursor-pointer bg-surface-container-low flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40">build</span>
+                    </div>
+                    <div class="bento-item rounded-xl aspect-square overflow-hidden hover:border-primary transition-colors cursor-pointer bg-surface-container-low flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40">grass</span>
+                    </div>
+                    <div class="bento-item rounded-xl aspect-square overflow-hidden hover:border-primary transition-colors cursor-pointer bg-surface-container-low flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40">settings</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content & Actions Section (Right Column) -->
+            <div class="col-span-12 lg:col-span-5 flex flex-col gap-6">
+
+                <!-- Main Header Info -->
+                <div class="bento-item rounded-xl p-8 flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <span class="font-label-md text-label-md text-secondary uppercase tracking-widest" 
+                              th:text="${produit.categorie != null ? produit.categorie.nom : 'PRODUIT'}">CATÉGORIE</span>
+                        <h1 class="font-headline-xl text-headline-xl text-primary leading-tight" th:text="${produit.nom}">Nom du produit</h1>
+                    </div>
+                    <div class="flex items-baseline gap-4 mt-2">
+                        <span class="font-headline-lg text-headline-lg text-on-surface" 
+                              th:text="${produit.prixUnitaire != null ? #numbers.formatCurrency(produit.prixUnitaire) : 'Prix non défini'}">
+                            1 250,00 €
+                        </span>
+                        <span class="font-label-md text-label-md text-on-surface-variant">HT par unité</span>
+                    </div>
+                    <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mt-2" 
+                       th:text="${produit.description}">
+                        Description du produit
+                    </p>
+                </div>
+
+                <!-- Technical Specification Grid -->
+                <div class="bento-item rounded-xl overflow-hidden">
+                    <div class="bg-surface-container-high px-8 py-4 border-b border-outline-variant">
+                        <h3 class="font-label-md text-label-md text-primary font-bold">SPÉCIFICATIONS TECHNIQUES</h3>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-left">
+                            <tbody>
+                                <tr class="bg-white border-b border-outline-variant/30">
+                                    <th class="px-8 py-4 font-label-md text-label-md text-on-surface-variant w-1/3">CATÉGORIE</th>
+                                    <td class="px-8 py-4 font-body-md text-body-md font-semibold text-on-surface" 
+                                        th:text="${produit.categorie != null ? produit.categorie.nom : '-'}">Équipement de Sol</td>
+                                </tr>
+                                <tr class="bg-surface-container-low border-b border-outline-variant/30">
+                                    <th class="px-8 py-4 font-label-md text-label-md text-on-surface-variant">RÉFÉRENCE</th>
+                                    <td class="px-8 py-4 font-body-md text-body-md font-semibold text-on-surface" 
+                                        th:text="'#' + ${produit.idProduit}">#AG-5000-PRO</td>
+                                </tr>
+                                <tr class="bg-white border-b border-outline-variant/30">
+                                    <th class="px-8 py-4 font-label-md text-label-md text-on-surface-variant">CONSEIL USAGE</th>
+                                    <td class="px-8 py-4 font-body-md text-body-md font-semibold text-on-surface" 
+                                        th:text="${produit.conseilUsage != null ? produit.conseilUsage : 'Non défini'}">Conseil d'usage</td>
+                                </tr>
+                                <tr class="bg-surface-container-low">
+                                    <th class="px-8 py-4 font-label-md text-label-md text-on-surface-variant">STATUT</th>
+                                    <td class="px-8 py-4 font-body-md text-body-md font-semibold text-on-surface">
+                                        <span class="px-3 py-1 rounded-full text-sm font-bold"
+                                              th:classappend="${produit.actif} ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+                                              th:text="${produit.actif} ? 'Actif' : 'Inactif'">
+                                            Actif
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Action Card -->
+                <div class="bento-item rounded-xl p-8 bg-surface-container-low border-2 border-primary-container/20">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-4 bg-white p-4 rounded-lg border border-outline-variant">
+                            <div class="flex-1">
+                                <label class="font-label-sm text-label-sm text-on-surface-variant block mb-1">QUANTITÉ</label>
+                                <input class="w-full bg-transparent font-bold text-headline-md border-none focus:ring-0 p-0 text-primary" 
+                                       min="1" type="number" value="1" id="quantityInput"/>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <button class="material-symbols-outlined p-1 hover:bg-surface-container rounded-full text-primary transition-colors" 
+                                        onclick="increaseQuantity()">add</button>
+                                <button class="material-symbols-outlined p-1 hover:bg-surface-container rounded-full text-primary transition-colors" 
+                                        onclick="decreaseQuantity()">remove</button>
+                            </div>
+                        </div>
+
+                        <!-- Lien vers le panier (envoie aussi la quantité) -->
+                        <form th:action="@{/panier/ajouter}" method="get" title="Ajouter au panier">
+                            <input type="hidden" name="produitId" th:value="${produit.idProduit}" />
+                            <input type="hidden" name="quantite" id="quantiteInput" value="1" />
+
+                            <button type="submit"
+                                    class="w-full bg-primary text-on-primary py-5 rounded-lg flex items-center justify-center gap-3 font-label-md text-label-md font-bold btn-hover-effect shadow-md hover:bg-primary-container transition-all">
+                                <span class="material-symbols-outlined">shopping_cart</span>
+                                AJOUTER AU PANIER
+                            </button>
+                        </form>
+
+                        <div class="flex items-center gap-3 justify-center text-on-surface-variant font-label-sm text-label-sm mt-2">
+                            <span class="material-symbols-outlined text-sm">local_shipping</span>
+                            Livraison offerte dès 500€ d'achat
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Usage Tips & Additional Details -->
+        <section class="mt-stack-lg" th:if="${produit != null}">
+            <div class="bento-item rounded-xl p-8 bg-white">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="material-symbols-outlined text-primary text-3xl">psychology_alt</span>
+                    <h2 class="font-headline-md text-headline-md text-on-surface">Conseils d'Utilisation Professionnelle</h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="flex flex-col gap-2">
+                        <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">1</div>
+                        <h4 class="font-label-md text-label-md text-on-surface font-bold mt-2">Préparation</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Vérifiez les niveaux de lubrifiant et la tension des courroies avant chaque session intensive pour garantir une longévité maximale.</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">2</div>
+                        <h4 class="font-label-md text-label-md text-on-surface font-bold mt-2">Optimisation</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Adaptez la vitesse de rotation selon la densité du sol. Pour les sols argileux, privilégiez un régime moteur constant et lent.</p>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">3</div>
+                        <h4 class="font-label-md text-label-md text-on-surface font-bold mt-2">Entretien</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Nettoyez les éléments de coupe après utilisation en milieu humide pour prévenir l'oxydation précoce des surfaces mécaniques.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-stack-lg px-margin-desktop mt-stack-lg flex flex-col md:flex-row justify-between items-center bg-surface-container-highest border-t border-outline-variant">
+        <div class="flex flex-col gap-2">
+            <span class="font-headline-md text-headline-md text-primary font-bold">AgriElite</span>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-xs">Excellence en équipement agricole pour les professionnels de la terre.</p>
+        </div>
+        <div class="flex flex-wrap gap-8 my-8 md:my-0">
+            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all" href="#">Conditions de vente</a>
+            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all" href="#">Support technique</a>
+            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all" href="#">Points de retrait</a>
+            <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all" href="#">Contact</a>
+        </div>
+        <div class="text-right">
+            <p class="font-label-sm text-label-sm text-on-surface-variant opacity-80">© 2024 AgriElite. Excellence en équipement agricole.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Quantity management
+        function increaseQuantity() {
+            const input = document.getElementById('quantityInput');
+            if (input) {
+                input.value = parseInt(input.value) + 1;
+            }
+            syncQuantiteHidden();
+        }
+
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantityInput');
+            if (input && parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+            syncQuantiteHidden();
+        }
+
+        function syncQuantiteHidden() {
+            const visible = document.getElementById('quantityInput');
+            const hidden = document.getElementById('quantiteInput');
+            if (visible && hidden) {
+                hidden.value = visible.value;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            syncQuantiteHidden();
+        });
+
+        // Micro-interaction for buttons
+        document.querySelectorAll('.btn-hover-effect').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+
 </body>
 </html>

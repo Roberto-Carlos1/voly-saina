@@ -185,12 +185,12 @@
             >
             <a
               class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1"
-              href="client/ventes/catalogue"
+              href="/catalogue/produits/catalogue"
               >Achat</a
             >
             <a
               class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
-              href="guide-plantation/cultures"
+              href="/guide-plantation"
               >Encyclopédie</a
             >
           </nav>
@@ -209,6 +209,7 @@
           </div>
           <button
             class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-all active:scale-95"
+          onclick="window.location.href='/profil'"
           >
             Mon Compte
           </button>
@@ -351,7 +352,7 @@
           </a>
           <!-- Achat -->
           <a
-            href="client/ventes/catalogue"
+            href="/catalogue/produits/catalogue"
             class="group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low cursor-pointer transition-all hover:border-primary block"
           >
             <div
@@ -377,7 +378,7 @@
           </a>
           <!-- Encyclopédie -->
           <a
-            href="guide-plantation/cultures"
+            href="/guide-plantation"
             class="group relative overflow-hidden rounded-xl border border-outline-variant bg-surface-container-low cursor-pointer transition-all hover:border-primary block"
           >
             <div
@@ -412,11 +413,87 @@
               </p>
             </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop">
-            <!-- Machine Card 1 -->
-            <div
-              class="bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300"
-            >
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop" id="featuredMachinesGrid">
+            <div id="featuredLoading" class="md:col-span-3 text-center py-10 text-on-surface-variant">
+              Chargement des annonces...
+            </div>
+            <div id="featuredEmpty" class="md:col-span-3 text-center py-10 text-on-surface-variant hidden">
+              Aucune machine disponible pour le moment.
+            </div>
+
+            <!-- Machine Cards injectées dynamiquement ici -->
+            <script>
+              (function () {
+                const grid = document.getElementById('featuredMachinesGrid');
+                const loading = document.getElementById('featuredLoading');
+                const empty = document.getElementById('featuredEmpty');
+                if (!grid) return;
+
+                function fmtPrice(p) {
+                  if (p === null || p === undefined || p === '') return '—';
+                  return p + ' MGA / JOUR';
+                }
+
+                function makeCard(m) {
+                  const disponible = !!m.disponible;
+                  const badgeClass = disponible ? 'bg-primary text-on-primary' : 'bg-secondary text-on-secondary';
+                  const badgeText = disponible ? 'DISPONIBLE' : 'INDISPONIBLE';
+                  const img = m.imageUrl || '/img/tracteur.jpg';
+
+                  const typeLabel = m.typeMachine || '—';
+                  const etatLabel = m.etatMachine || '—';
+                  const localisation = m.localisation || '—';
+                  const nom = m.nom || '—';
+
+                  const wrapper = document.createElement('div');
+                  wrapper.className = 'bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300';
+                  wrapper.innerHTML = `
+                    <div class="relative h-64 overflow-hidden">
+                      <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image:url('${img}');"></div>
+                      <div class="absolute top-4 left-4 px-3 py-1 rounded text-label-sm font-label-md ${badgeClass}">${badgeText}</div>
+                      <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-secondary px-3 py-1 rounded text-label-sm font-bold shadow-sm">${fmtPrice(m.prixJour)}</div>
+                    </div>
+                    <div class="p-6">
+                      <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">${nom}</h3>
+                        <span class="material-symbols-outlined text-outline">favorite</span>
+                      </div>
+                      <div class="flex gap-4 mb-6">
+                        <div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">bolt</span><span class="text-label-sm">${typeLabel}</span></div>
+                        <div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-label-sm">${etatLabel}</span></div>
+                        <div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">location_on</span><span class="text-label-sm">${localisation}</span></div>
+                      </div>
+                      <a href="/catalogue/machines/detail?id=${m.idMachine}" class="w-full block text-center py-3 border-2 border-outline-variant rounded-lg font-label-md text-label-md text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-all">Voir les Détails</a>
+                    </div>
+                  `;
+                  return wrapper;
+                }
+
+                fetch('/catalogue/machines/api/disponibles', { headers: { 'Accept': 'application/json' } })
+                  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                  .then(machines => {
+                    if (loading) loading.classList.add('hidden');
+                    const list = Array.isArray(machines) ? machines : [];
+                    if (!list.length) {
+                      if (empty) empty.classList.remove('hidden');
+                      return;
+                    }
+                    // remove static placeholders (old cards) except loading/empty
+                    [...grid.querySelectorAll('.bg-surface.border')].forEach(el => el.remove());
+                    list.slice(0, 6).forEach(m => grid.appendChild(makeCard(m)));
+                  })
+                  .catch(() => {
+                    if (loading) loading.textContent = 'Erreur de chargement';
+                    if (empty) empty.classList.remove('hidden');
+                  });
+              })();
+            </script>
+
+            <!-- Anciennes cartes hardcodées (désactivées) -->
+            <template aria-hidden="true">
+              <div
+                class="hidden bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300"
+              >
               <div class="relative h-64 overflow-hidden">
                 <div
                   class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"

@@ -1,123 +1,400 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
 <head>
-    <meta charset="UTF-8">
-    <title>Guide de plantation</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guide de plantation | VolySaina+</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed": "#341000",
+                        "on-primary-fixed-variant": "#005226",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "inverse-surface": "#33302c",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#fff8f2",
+                        "surface-variant": "#e8e1db",
+                        "primary-fixed": "#a6f4b5",
+                        "tertiary": "#653319",
+                        "primary-container": "#166534",
+                        "on-primary-container": "#93e0a2",
+                        "surface-tint": "#1f6c3a",
+                        "on-surface": "#1e1b17",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#e0d9d2",
+                        "surface-container-high": "#eee7e0",
+                        "background": "#fff8f2",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary-container": "#712c00",
+                        "surface-container-highest": "#e8e1db",
+                        "surface-container": "#f4ede6",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#fff8f2",
+                        "secondary-fixed": "#ffdbcb",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "outline-variant": "#bfc9bd",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#404940",
+                        "outline": "#707a6f",
+                        "on-error-container": "#93000a",
+                        "primary": "#004c22",
+                        "on-background": "#1e1b17",
+                        "surface-container-low": "#faf2eb",
+                        "on-primary-fixed": "#00210b",
+                        "on-tertiary-fixed": "#ffdbcc",
+                        "on-tertiary-container": "#ffc1a4",
+                        "inverse-on-surface": "#f7efe9",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#8bd79b",
+                        "secondary": "#9a4614",
+                        "inverse-primary": "#8bd79b",
+                        "tertiary-container": "#81492d",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fd925b"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "stack-md": "16px",
+                        "margin-desktop": "48px",
+                        "stack-lg": "32px",
+                        "gutter-desktop": "24px",
+                        "base": "4px",
+                        "stack-sm": "8px",
+                        "gutter-mobile": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .crop-card { transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1); }
+        .crop-card:hover { transform: translateY(-4px); border-color: #004c22; }
+    </style>
 </head>
-<body>
-<h1>Guide de plantation</h1>
 
-<form method="get" th:action="@{/guide-plantation/cultures}">
-    <label>
-        Mot-clé
-        <input type="text" name="motCle" th:value="${filtres.motCle}" placeholder="Nom ou description">
-    </label>
-    <label>
-        Localisation
-        <select name="localisation">
-            <option value="">Toutes</option>
-            <option th:each="localisationDisponible : ${localisationsDisponibles}"
-                    th:value="${localisationDisponible}"
-                    th:text="${localisationDisponible}"
-                    th:selected="${localisationDisponible == filtres.localisation}">
-                Localisation
-            </option>
-        </select>
-    </label>
-    <label>
-        Saison
-        <select name="saison">
-            <option value="">Toutes</option>
-            <option th:each="saisonDisponible : ${saisonsDisponibles}"
-                    th:value="${saisonDisponible}"
-                    th:text="${saisonDisponible}"
-                    th:selected="${saisonDisponible == filtres.saison}">
-                Saison
-            </option>
-        </select>
-    </label>
-    <label>
-        Tri
-        <select name="tri" onchange="this.form.submit()">
-            <option value="nom_asc" th:selected="${tri == 'nom_asc'}">Nom A-Z</option>
-            <option value="nom_desc" th:selected="${tri == 'nom_desc'}">Nom Z-A</option>
-        </select>
-    </label>
-    <label>
-        Taille page
-        <input type="number" name="size" min="1" max="100" th:value="${size}">
-    </label>
-    <button type="submit">Filtrer</button>
-    <a th:href="@{/guide-plantation/cultures}">Réinitialiser</a>
-</form>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
 
-<p>
-    <a th:href="@{/guide-plantation/cultures/export/pdf(
-        motCle=${filtres.motCle},
-        localisation=${filtres.localisation},
-        saison=${filtres.saison},
-        page=${culturesPage.number},
-        size=${size},
-        tri=${tri}
-    )}">Exporter PDF</a>
-    <a th:href="@{/guide-plantation/cultures/export/excel(
-        motCle=${filtres.motCle},
-        localisation=${filtres.localisation},
-        saison=${filtres.saison},
-        page=${culturesPage.number},
-        size=${size},
-        tri=${tri}
-    )}">Exporter Excel</a>
-</p>
+    <!-- TopNavBar -->
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-margin-desktop py-base max-w-[1280px] mx-auto">
+            <div class="font-headline-md text-headline-md font-bold text-primary">
+                VolySaina+
+            </div>
+            <nav class="hidden md:flex items-center gap-stack-lg">
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Location</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="/catalogue/produits/catalogue">Achat</a>
+                <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="/guide-plantation">Encyclopédie</a>
+            </nav>
+            <div class="flex items-center gap-stack-md">
+                <button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container rounded-full transition-colors">
+                    account_circle
+                </button>
+            </div>
+        </div>
+    </header>
 
-<p th:text="'Résultats : ' + ${culturesPage.totalElements}">Résultats</p>
+    <main class="flex-grow max-w-[1280px] mx-auto w-full px-margin-desktop py-stack-lg">
 
-<p th:if="${#lists.isEmpty(cultures)}">Aucune culture disponible.</p>
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-lg">
+            <div>
+                <h1 class="font-headline-xl text-headline-xl text-on-surface mb-base">Encyclopédie des Cultures</h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Le guide technique complet pour optimiser vos rendements. Découvrez les meilleures pratiques de plantation adaptées à votre terroir.
+                </p>
+            </div>
 
-<table th:if="${!#lists.isEmpty(cultures)}" border="1">
-    <thead>
-    <tr>
-        <th>Nom</th>
-        <th>Description</th>
-        <th>Localisation adaptée</th>
-        <th>Saison adaptée</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="culture : ${cultures}">
-        <td th:text="${culture.nom}">Nom</td>
-        <td th:text="${culture.description}">Description</td>
-        <td th:text="${culture.localisationRecommandee}">Localisation</td>
-        <td th:text="${culture.saisonRecommandee}">Saison</td>
-        <td>
-            <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Détail</a>
-            <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}">Fiche</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+            <!-- Export Section -->
+            <div class="flex items-center gap-stack-sm bg-surface-container-low p-base rounded-lg border border-outline-variant">
+                <span class="font-label-sm text-label-sm text-on-surface-variant px-stack-sm uppercase tracking-wider">Export :</span>
+                <a th:href="@{/guide-plantation/cultures/export/pdf(
+                    motCle=${filtres.motCle},
+                    localisation=${filtres.localisation},
+                    saison=${filtres.saison},
+                    page=${culturesPage.number},
+                    size=${size},
+                    tri=${tri}
+                )}" class="p-2 hover:bg-primary-container hover:text-on-primary-container rounded transition-colors group" title="Exporter PDF">
+                    <span class="material-symbols-outlined align-middle">picture_as_pdf</span>
+                </a>
+                <a th:href="@{/guide-plantation/cultures/export/excel(
+                    motCle=${filtres.motCle},
+                    localisation=${filtres.localisation},
+                    saison=${filtres.saison},
+                    page=${culturesPage.number},
+                    size=${size},
+                    tri=${tri}
+                )}" class="p-2 hover:bg-primary-container hover:text-on-primary-container rounded transition-colors group" title="Exporter Excel">
+                    <span class="material-symbols-outlined align-middle">table_view</span>
+                </a>
+            </div>
+        </div>
 
-<p th:if="${culturesPage.totalPages > 1}">
-    <a th:if="${culturesPage.hasPrevious()}" th:href="@{/guide-plantation/cultures(
-        motCle=${filtres.motCle},
-        localisation=${filtres.localisation},
-        saison=${filtres.saison},
-        page=${culturesPage.number - 1},
-        size=${size},
-        tri=${tri}
-    )}">Précédent</a>
+        <!-- Filters Bar -->
+        <section class="bg-surface-container-low border border-outline-variant p-stack-md mb-stack-lg">
+            <form th:action="@{/guide-plantation/cultures}" method="get" class="grid grid-cols-1 md:grid-cols-4 gap-stack-md items-end">
+                <!-- Mot-clé -->
+                <div class="space-y-base">
+                    <label class="font-label-md text-label-md text-on-surface-variant">Mot-clé</label>
+                    <div class="relative">
+                        <input type="text" name="motCle" th:value="${filtres.motCle}" placeholder="Blé, Maïs, etc."
+                               class="w-full bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-2 px-stack-sm" />
+                    </div>
+                </div>
 
-    <span th:text="'Page ' + ${culturesPage.number + 1} + ' / ' + ${culturesPage.totalPages}">Page</span>
+                <!-- Localisation -->
+                <div class="space-y-base">
+                    <label class="font-label-md text-label-md text-on-surface-variant">Localisation</label>
+                    <select name="localisation" class="w-full bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-2 px-stack-sm">
+                        <option value="">Toutes les régions</option>
+                        <option th:each="loc : ${localisationsDisponibles}"
+                                th:value="${loc}"
+                                th:text="${loc}"
+                                th:selected="${loc == filtres.localisation}">Localisation</option>
+                    </select>
+                </div>
 
-    <a th:if="${culturesPage.hasNext()}" th:href="@{/guide-plantation/cultures(
-        motCle=${filtres.motCle},
-        localisation=${filtres.localisation},
-        saison=${filtres.saison},
-        page=${culturesPage.number + 1},
-        size=${size},
-        tri=${tri}
-    )}">Suivant</a>
-</p>
+                <!-- Saison -->
+                <div class="space-y-base">
+                    <label class="font-label-md text-label-md text-on-surface-variant">Saison</label>
+                    <select name="saison" class="w-full bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-2 px-stack-sm">
+                        <option value="">Toutes les saisons</option>
+                        <option th:each="s : ${saisonsDisponibles}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${s == filtres.saison}">Saison</option>
+                    </select>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-stack-sm">
+                    <button type="submit" class="flex-1 bg-primary text-on-primary font-label-md py-2 px-stack-md hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">filter_alt</span>
+                        Filtrer
+                    </button>
+                    <a th:href="@{/guide-plantation/cultures}" class="bg-surface border-2 border-outline-variant text-on-surface font-label-md py-2 px-stack-md hover:border-primary transition-all text-center">
+                        Réinitialiser
+                    </a>
+                </div>
+
+                <!-- Champs cachés pour tri et taille -->
+                <input type="hidden" name="tri" th:value="${tri}" />
+                <input type="hidden" name="size" th:value="${size}" />
+            </form>
+
+            <!-- Tri et taille de page (dans une ligne séparée) -->
+            <div class="flex flex-wrap items-center gap-stack-md mt-stack-md pt-stack-md border-t border-outline-variant">
+                <div class="flex items-center gap-stack-sm">
+                    <span class="font-label-md text-label-md text-on-surface-variant">Tri :</span>
+                    <form method="get" th:action="@{/guide-plantation/cultures}" class="flex items-center gap-2">
+                        <input type="hidden" name="motCle" th:value="${filtres.motCle}" />
+                        <input type="hidden" name="localisation" th:value="${filtres.localisation}" />
+                        <input type="hidden" name="saison" th:value="${filtres.saison}" />
+                        <input type="hidden" name="size" th:value="${size}" />
+                        <select name="tri" onchange="this.form.submit()" class="bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-1 px-stack-sm">
+                            <option value="nom_asc" th:selected="${tri == 'nom_asc'}">Nom A-Z</option>
+                            <option value="nom_desc" th:selected="${tri == 'nom_desc'}">Nom Z-A</option>
+                        </select>
+                    </form>
+                </div>
+
+                <div class="flex items-center gap-stack-sm">
+                    <span class="font-label-md text-label-md text-on-surface-variant">Taille page :</span>
+                    <form method="get" th:action="@{/guide-plantation/cultures}" class="flex items-center gap-2">
+                        <input type="hidden" name="motCle" th:value="${filtres.motCle}" />
+                        <input type="hidden" name="localisation" th:value="${filtres.localisation}" />
+                        <input type="hidden" name="saison" th:value="${filtres.saison}" />
+                        <input type="hidden" name="tri" th:value="${tri}" />
+                        <input type="number" name="size" min="1" max="100" th:value="${size}"
+                               onchange="this.form.submit()"
+                               class="w-20 bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-1 px-stack-sm" />
+                    </form>
+                </div>
+
+                <span class="font-label-md text-label-md text-on-surface-variant ml-auto" th:text="'Résultats : ' + ${culturesPage.totalElements}">
+                    Résultats
+                </span>
+            </div>
+        </section>
+
+        <!-- Cultures Grid -->
+        <div th:if="${#lists.isEmpty(culturesPage.content)}" class="text-center py-stack-lg">
+            <p class="font-body-lg text-body-lg text-on-surface-variant">Aucune culture disponible pour ces critères.</p>
+        </div>
+
+        <div th:if="${!#lists.isEmpty(culturesPage.content)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-desktop">
+            <article th:each="culture : ${culturesPage.content}" class="crop-card bg-surface border border-outline-variant overflow-hidden flex flex-col">
+                <!-- Image placeholder - à remplacer par une vraie image si disponible -->
+                <div class="h-48 overflow-hidden bg-primary-fixed flex items-center justify-center">
+                    <span class="material-symbols-outlined text-7xl text-on-primary-container opacity-60">agriculture</span>
+                </div>
+
+                <div class="p-stack-md flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-base">
+                        <h3 class="font-headline-md text-headline-md text-on-surface" th:text="${culture.nom}">Nom</h3>
+                        <span class="bg-primary-fixed text-on-primary-fixed font-label-sm px-2 py-0.5 rounded" th:text="${culture.saisonRecommandee}">Saison</span>
+                    </div>
+
+                    <p class="font-body-md text-body-md text-on-surface-variant line-clamp-2 mb-stack-md" th:text="${culture.description}">
+                        Description
+                    </p>
+
+                    <div class="space-y-base mb-stack-md">
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[18px]">location_on</span>
+                            <span class="font-label-md text-label-md" th:text="${culture.localisationRecommandee}">Localisation</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                            <span class="font-label-md text-label-md" th:text="${culture.saisonRecommandee}">Saison</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-stack-md border-t border-outline-variant flex gap-stack-sm">
+                        <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}" class="flex-1 bg-primary text-on-primary font-label-md py-2 text-center hover:opacity-90 transition-opacity">
+                            Voir Détails
+                        </a>
+                        <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}" class="px-3 border-2 border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-all flex items-center justify-center" title="Télécharger la fiche">
+                            <span class="material-symbols-outlined align-middle">download</span>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${culturesPage.totalPages > 1}" class="mt-stack-lg flex items-center justify-between border-t border-outline-variant pt-stack-md">
+            <div class="hidden sm:block">
+                <p class="font-label-md text-label-md text-on-surface-variant">
+                    Affichage de
+                    <span class="font-bold text-on-surface" th:text="${culturesPage.number * culturesPage.size + 1}">1</span>
+                    à
+                    <span class="font-bold text-on-surface" th:text="${culturesPage.number * culturesPage.size + culturesPage.size}">6</span>
+                    sur
+                    <span class="font-bold text-on-surface" th:text="${culturesPage.totalElements}">42</span>
+                    cultures
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Précédent -->
+                <a th:if="${culturesPage.hasPrevious()}"
+                   th:href="@{/guide-plantation/cultures(
+                       motCle=${filtres.motCle},
+                       localisation=${filtres.localisation},
+                       saison=${filtres.saison},
+                       page=${culturesPage.number - 1},
+                       size=${size},
+                       tri=${tri}
+                   )}"
+                   class="p-2 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-all">
+                    <span class="material-symbols-outlined align-middle">chevron_left</span>
+                </a>
+                <span th:unless="${culturesPage.hasPrevious()}" class="p-2 border border-outline-variant text-on-surface-variant opacity-30">
+                    <span class="material-symbols-outlined align-middle">chevron_left</span>
+                </span>
+
+                <!-- Pages -->
+                <div class="flex gap-1">
+                    <a th:each="i : ${#numbers.sequence(0, culturesPage.totalPages - 1)}"
+                       th:href="@{/guide-plantation/cultures(
+                           motCle=${filtres.motCle},
+                           localisation=${filtres.localisation},
+                           saison=${filtres.saison},
+                           page=${i},
+                           size=${size},
+                           tri=${tri}
+                       )}"
+                       th:classappend="${i == culturesPage.number} ? 'bg-primary text-on-primary' : 'border border-outline-variant text-on-surface hover:border-primary'"
+                       class="w-10 h-10 flex items-center justify-center font-label-md transition-all"
+                       th:text="${i + 1}">
+                        1
+                    </a>
+                </div>
+
+                <!-- Suivant -->
+                <a th:if="${culturesPage.hasNext()}"
+                   th:href="@{/guide-plantation/cultures(
+                       motCle=${filtres.motCle},
+                       localisation=${filtres.localisation},
+                       saison=${filtres.saison},
+                       page=${culturesPage.number + 1},
+                       size=${size},
+                       tri=${tri}
+                   )}"
+                   class="p-2 border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-all">
+                    <span class="material-symbols-outlined align-middle">chevron_right</span>
+                </a>
+                <span th:unless="${culturesPage.hasNext()}" class="p-2 border border-outline-variant text-on-surface-variant opacity-30">
+                    <span class="material-symbols-outlined align-middle">chevron_right</span>
+                </span>
+            </div>
+        </nav>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest border-t border-outline-variant mt-stack-lg">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-lg gap-stack-md max-w-[1280px] mx-auto">
+            <div class="flex flex-col items-center md:items-start gap-base">
+                <div class="font-headline-md text-headline-md font-bold text-primary">
+                    VolySaina+
+                </div>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">
+                    © 2024 VolySaina+. Excellence en Agriculture Durable.
+                </p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-stack-md">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Conditions d'utilisation</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Politique de confidentialité</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Contact Support</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Partenaires</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
 </body>
 </html>

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.voly_saina.entity.Commande;
 import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.Panier;
+import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.Produit;
 import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.entity.Utilisateur;
@@ -21,6 +22,7 @@ import com.voly_saina.exception.PanierException;
 import com.voly_saina.service.CommandeService;
 import com.voly_saina.service.LigneCommandeService;
 import com.voly_saina.service.ModePaiementService;
+import com.voly_saina.service.PanierDetailsService;
 import com.voly_saina.service.PanierService;
 import com.voly_saina.service.ProduitService;
 import com.voly_saina.service.UtilisateurService;
@@ -33,6 +35,9 @@ public class PanierController {
     private PanierService panierService;
 
     @Autowired
+    private PanierDetailsService panierDetailsService;
+
+    @Autowired
     private UtilisateurService utilisateurService;
 
     @Autowired
@@ -43,6 +48,9 @@ public class PanierController {
 
     @Autowired
     private LigneCommandeService ligneCommandeService;
+
+    @Autowired
+    private CommandeService commandeService;
 
     private Long resolveClientId(Long clientId) {
         return clientId != null ? clientId : 1L;
@@ -160,8 +168,8 @@ public class PanierController {
             Model model) {
 
         try {
-            Long idClientFinal = resolveClientId(clientId);
 
+            Long idClientFinal = resolveClientId(clientId);
             panierService.supprimerLigne(ligneId, idClientFinal);
 
             Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
@@ -172,7 +180,7 @@ public class PanierController {
 
             return "redirect:/panier";
 
-        } catch (PanierException e) {
+        } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "client/panier/commandePanier";
         }
@@ -203,9 +211,9 @@ public class PanierController {
                 throw new PanierException(PanierException.QUANTITE_INVALIDE);
             }
 
-            LigneCommande ligneCommande= ligneCommandeService.findById(ligneId).orElse(null);
-            Produit produit = produitService.findById(ligneCommande.getProduit().getIdProduit()).orElse(null); 
-            BigDecimal stockDisponible = produit.getStock(); 
+            LigneCommande ligneCommande = ligneCommandeService.findById(ligneId).orElse(null);
+            Produit produit = produitService.findById(ligneCommande.getProduit().getIdProduit()).orElse(null);
+            BigDecimal stockDisponible = produit.getStock();
 
             if (quantite.compareTo(stockDisponible) > 0) {
                 throw new PanierException(PanierException.STOCK_INSUFFISANT);

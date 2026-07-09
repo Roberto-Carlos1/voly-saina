@@ -439,6 +439,7 @@ INSERT INTO produit(id_categorie, nom, description, conseil_usage, prix_unitaire
 (1, 'Compost', 'Fertilisant organique', 'Adapter la quantité à la surface cultivée.', 12000, 150, 20);
 
 INSERT INTO utilisateur(nom, mot_de_passe,email, id_role, id_statut_compte) VALUES
+('admin', ' ', 'a@local', 3, 1),
 ('Rakoto', ' ', 'r@local', 1, 1);
 
 

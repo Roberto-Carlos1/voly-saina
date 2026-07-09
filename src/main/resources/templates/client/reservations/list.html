@@ -162,7 +162,7 @@
                             
                             <!-- Voir facture -->
                             <a th:if="${reservation.factureId != null}" 
-                               th:href="@{/catalogue/reservations/facture/{factureId}(factureId=${reservation.factureId})}" 
+                               th:href="@{/client/factures/{id}(id=${reservation.factureId}, idClient=${idClient})}" 
                                class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-lg font-label-md hover:bg-surface-container transition-all">
                                 Facture
                             </a>

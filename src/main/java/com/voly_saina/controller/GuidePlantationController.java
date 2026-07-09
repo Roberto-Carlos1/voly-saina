@@ -121,6 +121,24 @@ public class GuidePlantationController {
         return "guide-plantation/fiche-culture";
     }
 
+    @GetMapping("/cultures/{idCulture}/fiche/export/pdf")
+    public ResponseEntity<byte[]> exporterFicheCulturePdf(@PathVariable Long idCulture) {
+        Culture culture = consulterCultureExistante(idCulture);
+        FicheCulture ficheCulture = guidePlantationService.consulterDetail("fiche_culture", idCulture)
+                .map(FicheCulture.class::cast)
+                .orElse(null);
+        byte[] contenu = guidePlantationExportService.exporterFicheCulturePdf(
+                culture,
+                ficheCulture,
+                guidePlantationService.listerSuggestions("outil", idCulture),
+                guidePlantationService.listerSuggestions("produit", idCulture));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=fiche-culture-" + idCulture + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(contenu);
+    }
+
     private Culture consulterCultureExistante(Long idCulture) {
         return guidePlantationService.consulterDetail("culture", idCulture)
                 .map(Culture.class::cast)

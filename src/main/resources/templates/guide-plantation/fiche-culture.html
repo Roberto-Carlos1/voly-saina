@@ -130,33 +130,41 @@
     <main class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
 
         <!-- Breadcrumbs -->
-        <nav class="flex items-center gap-base mb-stack-lg text-on-surface-variant">
-            <a class="flex items-center font-label-sm text-label-sm hover:text-primary transition-colors" th:href="@{/guide-plantation/cultures(
-                motCle=${filtres.motCle},
-                localisation=${filtres.localisation},
-                saison=${filtres.saison},
-                page=${page},
-                size=${size},
-                tri=${tri}
-            )}">
-                <span class="material-symbols-outlined mr-1" style="font-size: 16px;">arrow_back</span>
-                Retour à la liste
+        <div class="flex items-center justify-between gap-stack-md mb-stack-lg">
+            <nav class="flex items-center gap-base text-on-surface-variant">
+                <a class="flex items-center font-label-sm text-label-sm hover:text-primary transition-colors" th:href="@{/guide-plantation/cultures(
+                    motCle=${filtres.motCle},
+                    localisation=${filtres.localisation},
+                    saison=${filtres.saison},
+                    page=${page},
+                    size=${size},
+                    tri=${tri}
+                )}">
+                    <span class="material-symbols-outlined mr-1" style="font-size: 16px;">arrow_back</span>
+                    Retour à la liste
+                </a>
+                <span class="text-outline">/</span>
+                <a class="font-label-sm text-label-sm hover:text-primary transition-colors" th:href="@{/guide-plantation/cultures/{id}(
+                    id=${culture.idCulture},
+                    motCle=${filtres.motCle},
+                    localisation=${filtres.localisation},
+                    saison=${filtres.saison},
+                    page=${page},
+                    size=${size},
+                    tri=${tri}
+                )}">
+                    Détail
+                </a>
+                <span class="text-outline">/</span>
+                <span class="font-label-sm text-label-sm font-bold text-on-surface">Fiche détaillée</span>
+            </nav>
+
+            <a class="inline-flex items-center gap-base bg-primary text-on-primary font-label-md text-label-md py-stack-sm px-stack-md rounded-lg hover:bg-primary-container transition-colors"
+               th:href="@{/guide-plantation/cultures/{id}/fiche/export/pdf(id=${culture.idCulture})}">
+                <span class="material-symbols-outlined" style="font-size: 18px;">picture_as_pdf</span>
+                Exporter PDF
             </a>
-            <span class="text-outline">/</span>
-            <a class="font-label-sm text-label-sm hover:text-primary transition-colors" th:href="@{/guide-plantation/cultures/{id}(
-                id=${culture.idCulture},
-                motCle=${filtres.motCle},
-                localisation=${filtres.localisation},
-                saison=${filtres.saison},
-                page=${page},
-                size=${size},
-                tri=${tri}
-            )}">
-                Détail
-            </a>
-            <span class="text-outline">/</span>
-            <span class="font-label-sm text-label-sm font-bold text-on-surface">Fiche détaillée</span>
-        </nav>
+        </div>
 
         <!-- Hero Section -->
         <section class="relative h-[400px] rounded-xl overflow-hidden mb-stack-lg border border-outline-variant">
@@ -225,17 +233,6 @@
                         <li class="flex items-center"><span class="material-symbols-outlined mr-2 text-sm">check_circle</span> Demande stable</li>
                     </ul>
                 </div>
-                <a th:href="@{/guide-plantation/cultures/{id}/fiche(
-                    id=${culture.idCulture},
-                    motCle=${filtres.motCle},
-                    localisation=${filtres.localisation},
-                    saison=${filtres.saison},
-                    page=${page},
-                    size=${size},
-                    tri=${tri}
-                )}" class="w-full bg-white text-primary font-label-md text-label-md py-stack-md rounded-lg font-bold hover:bg-surface-container-low transition-colors mt-stack-lg text-center">
-                    Voir Guide Complet
-                </a>
             </div>
         </div>
 

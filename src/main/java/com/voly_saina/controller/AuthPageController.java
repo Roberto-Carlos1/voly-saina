@@ -28,7 +28,7 @@ public class AuthPageController {
     @GetMapping({"/connexion", "/login"})
     public String afficherConnexion(Model model) {
         model.addAttribute("roles", roleUtilisateurRepository.findAll());
-        return "auth/page01";
+        return "auth/login";
     }
 
     /**

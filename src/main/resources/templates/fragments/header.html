@@ -135,6 +135,47 @@
         .btn-primary:active {
             transform: scale(0.95);
         }
+        
+        /* ===== STYLES POUR LE SOULIGNEMENT ===== */
+        .nav-link {
+            position: relative;
+            padding-bottom: 4px;
+            transition: color 0.3s ease;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        /* La ligne de soulignement */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #9a4614; /* Couleur orange/marron */
+            transition: width 0.3s ease;
+        }
+        /* Au survol - la ligne apparaît */
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        /* Quand la page est active - la ligne reste visible ET changement de couleur */
+        .nav-link.active {
+            color: #9a4614 !important; /* Orange/marron */
+            font-weight: 600 !important;
+        }
+        .nav-link.active::after {
+            width: 100% !important;
+            background-color: #9a4614 !important;
+        }
+        /* Couleur par défaut */
+        .nav-link:not(.active) {
+            color: #404940;
+        }
+        .nav-link:not(.active):hover {
+            color: #004c22;
+        }
+        /* ===== FIN STYLES SOULIGNEMENT ===== */
     </style>
     <title th:text="${pageTitle} ?: 'AgriElite'">AgriElite</title>
 </head>
@@ -149,13 +190,24 @@
                     Voly Saina +
                 </a>
                 <div class="hidden md:flex gap-6 items-center">
-                    <a href="/catalogue/machines/catalogue" class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1">
+                    <!-- Matériel Agricole -->
+                    <a href="/catalogue/machines/catalogue" 
+                       class="nav-link font-label-md text-label-md transition-colors duration-200"
+                       data-page="machines">
                         Matériel Agricole
                     </a>
-                    <a href="/catalogue/produits/catalogue" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200">
+                    
+                    <!-- Équipements & Pièces -->
+                    <a href="/catalogue/produits/catalogue" 
+                       class="nav-link font-label-md text-label-md transition-colors duration-200"
+                       data-page="produits">
                         Équipements &amp; Pièces
                     </a>
-                    <a href="/catalogue/reservations/mes-reservations" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200">
+                    
+                    <!-- Mes Réservations -->
+                    <a href="/catalogue/reservations/mes-reservations" 
+                       class="nav-link font-label-md text-label-md transition-colors duration-200"
+                       data-page="reservations">
                         Mes Réservations
                     </a>
                 </div>
@@ -175,5 +227,63 @@
             </div>
         </nav>
     </header>
+
+    <!-- Script pour activer le soulignement en fonction de l'URL -->
+    <script>
+        (function() {
+            // Fonction pour déterminer la page active
+            function setActiveNav() {
+                const currentPath = window.location.pathname;
+                
+                // Sélectionner tous les liens de navigation
+                const navLinks = document.querySelectorAll('.nav-link');
+                
+                // Retirer la classe active de tous les liens
+                navLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                });
+                
+                // Déterminer quel lien doit être actif
+                let activePage = '';
+                if (currentPath.startsWith('/catalogue/machines')) {
+                    activePage = 'machines';
+                } else if (currentPath.startsWith('/catalogue/produits')) {
+                    activePage = 'produits';
+                } else if (currentPath.startsWith('/catalogue/reservations')) {
+                    activePage = 'reservations';
+                }
+                
+                // Ajouter la classe active au lien correspondant
+                if (activePage) {
+                    navLinks.forEach(function(link) {
+                        if (link.getAttribute('data-page') === activePage) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            }
+            
+            // Exécuter au chargement de la page
+            setActiveNav();
+            
+            // Réexécuter après chaque navigation (pour les SPA)
+            window.addEventListener('popstate', setActiveNav);
+            
+            // Optionnel: observer les changements d'URL
+            if (window.history && window.history.pushState) {
+                const originalPushState = window.history.pushState;
+                window.history.pushState = function() {
+                    originalPushState.apply(this, arguments);
+                    setActiveNav();
+                };
+                
+                const originalReplaceState = window.history.replaceState;
+                window.history.replaceState = function() {
+                    originalReplaceState.apply(this, arguments);
+                    setActiveNav();
+                };
+            }
+        })();
+    </script>
 </body>
 </html>

@@ -2,11 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
     <!-- Footer -->
-    <footer th:fragment="footer" class="w-full bg-surface-container-highest border-t border-outline-variant mt-20">
-        <div class="max-w-[1280px] mx-auto px-margin-desktop py-16 grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop">
+    <footer th:fragment="footer" class="w-full bg-surface-container-highest border-t border-outline-variant mt-auto">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop py-12 grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop">
             <!-- Brand -->
             <div class="col-span-1 md:col-span-1">
-                <span class="font-headline-md text-headline-md text-primary mb-4 block">AgriElite</span>
+                <span class="font-headline-md text-headline-md text-primary mb-4 block">Voly Saina +</span>
                 <p class="font-body-md text-body-md text-on-surface-variant">L'excellence au service des agriculteurs. Leader européen de la location de machines agricoles haute performance.</p>
             </div>
             
@@ -42,7 +42,7 @@
         </div>
         
         <!-- Bottom Bar -->
-        <div class="max-w-[1280px] mx-auto px-margin-desktop py-6 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop py-4 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="font-label-sm text-label-sm text-on-surface-variant opacity-80">© 2024 AgriElite. Excellence en Machinerie Agricole.</p>
             <div class="flex gap-6">
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Mentions légales</a>
@@ -50,20 +50,5 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        // Simple micro-interaction for buttons
-        document.querySelectorAll('.btn-primary').forEach(btn => {
-            btn.addEventListener('mousedown', () => {
-                btn.classList.add('scale-95');
-            });
-            btn.addEventListener('mouseup', () => {
-                btn.classList.remove('scale-95');
-            });
-            btn.addEventListener('mouseleave', () => {
-                btn.classList.remove('scale-95');
-            });
-        });
-    </script>
 </body>
 </html>

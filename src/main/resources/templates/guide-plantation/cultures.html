@@ -91,8 +91,24 @@
         <td th:text="${culture.localisationRecommandee}">Localisation</td>
         <td th:text="${culture.saisonRecommandee}">Saison</td>
         <td>
-            <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Détail</a>
-            <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}">Fiche</a>
+            <a th:href="@{/guide-plantation/cultures/{id}(
+                id=${culture.idCulture},
+                motCle=${filtres.motCle},
+                localisation=${filtres.localisation},
+                saison=${filtres.saison},
+                page=${culturesPage.number},
+                size=${size},
+                tri=${tri}
+            )}">Détail</a>
+            <a th:href="@{/guide-plantation/cultures/{id}/fiche(
+                id=${culture.idCulture},
+                motCle=${filtres.motCle},
+                localisation=${filtres.localisation},
+                saison=${filtres.saison},
+                page=${culturesPage.number},
+                size=${size},
+                tri=${tri}
+            )}">Fiche</a>
         </td>
     </tr>
     </tbody>

@@ -80,7 +80,14 @@ public class GuidePlantationController {
     }
 
     @GetMapping("/cultures/{idCulture}")
-    public String consulterCulture(@PathVariable Long idCulture, Model model) {
+    public String consulterCulture(@PathVariable Long idCulture,
+                                   @RequestParam(required = false) String motCle,
+                                   @RequestParam(required = false) String localisation,
+                                   @RequestParam(required = false) String saison,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "nom_asc") String tri,
+                                   Model model) {
         Culture culture = consulterCultureExistante(idCulture);
         FicheCulture ficheCulture = guidePlantationService.consulterDetail("fiche_culture", idCulture)
                 .map(FicheCulture.class::cast)
@@ -88,11 +95,19 @@ public class GuidePlantationController {
 
         model.addAttribute("culture", culture);
         model.addAttribute("ficheCulture", ficheCulture);
+        ajouterParametresRetour(model, motCle, localisation, saison, page, size, tri);
         return "guide-plantation/detail-culture";
     }
 
     @GetMapping("/cultures/{idCulture}/fiche")
-    public String consulterFicheCulture(@PathVariable Long idCulture, Model model) {
+    public String consulterFicheCulture(@PathVariable Long idCulture,
+                                        @RequestParam(required = false) String motCle,
+                                        @RequestParam(required = false) String localisation,
+                                        @RequestParam(required = false) String saison,
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(defaultValue = "nom_asc") String tri,
+                                        Model model) {
         Culture culture = consulterCultureExistante(idCulture);
         FicheCulture ficheCulture = guidePlantationService.consulterDetail("fiche_culture", idCulture)
                 .map(FicheCulture.class::cast)
@@ -102,6 +117,7 @@ public class GuidePlantationController {
         model.addAttribute("ficheCulture", ficheCulture);
         model.addAttribute("outils", guidePlantationService.listerSuggestions("outil", idCulture));
         model.addAttribute("produits", guidePlantationService.listerSuggestions("produit", idCulture));
+        ajouterParametresRetour(model, motCle, localisation, saison, page, size, tri);
         return "guide-plantation/fiche-culture";
     }
 
@@ -111,4 +127,11 @@ public class GuidePlantationController {
                 .orElseThrow(() -> new IllegalArgumentException("Culture introuvable: " + idCulture));
     }
 
+    private void ajouterParametresRetour(Model model, String motCle, String localisation, String saison,
+                                         int page, int size, String tri) {
+        model.addAttribute("filtres", guidePlantationService.construireFiltresCulture(motCle, localisation, saison));
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("tri", tri);
+    }
 }

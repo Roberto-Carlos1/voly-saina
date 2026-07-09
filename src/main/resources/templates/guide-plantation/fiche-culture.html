@@ -6,8 +6,23 @@
 </head>
 <body>
 <p>
-    <a th:href="@{/guide-plantation/cultures}">Retour à la liste</a>
-    <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Retour au détail</a>
+    <a th:href="@{/guide-plantation/cultures(
+        motCle=${filtres.motCle},
+        localisation=${filtres.localisation},
+        saison=${filtres.saison},
+        page=${page},
+        size=${size},
+        tri=${tri}
+    )}">Retour à la liste</a>
+    <a th:href="@{/guide-plantation/cultures/{id}(
+        id=${culture.idCulture},
+        motCle=${filtres.motCle},
+        localisation=${filtres.localisation},
+        saison=${filtres.saison},
+        page=${page},
+        size=${size},
+        tri=${tri}
+    )}">Retour au détail</a>
 </p>
 
 <h1 th:text="'Fiche détaillée - ' + ${culture.nom}">Fiche détaillée</h1>

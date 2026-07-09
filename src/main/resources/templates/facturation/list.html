@@ -24,7 +24,7 @@
             <td>Action</td>
         </tr>
 
-        <form action="/factures/pages" method="post">
+        <form action="/admin/factures/pages" method="post">
             <p>
                 Éléments par page
                 <input type="number" name="pages" th:value="${nombreParPage}" id="">
@@ -58,10 +58,10 @@
                 <td th:text="${facture.getDateFacture()}"></td>
                 <td th:text="${facture.getDateLimite()}"></td>
                 <td>
-                    <a th:href="@{/factures/{id_facture}(id_facture=${facture.getIdFacture()})}">Voir plus</a>
-                    <a th:href="@{/factures/modify/{id_facture}(id_facture=${facture.getIdFacture()})}">Modifier</a>
+                    <a th:href="@{/admin/factures/{id_facture}(id_facture=${facture.getIdFacture()})}">Voir plus</a>
+                    <a th:href="@{/admin/factures/modify/{id_facture}(id_facture=${facture.getIdFacture()})}">Modifier</a>
                     <a
-                        th:href="@{/factures/delete/{id_facture}(id_facture=${facture.getIdFacture()})}">Supprimer</a>
+                        th:href="@{/admin/factures/delete/{id_facture}(id_facture=${facture.getIdFacture()})}">Supprimer</a>
                 </td>
             </tr>
         </tbody>
@@ -86,7 +86,7 @@
         const data = new FormData(form);
         lines.innerHTML = ""; // Vider le tableau
 
-        fetch("/factures/filtre", {
+        fetch("/admin/factures/filtre", {
             method: "POST",
             body: data
         })
@@ -105,9 +105,9 @@
                 <td>${facture.dateFacture}</td>
                 <td>${facture.dateLimite}</td>
                 <td>
-                    <a href="/factures/${facture.idFacture}">Voir plus</a> 
-                    <a href="/factures/modify/${facture.idFacture}">Modifier</a>
-                    <a href="/factures/delete/${facture.idFacture}">Supprimer</a>
+                    <a href="/admin/factures/${facture.idFacture}">Voir plus</a> 
+                    <a href="/admin/factures/modify/${facture.idFacture}">Modifier</a>
+                    <a href="/admin/factures/delete/${facture.idFacture}">Supprimer</a>
                 </td>`;
                     lines.appendChild(line);
                 });

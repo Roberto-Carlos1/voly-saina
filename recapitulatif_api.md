@@ -24,64 +24,64 @@ Ce document résume l'état actuel de toutes les routes backend du projet `voly-
 ### Backoffice — Machines
 
 
-| Méthode | URL                        | Controller          | Vue                       |
-| -------- | -------------------------- | ------------------- | ------------------------- |
-| GET      | `/machines/`               | `MachineController` | `index`                   |
-| GET      | `/machines`                | `MachineController` | `machines/list`           |
-| POST     | `/machines/pages`          | `MachineController` | redirect                  |
-| GET      | `/machines/ajouter`        | `MachineController` | `machines/insert-machine` |
-| POST     | `/machines/ajouter`        | `MachineController` | redirect                  |
-| GET      | `/machines/supprimer/{id}` | `MachineController` | redirect                  |
-| GET      | `/machines/modifier/{id}`  | `MachineController` | `machines/modify-machine` |
-| POST     | `/machines/modifier/{id}`  | `MachineController` | redirect                  |
-| GET      | `/machines/{id}`           | `MachineController` | `machines/detail-machine` |
-| POST     | `/machines/api/filtre`     | `MachineController` | JSON                      |
+| Méthode | URL                           | Controller          | Vue                       |
+| -------- | ----------------------------- | ------------------- | ------------------------- |
+| GET      | `/admin/machines/`            | `MachineController` | `index`                   |
+| GET      | `/admin/machines`             | `MachineController` | `machines/list`           |
+| POST     | `/admin/machines/pages`       | `MachineController` | redirect                  |
+| GET      | `/admin/machines/ajouter`     | `MachineController` | `machines/insert-machine` |
+| POST     | `/admin/machines/ajouter`     | `MachineController` | redirect                  |
+| GET      | `/admin/machines/supprimer/{id}` | `MachineController` | redirect                  |
+| GET      | `/admin/machines/modifier/{id}`  | `MachineController` | `machines/modify-machine` |
+| POST     | `/admin/machines/modifier/{id}`  | `MachineController` | redirect                  |
+| GET      | `/admin/machines/{id}`           | `MachineController` | `machines/detail-machine` |
+| POST     | `/admin/machines/api/filtre`     | `MachineController` | JSON                      |
 
 ### Backoffice — Maintenances
 
 
-| Méthode | URL                                    | Controller                     | Vue                                |
-| -------- | -------------------------------------- | ------------------------------ | ---------------------------------- |
-| GET      | `/maintenances-machine`                | `MaintenanceMachineController` | `/machines/maintenance/list`       |
-| POST     | `/maintenances-machine/pages`          | `MaintenanceMachineController` | redirect                           |
-| GET      | `/maintenances-machine/ajouter`        | `MaintenanceMachineController` | `/machines/maintenance/form`       |
-| POST     | `/maintenances-machine/ajouter`        | `MaintenanceMachineController` | redirect                           |
-| GET      | `/maintenances-machine/modifier/{id}`  | `MaintenanceMachineController` | `/machines/maintenance/form`       |
-| POST     | `/maintenances-machine/modifier/{id}`  | `MaintenanceMachineController` | redirect                           |
-| GET      | `/maintenances-machine/supprimer/{id}` | `MaintenanceMachineController` | redirect                           |
-| GET      | `/maintenances-machine/valider/{id}`   | `MaintenanceMachineController` | `/machines/maintenance/validation` |
-| POST     | `/maintenances-machine/valider`        | `MaintenanceMachineController` | redirect                           |
-| POST     | `/maintenances-machine/api/filtre`     | `MaintenanceMachineController` | JSON                               |
+| Méthode | URL                                       | Controller                     | Vue                                |
+| -------- | ----------------------------------------- | ------------------------------ | ---------------------------------- |
+| GET      | `/admin/maintenances-machine`                | `MaintenanceMachineController` | `/machines/maintenance/list`       |
+| POST     | `/admin/maintenances-machine/pages`          | `MaintenanceMachineController` | redirect                           |
+| GET      | `/admin/maintenances-machine/ajouter`        | `MaintenanceMachineController` | `/machines/maintenance/form`       |
+| POST     | `/admin/maintenances-machine/ajouter`        | `MaintenanceMachineController` | redirect                           |
+| GET      | `/admin/maintenances-machine/modifier/{id}`  | `MaintenanceMachineController` | `/machines/maintenance/form`       |
+| POST     | `/admin/maintenances-machine/modifier/{id}`  | `MaintenanceMachineController` | redirect                           |
+| GET      | `/admin/maintenances-machine/supprimer/{id}` | `MaintenanceMachineController` | redirect                           |
+| GET      | `/admin/maintenances-machine/valider/{id}`   | `MaintenanceMachineController` | `/machines/maintenance/validation` |
+| POST     | `/admin/maintenances-machine/valider`        | `MaintenanceMachineController` | redirect                           |
+| POST     | `/admin/maintenances-machine/api/filtre`     | `MaintenanceMachineController` | JSON                               |
 
 ### Backoffice — Réservations (admin)
 
 
-| Méthode | URL                                | Controller                     | Vue                      |
-| -------- | ---------------------------------- | ------------------------------ | ------------------------ |
-| GET      | `/reservations-machine`            | `ReservationMachineController` | `reservation/list`       |
-| GET      | `/reservations-machine/calendrier` | `CalendarController`           | `reservation/calendrier` |
+| Méthode | URL                                   | Controller                     | Vue                      |
+| -------- | ------------------------------------- | ------------------------------ | ------------------------ |
+| GET      | `/admin/reservations-machine`            | `ReservationMachineController` | `reservation/list`       |
+| GET      | `/admin/reservations-machine/calendrier` | `CalendarController`           | `reservation/calendrier` |
 
 ### Backoffice — Factures & Paiements
 
 
-| Méthode | URL                       | Controller           | Vue                          |
-| -------- | ------------------------- | -------------------- | ---------------------------- |
-| GET      | `/factures`               | `FactureController`  | `facturation/list`           |
-| GET      | `/factures/client/{id}`   | `FactureController`  | `facturation/list`           |
-| POST     | `/factures/pages`         | `FactureController`  | redirect                     |
-| GET      | `/factures/{id}`          | `FactureController`  | `facturation/detail-facture` |
-| POST     | `/factures/filtre`        | `FactureController`  | JSON                         |
-| GET      | `/paiements`              | `PaiementController` | `paiements/list`             |
-| GET      | `/paiements/reste/{id}`   | `PaiementController` | `paiements/form-reste`       |
-| POST     | `/paiements/restePayee`   | `PaiementController` | redirect                     |
-| GET      | `/paiements/facture/{id}` | `PaiementController` | `paiements/historique`       |
+| Méthode | URL                          | Controller           | Vue                          |
+| -------- | ---------------------------- | -------------------- | ---------------------------- |
+| GET      | `/admin/factures`               | `FactureController`  | `facturation/list`           |
+| GET      | `/admin/factures/client/{id}`   | `FactureController`  | `facturation/list`           |
+| POST     | `/admin/factures/pages`         | `FactureController`  | redirect                     |
+| GET      | `/admin/factures/{id}`          | `FactureController`  | `facturation/detail-facture` |
+| POST     | `/admin/factures/filtre`        | `FactureController`  | JSON                         |
+| GET      | `/admin/paiements`              | `PaiementController` | `paiements/list`             |
+| GET      | `/admin/paiements/reste/{id}`   | `PaiementController` | `paiements/form-reste`       |
+| POST     | `/admin/paiements/restePayee`   | `PaiementController` | redirect                     |
+| GET      | `/admin/paiements/facture/{id}` | `PaiementController` | `paiements/historique`       |
 
 ### Backoffice — Import fichiers
 
 
-| Méthode | URL      | Controller             | Vue                 |
-| -------- | -------- | ---------------------- | ------------------- |
-| GET      | `/files` | `FileUploadController` | `import/form/index` |
+| Méthode | URL         | Controller             | Vue                 |
+| -------- | ----------- | ---------------------- | ------------------- |
+| GET      | `/admin/files` | `FileUploadController` | `import/form/index` |
 
 ### Front-office — Espace client
 
@@ -223,28 +223,28 @@ Ce document résume l'état actuel de toutes les routes backend du projet `voly-
 ### 2.3 APIs Backoffice (AJAX filtres)
 
 
-| Méthode | URL                                       | Controller                     | Retour                    |
-| -------- | ----------------------------------------- | ------------------------------ | ------------------------- |
-| POST     | `/machines/api/filtre`                    | `MachineController`            | JSON (Page)               |
-| POST     | `/maintenances-machine/api/filtre`        | `MaintenanceMachineController` | JSON (Page)               |
-| POST     | `/factures/filtre`                        | `FactureController`            | JSON (Page)               |
-| GET      | `/reservations-machine/calendrier/events` | `CalendarController`           | JSON (List)               |
-| GET      | `/reservations-machine/{id}`              | `ReservationMachineController` | JSON                      |
-| POST     | `/reservations-machine`                   | `ReservationMachineController` | JSON                      |
-| PUT      | `/reservations-machine/{id}`              | `ReservationMachineController` | JSON                      |
-| DELETE   | `/reservations-machine/{id}`              | `ReservationMachineController` | JSON                      |
-| GET      | `/maintenances-machine/{id}`              | `MaintenanceMachineController` | JSON                      |
-| POST     | `/maintenances-machine`                   | `MaintenanceMachineController` | JSON                      |
-| PUT      | `/maintenances-machine/{id}`              | `MaintenanceMachineController` | JSON                      |
-| DELETE   | `/maintenances-machine/{id}`              | `MaintenanceMachineController` | JSON                      |
-| GET      | `/factures/{id}`                          | `FactureController`            | Vue (ou JSON avec Accept) |
-| POST     | `/factures`                               | `FactureController`            | JSON                      |
-| PUT      | `/factures/{id}`                          | `FactureController`            | JSON                      |
-| DELETE   | `/factures/{id}`                          | `FactureController`            | JSON                      |
-| GET      | `/paiements/{id}`                         | `PaiementController`           | JSON                      |
-| POST     | `/paiements`                              | `PaiementController`           | JSON                      |
-| PUT      | `/paiements/{id}`                         | `PaiementController`           | JSON                      |
-| DELETE   | `/paiements/{id}`                         | `PaiementController`           | JSON                      |
+| Méthode | URL                                          | Controller                     | Retour                    |
+| -------- | -------------------------------------------- | ------------------------------ | ------------------------- |
+| POST     | `/admin/machines/api/filtre`                    | `MachineController`            | JSON (Page)               |
+| POST     | `/admin/maintenances-machine/api/filtre`        | `MaintenanceMachineController` | JSON (Page)               |
+| POST     | `/admin/factures/filtre`                        | `FactureController`            | JSON (Page)               |
+| GET      | `/admin/reservations-machine/calendrier/events` | `CalendarController`           | JSON (List)               |
+| GET      | `/admin/reservations-machine/{id}`              | `ReservationMachineController` | JSON                      |
+| POST     | `/admin/reservations-machine`                   | `ReservationMachineController` | JSON                      |
+| PUT      | `/admin/reservations-machine/{id}`              | `ReservationMachineController` | JSON                      |
+| DELETE   | `/admin/reservations-machine/{id}`              | `ReservationMachineController` | JSON                      |
+| GET      | `/admin/maintenances-machine/{id}`              | `MaintenanceMachineController` | JSON                      |
+| POST     | `/admin/maintenances-machine`                   | `MaintenanceMachineController` | JSON                      |
+| PUT      | `/admin/maintenances-machine/{id}`              | `MaintenanceMachineController` | JSON                      |
+| DELETE   | `/admin/maintenances-machine/{id}`              | `MaintenanceMachineController` | JSON                      |
+| GET      | `/admin/factures/{id}`                          | `FactureController`            | Vue (ou JSON avec Accept) |
+| POST     | `/admin/factures`                               | `FactureController`            | JSON                      |
+| PUT      | `/admin/factures/{id}`                          | `FactureController`            | JSON                      |
+| DELETE   | `/admin/factures/{id}`                          | `FactureController`            | JSON                      |
+| GET      | `/admin/paiements/{id}`                         | `PaiementController`           | JSON                      |
+| POST     | `/admin/paiements`                              | `PaiementController`           | JSON                      |
+| PUT      | `/admin/paiements/{id}`                         | `PaiementController`           | JSON                      |
+| DELETE   | `/admin/paiements/{id}`                         | `PaiementController`           | JSON                      |
 
 ### 2.4 APIs Front-office — Catalogue machines
 

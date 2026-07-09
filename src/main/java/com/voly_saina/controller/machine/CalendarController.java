@@ -17,7 +17,7 @@ import com.voly_saina.service.MaintenanceMachineService;
 import com.voly_saina.service.ReservationMachineService;
 
 @Controller
-@RequestMapping("/reservations-machine")
+@RequestMapping("/admin/reservations-machine")
 public class CalendarController {
 
     @Autowired

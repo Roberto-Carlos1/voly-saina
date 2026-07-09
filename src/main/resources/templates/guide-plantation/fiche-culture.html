@@ -1,106 +1,380 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
 <head>
-    <meta charset="UTF-8">
-    <title>Fiche détaillée culture</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title th:text="'VolySaina+ - Fiche détaillée - ' + ${culture.nom}">VolySaina+ - Fiche détaillée culture</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#fd925b",
+                        "on-tertiary": "#ffffff",
+                        "surface-dim": "#e0d9d2",
+                        "background": "#fff8f2",
+                        "tertiary": "#653319",
+                        "on-primary-fixed": "#00210b",
+                        "on-background": "#1e1b17",
+                        "on-error-container": "#93000a",
+                        "surface": "#fff8f2",
+                        "outline-variant": "#bfc9bd",
+                        "on-tertiary-fixed": "#351000",
+                        "on-surface-variant": "#404940",
+                        "secondary-fixed": "#ffdbcb",
+                        "inverse-primary": "#8bd79b",
+                        "primary": "#004c22",
+                        "on-tertiary-container": "#ffc1a4",
+                        "surface-container-highest": "#e8e1db",
+                        "outline": "#707a6f",
+                        "on-secondary-container": "#712c00",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#fff8f2",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-secondary-fixed": "#341000",
+                        "primary-container": "#166534",
+                        "on-primary-fixed-variant": "#005226",
+                        "on-primary-container": "#93e0a2",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#1f6c3a",
+                        "tertiary-container": "#81492d",
+                        "secondary": "#9a4614",
+                        "primary-fixed-dim": "#8bd79b",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "surface-container-high": "#eee7e0",
+                        "on-surface": "#1e1b17",
+                        "surface-container-low": "#faf2eb",
+                        "surface-container": "#f4ede6",
+                        "secondary-fixed-dim": "#ffb693",
+                        "tertiary-fixed": "#ffdbcc",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e8e1db",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#a6f4b5",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#33302c",
+                        "inverse-on-surface": "#f7efe9"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "margin-mobile": "20px",
+                        "margin-desktop": "48px",
+                        "gutter-desktop": "24px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "base": "4px"
+                    },
+                    fontFamily: {
+                        "headline-xl-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff8f2;
+        }
+    </style>
 </head>
-<body>
-<p>
-    <a th:href="@{/guide-plantation/cultures}">Retour à la liste</a>
-    <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">Retour au détail</a>
-</p>
 
-<h1 th:text="'Fiche détaillée - ' + ${culture.nom}">Fiche détaillée</h1>
+<body class="text-on-surface">
 
-<dl>
-    <dt>Description</dt>
-    <dd th:text="${culture.description}">Description</dd>
+    <!-- Header / Navigation Shell -->
+    <header class="bg-surface sticky top-0 z-50 border-b border-outline-variant">
+        <div class="flex justify-between items-center w-full px-margin-desktop py-base max-w-[1280px] mx-auto">
+            <div class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</div>
+            <nav class="hidden md:flex gap-stack-lg items-center">
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Location</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Achat</a>
+                <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="#">Encyclopédie</a>
+                <div class="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</div>
+            </nav>
+        </div>
+    </header>
 
-    <dt>Localisation adaptée</dt>
-    <dd th:text="${culture.localisationRecommandee}">Localisation</dd>
+    <main class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
 
-    <dt>Saison adaptée</dt>
-    <dd th:text="${culture.saisonRecommandee}">Saison</dd>
-</dl>
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-base mb-stack-lg text-on-surface-variant">
+            <a class="flex items-center font-label-sm text-label-sm hover:text-primary transition-colors" th:href="@{/guide-plantation/cultures}">
+                <span class="material-symbols-outlined mr-1" style="font-size: 16px;">arrow_back</span>
+                Retour à la liste
+            </a>
+            <span class="text-outline">/</span>
+            <a class="font-label-sm text-label-sm hover:text-primary transition-colors" th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}">
+                Détail
+            </a>
+            <span class="text-outline">/</span>
+            <span class="font-label-sm text-label-sm font-bold text-on-surface">Fiche détaillée</span>
+        </nav>
 
-<section th:if="${ficheCulture == null}">
-    <p>Aucune fiche détaillée disponible pour cette culture.</p>
-</section>
+        <!-- Hero Section -->
+        <section class="relative h-[400px] rounded-xl overflow-hidden mb-stack-lg border border-outline-variant">
+            <div class="absolute inset-0 bg-primary-fixed flex items-center justify-center">
+                <span class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-stack-lg w-full">
+                <h1 class="font-headline-xl text-headline-xl text-white mb-base" th:text="'Fiche détaillée - ' + ${culture.nom}">
+                    Fiche détaillée - Maïs Douceur
+                </h1>
+                <div class="flex gap-stack-md">
+                    <span class="px-stack-md py-1 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full border border-primary/20" th:text="${culture.saisonRecommandee}">
+                        Saison
+                    </span>
+                    <span class="px-stack-md py-1 bg-secondary-container text-on-secondary-container font-label-md text-label-md rounded-full border border-secondary/20" th:text="${culture.localisationRecommandee}">
+                        Localisation
+                    </span>
+                </div>
+            </div>
+        </section>
 
-<section th:if="${ficheCulture != null}">
-    <dl>
-        <dt>Période de plantation</dt>
-        <dd th:text="${ficheCulture.periodePlantation}">Période</dd>
+        <!-- Main Info Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop mb-stack-lg">
 
-        <dt>Durée avant récolte</dt>
-        <dd th:text="${ficheCulture.dureeAvantRecolte}">Durée</dd>
+            <!-- Description Card -->
+            <div class="md:col-span-2 bg-surface-container-low p-stack-lg rounded-xl border border-outline-variant">
+                <h2 class="font-headline-md text-headline-md mb-stack-md flex items-center text-primary">
+                    <span class="material-symbols-outlined mr-2">description</span>
+                    Description de la culture
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed" th:text="${culture.description}">
+                    Description de la culture
+                </p>
 
-        <dt>Préparation du sol</dt>
-        <dd th:text="${ficheCulture.preparationSol}">Préparation</dd>
+                <div class="mt-stack-lg grid grid-cols-1 sm:grid-cols-2 gap-stack-md">
+                    <div class="flex items-center gap-stack-md p-stack-sm bg-white rounded border border-outline-variant">
+                        <div class="bg-surface-container-high p-stack-sm rounded">
+                            <span class="material-symbols-outlined text-primary">location_on</span>
+                        </div>
+                        <div>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Localisation adaptée</p>
+                            <p class="font-label-md text-label-md text-on-surface" th:text="${culture.localisationRecommandee}">Localisation</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-stack-md p-stack-sm bg-white rounded border border-outline-variant">
+                        <div class="bg-surface-container-high p-stack-sm rounded">
+                            <span class="material-symbols-outlined text-primary">calendar_month</span>
+                        </div>
+                        <div>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Saison idéale</p>
+                            <p class="font-label-md text-label-md text-on-surface" th:text="${culture.saisonRecommandee}">Saison</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <dt>Quantité de semence</dt>
-        <dd th:text="${ficheCulture.quantiteSemence}">Semence</dd>
+            <!-- Quick Stats / Action Card -->
+            <div class="bg-primary-container text-on-primary-container p-stack-lg rounded-xl border border-primary/30 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-label-md text-label-md uppercase mb-stack-sm opacity-80">Indice de rentabilité</h3>
+                    <div class="text-4xl font-bold mb-stack-md">Haut</div>
+                    <ul class="space-y-stack-sm font-label-md text-label-md">
+                        <li class="flex items-center"><span class="material-symbols-outlined mr-2 text-sm">check_circle</span> Cycle adapté</li>
+                        <li class="flex items-center"><span class="material-symbols-outlined mr-2 text-sm">check_circle</span> Bon rendement</li>
+                        <li class="flex items-center"><span class="material-symbols-outlined mr-2 text-sm">check_circle</span> Demande stable</li>
+                    </ul>
+                </div>
+                <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}" class="w-full bg-white text-primary font-label-md text-label-md py-stack-md rounded-lg font-bold hover:bg-surface-container-low transition-colors mt-stack-lg text-center">
+                    Voir Guide Complet
+                </a>
+            </div>
+        </div>
 
-        <dt>Engrais recommandés</dt>
-        <dd th:text="${ficheCulture.engraisRecommandes}">Engrais</dd>
+        <!-- Detailed Guide Section (th:if="${ficheCulture != null}") -->
+        <section class="mb-stack-lg" th:if="${ficheCulture != null}">
+            <h2 class="font-headline-lg text-headline-lg mb-stack-lg text-on-surface border-l-4 border-primary pl-4">Guide Technique Détaillé</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-stack-md">
+                <!-- Plantation -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">agriculture</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Période de plantation</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.periodePlantation}">Mars à Mai</p>
+                </div>
+                <!-- Durée récolte -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">timer</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Durée avant récolte</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.dureeAvantRecolte}">110 - 130 jours</p>
+                </div>
+                <!-- Préparation sol -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">landscape</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Préparation du sol</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.preparationSol}">Labour profond, drainage</p>
+                </div>
+                <!-- Quantité semence -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">grain</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Quantité de semence</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.quantiteSemence}">25 kg / hectare</p>
+                </div>
+                <!-- Engrais -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">science</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Engrais recommandés</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.engraisRecommandes}">NPK 15-15-15</p>
+                </div>
+                <!-- Arrosage -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">water_drop</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Arrosage</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.arrosage}">Modéré, plus intense en floraison</p>
+                </div>
+                <!-- Maladies -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">bug_report</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Maladies courantes</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.maladiesCourantes}">Mildiou, Pucerons</p>
+                </div>
+                <!-- Conseils -->
+                <div class="bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-colors">
+                    <span class="material-symbols-outlined text-primary mb-base">tips_and_updates</span>
+                    <h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase">Conseils pratiques</h4>
+                    <p class="font-label-md text-label-md font-bold" th:text="${ficheCulture.conseilsPratiques}">Rotation triennale recommandée</p>
+                </div>
+            </div>
+        </section>
 
-        <dt>Arrosage</dt>
-        <dd th:text="${ficheCulture.arrosage}">Arrosage</dd>
+        <!-- Empty State (th:if="${ficheCulture == null}") -->
+        <section class="bg-surface-container p-stack-lg rounded-xl border-2 border-dashed border-outline-variant text-center mb-stack-lg" th:if="${ficheCulture == null}">
+            <span class="material-symbols-outlined text-6xl text-outline mb-stack-md">info</span>
+            <p class="font-headline-md text-headline-md text-on-surface-variant">Fiche technique en cours de rédaction</p>
+            <p class="font-body-md text-body-md text-on-surface-variant">Nos experts agronomes préparent actuellement les données détaillées pour cette culture.</p>
+        </section>
 
-        <dt>Maladies courantes</dt>
-        <dd th:text="${ficheCulture.maladiesCourantes}">Maladies</dd>
+        <!-- Recommended Tools Section -->
+        <section class="mb-stack-lg">
+            <div class="flex justify-between items-end mb-stack-md">
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">Équipements recommandés</h2>
+                <a class="font-label-md text-label-md text-primary flex items-center hover:underline" href="#">
+                    Tout voir <span class="material-symbols-outlined ml-1">chevron_right</span>
+                </a>
+            </div>
 
-        <dt>Conseils pratiques</dt>
-        <dd th:text="${ficheCulture.conseilsPratiques}">Conseils</dd>
-    </dl>
-</section>
+            <!-- Message si aucun outil -->
+            <div th:if="${#lists.isEmpty(outils)}" class="bg-surface-container-low p-stack-lg rounded-xl border border-outline-variant text-center">
+                <p class="font-body-md text-body-md text-on-surface-variant">Aucun outil disponible pour cette culture.</p>
+            </div>
 
-<h2>Outils recommandés</h2>
-<p th:if="${#lists.isEmpty(outils)}">Aucun outil disponible.</p>
-<table th:if="${!#lists.isEmpty(outils)}" border="1">
-    <thead>
-    <tr>
-        <th>Nom</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Localisation</th>
-        <th>Prix par jour</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="outil : ${outils}">
-        <td th:text="${outil.nom}">Nom</td>
-        <td th:text="${outil.typeMachine != null ? outil.typeMachine.libelle : ''}">Type</td>
-        <td th:text="${outil.description}">Description</td>
-        <td th:text="${outil.localisation}">Localisation</td>
-        <td th:text="${outil.prixJour}">Prix</td>
-    </tr>
-    </tbody>
-</table>
+            <!-- Liste des outils -->
+            <div th:if="${!#lists.isEmpty(outils)}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter-desktop">
+                <div class="bg-white rounded-xl border border-outline-variant overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-lg" th:each="outil : ${outils}">
+                    <div class="h-48 relative overflow-hidden bg-surface-container-low flex items-center justify-center">
+                        <span class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30">build</span>
+                    </div>
+                    <div class="p-stack-md flex-1 flex flex-col">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-1" th:text="${outil.typeMachine != null ? outil.typeMachine.libelle : 'Outil'}">Type</span>
+                        <h3 class="font-headline-md text-headline-md mb-stack-md group-hover:text-primary transition-colors" th:text="${outil.nom}">Nom de l'outil</h3>
+                        <div class="mt-auto flex justify-between items-center pt-stack-md border-t border-outline-variant">
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant">Prix par jour</p>
+                                <p class="font-headline-md text-headline-md text-primary" th:text="${outil.prixJour} + ' €/j'">150 €/j</p>
+                            </div>
+                            <div class="flex items-center text-on-surface-variant">
+                                <span class="material-symbols-outlined mr-1" style="font-size: 18px;">location_on</span>
+                                <span class="font-label-sm text-label-sm" th:text="${outil.localisation}">Localisation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<h2>Produits suggérés</h2>
-<p th:if="${#lists.isEmpty(produits)}">Aucun produit disponible.</p>
-<table th:if="${!#lists.isEmpty(produits)}" border="1">
-    <thead>
-    <tr>
-        <th>Nom</th>
-        <th>Catégorie</th>
-        <th>Description</th>
-        <th>Conseil d'usage</th>
-        <th>Prix unitaire</th>
-        <th>Stock</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="produit : ${produits}">
-        <td th:text="${produit.nom}">Nom</td>
-        <td th:text="${produit.categorie != null ? produit.categorie.nom : ''}">Catégorie</td>
-        <td th:text="${produit.description}">Description</td>
-        <td th:text="${produit.conseilUsage}">Conseil</td>
-        <td th:text="${produit.prixUnitaire}">Prix</td>
-        <td th:text="${produit.stock}">Stock</td>
-    </tr>
-    </tbody>
-</table>
+        <!-- Suggested Products Section -->
+        <section class="mb-stack-lg">
+            <h2 class="font-headline-lg text-headline-lg mb-stack-lg text-on-surface">Produits &amp; Intrants suggérés</h2>
+
+            <!-- Message si aucun produit -->
+            <div th:if="${#lists.isEmpty(produits)}" class="bg-surface-container-low p-stack-lg rounded-xl border border-outline-variant text-center">
+                <p class="font-body-md text-body-md text-on-surface-variant">Aucun produit disponible pour cette culture.</p>
+            </div>
+
+            <!-- Liste des produits -->
+            <div th:if="${!#lists.isEmpty(produits)}" class="grid grid-cols-1 sm:grid-cols-3 gap-gutter-desktop">
+                <div class="flex gap-stack-md bg-white p-stack-md rounded-xl border border-outline-variant hover:border-primary transition-all group" th:each="produit : ${produits}">
+                    <div class="w-24 h-24 rounded-lg bg-surface-container-high flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        <span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-40">science</span>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-label-sm text-label-sm text-on-secondary-fixed-variant" th:text="${produit.categorie != null ? produit.categorie.nom : 'Produit'}">Catégorie</span>
+                                <h4 class="font-label-md text-label-md font-bold mb-1" th:text="${produit.nom}">Nom du produit</h4>
+                            </div>
+                            <p class="font-label-md text-label-md text-primary font-bold" th:text="'€' + ${produit.prixUnitaire}">45,99 €</p>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-2" th:text="${produit.description}">Description</p>
+                        <div class="mt-auto flex justify-between items-center pt-stack-sm">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant" th:text="'En stock: ' + ${produit.stock} + ' unités'">En stock: 24 unités</span>
+                            <button class="bg-primary text-white p-1 rounded hover:bg-primary-container transition-colors">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">add_shopping_cart</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest border-t border-outline-variant mt-stack-lg">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-lg gap-stack-md max-w-[1280px] mx-auto">
+            <div class="flex flex-col items-center md:items-start gap-stack-sm">
+                <div class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</div>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 VolySaina+. Excellence en Agriculture Durable.</p>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-stack-md">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150" href="#">Conditions d'utilisation</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150" href="#">Politique de confidentialité</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150" href="#">Contact Support</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150" href="#">Partenaires</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        // Simple micro-interaction for tool cards
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('mouseenter', () => {});
+        });
+    </script>
+
 </body>
 </html>

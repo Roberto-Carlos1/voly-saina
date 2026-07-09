@@ -1,204 +1,396 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-
+<html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recapitulatif Commande - Voly Saina+</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mon Panier | AgriElite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background": "#fff8f2",
+                        "on-tertiary-fixed": "#351000",
+                        "on-background": "#1e1b17",
+                        "surface-variant": "#e8e1db",
+                        "surface-dim": "#e0d9d2",
+                        "inverse-on-surface": "#f7efe9",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#712c00",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#ffb693",
+                        "primary": "#004c22",
+                        "surface-bright": "#fff8f2",
+                        "surface": "#fff8f2",
+                        "outline-variant": "#bfc9bd",
+                        "on-primary-fixed-variant": "#005226",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eee7e0",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f4ede6",
+                        "surface-container-highest": "#e8e1db",
+                        "inverse-primary": "#8bd79b",
+                        "tertiary": "#653319",
+                        "on-tertiary-container": "#ffc1a4",
+                        "on-error-container": "#93000a",
+                        "secondary": "#9a4614",
+                        "inverse-surface": "#33302c",
+                        "on-primary-fixed": "#00210b",
+                        "primary-container": "#166534",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "on-surface": "#1e1b17",
+                        "surface-tint": "#1f6c3a",
+                        "surface-container-low": "#faf2eb",
+                        "secondary-container": "#fd925b",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#341000",
+                        "on-surface-variant": "#404940",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "primary-fixed": "#a6f4b5",
+                        "tertiary-container": "#81492d",
+                        "secondary-fixed": "#ffdbcb",
+                        "outline": "#707a6f",
+                        "primary-fixed-dim": "#8bd79b",
+                        "on-primary-container": "#93e0a2",
+                        "on-secondary": "#ffffff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "margin-desktop": "48px",
+                        "stack-lg": "32px",
+                        "gutter-desktop": "24px",
+                        "base": "4px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "20px",
+                        "gutter-mobile": "16px",
+                        "stack-md": "16px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl-mobile": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            background-color: #f5f5f5;
-            padding: 20px 0;
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-
-        .container {
-            max-width: 1200px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px 12px 0 0 !important;
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .badge-green {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .btn {
-            border-radius: 8px;
-        }
-
-        .table thead th {
-            background: #f9fafb;
-            border-bottom: 2px solid #e5e7eb;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f4ede6; }
+        ::-webkit-scrollbar-thumb { background: #707a6f; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #004c22; }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <div class="card">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Mon panier</h4>
-                <a th:href="@{/catalogue/produits/catalogue}" class="text-decoration-none"
-                    style="color: white; font-weight: 500;">← Continuer mes achats</a>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+
+    <!-- Top Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-mobile md:px-margin-desktop h-16 bg-surface border-b border-outline-variant">
+        <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-headline-md">agriculture</span>
+            <h1 class="font-headline-md text-headline-md font-bold text-primary">AgriElite</h1>
+        </div>
+        <nav class="hidden md:flex gap-8">
+            <a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" href="#">Accueil</a>
+            <a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" th:href="@{/catalogue/produits/catalogue}">Catalogue</a>
+            <a class="text-primary font-bold font-label-md" href="#">Mon Panier</a>
+        </nav>
+        <div class="flex items-center gap-4">
+            <button class="material-symbols-outlined text-primary hover:bg-surface-variant rounded-full p-2 transition-colors">search</button>
+            <button class="material-symbols-outlined text-primary hover:bg-surface-variant rounded-full p-2 transition-colors">person</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-24 pb-stack-lg px-gutter-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
+
+        <!-- Header & Breadcrumb -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-lg border-l-4 border-primary pl-4">
+            <div>
+                <h2 class="font-headline-xl text-headline-xl text-on-background">Mon panier</h2>
+                <a class="group flex items-center gap-2 text-primary font-label-md hover:translate-x-[-4px] transition-transform" th:href="@{/catalogue/produits/catalogue}">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Continuer mes achats
+                </a>
             </div>
-
-            <div class="card-body p-4">
-                <div th:if="${message != null}" class="alert alert-success" th:text="${message}"></div>
-                <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
-
-                <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}"
-                    class="text-center py-5 text-muted">
-                    Le panier est vide.
-                </div>
-
-                <div th:if="${(lignes != null and not #lists.isEmpty(lignes)) or (reservations != null and not #lists.isEmpty(reservations))}"
-                    id="panierContent">
-
-                    <div th:if="${lignes != null and not #lists.isEmpty(lignes)}">
-                        <h5 class="mb-3">🛒 Articles commandés</h5>
-                        <div class="table-responsive mb-4">
-                            <table class="table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40%">Produit</th>
-                                        <th style="width: 15%">Prix unitaire</th>
-                                        <th style="width: 20%">Quantité</th>
-                                        <th style="width: 15%">Sous-total</th>
-                                        <th style="width: 10%">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="ligne : ${lignes}">
-                                        <td>
-                                            <div style="font-weight: 700;" th:text="${ligne.produit.nom}">Nom du produit
-                                            </div>
-                                        </td>
-                                        <td class="prix-unitaire"
-                                            th:text="${#numbers.formatDecimal(ligne.prixUnitaire, 0, 'COMMA', 2, 'POINT')} + ' AR'"
-                                            th:data-prix-unitaire="${ligne.prixUnitaire}">
-                                        </td>
-                                        <td>
-                                            <form th:action="@{/panier/quantite}" method="post">
-                                                <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
-
-                                                <input type="text" name="quantite" class="form-control form-control-sm"
-                                                    onchange="this.form.submit()" th:value="${ligne.quantite}" />
-
-                                                <div th:if="${idLigneEnErreur == ligne.idLigne and error != null}"
-                                                    class="text-danger small mt-1" th:text="${error}">
-                                                </div>
-                                            </form>
-                                        </td>
-                                        <td
-                                            th:text="${#numbers.formatDecimal(ligne.sousTotal, 0, 'COMMA', 2, 'POINT')} + ' AR'">
-                                        </td>
-                                        <td>
-                                            <form th:action="@{/panier/supprimer}" method="post"
-                                                onsubmit="return confirm('Supprimer cet article ?');">
-                                                <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
-                                                <input type="hidden" name="clientId" th:value="1" />
-                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="mt-4">
-                        <h5 class="mb-3">📆 Machines réservées</h5>
-                        <div class="table-responsive mb-4">
-                            <table class="table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 30%">Machine</th>
-                                        <th style="width: 20%">Période</th>
-                                        <th style="width: 20%">Lieu livraison</th>
-                                        <th style="width: 15%">Prix total</th>
-                                        <th style="width: 15%">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="reservation : ${reservations}">
-                                        <td>
-                                            <div style="font-weight: 700;" th:text="${reservation.machine.nom}">Machine
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span
-                                                th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span>
-                                            au
-                                            <span
-                                                th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span>
-                                        </td>
-                                        <td
-                                            th:text="${reservation.lieuLivraison != null ? reservation.lieuLivraison : '-'}">
-                                        </td>
-                                        <td class="fw-bold text-success"
-                                            th:text="${reservation.prixTotal != null ? #numbers.formatDecimal(reservation.prixTotal, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">
-                                        </td>
-                                        <td>
-                                            <form th:action="@{/panier/reservations/supprimer}" method="post"
-                                                onsubmit="return confirm('Supprimer cette réservation ?');">
-                                                <input type="hidden" name="reservationId"
-                                                    th:value="${reservation.idReservation}" />
-                                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Validation Finale -->
-                    <div class="d-flex justify-content-end mt-4">
-                        <div style="min-width: 320px;">
-                            <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-                                <div class="text-muted" style="font-weight: 600;">Montant global</div>
-                                <div style="font-weight: 800; font-size: 1.3rem;">
-                                    <span
-                                        th:text="${#numbers.formatDecimal(montantTotal, 0, 'COMMA', 2, 'POINT')}">0.00</span>
-                                    AR
-                                </div>
-                            </div>
-
-                            <form th:action="@{/panier/valider}" method="post" class="mt-3">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold">Adresse de livraison effective</label>
-                                    <input class="form-control" name="adresseLivraison" required
-                                        placeholder="Ex: Lot II M 45 Antananarivo"
-                                        th:value="${commande != null ? commande.adresseLivraison : ''}" />
-                                    <input type="hidden" name="idPanier" th:value="${idPanier}">
-                                </div>
-                                <button type="submit" class="btn btn-success w-100 py-2">Valider le panier</button>
-                            </form>
-                        </div>
-                    </div>
-
-                </div>
+            <div class="hidden md:block">
+                <span class="text-label-sm text-on-surface-variant uppercase tracking-wider">État de la commande: En cours</span>
             </div>
         </div>
-    </div>
-</body>
 
+        <!-- Messages (Success/Error) -->
+        <div th:if="${message != null}" class="mb-stack-md bg-primary-container/20 text-primary p-4 rounded flex items-center gap-3 border border-primary/20">
+            <span class="material-symbols-outlined">check_circle</span>
+            <p class="font-body-md" th:text="${message}">Message de succès</p>
+        </div>
+        <div th:if="${error != null}" class="mb-stack-md bg-error-container text-on-error-container p-4 rounded flex items-center gap-3 border border-error/20">
+            <span class="material-symbols-outlined">report</span>
+            <p class="font-body-md" th:text="${error}">Message d'erreur</p>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${(lignes == null or #lists.isEmpty(lignes)) and (reservations == null or #lists.isEmpty(reservations))}" 
+             class="flex flex-col items-center justify-center py-20 text-center">
+            <span class="material-symbols-outlined text-[80px] text-outline mb-4">shopping_cart_off</span>
+            <h3 class="font-headline-md text-on-surface">Le panier est vide.</h3>
+            <p class="text-on-surface-variant mb-6">Vous n'avez pas encore ajouté d'articles ou de machines.</p>
+            <a class="bg-primary text-on-primary px-8 py-3 rounded font-label-md hover:opacity-90 transition-opacity" th:href="@{/catalogue/produits/catalogue}">Découvrir le catalogue</a>
+        </div>
+
+        <!-- Panier avec contenu -->
+        <div th:if="${(lignes != null and not #lists.isEmpty(lignes)) or (reservations != null and not #lists.isEmpty(reservations))}" 
+             class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+
+            <!-- Colonne des items -->
+            <div class="lg:col-span-8 space-y-stack-lg">
+
+                <!-- Section: Articles commandés -->
+                <div th:if="${lignes != null and not #lists.isEmpty(lignes)}" class="bg-surface-container-lowest border border-outline-variant overflow-hidden">
+                    <div class="bg-surface-container-high px-gutter-mobile py-stack-sm border-b border-outline-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">shopping_cart</span>
+                        <h3 class="font-label-md uppercase tracking-widest text-primary">Articles commandés</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container text-on-surface-variant font-label-md border-b border-outline-variant">
+                                    <th class="px-6 py-4">Produit</th>
+                                    <th class="px-6 py-4">Prix unitaire</th>
+                                    <th class="px-6 py-4">Quantité</th>
+                                    <th class="px-6 py-4">Sous-total</th>
+                                    <th class="px-6 py-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant">
+                                <tr th:each="ligne : ${lignes}" class="hover:bg-surface-container-low transition-colors">
+                                    <td class="px-6 py-4 flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-surface-variant overflow-hidden rounded border border-outline-variant flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-2xl text-on-surface-variant opacity-40">inventory_2</span>
+                                        </div>
+                                        <span class="font-body-md font-semibold" th:text="${ligne.produit.nom}">Nom du produit</span>
+                                    </td>
+                                    <td class="px-6 py-4 font-body-md" th:text="${#numbers.formatDecimal(ligne.prixUnitaire, 0, 'COMMA', 2, 'POINT') + ' AR'}">45,000 AR</td>
+                                    <td class="px-6 py-4">
+                                        <form th:action="@{/panier/quantite}" method="post" class="flex items-center gap-2">
+                                            <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                            <input type="number" name="quantite" 
+                                                   class="w-16 bg-surface-container border-outline-variant text-body-md focus:ring-primary focus:border-primary rounded py-1 px-2" 
+                                                   min="1" th:value="${ligne.quantite}"
+                                                   onchange="this.form.submit()" />
+                                            <div th:if="${idLigneEnErreur == ligne.idLigne and error != null}" 
+                                                 class="text-error text-xs mt-1" th:text="${error}">
+                                            </div>
+                                        </form>
+                                    </td>
+                                    <td class="px-6 py-4 font-body-md font-bold text-primary" th:text="${#numbers.formatDecimal(ligne.sousTotal, 0, 'COMMA', 2, 'POINT') + ' AR'}">90,000 AR</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <form th:action="@{/panier/supprimer}" method="post" 
+                                              onsubmit="return confirm('Supprimer cet article ?');">
+                                            <input type="hidden" name="ligneId" th:value="${ligne.idLigne}" />
+                                            <button class="text-error hover:bg-error-container/20 p-2 rounded-full transition-colors material-symbols-outlined" type="submit">delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section: Machines réservées -->
+                <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="bg-surface-container-lowest border border-outline-variant overflow-hidden">
+                    <div class="bg-surface-container-high px-gutter-mobile py-stack-sm border-b border-outline-variant flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">agriculture</span>
+                        <h3 class="font-label-md uppercase tracking-widest text-primary">Machines réservées</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container text-on-surface-variant font-label-md border-b border-outline-variant">
+                                    <th class="px-6 py-4">Machine</th>
+                                    <th class="px-6 py-4">Période</th>
+                                    <th class="px-6 py-4">Lieu livraison</th>
+                                    <th class="px-6 py-4">Prix total</th>
+                                    <th class="px-6 py-4 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant">
+                                <tr th:each="reservation : ${reservations}" class="hover:bg-surface-container-low transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-body-md font-bold" th:text="${reservation.machine.nom}">Machine</span>
+                                            <span class="text-label-sm text-on-surface-variant" th:text="${reservation.machine.description}">Description</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 font-body-md">
+                                        <div class="flex flex-col">
+                                            <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}"></span>
+                                            <span th:text="'au ' + ${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 font-body-md" th:text="${reservation.lieuLivraison != null ? reservation.lieuLivraison : '-'}">Antsirabe, Site A12</td>
+                                    <td class="px-6 py-4 font-body-md font-bold text-primary" th:text="${reservation.prixTotal != null ? #numbers.formatDecimal(reservation.prixTotal, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">1,250,000 AR</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <form th:action="@{/panier/reservations/supprimer}" method="post" 
+                                              onsubmit="return confirm('Supprimer cette réservation ?');">
+                                            <input type="hidden" name="reservationId" th:value="${reservation.idReservation}" />
+                                            <button class="text-error hover:bg-error-container/20 p-2 rounded-full transition-colors material-symbols-outlined" type="submit">delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Colonne Résumé / Validation -->
+            <aside class="lg:col-span-4 sticky top-24">
+                <div class="bg-surface-container-lowest border border-outline-variant shadow-sm p-gutter-mobile">
+                    <h3 class="font-headline-md mb-stack-md border-b border-outline-variant pb-stack-sm">Résumé de la commande</h3>
+                    <div class="space-y-4 mb-stack-lg">
+                        <div class="flex justify-between text-body-md">
+                            <span class="text-on-surface-variant">Sous-total articles</span>
+                            <span th:text="${sousTotalArticles != null ? #numbers.formatDecimal(sousTotalArticles, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">210,000 AR</span>
+                        </div>
+                        <div class="flex justify-between text-body-md">
+                            <span class="text-on-surface-variant">Location machines</span>
+                            <span th:text="${sousTotalReservations != null ? #numbers.formatDecimal(sousTotalReservations, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">1,250,000 AR</span>
+                        </div>
+                        <div class="flex justify-between text-body-md">
+                            <span class="text-on-surface-variant">Frais de service</span>
+                            <span th:text="${fraisService != null ? #numbers.formatDecimal(fraisService, 0, 'COMMA', 2, 'POINT') + ' AR' : '15,000 AR'}">15,000 AR</span>
+                        </div>
+                        <div class="pt-4 border-t-2 border-primary/20 flex justify-between items-baseline">
+                            <span class="font-label-md uppercase text-primary">Montant global</span>
+                            <span class="font-headline-md text-primary font-bold" th:text="${montantTotal != null ? #numbers.formatDecimal(montantTotal, 0, 'COMMA', 2, 'POINT') + ' AR' : '0.00 AR'}">1,475,000 AR</span>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de validation -->
+                    <form th:action="@{/panier/valider}" class="space-y-stack-md" method="post">
+                        <input type="hidden" name="idPanier" th:value="${idPanier}" />
+                        <div class="flex flex-col gap-2">
+                            <label class="font-label-md text-on-surface" for="adresse">Adresse de livraison effective <span class="text-error">*</span></label>
+                            <textarea class="bg-surface-container-low border-outline-variant focus:ring-primary focus:border-primary rounded w-full h-24 p-3 font-body-md placeholder:text-outline" 
+                                      id="adresse" name="adresseLivraison" 
+                                      th:text="${commande != null ? commande.adresseLivraison : ''}"
+                                      placeholder="Ex: Lot IV 22 Antananarivo 101..." required=""></textarea>
+                        </div>
+                        <div class="flex items-start gap-2 bg-surface-container-high p-3 rounded">
+                            <input class="mt-1 text-primary focus:ring-primary border-outline-variant" id="terms" required="" type="checkbox"/>
+                            <label class="text-label-sm text-on-surface-variant" for="terms">J'accepte les conditions générales de location et de vente d'AgriElite.</label>
+                        </div>
+                        <button class="w-full bg-primary text-on-primary font-label-md py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container transition-all active:scale-[0.98]" type="submit">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            Valider le panier
+                        </button>
+                    </form>
+
+                    <div class="mt-6 flex flex-col gap-3">
+                        <p class="text-label-sm text-center text-on-surface-variant flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">lock</span>
+                            Paiement sécurisé par virement ou mobile money
+                        </p>
+                        <div class="flex justify-center gap-4 opacity-40 grayscale">
+                            <span class="material-symbols-outlined text-[32px]">payments</span>
+                            <span class="material-symbols-outlined text-[32px]">account_balance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aide -->
+                <div class="mt-stack-md p-4 bg-surface-variant border-l-4 border-secondary text-on-surface-variant rounded-r">
+                    <p class="font-label-sm flex items-start gap-2">
+                        <span class="material-symbols-outlined text-secondary text-[20px]">info</span>
+                        Besoin d'aide ? Nos conseillers sont disponibles de 8h à 18h au 034 00 000 00.
+                    </p>
+                </div>
+            </aside>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full px-gutter-mobile py-stack-lg flex flex-col items-center gap-stack-md bg-surface-container-highest border-t-2 border-outline-variant mt-auto">
+        <div class="flex items-center gap-2 text-primary font-headline-md">
+            <span class="material-symbols-outlined">agriculture</span>
+            <span class="font-bold">AgriElite</span>
+        </div>
+        <div class="flex flex-wrap justify-center gap-gutter-desktop">
+            <a class="text-on-surface-variant font-label-sm hover:underline" href="#">CGV</a>
+            <a class="text-on-surface-variant font-label-sm hover:underline" href="#">Confidentialité</a>
+            <a class="text-on-surface-variant font-label-sm hover:underline" href="#">Contact</a>
+            <a class="text-on-surface-variant font-label-sm hover:underline" href="#">Aide</a>
+        </div>
+        <p class="text-on-surface-variant font-label-sm">© 2024 AgriElite. Durable &amp; Robuste.</p>
+    </footer>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-label-sm">Accueil</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant" th:href="@{/catalogue/produits/catalogue}">
+            <span class="material-symbols-outlined">search</span>
+            <span class="text-label-sm">Catalogue</span>
+        </a>
+        <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+            <span class="text-label-sm">Panier</span>
+        </a>
+        <a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+            <span class="material-symbols-outlined">person</span>
+            <span class="text-label-sm">Profil</span>
+        </a>
+    </nav>
+
+    <script>
+        // Auto-submit form on quantity change
+        document.querySelectorAll('input[name="quantite"]').forEach(input => {
+            input.addEventListener('change', function() {
+                this.closest('form').submit();
+            });
+        });
+
+        // Micro-interactions
+        document.querySelectorAll('button[type="submit"]').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+    </script>
+
+</body>
 </html>

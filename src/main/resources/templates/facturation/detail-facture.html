@@ -19,6 +19,8 @@
 
     </div>
 
+    <a th:href="@{/factures/exportFacture/{id_facture}/{id_client} (id_facture = ${facture.getIdFacture()}, id_client = ${facture.getClient.getIdUtilisateur()})}">Exporter en PDF</a>
+
     <div class="statut-facture">
         <h2 th:text="${facture.getStatutFacture() != null ? facture.getStatutFacture().getLibelle() : 'Aucun état'}">
         </h2>

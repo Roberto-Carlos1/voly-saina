@@ -56,11 +56,11 @@ public class ClientFactureService {
 
     public ClientFactureService(FactureService factureService, PanierService panierService,
             PanierDetailsService panierDetailsService, LigneCommandeService ligneCommandeService,
-        ReservationMachineService reservationMachineService) {
+            ReservationMachineService reservationMachineService) {
         this.factureService = factureService;
         this.panierDetailsService = panierDetailsService;
         this.ligneCommandeService = ligneCommandeService;
-        this.reservationMachineService= reservationMachineService;
+        this.reservationMachineService = reservationMachineService;
     }
 
     public List<FactureClientDTO> listerFacturesClient(Long idClient, String filtreStatut) {
@@ -86,15 +86,20 @@ public class ClientFactureService {
         return mapToDTO(factureOpt.get());
     }
 
-    public void detailsFacture(Long idFacture, Long idClient, Model m){
+    public void detailsFacture(Long idFacture, Long idClient, Model m) {
         Facture facture = factureService.findById(idFacture);
         Panier panier = facture.getPanier();
 
         List<PanierDetails> listeCommande = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
         List<PanierDetails> listeReservation = panierDetailsService.findReservationByPanier(panier.getIdPanier());
 
-        // BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null ? panierDetailsService.montantCommande(panier.getIdPanier()) : BigDecimal.ZERO;
-        // BigDecimal montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null ? panierDetailsService.montantReservation(panier.getIdPanier()) : BigDecimal.ZERO;
+        // BigDecimal montantCommande =
+        // panierDetailsService.montantCommande(panier.getIdPanier()) != null ?
+        // panierDetailsService.montantCommande(panier.getIdPanier()) : BigDecimal.ZERO;
+        // BigDecimal montantReservation =
+        // panierDetailsService.montantReservation(panier.getIdPanier()) != null ?
+        // panierDetailsService.montantReservation(panier.getIdPanier()) :
+        // BigDecimal.ZERO;
         // BigDecimal montantTotal = montantCommande.add(montantReservation);
 
         List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
@@ -102,18 +107,19 @@ public class ClientFactureService {
         List<ReservationMachine> reservationMachines = reservationMachineService.findAll();
 
         List<LigneCommande> lignes = new ArrayList<>();
-        List<ReservationMachine> ligneReservation= new ArrayList<>();
+        List<ReservationMachine> ligneReservation = new ArrayList<>();
 
         for (LigneCommande ligne : ligneCommande) {
             for (PanierDetails panierDet : panierDetails) {
-                if (panierDet.getCommande() != null && (panierDet.getCommande().getIdCommande() == ligne.getCommande().getIdCommande())) {
-                        lignes.add(ligne);
+                if (panierDet.getCommande() != null
+                        && (panierDet.getCommande().getIdCommande() == ligne.getCommande().getIdCommande())) {
+                    lignes.add(ligne);
                 }
             }
         }
 
-        for(ReservationMachine reserve: reservationMachines){
-            if(reserve.getFacture().getIdFacture() == facture.getIdFacture()){
+        for (ReservationMachine reserve : reservationMachines) {
+            if (reserve.getFacture().getIdFacture() == facture.getIdFacture()) {
                 ligneReservation.add(reserve);
             }
         }
@@ -131,8 +137,12 @@ public class ClientFactureService {
         List<PanierDetails> listeCommande = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
         List<PanierDetails> listeReservation = panierDetailsService.findReservationByPanier(panier.getIdPanier());
 
-        BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null ? panierDetailsService.montantCommande(panier.getIdPanier()) : BigDecimal.ZERO;
-        BigDecimal montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null ? panierDetailsService.montantReservation(panier.getIdPanier()) : BigDecimal.ZERO;
+        BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null
+                ? panierDetailsService.montantCommande(panier.getIdPanier())
+                : BigDecimal.ZERO;
+        BigDecimal montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null
+                ? panierDetailsService.montantReservation(panier.getIdPanier())
+                : BigDecimal.ZERO;
         BigDecimal montantTotal = montantCommande.add(montantReservation);
 
         try {
@@ -209,20 +219,21 @@ public class ClientFactureService {
             document.add(Chunk.NEWLINE);
 
             // ============ SECTION COMMANDES ============
-            PdfPTable sectionHeaderCommande = new PdfPTable(1);
-            sectionHeaderCommande.setWidthPercentage(100);
-            PdfPCell sectionCellCommande = new PdfPCell();
-            sectionCellCommande.setBackgroundColor(new Color(0, 102, 51));
-            sectionCellCommande.setPadding(8);
-            sectionCellCommande.setHorizontalAlignment(Element.ALIGN_CENTER);
-            sectionCellCommande.setPhrase(new Phrase("COMMANDES DE PRODUITS", headerFont));
-            sectionHeaderCommande.addCell(sectionCellCommande);
-            document.add(sectionHeaderCommande);
-            document.add(Chunk.NEWLINE);
 
             if (listeCommande.isEmpty()) {
                 document.add(new Paragraph("Aucune commande de produit", normalFont));
             } else {
+                PdfPTable sectionHeaderCommande = new PdfPTable(1);
+                sectionHeaderCommande.setWidthPercentage(100);
+                PdfPCell sectionCellCommande = new PdfPCell();
+                sectionCellCommande.setBackgroundColor(new Color(0, 102, 51));
+                sectionCellCommande.setPadding(8);
+                sectionCellCommande.setHorizontalAlignment(Element.ALIGN_CENTER);
+                sectionCellCommande.setPhrase(new Phrase("COMMANDES DE PRODUITS", headerFont));
+                sectionHeaderCommande.addCell(sectionCellCommande);
+                document.add(sectionHeaderCommande);
+                document.add(Chunk.NEWLINE);
+
                 PdfPTable tableCommande = new PdfPTable(5);
                 tableCommande.setWidthPercentage(100);
                 tableCommande.setWidths(new float[] { 10f, 15f, 15f, 15f, 15f });
@@ -238,20 +249,21 @@ public class ClientFactureService {
             document.add(Chunk.NEWLINE);
 
             // ============ SECTION RÉSERVATIONS ============
-            PdfPTable sectionHeaderReservation = new PdfPTable(1);
-            sectionHeaderReservation.setWidthPercentage(100);
-            PdfPCell sectionCellReservation = new PdfPCell();
-            sectionCellReservation.setBackgroundColor(new Color(0, 102, 51));
-            sectionCellReservation.setPadding(8);
-            sectionCellReservation.setHorizontalAlignment(Element.ALIGN_CENTER);
-            sectionCellReservation.setPhrase(new Phrase("RÉSERVATIONS DE MACHINES", headerFont));
-            sectionHeaderReservation.addCell(sectionCellReservation);
-            document.add(sectionHeaderReservation);
-            document.add(Chunk.NEWLINE);
 
             if (listeReservation.isEmpty()) {
                 document.add(new Paragraph("Aucune réservation de machines", normalFont));
             } else {
+                PdfPTable sectionHeaderReservation = new PdfPTable(1);
+                sectionHeaderReservation.setWidthPercentage(100);
+                PdfPCell sectionCellReservation = new PdfPCell();
+                sectionCellReservation.setBackgroundColor(new Color(0, 102, 51));
+                sectionCellReservation.setPadding(8);
+                sectionCellReservation.setHorizontalAlignment(Element.ALIGN_CENTER);
+                sectionCellReservation.setPhrase(new Phrase("RÉSERVATIONS DE MACHINES", headerFont));
+                sectionHeaderReservation.addCell(sectionCellReservation);
+                document.add(sectionHeaderReservation);
+                document.add(Chunk.NEWLINE);
+
                 PdfPTable tableReservation = new PdfPTable(6);
                 tableReservation.setWidthPercentage(100);
                 tableReservation.setWidths(new float[] { 10f, 15f, 15f, 15f, 10f, 15f });

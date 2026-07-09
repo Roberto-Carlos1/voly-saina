@@ -9,12 +9,12 @@
 
 <body>
     <h1>Liste des maintenances</h1>
-    <a href="/maintenances-machine/ajouter">Nouvelle maintenance</a>
+    <a href="/admin/maintenances-machine/ajouter">Nouvelle maintenance</a>
     <p th:if="${success}" th:text="${success}"></p>
     <p th:if="${error}" th:text="${error}"></p>
 
     <h3>Filtre</h3>
-    <form action="/maintenances-machine/pages" method="post">
+    <form action="/admin/maintenances-machine/pages" method="post">
         <p>
             Éléments par page
             <input type="number" name="pages" id="">
@@ -63,10 +63,10 @@
                 <td th:text="${maintenance.getTravaux()}"></td>
                 <td th:text="${maintenance.getCout()}"></td>
                 <td>
-                    <a th:href="@{/maintenances-machine/valider/{id}(id=${maintenance.idMaintenance})}"
+                    <a th:href="@{/admin/maintenances-machine/valider/{id}(id=${maintenance.idMaintenance})}"
                        th:if="${maintenance.getStatutMaintenance().getCode() == 'prevue' || maintenance.getStatutMaintenance().getCode() == 'en_cours'}">Valider</a>
-                    <a th:href="@{/maintenances-machine/modifier/{id}(id=${maintenance.idMaintenance})}">Modifier</a>
-                    <a th:href="@{/maintenances-machine/supprimer/{id}(id=${maintenance.idMaintenance})}"
+                    <a th:href="@{/admin/maintenances-machine/modifier/{id}(id=${maintenance.idMaintenance})}">Modifier</a>
+                    <a th:href="@{/admin/maintenances-machine/supprimer/{id}(id=${maintenance.idMaintenance})}"
                        onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
                 </td>
             </tr>
@@ -110,7 +110,7 @@
                         var id = m.idMaintenance;
                         var statutCode = m.statutMaintenance ? m.statutMaintenance.code : '';
                         var lienValider = (statutCode === 'prevue' || statutCode === 'en_cours')
-                            ? '<a href="/maintenances-machine/valider/' + id + '">Valider</a> '
+                            ? '<a href="/admin/maintenances-machine/valider/' + id + '">Valider</a> '
                             : '';
                         line.innerHTML = `
                             <td>${machineNom}</td>
@@ -122,8 +122,8 @@
                             <td>${m.cout || ''}</td>
                             <td>
                                 ${lienValider}
-                                <a href="/maintenances-machine/modifier/${id}">Modifier</a>
-                                <a href="/maintenances-machine/supprimer/${id}" onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
+                                <a href="/admin/maintenances-machine/modifier/${id}">Modifier</a>
+                                <a href="/admin/maintenances-machine/supprimer/${id}" onclick="return confirm('Supprimer cette maintenance ?')">Supprimer</a>
                             </td>`;
                         lines.appendChild(line);
                     });

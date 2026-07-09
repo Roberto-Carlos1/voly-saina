@@ -28,7 +28,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Controller
-@RequestMapping("/factures")
+@RequestMapping("/admin/factures")
 public class FactureController {
 
     @Autowired
@@ -94,12 +94,12 @@ public class FactureController {
         Pages p = pageService.findById(1L);
         if (page <= 0) {
             attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
-            return "redirect:/factures";
+            return "redirect:/admin/factures";
         } else {
             p.setNombre(page);
             pageService.save(p);
         }
-        return "redirect:/factures";
+        return "redirect:/admin/factures";
     }
 
     // GET /api/factures/{id}

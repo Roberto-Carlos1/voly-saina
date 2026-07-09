@@ -19,7 +19,7 @@ import com.voly_saina.entity.ReservationMachine;
 import com.voly_saina.service.ReservationMachineService;
 
 @Controller
-@RequestMapping("/reservations-machine")
+@RequestMapping("/admin/reservations-machine")
 public class ReservationMachineController {
 
     @Autowired

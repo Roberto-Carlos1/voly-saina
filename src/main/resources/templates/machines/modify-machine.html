@@ -9,7 +9,7 @@
 
 <body>
     <h1>Page de modification</h1>
-    <form th:action="@{/machines/modifier/{id}(id=${machine.getIdMachine()})}" method="post">
+    <form th:action="@{/admin/machines/modifier/{id}(id=${machine.getIdMachine()})}" method="post">
         <p>
             Nom machine
             <input type="text" name="nom" th:value="${machine.getNom()}">

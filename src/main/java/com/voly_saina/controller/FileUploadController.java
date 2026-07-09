@@ -31,7 +31,7 @@ public class FileUploadController {
     this.storageService = storageService;
   }
 
-  @GetMapping("/files")
+  @GetMapping("/admin/files")
   public String listUploadedFiles(Model model) {
 
     model.addAttribute("files", storageService.loadAll().map(
@@ -63,7 +63,7 @@ public class FileUploadController {
     redirectAttributes.addFlashAttribute("message",
         "You successfully uploaded " + file.getOriginalFilename() + "!");
 
-    return "redirect:/files";
+    return "redirect:/admin/files";
   }
 
   @ExceptionHandler(StorageFileNotFoundException.class)

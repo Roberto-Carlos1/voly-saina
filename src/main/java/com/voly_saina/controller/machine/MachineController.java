@@ -35,7 +35,7 @@ import com.voly_saina.service.StatutMachineService;
 import com.voly_saina.service.TypeMachineService;
 
 @Controller
-@RequestMapping("/machines")
+@RequestMapping("/admin/machines")
 public class MachineController {
     private final EtatMachineService etatMachineService;
     private final MachineService machineService;
@@ -104,12 +104,12 @@ public class MachineController {
         Pages p = pageService.findById(1L);
         if (page <= 0) {
             attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
-            return "redirect:/machines";
+            return "redirect:/admin/machines";
         } else {
             p.setNombre(page);
             pageService.save(p);
         }
-        return "redirect:/machines";
+        return "redirect:/admin/machines";
     }
 
     @GetMapping("/ajouter")
@@ -147,13 +147,13 @@ public class MachineController {
         statutMachineService.save(statutMachine);
 
         redirectAttributes.addFlashAttribute("success", "Machine insérée avec succès");
-        return "redirect:/machines";
+        return "redirect:/admin/machines";
     }
 
     @GetMapping("/supprimer/{id}")
     public String deleteMachine(@PathVariable Long id, Model model) {
         machineService.deleteById(id);
-        return "redirect:/machines";
+        return "redirect:/admin/machines";
     }
 
     @GetMapping("/modifier/{id}")
@@ -181,7 +181,7 @@ public class MachineController {
         Machine machine = machineService.findById(id);
         if (machine == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
-            return "redirect:/machines";
+            return "redirect:/admin/machines";
         }
 
         machine.setNom(nom);
@@ -203,7 +203,7 @@ public class MachineController {
         }
 
         redirectAttributes.addFlashAttribute("success", "Machine modifiée avec succès");
-        return "redirect:/machines";
+        return "redirect:/admin/machines";
     }
 
     // GET /machines/{id}

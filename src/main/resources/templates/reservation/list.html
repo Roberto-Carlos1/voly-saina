@@ -1,38 +1,392 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<!--
+  Vue liste des réservations (côté admin) — route GET /admin/reservations-machine
+  Rendue par ReservationMachineController.getAllReservations(...).
+
+  Disposition « maître / détail » :
+    - à gauche  : le tableau des réservations (triable sur plusieurs critères) ;
+    - à droite  : le détail de la réservation sélectionnée (rempli en JavaScript
+                  à partir des attributs data-* de la ligne cliquée — aucun appel réseau).
+
+  Données fournies par le contrôleur :
+    - reservations : List<ReservationMachine>
+    - totalReservations / enAttente / enCours / terminees : compteurs par statut
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Réservations — Voly Saina +')}"></head>
 <body>
-    <h1>Liste des reservations</h1>
-    <table border="1">
-        <tr>
-            <th>Id reservation</th>
-            <th>Id client</th>
-            <th>Id machine</th>
-            <th>Date debut</th>
-            <th>Date fin</th>
-            <th>Lieu livraison</th>
-            <th>Actions</th>
-        </tr>
 
-        <tbody id="reservationLines">
-            <tr th:each="reservation : ${reservations}">
-                <td th:text=${reservation.getIdReservation()}></td>
-                <td th:text=${reservation.getClient().getIdUtilisateur()}></td>
-                <td th:text=${reservation.getMachine().getIdMachine()}></td>
-                <td th:text=${reservation.getDateDebut()}></td>
-                <td th:text=${reservation.getDateFin()}></td>
-                <td th:text=${reservation.getLieuLivraison()}></td>
-                <td>
-                    <a href="">Accepter</a>
-                    <a href="">Refuser</a>
-                </td>
+<!-- Barre latérale (fragment réutilisable, onglet « Réservations » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('reservations')}"></aside>
 
-            </tr>
-        </tbody>
-    </table>
+<main class="admin-main">
+
+    <!-- Barre supérieure (fragment réutilisable) -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Gestion des réservations</h1>
+                <p>Suivez les locations de machines et consultez leur détail.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/reservations-machine/calendrier}">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    Calendrier
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Compteurs par statut ===== -->
+        <div class="stat-bar">
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">event</span></div>
+                <div>
+                    <p class="stat-tile__label">Total</p>
+                    <p class="stat-tile__value" th:text="${totalReservations}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--off"><span class="material-symbols-outlined">schedule</span></div>
+                <div>
+                    <p class="stat-tile__label">En attente</p>
+                    <p class="stat-tile__value" th:text="${enAttente}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--ok"><span class="material-symbols-outlined">local_shipping</span></div>
+                <div>
+                    <p class="stat-tile__label">En cours</p>
+                    <p class="stat-tile__value" th:text="${enCours}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">check_circle</span></div>
+                <div>
+                    <p class="stat-tile__label">Terminées</p>
+                    <p class="stat-tile__value" th:text="${terminees}">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Disposition maître / détail ===== -->
+        <div class="res-layout">
+
+            <!-- ---------- Tableau (gauche) ---------- -->
+            <div>
+                <p class="res-hint">
+                    <span class="material-symbols-outlined">filter_list</span>
+                    Cliquez sur les en-têtes pour trier (tri multicritère), et sur une ligne pour voir le détail.
+                </p>
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table class="data" id="resTable">
+                            <thead>
+                            <tr>
+                                <th class="sortable" data-sort="client" data-type="text">Client <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort="machine" data-type="text">Machine <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort="debut" data-type="date">Début <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort="fin" data-type="date">Fin <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort="prix" data-type="number">Prix <span class="sort-ind"></span></th>
+                                <th class="sortable" data-sort="statut" data-type="text">Statut <span class="sort-ind"></span></th>
+                            </tr>
+                            </thead>
+                            <tbody id="reservationLines">
+                            <!-- Aucune réservation -->
+                            <tr th:if="${#lists.isEmpty(reservations)}">
+                                <td colspan="6" class="empty-state">Aucune réservation enregistrée.</td>
+                            </tr>
+                            <!-- Une ligne par réservation (les data-* servent au tri ET au panneau de détail) -->
+                            <tr class="res-row" th:each="reservation : ${reservations}"
+                                th:data-id="${reservation.idReservation}"
+                                th:data-client="${reservation.client != null ? reservation.client.nom : ''}"
+                                th:data-tel="${reservation.client != null and reservation.client.telephone != null ? reservation.client.telephone : ''}"
+                                th:data-email="${reservation.client != null and reservation.client.email != null ? reservation.client.email : ''}"
+                                th:data-machine="${reservation.machine != null ? reservation.machine.nom : ''}"
+                                th:data-machine-type="${reservation.machine != null and reservation.machine.typeMachine != null ? reservation.machine.typeMachine.libelle : ''}"
+                                th:data-debut="${reservation.dateDebut}"
+                                th:data-fin="${reservation.dateFin}"
+                                th:data-lieu="${reservation.lieuLivraison != null ? reservation.lieuLivraison : ''}"
+                                th:data-prix="${reservation.prixTotal}"
+                                th:data-statut="${reservation.statutReservation != null ? reservation.statutReservation.libelle : ''}"
+                                th:data-statut-code="${reservation.statutReservation != null ? reservation.statutReservation.code : ''}"
+                                th:data-remarque="${reservation.remarque != null ? reservation.remarque : ''}"
+                                th:data-motif="${reservation.motifRefus != null ? reservation.motifRefus : ''}"
+                                th:data-creation="${reservation.dateCreation != null ? #temporals.format(reservation.dateCreation, 'dd/MM/yyyy') : ''}">
+                                <td class="strong" th:text="${reservation.client != null ? reservation.client.nom : '—'}">Client</td>
+                                <td th:text="${reservation.machine != null ? reservation.machine.nom : '—'}">Machine</td>
+                                <td th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')}">01/01/2024</td>
+                                <td th:text="${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}">01/01/2024</td>
+                                <td class="strong" th:text="${reservation.prixTotal} + ' Ar'">0 Ar</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${reservation.statutReservation != null} ? 'badge--' + ${reservation.statutReservation.code} : ''"
+                                          th:text="${reservation.statutReservation != null ? reservation.statutReservation.libelle : '—'}">Statut</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------- Panneau de détail (droite) ---------- -->
+            <aside class="res-detail">
+                <div class="card card--pad-lg">
+                    <!-- État initial : aucune réservation sélectionnée -->
+                    <div id="resDetailEmpty" class="res-detail__empty">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        Sélectionnez une réservation dans le tableau pour afficher son détail.
+                    </div>
+
+                    <!-- Détail (rempli en JavaScript) -->
+                    <div id="resDetailContent" style="display:none;">
+                        <div class="res-detail__head">
+                            <div>
+                                <p class="res-detail__eyebrow">Réservation</p>
+                                <h3 id="rd-title">#0</h3>
+                            </div>
+                            <button type="button" class="res-detail__close" id="rd-close" title="Fermer">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        <div class="res-detail__list">
+                            <span id="rd-badge" class="badge">Statut</span>
+
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">person</span>
+                                <div>
+                                    <p class="res-field__label">Client</p>
+                                    <p class="res-field__value" id="rd-client">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field" id="rd-contact-row">
+                                <span class="material-symbols-outlined">mail</span>
+                                <div>
+                                    <p class="res-field__label">Contact</p>
+                                    <p class="res-field__value" id="rd-contact">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">agriculture</span>
+                                <div>
+                                    <p class="res-field__label">Machine</p>
+                                    <p class="res-field__value" id="rd-machine">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">calendar_today</span>
+                                <div>
+                                    <p class="res-field__label">Période</p>
+                                    <p class="res-field__value" id="rd-periode">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">schedule</span>
+                                <div>
+                                    <p class="res-field__label">Durée</p>
+                                    <p class="res-field__value" id="rd-duree">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">location_on</span>
+                                <div>
+                                    <p class="res-field__label">Lieu de livraison</p>
+                                    <p class="res-field__value" id="rd-lieu">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">payments</span>
+                                <div>
+                                    <p class="res-field__label">Prix total</p>
+                                    <p class="res-field__value" id="rd-prix">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field" id="rd-remarque-row">
+                                <span class="material-symbols-outlined">description</span>
+                                <div>
+                                    <p class="res-field__label">Remarque</p>
+                                    <p class="res-field__value" id="rd-remarque">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field" id="rd-motif-row">
+                                <span class="material-symbols-outlined">report</span>
+                                <div>
+                                    <p class="res-field__label">Motif de refus</p>
+                                    <p class="res-field__value" id="rd-motif">—</p>
+                                </div>
+                            </div>
+                            <div class="res-field">
+                                <span class="material-symbols-outlined">event</span>
+                                <div>
+                                    <p class="res-field__label">Créée le</p>
+                                    <p class="res-field__value" id="rd-creation">—</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lien vers la fiche complète (page de détail dédiée) -->
+                        <a id="rd-full" class="btn btn--primary" href="#"
+                           style="width:100%; justify-content:center; margin-top:20px;">
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                            Voir la fiche complète
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/machines}">Flotte de matériel</a>
+            <a th:href="@{/admin/reservations-machine/calendrier}">Calendrier</a>
+        </div>
+    </footer>
+</main>
+
+<script>
+    // =================================================================
+    //  Réservations : tri multicritère + panneau de détail (JS pur).
+    // =================================================================
+    const tbody = document.getElementById("reservationLines");
+
+    /* ---------- 1) Tri multicritère du tableau ----------
+       On garde une liste ordonnée de critères (le 1er est prioritaire).
+       Cliquer un en-tête le place en tête ; recliquer inverse son sens. */
+    let sortKeys = []; // ex : [{ key:'debut', type:'date', dir:'asc' }, ...]
+
+    function cellValue(row, key, type) {
+        const v = row.getAttribute("data-" + key) || "";
+        if (type === "number") return parseFloat(v) || 0;
+        return v; // 'date' au format ISO (aaaa-mm-jj) et 'text' se comparent comme du texte
+    }
+
+    function compareRows(a, b) {
+        for (const critere of sortKeys) {
+            const va = cellValue(a, critere.key, critere.type);
+            const vb = cellValue(b, critere.key, critere.type);
+            let cmp;
+            if (critere.type === "number") cmp = va - vb;
+            else cmp = String(va).localeCompare(String(vb), "fr");
+            if (cmp !== 0) return critere.dir === "asc" ? cmp : -cmp;
+        }
+        return 0;
+    }
+
+    function appliquerTri() {
+        const rows = Array.from(tbody.querySelectorAll("tr.res-row"));
+        rows.sort(compareRows);
+        rows.forEach(r => tbody.appendChild(r)); // réordonne les lignes dans le DOM
+        majIndicateurs();
+    }
+
+    function majIndicateurs() {
+        document.querySelectorAll("th.sortable").forEach(th => {
+            th.classList.remove("is-asc", "is-desc");
+            const ind = th.querySelector(".sort-ind");
+            if (ind) ind.textContent = "";
+        });
+        sortKeys.forEach((critere, i) => {
+            const th = document.querySelector('th.sortable[data-sort="' + critere.key + '"]');
+            if (!th) return;
+            th.classList.add(critere.dir === "asc" ? "is-asc" : "is-desc");
+            const ind = th.querySelector(".sort-ind");
+            // Flèche + numéro de priorité si plusieurs critères sont actifs
+            if (ind) ind.textContent = (critere.dir === "asc" ? "▲" : "▼") + (sortKeys.length > 1 ? (i + 1) : "");
+        });
+    }
+
+    document.querySelectorAll("th.sortable").forEach(th => {
+        th.addEventListener("click", () => {
+            const key = th.dataset.sort;
+            const type = th.dataset.type || "text";
+            const existant = sortKeys.find(c => c.key === key);
+            if (existant) {
+                existant.dir = existant.dir === "asc" ? "desc" : "asc";
+                sortKeys = [existant, ...sortKeys.filter(c => c.key !== key)];
+            } else {
+                sortKeys.unshift({ key, type, dir: "asc" });
+                if (sortKeys.length > 3) sortKeys.pop(); // on garde 3 critères au maximum
+            }
+            appliquerTri();
+        });
+    });
+
+    /* ---------- 2) Panneau de détail ---------- */
+    const detailEmpty = document.getElementById("resDetailEmpty");
+    const detailContent = document.getElementById("resDetailContent");
+
+    function set(id, texte) { document.getElementById(id).textContent = texte; }
+
+    // Convertit une date ISO (aaaa-mm-jj) en format français (jj/mm/aaaa).
+    function dateFr(iso) {
+        if (!iso) return "—";
+        const p = iso.split("-");
+        return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : iso;
+    }
+    // Nombre de jours entre deux dates ISO.
+    function nbJours(debut, fin) {
+        if (!debut || !fin) return 0;
+        const ms = new Date(fin) - new Date(debut);
+        return Math.round(ms / (1000 * 60 * 60 * 24));
+    }
+    // Affiche ou masque une ligne facultative selon que la valeur est vide.
+    function ligneOptionnelle(rowId, valeurId, valeur) {
+        const row = document.getElementById(rowId);
+        if (valeur && valeur.trim() !== "") {
+            document.getElementById(valeurId).textContent = valeur;
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    }
+
+    function afficherDetail(row) {
+        document.querySelectorAll("tr.res-row.is-selected").forEach(r => r.classList.remove("is-selected"));
+        row.classList.add("is-selected");
+        const d = row.dataset;
+
+        set("rd-title", "#" + d.id);
+        const badge = document.getElementById("rd-badge");
+        badge.textContent = d.statut || "—";
+        badge.className = "badge" + (d.statutCode ? " badge--" + d.statutCode : "");
+
+        set("rd-client", d.client || "—");
+        const contact = [d.tel, d.email].filter(x => x && x.trim() !== "").join("  ·  ");
+        ligneOptionnelle("rd-contact-row", "rd-contact", contact);
+
+        set("rd-machine", d.machine + (d.machineType ? "  ·  " + d.machineType : ""));
+        set("rd-periode", dateFr(d.debut) + "  →  " + dateFr(d.fin));
+        set("rd-duree", nbJours(d.debut, d.fin) + " jour(s)");
+        set("rd-lieu", (d.lieu && d.lieu.trim() !== "") ? d.lieu : "Non précisé");
+        set("rd-prix", (d.prix || "0") + " Ar");
+        ligneOptionnelle("rd-remarque-row", "rd-remarque", d.remarque);
+        ligneOptionnelle("rd-motif-row", "rd-motif", d.motif);
+        set("rd-creation", d.creation || "—");
+        document.getElementById("rd-full").href = "/admin/reservations-machine/" + d.id;
+
+        detailEmpty.style.display = "none";
+        detailContent.style.display = "block";
+    }
+
+    document.querySelectorAll("tr.res-row").forEach(row => {
+        row.addEventListener("click", () => afficherDetail(row));
+    });
+
+    // Bouton « fermer » du panneau
+    document.getElementById("rd-close").addEventListener("click", () => {
+        document.querySelectorAll("tr.res-row.is-selected").forEach(r => r.classList.remove("is-selected"));
+        detailContent.style.display = "none";
+        detailEmpty.style.display = "block";
+    });
+</script>
 </body>
 </html>

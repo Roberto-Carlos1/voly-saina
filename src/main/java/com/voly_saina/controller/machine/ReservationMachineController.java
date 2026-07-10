@@ -1,5 +1,6 @@
 package com.voly_saina.controller.machine;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +26,59 @@ public class ReservationMachineController {
     @Autowired
     private ReservationMachineService reservationMachineService;
 
-    // GET /api/reservations-machine
+    // GET /admin/reservations-machine
     @GetMapping
     public String getAllReservations(Model model) {
         List<ReservationMachine> reservations = reservationMachineService.findAll();
         model.addAttribute("reservations", reservations);
+
+        // Statistiques par statut (calculées à partir de la liste déjà chargée,
+        // sans requête supplémentaire). Les codes viennent de la table statut_reservation.
+        model.addAttribute("totalReservations", reservations.size());
+        model.addAttribute("enAttente", countByCode(reservations, "en_attente"));
+        model.addAttribute("enCours", countByCode(reservations, "en_cours"));
+        model.addAttribute("terminees", countByCode(reservations, "terminee"));
         return "reservation/list";
     }
 
-    // GET /api/reservations-machine/{id}
+    // Compte les réservations ayant un code de statut donné (petit utilitaire lisible).
+    private long countByCode(List<ReservationMachine> reservations, String code) {
+        long total = 0;
+        for (ReservationMachine reservation : reservations) {
+            if (reservation.getStatutReservation() != null
+                    && code.equals(reservation.getStatutReservation().getCode())) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    // GET /admin/reservations-machine/{id} — page de détail d'une réservation
     @GetMapping("/{id}")
-    public ResponseEntity<ReservationMachine> getById(@PathVariable Long id) {
-        return reservationMachineService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public String getById(@PathVariable Long id, Model model) {
+        ReservationMachine reservation = reservationMachineService.findById(id).orElse(null);
+        if (reservation == null) {
+            return "redirect:/admin/reservations-machine";
+        }
+        model.addAttribute("reservation", reservation);
+
+        // Historique des réservations de la même machine (méthode de service existante).
+        if (reservation.getMachine() != null) {
+            model.addAttribute("historique",
+                    reservationMachineService.findMachine(reservation.getMachine().getIdMachine()));
+        }
+        // Durée de location en jours (calcul simple).
+        if (reservation.getDateDebut() != null && reservation.getDateFin() != null) {
+            model.addAttribute("dureeJours",
+                    ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin()));
+        }
+        // Reste à payer, uniquement si la réservation a déjà une facture.
+        if (reservation.getFacture() != null && reservation.getFacture().getMontantTotal() != null) {
+            model.addAttribute("reste",
+                    reservation.getFacture().getMontantTotal()
+                            .subtract(reservation.getFacture().getMontantPaye()));
+        }
+        return "reservation/detail";
     }
 
     // POST /api/reservations-machine

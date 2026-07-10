@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!--
+  Vue détail d'une réservation (côté admin) — route GET /admin/reservations-machine/{id}
+  Rendue par ReservationMachineController.getById(...).
+  Intègre la maquette Admin/ds.html en HTML/CSS/JS pur (design system /css/admin.css).
+
+  Données fournies par le contrôleur :
+    - reservation : la réservation (client, machine, dates, prix, statut, facture...)
+    - historique  : List<ReservationMachine> — autres réservations de la même machine
+    - dureeJours  : durée de location en jours
+    - reste       : reste à payer (présent seulement si la réservation est facturée)
+  On n'affiche que des données réellement disponibles (pas de champ inventé).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head(${'Réservation #' + reservation.idReservation})}"></head>
+<body>
+
+<!-- Barre latérale (fragment réutilisable, onglet « Réservations » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('reservations')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure (fragment réutilisable) -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <p class="crumb">
+                    <a th:href="@{/admin/reservations-machine}">Réservations</a>
+                    <span> / </span><span>Détail</span>
+                </p>
+                <h1 th:text="'Réservation #' + ${reservation.idReservation}">Réservation #0</h1>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/reservations-machine}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Grille principale (contenu large à gauche, résumé à droite) ===== -->
+        <div class="rd-grid">
+
+            <!-- ---------- Colonne gauche ---------- -->
+            <div class="rd-col">
+
+                <!-- Machine + réservation -->
+                <div class="card card--pad-lg">
+                    <div class="machine-hero" style="margin-bottom:16px;">
+                        <div class="machine-hero__art"><span class="material-symbols-outlined">agriculture</span></div>
+                        <div class="machine-hero__foot">
+                            <span th:text="${reservation.machine != null and reservation.machine.typeMachine != null ? reservation.machine.typeMachine.libelle : 'Machine'}">Type</span>
+                            <span th:if="${reservation.machine != null}" th:text="${reservation.machine.prixJour} + ' Ar/jour'">Prix/jour</span>
+                        </div>
+                    </div>
+
+                    <div class="section-head" style="margin-bottom:8px;">
+                        <h2 th:text="${reservation.machine != null ? reservation.machine.nom : 'Machine'}">Machine</h2>
+                        <span class="badge" th:if="${reservation.statutReservation != null}"
+                              th:classappend="'badge--' + ${reservation.statutReservation.code}"
+                              th:text="${reservation.statutReservation.libelle}">Statut</span>
+                    </div>
+
+                    <div class="specs">
+                        <div class="spec-row">
+                            <span class="spec-row__key">Période</span>
+                            <span class="spec-row__val"
+                                  th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')} + '  →  ' + ${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Durée</span>
+                            <span class="spec-row__val" th:text="${dureeJours != null ? dureeJours + ' jour(s)' : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Lieu de livraison</span>
+                            <span class="spec-row__val" th:text="${reservation.lieuLivraison != null and !reservation.lieuLivraison.isEmpty() ? reservation.lieuLivraison : 'Non précisé'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Prix total</span>
+                            <span class="spec-row__val" th:text="${reservation.prixTotal} + ' Ar'">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Créée le</span>
+                            <span class="spec-row__val" th:text="${reservation.dateCreation != null ? #temporals.format(reservation.dateCreation, 'dd/MM/yyyy') : '—'}">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Remarque / motif de refus (affichés seulement s'ils existent) -->
+                    <div class="res-field" style="margin-top:16px;"
+                         th:if="${reservation.remarque != null and !reservation.remarque.isEmpty()}">
+                        <span class="material-symbols-outlined">description</span>
+                        <div>
+                            <p class="res-field__label">Remarque</p>
+                            <p class="res-field__value" th:text="${reservation.remarque}">—</p>
+                        </div>
+                    </div>
+                    <div class="res-field" style="margin-top:12px;"
+                         th:if="${reservation.motifRefus != null and !reservation.motifRefus.isEmpty()}">
+                        <span class="material-symbols-outlined">report</span>
+                        <div>
+                            <p class="res-field__label">Motif de refus</p>
+                            <p class="res-field__value" th:text="${reservation.motifRefus}">—</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historique des réservations de la même machine -->
+                <div class="table-card">
+                    <div class="table-card__head"><h2>Historique de la machine</h2></div>
+                    <p th:if="${historique == null or #lists.isEmpty(historique)}" class="empty-state">
+                        Aucune autre réservation pour cette machine.
+                    </p>
+                    <div class="table-scroll" th:if="${historique != null and !#lists.isEmpty(historique)}">
+                        <table class="data">
+                            <thead>
+                            <tr>
+                                <th>Début</th>
+                                <th>Client</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="h : ${historique}"
+                                th:classappend="${h.idReservation == reservation.idReservation} ? ' is-selected' : ''">
+                                <td th:text="${#temporals.format(h.dateDebut, 'dd/MM/yyyy')}">01/01/2024</td>
+                                <td class="strong" th:text="${h.client != null ? h.client.nom : '—'}">Client</td>
+                                <td th:text="${h.prixTotal} + ' Ar'">0 Ar</td>
+                                <td>
+                                    <span class="badge" th:if="${h.statutReservation != null}"
+                                          th:classappend="'badge--' + ${h.statutReservation.code}"
+                                          th:text="${h.statutReservation.libelle}">Statut</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------- Colonne droite ---------- -->
+            <div class="rd-col">
+
+                <!-- Décision administrateur : liens vers la validation / le refus -->
+                <div class="card card--pad-lg">
+                    <div class="section-head"><h2>Décision</h2></div>
+                    <p class="detail-text" style="margin-bottom:12px;">Valider ou refuser cette réservation.</p>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <a class="btn btn--primary" style="width:100%; justify-content:center;"
+                           th:href="@{/admin/reservations-machine/{id}/valider(id=${reservation.idReservation})}"
+                           onclick="return confirm('Valider cette réservation ?');">
+                            <span class="material-symbols-outlined">check_circle</span>
+                            Valider
+                        </a>
+                        <a class="btn btn--danger" style="width:100%; justify-content:center;"
+                           th:href="@{/admin/reservations-machine/{id}/refuser(id=${reservation.idReservation})}"
+                           onclick="return confirm('Refuser cette réservation ?');">
+                            <span class="material-symbols-outlined">block</span>
+                            Refuser
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Informations client -->
+                <div class="card card--pad-lg">
+                    <div class="section-head"><h2>Client</h2></div>
+                    <div class="res-field" style="margin-bottom:12px;">
+                        <span class="material-symbols-outlined">person</span>
+                        <div>
+                            <p class="res-field__label">Nom</p>
+                            <p class="res-field__value" th:text="${reservation.client != null ? reservation.client.nom : '—'}">—</p>
+                        </div>
+                    </div>
+                    <div class="specs">
+                        <div class="spec-row">
+                            <span class="spec-row__key">Téléphone</span>
+                            <span class="spec-row__val" th:text="${reservation.client != null and reservation.client.telephone != null and !reservation.client.telephone.isEmpty() ? reservation.client.telephone : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Email</span>
+                            <span class="spec-row__val" th:text="${reservation.client != null and reservation.client.email != null and !reservation.client.email.isEmpty() ? reservation.client.email : '—'}">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facturation -->
+                <div class="card card--pad-lg">
+                    <div class="section-head"><h2>Facturation</h2></div>
+
+                    <!-- Réservation facturée -->
+                    <div th:if="${reservation.facture != null}">
+                        <div class="res-field" style="margin-bottom:12px;">
+                            <span class="material-symbols-outlined">receipt_long</span>
+                            <div>
+                                <p class="res-field__label">Numéro de facture</p>
+                                <p class="res-field__value" th:text="${reservation.facture.numero}">—</p>
+                            </div>
+                        </div>
+                        <div class="specs">
+                            <div class="spec-row">
+                                <span class="spec-row__key">Montant total</span>
+                                <span class="spec-row__val" th:text="${reservation.facture.montantTotal} + ' Ar'">—</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-row__key">Montant payé</span>
+                                <span class="spec-row__val" th:text="${reservation.facture.montantPaye} + ' Ar'">—</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-row__key">Reste à payer</span>
+                                <span class="spec-row__val" th:text="${reste != null ? reste + ' Ar' : '—'}">—</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-row__key">Statut</span>
+                                <span class="spec-row__val" th:text="${reservation.facture.statutFacture != null ? reservation.facture.statutFacture.libelle : '—'}">—</span>
+                            </div>
+                        </div>
+                        <a class="btn btn--outline" style="width:100%; justify-content:center; margin-top:16px;"
+                           th:href="@{/admin/factures/{id}(id=${reservation.facture.idFacture})}">
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                            Voir la facture
+                        </a>
+                    </div>
+
+                    <!-- Réservation non facturée -->
+                    <div th:if="${reservation.facture == null}">
+                        <p class="detail-text" style="margin-bottom:12px;">Cette réservation n'a pas encore de facture.</p>
+                        <div class="specs">
+                            <div class="spec-row">
+                                <span class="spec-row__key">Montant de la réservation</span>
+                                <span class="spec-row__val" th:text="${reservation.prixTotal} + ' Ar'">—</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/reservations-machine}">Réservations</a>
+            <a th:href="@{/admin/machines}">Flotte de matériel</a>
+        </div>
+    </footer>
+</main>
+
+</body>
+</html>

@@ -85,6 +85,11 @@
 
 <!-- ===== TOPBAR ===== -->
 <header th:fragment="topbar" class="admin-topbar">
+    <!-- Bouton menu (visible uniquement en mobile) : ouvre/ferme la barre latérale -->
+    <button type="button" class="admin-topbar__menu" aria-label="Menu"
+            onclick="document.getElementById('adminSidebar').classList.toggle('is-open')">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
     <div class="admin-topbar__search">
         <span class="material-symbols-outlined">search</span>
         <input type="text" placeholder="Rechercher une machine, un client...">

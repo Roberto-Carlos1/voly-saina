@@ -233,6 +233,22 @@ a { text-decoration: none; color: inherit; }
     background-color: var(--surface);
     border-bottom: 1px solid var(--outline-variant);
 }
+/* Bouton menu mobile (masqué sur grand écran, affiché sous 640px) */
+.admin-topbar__menu {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--on-surface-variant);
+    cursor: pointer;
+    border-radius: var(--radius);
+    flex-shrink: 0;
+}
+.admin-topbar__menu:hover { background-color: var(--surface-container-low); color: var(--primary); }
+
 .admin-topbar__search {
     position: relative;
     width: 100%;
@@ -330,6 +346,8 @@ a { text-decoration: none; color: inherit; }
     border: 2px solid var(--outline-variant);
 }
 .btn--outline:hover { background-color: var(--surface-container-low); }
+.btn--danger { background-color: var(--error); color: #fff; }
+.btn--danger:hover { filter: brightness(1.1); }
 
 .badge {
     display: inline-flex;
@@ -340,6 +358,7 @@ a { text-decoration: none; color: inherit; }
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 .badge--disponible { background-color: var(--surface-container-highest); color: var(--on-surface-variant); }
 .badge--louee { background-color: var(--primary-container); color: #fff; }
@@ -992,8 +1011,8 @@ table.data td.muted { color: var(--on-surface-variant); }
 .flash--success { background-color: var(--primary-container); color: #fff; border-left-color: var(--on-primary-fixed-variant); }
 .flash--error { background-color: var(--error-container); color: var(--on-error-container); border-left-color: var(--error); }
 
-/* Barre de statistiques globales du parc */
-.stat-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--stack-md); }
+/* Barre de statistiques (s'adapte automatiquement à 3 ou 4 tuiles) */
+.stat-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--stack-md); }
 .stat-tile {
     display: flex;
     align-items: center;
@@ -1121,6 +1140,63 @@ table.data td.muted { color: var(--on-surface-variant); }
 .pager__btn .material-symbols-outlined { font-size: 18px; }
 
 /* =====================================================================
+   Réservations — disposition maître/détail (liste à gauche, détail à droite)
+   ===================================================================== */
+.res-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: var(--stack-lg);
+    align-items: start;
+}
+.res-detail { position: sticky; top: 88px; }
+.res-detail > .card { margin: 5px; }
+
+/* Astuce de tri au-dessus du tableau */
+.res-hint { font-size: 12px; color: var(--on-surface-variant); margin: 0 0 8px; display: inline-flex; align-items: center; gap: 6px; }
+.res-hint .material-symbols-outlined { font-size: 16px; }
+
+/* En-têtes de colonnes triables (tri multicritère) */
+table.data th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+table.data th.sortable:hover { color: var(--primary); }
+.sort-ind { font-size: 10px; margin-left: 4px; opacity: .35; }
+th.sortable.is-asc .sort-ind,
+th.sortable.is-desc .sort-ind { opacity: 1; color: var(--primary); }
+
+/* Ligne cliquable + ligne sélectionnée */
+table.data tbody tr.res-row { cursor: pointer; }
+table.data tbody tr.is-selected { background-color: var(--surface-container-high); box-shadow: inset 3px 0 0 var(--primary); }
+
+/* Panneau de détail */
+.res-detail__empty { text-align: center; color: var(--on-surface-variant); padding: var(--stack-lg) var(--stack-md); font-size: 14px; }
+.res-detail__empty .material-symbols-outlined { font-size: 48px; color: var(--outline-variant); display: block; margin: 0 auto 8px; }
+.res-detail__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: var(--stack-md);
+    padding-bottom: var(--stack-md);
+    border-bottom: 1px solid var(--outline-variant);
+}
+.res-detail__eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--on-surface-variant); margin: 0; }
+.res-detail__head h3 { font-size: 20px; font-weight: 700; margin: 2px 0 0; color: var(--on-surface); }
+.res-detail__close { border: none; background: transparent; cursor: pointer; color: var(--on-surface-variant); padding: 2px; border-radius: var(--radius); display: inline-flex; }
+.res-detail__close:hover { background-color: var(--surface-container-high); }
+.res-detail__list { display: flex; flex-direction: column; gap: 14px; }
+.res-field { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; }
+.res-field > .material-symbols-outlined { font-size: 18px; color: var(--primary); margin-top: 2px; }
+.res-field__label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--on-surface-variant); margin: 0; }
+.res-field__value { font-size: 14px; font-weight: 600; color: var(--on-surface); margin: 2px 0 0; word-break: break-word; }
+
+/* Détail d'une réservation : grille (contenu large à gauche, résumé à droite) */
+.rd-grid { display: grid; grid-template-columns: 2fr 1fr; gap: var(--stack-lg); align-items: start; }
+.rd-col { display: flex; flex-direction: column; gap: var(--stack-lg); }
+/* Fil d'ariane */
+.crumb { font-size: 12px; color: var(--on-surface-variant); margin: 0 0 6px; }
+.crumb a { color: var(--primary); font-weight: 600; }
+.crumb a:hover { text-decoration: underline; }
+
+/* =====================================================================
    Responsive
    ===================================================================== */
 @media (max-width: 1100px) {
@@ -1128,14 +1204,19 @@ table.data td.muted { color: var(--on-surface-variant); }
     .grid-main { grid-template-columns: 1fr; }
     .cal-layout { grid-template-columns: 1fr; }
     .detail-grid { grid-template-columns: 1fr; }
-    .stat-bar { grid-template-columns: 1fr; }
+    .res-layout { grid-template-columns: 1fr; }
+    .res-detail { position: static; }
+    .rd-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
     .grid-kpi { grid-template-columns: 1fr; }
-    .admin-sidebar { transform: translateX(-100%); transition: transform .2s ease; }
+    .admin-sidebar { transform: translateX(-100%); transition: transform .2s ease; box-shadow: 2px 0 12px rgba(0,0,0,0.15); }
     .admin-sidebar.is-open { transform: translateX(0); }
+    .admin-topbar__menu { display: inline-flex; }
     .admin-main { margin-left: 0; }
+    .admin-canvas { padding: 16px; }
     .admin-topbar__search { max-width: none; }
+    .page-head__actions { width: 100%; }
     .cal-toolbar { flex-direction: column; align-items: stretch; }
     .info-grid, .mini-stats { grid-template-columns: 1fr; }
     .res-body__top { flex-direction: column; }

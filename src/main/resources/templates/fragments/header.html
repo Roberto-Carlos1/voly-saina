@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head">
+
+
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -190,18 +192,11 @@
                     Voly Saina +
                 </a>
                 <div class="hidden md:flex gap-6 items-center">
-                    <!-- Matériel Agricole -->
-                    <a href="/catalogue/machines/catalogue" 
-                       class="nav-link font-label-md text-label-md transition-colors duration-200"
-                       data-page="machines">
-                        Matériel Agricole
+                    <a href="/catalogue/machines/catalogue" class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1">
+                        Catalogue Machines
                     </a>
-                    
-                    <!-- Équipements & Pièces -->
-                    <a href="/catalogue/produits/catalogue" 
-                       class="nav-link font-label-md text-label-md transition-colors duration-200"
-                       data-page="produits">
-                        Équipements &amp; Pièces
+                    <a href="/catalogue/produits/catalogue" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200">
+                        Boutique
                     </a>
                     
                     <!-- Mes Réservations -->

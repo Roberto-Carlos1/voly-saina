@@ -1,52 +1,425 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-        }
-
-        #calendar {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head(${pageTitle})}"></head>
 <body>
-    <h1>Calendrier des reservations</h1>
-    <div id="calendar"></div>
 
-    <!-- JS FullCalendar -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<!-- Barre latérale admin (fragment réutilisable) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('calendrier')}"></aside>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const calendarEl = document.getElementById('calendar');
+<main class="admin-main">
 
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'fr',
+    <!-- Barre supérieure (fragment réutilisable) -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
 
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
+    <div class="admin-canvas">
 
-                events: "/admin/reservations-machine/calendrier/events"
+        <!-- En-tête de page -->
+        <div class="page-head">
+            <div>
+                <h1>Calendrier des réservations</h1>
+                <p>Planning des locations de matériel — vue mensuelle.</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a class="btn btn--outline" th:href="@{/admin/reservations-machine}">
+                    <span class="material-symbols-outlined">table_view</span>
+                    Liste des réservations
+                </a>
+            </div>
+        </div>
 
+        <!-- Disposition : calendrier + panneau latéral -->
+        <div class="cal-layout">
+
+            <!-- ===================== CALENDRIER ===================== -->
+            <section class="cal-section">
+                <div class="cal-toolbar">
+                    <div class="cal-toolbar__left">
+                        <h2 id="calTitle">—</h2>
+                        <div class="cal-nav">
+                            <button type="button" id="calPrev" title="Mois précédent">
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <button type="button" id="calToday">Aujourd'hui</button>
+                            <button type="button" id="calNext" title="Mois suivant">
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="cal-filter">
+                        <span class="material-symbols-outlined">filter_list</span>
+                        <select id="calFilter">
+                            <option value="">Tous les statuts</option>
+                            <option value="en_attente">En attente</option>
+                            <option value="validee">Validée</option>
+                            <option value="en_cours">En cours</option>
+                            <option value="terminee">Terminée</option>
+                            <option value="refusee">Refusée</option>
+                            <option value="annulee">Annulée</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Noms des jours -->
+                <div class="cal-weekdays">
+                    <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span>
+                    <span>Ven</span><span class="weekend">Sam</span><span class="weekend">Dim</span>
+                </div>
+
+                <!-- Grille (semaines injectées en JS) -->
+                <div id="calGrid" class="cal-grid" th:attr="data-total-machines=${totalMachines}"></div>
+            </section>
+
+            <!-- ===================== PANNEAU LATÉRAL ===================== -->
+            <aside class="cal-side">
+
+                <!-- Détail d'une réservation (au clic sur une barre) -->
+                <div id="calDetail" class="card cal-detail" hidden>
+                    <div class="cal-detail__head">
+                        <h3>Détail réservation</h3>
+                        <button type="button" id="calDetailClose" title="Fermer">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <dl class="cal-detail__body">
+                        <dt><span class="material-symbols-outlined">person</span>Client</dt>
+                        <dd id="dtClient">—</dd>
+                        <dt><span class="material-symbols-outlined">agriculture</span>Machine</dt>
+                        <dd id="dtMachine">—</dd>
+                        <dt><span class="material-symbols-outlined">event</span>Période</dt>
+                        <dd id="dtPeriode">—</dd>
+                        <dt><span class="material-symbols-outlined">location_on</span>Livraison</dt>
+                        <dd id="dtLieu">—</dd>
+                        <dt><span class="material-symbols-outlined">payments</span>Montant</dt>
+                        <dd id="dtPrix">—</dd>
+                        <dt><span class="material-symbols-outlined">check_circle</span>Statut</dt>
+                        <dd id="dtStatut">—</dd>
+                    </dl>
+                </div>
+
+                <!-- Demandes en attente -->
+                <div class="card">
+                    <div class="section-head" style="margin-bottom:12px;">
+                        <h2 style="font-size:18px; display:flex; align-items:center; gap:8px;">
+                            <span class="material-symbols-outlined" style="color:var(--secondary);">schedule</span>
+                            En attente
+                        </h2>
+                        <span class="badge badge--en_attente" id="pendingCount">0</span>
+                    </div>
+                    <div id="calPending" class="cal-pending"></div>
+                    <a th:href="@{/admin/reservations-machine}" class="btn btn--outline"
+                       style="width:100%; justify-content:center; margin-top:12px;">
+                        Voir toutes les demandes
+                    </a>
+                </div>
+
+                <!-- Aperçu du mois (stats calculées) -->
+                <div class="card">
+                    <h2 style="font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--on-surface-variant); margin:0 0 16px;">
+                        Aperçu du mois
+                    </h2>
+                    <div class="cal-stat">
+                        <span>Taux d'occupation</span>
+                        <span class="cal-stat__val" id="statOccVal">0%</span>
+                    </div>
+                    <div class="progress"><div class="progress__bar" id="statOccBar" style="width:0%"></div></div>
+
+                    <div class="cal-stat" style="margin-top:16px;">
+                        <span>Locations actives</span>
+                        <span class="cal-stat__val" id="statActive">0</span>
+                    </div>
+                    <div class="cal-stat">
+                        <span>Réservations du mois</span>
+                        <span class="cal-stat__val" id="statMonth">0</span>
+                    </div>
+                    <div class="cal-stat">
+                        <span>Revenu prévisionnel</span>
+                        <span class="cal-stat__val" style="color:var(--secondary);"><span id="statRevenu">0</span> Ar</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Planning des locations.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/dashboard}">Tableau de bord</a>
+            <a th:href="@{/admin/reservations-machine}">Réservations</a>
+        </div>
+    </footer>
+</main>
+
+<!-- ============================================================
+     Calendrier en JavaScript pur (aucune librairie externe).
+     Le code est volontairement simple et commenté pour rester
+     lisible et modifiable par des étudiants.
+     ============================================================ -->
+<script th:inline="none">
+(function () {
+    "use strict";
+
+    // URL fournissant les réservations (voir CalendarController)
+    var EVENTS_URL = "/admin/reservations-machine/calendrier/events";
+
+    var MOIS = ["janvier", "février", "mars", "avril", "mai", "juin",
+                "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+    // --- État de l'application ---------------------------------------
+    var grid = document.getElementById("calGrid");
+    var totalMachines = parseInt(grid.getAttribute("data-total-machines"), 10) || 0;
+    var events = [];                 // réservations chargées
+    var filtre = "";                 // code de statut filtré ("" = tous)
+    var current = new Date();        // mois affiché
+    current.setDate(1);
+    current.setHours(0, 0, 0, 0);
+
+    // --- Utilitaires de dates ----------------------------------------
+    function parseDate(s) {           // "yyyy-mm-dd" -> Date locale (minuit)
+        var p = s.split("-");
+        return new Date(+p[0], +p[1] - 1, +p[2]);
+    }
+    function atMidnight(d) {
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+    function addDays(d, n) {
+        var x = new Date(d);
+        x.setDate(x.getDate() + n);
+        return x;
+    }
+    function dayDiff(a, b) {           // nombre de jours entiers a -> b
+        return Math.round((atMidnight(b) - atMidnight(a)) / 86400000);
+    }
+    function sameDay(a, b) {
+        return a.getFullYear() === b.getFullYear()
+            && a.getMonth() === b.getMonth()
+            && a.getDate() === b.getDate();
+    }
+    // lundi de la semaine contenant d
+    function mondayOf(d) {
+        var x = atMidnight(d);
+        var day = (x.getDay() + 6) % 7;   // 0 = lundi ... 6 = dimanche
+        return addDays(x, -day);
+    }
+    function formatDateFr(d) {
+        return d.getDate() + " " + MOIS[d.getMonth()] + " " + d.getFullYear();
+    }
+    function formatMontant(n) {
+        if (n === null || n === undefined || isNaN(n)) return "0";
+        return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
+    // --- Chargement des données --------------------------------------
+    function load() {
+        fetch(EVENTS_URL)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                events = data.map(function (e) {
+                    return {
+                        id: e.id,
+                        client: e.client,
+                        machine: e.machine,
+                        start: parseDate(e.start),
+                        end: parseDate(e.end),
+                        statutCode: e.statutCode || "",
+                        statutLibelle: e.statutLibelle || "—",
+                        prix: e.prix != null ? Number(e.prix) : 0,
+                        lieu: e.lieu
+                    };
+                });
+                render();
+            })
+            .catch(function () {
+                grid.innerHTML = '<div class="cal-empty">Impossible de charger les réservations.</div>';
             });
+    }
 
-            calendar.render();
+    // Réservations visibles (après filtre) qui chevauchent [a, b]
+    function eventsBetween(a, b) {
+        return events.filter(function (e) {
+            if (filtre && e.statutCode !== filtre) return false;
+            return e.start <= b && e.end >= a;
         });
-    </script>
-</body>
+    }
 
+    // --- Rendu du calendrier -----------------------------------------
+    function render() {
+        var y = current.getFullYear(), m = current.getMonth();
+        document.getElementById("calTitle").textContent = MOIS[m] + " " + y;
+
+        var monthStart = new Date(y, m, 1);
+        var monthEnd = new Date(y, m + 1, 0);
+        var start = mondayOf(monthStart);        // début de grille
+        var end = mondayOf(monthEnd);            // début de la dernière semaine
+        var today = atMidnight(new Date());
+
+        grid.innerHTML = "";
+        for (var ws = new Date(start); ws <= end; ws = addDays(ws, 7)) {
+            grid.appendChild(buildWeek(new Date(ws), m, today));
+        }
+        renderStats(monthStart, monthEnd);
+        renderPending();
+    }
+
+    // Construit une ligne semaine (fond des jours + barres réservations)
+    function buildWeek(weekStart, month, today) {
+        var weekEnd = addDays(weekStart, 6);
+        var week = document.createElement("div");
+        week.className = "cal-week";
+
+        // Couche 1 : fond des 7 jours + numéros
+        var days = document.createElement("div");
+        days.className = "cal-week__days";
+        for (var i = 0; i < 7; i++) {
+            var d = addDays(weekStart, i);
+            var cell = document.createElement("div");
+            cell.className = "cal-day";
+            if (d.getMonth() !== month) cell.classList.add("cal-day--out");
+            if (i >= 5) cell.classList.add("cal-day--weekend");
+            if (sameDay(d, today)) cell.classList.add("cal-day--today");
+            var num = document.createElement("span");
+            num.className = "cal-daynum";
+            num.textContent = d.getDate();
+            cell.appendChild(num);
+            days.appendChild(cell);
+        }
+        week.appendChild(days);
+
+        // Couche 2 : barres de réservation, placées en "tracks" (lignes)
+        var layer = document.createElement("div");
+        layer.className = "cal-week__events";
+
+        var weekEvents = eventsBetween(weekStart, weekEnd).sort(function (a, b) {
+            return a.start - b.start || (b.end - b.start) - (a.end - a.start);
+        });
+
+        var tracks = [];   // date de fin (dans la semaine) de la dernière barre par track
+        weekEvents.forEach(function (e) {
+            var s = e.start < weekStart ? weekStart : e.start;
+            var en = e.end > weekEnd ? weekEnd : e.end;
+            var startCol = dayDiff(weekStart, s);       // 0..6
+            var endCol = dayDiff(weekStart, en);        // 0..6
+
+            // trouve la première track libre
+            var t = 0;
+            while (t < tracks.length && tracks[t] >= startCol) t++;
+            tracks[t] = endCol;
+
+            var bar = document.createElement("div");
+            bar.className = "cal-bar res--" + (e.statutCode || "autre");
+            if (e.start < weekStart) bar.classList.add("cont-left");
+            if (e.end > weekEnd) bar.classList.add("cont-right");
+            bar.style.gridColumn = (startCol + 1) + " / " + (endCol + 2);
+            bar.style.gridRow = String(t + 1);
+            bar.title = e.client + " — " + e.machine;
+            bar.textContent = e.client + " · " + e.machine;
+            bar.addEventListener("click", function () { openDetail(e); });
+            layer.appendChild(bar);
+        });
+
+        week.appendChild(layer);
+        return week;
+    }
+
+    // --- Panneau de détail -------------------------------------------
+    function openDetail(e) {
+        document.getElementById("dtClient").textContent = e.client;
+        document.getElementById("dtMachine").textContent = e.machine;
+        document.getElementById("dtPeriode").textContent =
+            formatDateFr(e.start) + " → " + formatDateFr(e.end)
+            + " (" + (dayDiff(e.start, e.end) + 1) + " j)";
+        document.getElementById("dtLieu").textContent = e.lieu || "—";
+        document.getElementById("dtPrix").textContent = formatMontant(e.prix) + " Ar";
+        var st = document.getElementById("dtStatut");
+        st.innerHTML = '<span class="badge res-badge res--' + (e.statutCode || "autre")
+            + '">' + e.statutLibelle + "</span>";
+        document.getElementById("calDetail").hidden = false;
+    }
+
+    // --- Statistiques du mois affiché --------------------------------
+    function renderStats(monthStart, monthEnd) {
+        var visibles = eventsBetween(monthStart, monthEnd);
+        var actives = visibles.filter(function (e) {
+            return e.statutCode === "validee" || e.statutCode === "en_cours";
+        });
+        // machines distinctes en location -> taux d'occupation
+        var machinesOccupees = {};
+        actives.forEach(function (e) { machinesOccupees[e.machine] = true; });
+        var nbOcc = Object.keys(machinesOccupees).length;
+        var taux = totalMachines > 0 ? Math.round(nbOcc * 100 / totalMachines) : 0;
+        if (taux > 100) taux = 100;
+
+        // réservations commençant dans le mois -> revenu prévisionnel
+        var duMois = visibles.filter(function (e) {
+            return e.start >= monthStart && e.start <= monthEnd;
+        });
+        var revenu = duMois.reduce(function (s, e) { return s + (e.prix || 0); }, 0);
+
+        document.getElementById("statOccVal").textContent = taux + "%";
+        document.getElementById("statOccBar").style.width = taux + "%";
+        document.getElementById("statActive").textContent = actives.length;
+        document.getElementById("statMonth").textContent = duMois.length;
+        document.getElementById("statRevenu").textContent = formatMontant(revenu);
+    }
+
+    // --- Liste des demandes en attente -------------------------------
+    function renderPending() {
+        var pending = events.filter(function (e) { return e.statutCode === "en_attente"; })
+            .sort(function (a, b) { return a.start - b.start; });
+        document.getElementById("pendingCount").textContent = pending.length;
+
+        var box = document.getElementById("calPending");
+        box.innerHTML = "";
+        if (pending.length === 0) {
+            box.innerHTML = '<p class="cal-empty">Aucune demande en attente.</p>';
+            return;
+        }
+        pending.slice(0, 5).forEach(function (e) {
+            var item = document.createElement("div");
+            item.className = "cal-pending__item";
+            item.innerHTML =
+                '<div class="cal-pending__top">' +
+                    '<span class="cal-pending__client">' + escapeHtml(e.client) + '</span>' +
+                '</div>' +
+                '<div class="cal-pending__row">' +
+                    '<span class="material-symbols-outlined">agriculture</span>' +
+                    '<span>' + escapeHtml(e.machine) + '</span>' +
+                '</div>' +
+                '<div class="cal-pending__row">' +
+                    '<span class="material-symbols-outlined">calendar_month</span>' +
+                    '<span>' + formatDateFr(e.start) + ' → ' + formatDateFr(e.end) + '</span>' +
+                '</div>';
+            item.addEventListener("click", function () { openDetail(e); });
+            box.appendChild(item);
+        });
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+    }
+
+    // --- Contrôles ----------------------------------------------------
+    document.getElementById("calPrev").addEventListener("click", function () {
+        current.setMonth(current.getMonth() - 1); render();
+    });
+    document.getElementById("calNext").addEventListener("click", function () {
+        current.setMonth(current.getMonth() + 1); render();
+    });
+    document.getElementById("calToday").addEventListener("click", function () {
+        current = new Date(); current.setDate(1); current.setHours(0, 0, 0, 0); render();
+    });
+    document.getElementById("calFilter").addEventListener("change", function () {
+        filtre = this.value; render();
+    });
+    document.getElementById("calDetailClose").addEventListener("click", function () {
+        document.getElementById("calDetail").hidden = true;
+    });
+
+    // --- Démarrage ----------------------------------------------------
+    load();
+})();
+</script>
+</body>
 </html>

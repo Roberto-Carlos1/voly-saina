@@ -1,0 +1,476 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AgriElite - Tableau de bord analytique</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#9a4614",
+                    "primary-fixed-dim": "#8bd79b",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#ffc1a4",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#e0d9d2",
+                    "on-primary-container": "#93e0a2",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#005226",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#341000",
+                    "inverse-surface": "#33302c",
+                    "inverse-primary": "#8bd79b",
+                    "secondary-container": "#fd925b",
+                    "tertiary-container": "#81492d",
+                    "tertiary": "#653319",
+                    "surface": "#fff8f2",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-primary-fixed": "#00210b",
+                    "on-background": "#1e1b17",
+                    "surface-bright": "#fff8f2",
+                    "on-surface": "#1e1b17",
+                    "on-surface-variant": "#404940",
+                    "surface-container-high": "#eee7e0",
+                    "secondary-fixed": "#ffdbcb",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#f4ede6",
+                    "secondary-fixed-dim": "#ffb693",
+                    "primary-fixed": "#a6f4b5",
+                    "surface-tint": "#1f6c3a",
+                    "inverse-on-surface": "#f7efe9",
+                    "outline-variant": "#bfc9bd",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "background": "#fff8f2",
+                    "on-tertiary-fixed": "#351000",
+                    "surface-container-highest": "#e8e1db",
+                    "on-tertiary-fixed-variant": "#6d391e",
+                    "outline": "#707a6f",
+                    "primary-container": "#166534",
+                    "on-secondary-container": "#712c00",
+                    "surface-container-low": "#faf2eb",
+                    "primary": "#004c22",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "surface-variant": "#e8e1db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "base": "4px",
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "48px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-xl-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .chart-bar {
+            transition: height 1s ease-out;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #bfc9bd;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col py-stack-md px-base shrink-0 bg-surface-container-low border-r border-outline-variant z-50">
+<div class="px-stack-md mb-stack-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Gestion Agricole</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Back-office Admin</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-base overflow-y-auto custom-scrollbar">
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-stack-md py-3 bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Tableau de bord</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">agriculture</span>
+<span class="font-label-md text-label-md">Flotte de matériel</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Réservations</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Boutique</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-md text-label-md">Rapports</span>
+</a>
+</nav>
+<div class="mt-auto px-base pt-stack-md border-t border-outline-variant">
+<button class="w-full bg-primary text-white py-3 px-4 rounded font-bold font-label-md text-label-md mb-stack-md hover:brightness-110 active:scale-95 transition-all">
+                Nouvelle Réservation
+            </button>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Aide</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Déconnexion</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 bg-surface flex justify-between items-center w-full px-gutter-desktop h-16 border-b border-outline-variant">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline rounded focus:border-primary focus:ring-0 font-body-md text-body-md outline-none transition-colors" placeholder="Rechercher une machine, un client..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="font-label-md text-label-md font-bold">Jean Dupuis</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Administrateur</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a middle-aged man in a work shirt, set against a clean, blurred outdoor farm background. The lighting is bright and natural, maintaining a high-strength, industrial but professional aesthetic. The colors are grounded in the AgriElite palette with subtle greens and browns." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiZuiFUFKz9_qY8BSGH0ek0WMpC5QQiAQaAh3y64Rt3CQMg3fL9dhxAITEQI0I9zpiRliPIC4w3k2WZlgvUsW3Kvbf5rzzeKRz0UrQgJI2aneI26v49hDL5M8a3DjkmE9KSQKmP3UKpIyqSYHdmFh-4kw0d7VQDnTH4r0ekaH-7aPqw33BAp3ppqgFw9Dh7COPT1dxg77C4oRybOS81F8g6wYj__CI1ASmNiEzhY64TFi7WVZ3150L">
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-gutter-desktop max-w-[1280px] mx-auto w-full">
+<div class="flex justify-between items-end mb-stack-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Vue d'ensemble analytique</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Suivi des performances opérationnelles et financières d'AgriElite.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 border-2 border-outline-variant rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+                        Derniers 30 jours
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded font-label-md text-label-md hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                        Exporter PDF
+                    </button>
+</div>
+</div>
+<!-- Bento Grid - KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-md mb-stack-lg">
+<!-- KPI 1: Revenue -->
+<div class="bg-surface border border-outline-variant p-stack-md rounded shadow-sm hover:border-primary transition-colors group">
+<div class="flex justify-between items-start mb-base">
+<p class="font-label-md text-label-md text-on-surface-variant">Chiffre d'affaires mensuel</p>
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">payments</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">142 500 €</h3>
+<span class="font-label-sm text-label-sm text-primary flex items-center">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> +12%
+                        </span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-stack-sm">vs mois précédent (127 200 €)</p>
+</div>
+<!-- KPI 2: Fleet Utilization -->
+<div class="bg-surface border border-outline-variant p-stack-md rounded shadow-sm hover:border-primary transition-colors group">
+<div class="flex justify-between items-start mb-base">
+<p class="font-label-md text-label-md text-on-surface-variant">Taux d'utilisation flotte</p>
+<span class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform">precision_manufacturing</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">85%</h3>
+<span class="font-label-sm text-label-sm text-primary flex items-center">
+<span class="material-symbols-outlined text-[16px]">expand_less</span> +3.5%
+                        </span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 mt-stack-md rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 85%"></div>
+</div>
+</div>
+<!-- KPI 3: Active Bookings -->
+<div class="bg-surface border border-outline-variant p-stack-md rounded shadow-sm hover:border-primary transition-colors group">
+<div class="flex justify-between items-start mb-base">
+<p class="font-label-md text-label-md text-on-surface-variant">Réservations actives</p>
+<span class="material-symbols-outlined text-tertiary group-hover:scale-110 transition-transform">event_available</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">34</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Contrats en cours</span>
+</div>
+<div class="flex gap-1 mt-stack-md">
+<div class="h-6 w-full bg-primary-container/20 rounded-sm"></div>
+<div class="h-6 w-full bg-primary-container/40 rounded-sm"></div>
+<div class="h-6 w-full bg-primary-container/60 rounded-sm"></div>
+<div class="h-6 w-full bg-primary-container/80 rounded-sm"></div>
+<div class="h-6 w-full bg-primary-container rounded-sm"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-stack-lg">
+<!-- Revenue Chart (6 months) -->
+<div class="lg:col-span-2 bg-surface border border-outline-variant p-stack-lg rounded shadow-sm">
+<div class="flex justify-between items-center mb-stack-lg">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Revenus semestriels</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Performance de location par mois</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded-sm"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Reel</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-outline-variant rounded-sm"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Objectif</span>
+</div>
+</div>
+</div>
+<div class="h-64 w-full flex items-end justify-between gap-4 border-b border-outline-variant pb-base pt-4 px-4 relative">
+<!-- Grid Lines -->
+<div class="absolute inset-x-0 top-0 h-px bg-outline-variant/20"></div>
+<div class="absolute inset-x-0 top-1/4 h-px bg-outline-variant/20"></div>
+<div class="absolute inset-x-0 top-1/2 h-px bg-outline-variant/20"></div>
+<div class="absolute inset-x-0 top-3/4 h-px bg-outline-variant/20"></div>
+<!-- Bar Chart -->
+<div class="flex-1 flex flex-col items-center gap-2 group relative">
+<div class="w-12 bg-primary/20 rounded-t-sm h-[40%] absolute bottom-0 left-1/2 -translate-x-1/2 -z-10"></div>
+<div class="w-12 bg-primary rounded-t-sm h-[35%] chart-bar group-hover:brightness-110 transition-all"></div>
+<span class="font-label-sm text-label-sm mt-stack-sm text-on-surface-variant">JAN</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group relative">
+<div class="w-12 bg-primary/20 rounded-t-sm h-[50%] absolute bottom-0 left-1/2 -translate-x-1/2 -z-10"></div>
+<div class="w-12 bg-primary rounded-t-sm h-[45%] chart-bar group-hover:brightness-110 transition-all"></div>
+<span class="font-label-sm text-label-sm mt-stack-sm text-on-surface-variant">FEB</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group relative">
+<div class="w-12 bg-primary/20 rounded-t-sm h-[55%] absolute bottom-0 left-1/2 -translate-x-1/2 -z-10"></div>
+<div class="w-12 bg-primary rounded-t-sm h-[62%] chart-bar group-hover:brightness-110 transition-all"></div>
+<span class="font-label-sm text-label-sm mt-stack-sm text-on-surface-variant">MAR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group relative">
+<div class="w-12 bg-primary/20 rounded-t-sm h-[65%] absolute bottom-0 left-1/2 -translate-x-1/2 -z-10"></div>
+<div class="w-12 bg-primary rounded-t-sm h-[70%] chart-bar group-hover:brightness-110 transition-all"></div>
+<span class="font-label-sm text-label-sm mt-stack-sm text-on-surface-variant">APR</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group relative">
+<div class="w-12 bg-primary/20 rounded-t-sm h-[80%] absolute bottom-0 left-1/2 -translate-x-1/2 -z-10"></div>
+<div class="w-12 bg-primary rounded-t-sm h-[85%] chart-bar group-hover:brightness-110 transition-all"></div>
+<span class="font-label-sm text-label-sm mt-stack-sm text-on-surface-variant">MAY</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-2 group relative">
+<div class="w-12 bg-primary/20 rounded-t-sm h-[90%] absolute bottom-0 left-1/2 -translate-x-1/2 -z-10"></div>
+<div class="w-12 bg-primary rounded-t-sm h-[92%] chart-bar group-hover:brightness-110 transition-all"></div>
+<span class="font-label-sm text-label-sm mt-stack-sm text-on-surface-variant">JUN</span>
+</div>
+</div>
+</div>
+<!-- Maintenance Alerts -->
+<div class="bg-surface border border-outline-variant p-stack-lg rounded shadow-sm flex flex-col">
+<div class="flex justify-between items-center mb-stack-md">
+<h4 class="font-headline-md text-headline-md text-on-surface">Alertes urgentes</h4>
+<span class="px-2 py-1 bg-error-container text-on-error-container font-label-sm text-label-sm rounded-lg">3 Alertes</span>
+</div>
+<div class="space-y-3 flex-1">
+<!-- Alert 1 -->
+<div class="p-3 bg-surface-container-low border-l-4 border-error rounded-r flex gap-3 hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<p class="font-label-md text-label-md font-bold">Moissonneuse TX-500</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Révision moteur requise (500h)</p>
+<p class="font-label-sm text-label-sm text-error mt-1">Immédiat</p>
+</div>
+</div>
+<!-- Alert 2 -->
+<div class="p-3 bg-surface-container-low border-l-4 border-secondary rounded-r flex gap-3 hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">tire_repair</span>
+<div>
+<p class="font-label-md text-label-md font-bold">Tracteur Magnum 340</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Pression pneus anormale (Arrière G)</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Échéance : 2h</p>
+</div>
+</div>
+<!-- Alert 3 -->
+<div class="p-3 bg-surface-container-low border-l-4 border-secondary rounded-r flex gap-3 hover:bg-surface-container-high transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">oil_barrel</span>
+<div>
+<p class="font-label-md text-label-md font-bold">Pulvérisateur Hardi 4000</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Niveau hydraulique bas</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Échéance : 5h</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-stack-lg py-2 text-primary font-label-md text-label-md border border-primary rounded hover:bg-primary-container/10 transition-all">
+                        Voir tout le planning maintenance
+                    </button>
+</div>
+</div>
+<!-- Technical Specs Table (Equipment Status) -->
+<div class="mt-stack-lg bg-white border border-outline-variant rounded shadow-sm overflow-hidden">
+<div class="p-stack-md border-b border-outline-variant bg-surface-container-low">
+<h4 class="font-headline-md text-headline-md text-on-surface">Statut de la flotte active</h4>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container-highest">
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant">MODÈLE</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant">ID UNITÉ</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant">STATUT</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant">LOCALISATION</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant">UTILISATION</th>
+<th class="px-6 py-4 font-label-md text-label-md text-on-surface-variant">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-body-md text-body-md font-bold">John Deere 8R 410</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">#JD-8R-410-01</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-primary-container text-white text-[11px] font-bold uppercase rounded">Loué</span>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md">Secteur Beauce - Nord</td>
+<td class="px-6 py-4 font-body-md text-body-md">92%</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:underline font-label-sm text-label-sm">Détails</button>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-body-md text-body-md font-bold">Claas Lexion 8900</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">#CL-LX-89-05</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-secondary-container text-on-secondary-container text-[11px] font-bold uppercase rounded">En Transit</span>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md">Dépôt Central</td>
+<td class="px-6 py-4 font-body-md text-body-md">15%</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:underline font-label-sm text-label-sm">Détails</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-body-md text-body-md font-bold">Fendt 1050 Vario</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">#FE-10V-02</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[11px] font-bold uppercase rounded">Disponible</span>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md">Dépôt Ouest</td>
+<td class="px-6 py-4 font-body-md text-body-md">0%</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:underline font-label-sm text-label-sm">Détails</button>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-body-md text-body-md font-bold">Case IH Axial-Flow</td>
+<td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant">#CIH-AF-08</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 bg-primary-container text-white text-[11px] font-bold uppercase rounded">Loué</span>
+</td>
+<td class="px-6 py-4 font-body-md text-body-md">Secteur Champagne</td>
+<td class="px-6 py-4 font-body-md text-body-md">78%</td>
+<td class="px-6 py-4">
+<button class="text-primary hover:underline font-label-sm text-label-sm">Détails</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full px-gutter-desktop py-stack-sm mt-auto border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center text-on-surface-variant">
+<p class="font-label-sm text-label-sm">© 2024 AgriManager Pro. Maintenance Platform v2.4.</p>
+<div class="flex gap-6">
+<a class="font-label-sm text-label-sm hover:text-primary underline transition-colors" href="#">Support Technique</a>
+<a class="font-label-sm text-label-sm hover:text-primary underline transition-colors" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm hover:text-primary underline transition-colors" href="#">Confidentialité</a>
+</div>
+</footer>
+</main>
+<script>
+        // Simple Chart Animation Simulation
+        document.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.chart-bar');
+            bars.forEach(bar => {
+                const height = bar.style.height;
+                bar.style.height = '0%';
+                setTimeout(() => {
+                    bar.style.height = height;
+                }, 300);
+            });
+        });
+
+        // Micro-interaction: Active state scale effect
+        const navItems = document.querySelectorAll('aside nav a');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.add('scale-95');
+                setTimeout(() => item.classList.remove('scale-95'), 150);
+            });
+        });
+    </script>
+</body></html>

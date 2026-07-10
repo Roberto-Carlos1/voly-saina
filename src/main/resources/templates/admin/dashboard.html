@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head(${pageTitle})}"></head>
+<body>
+
+<!-- Barre latérale (fragment réutilisable) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure (fragment réutilisable) -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- En-tête de page -->
+        <div class="page-head">
+            <div>
+                <h1>Vue d'ensemble analytique</h1>
+                <p>Suivi des performances opérationnelles et financières de Voly Saina +.</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a class="btn btn--outline" th:href="@{/admin/reservations-machine/calendrier}">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    Calendrier
+                </a>
+                <a class="btn btn--primary" th:href="@{/admin/factures}">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    Factures
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== KPIs ===== -->
+        <section class="grid-kpi">
+
+            <!-- CA du mois -->
+            <div class="card">
+                <div class="kpi__head">
+                    <p class="kpi__label">Chiffre d'affaires (mois)</p>
+                    <span class="material-symbols-outlined kpi__icon">payments</span>
+                </div>
+                <div class="kpi__value">
+                    <h3><span th:text="${caMois}">0</span> Ar</h3>
+                    <span th:if="${caVariation != null}" class="kpi__trend"
+                          th:classappend="${caVariation ge 0} ? ' is-up' : ' is-down'">
+                        <span class="material-symbols-outlined"
+                              th:text="${caVariation ge 0} ? 'trending_up' : 'trending_down'">trending_up</span>
+                        <span th:text="(${caVariation ge 0} ? '+' : '') + ${caVariation} + '%'">+0%</span>
+                    </span>
+                </div>
+                <p class="kpi__hint">Mois précédent : <span th:text="${caPrec}">0</span> Ar</p>
+            </div>
+
+            <!-- Taux d'utilisation flotte -->
+            <div class="card">
+                <div class="kpi__head">
+                    <p class="kpi__label">Taux d'utilisation flotte</p>
+                    <span class="material-symbols-outlined kpi__icon kpi__icon--secondary">precision_manufacturing</span>
+                </div>
+                <div class="kpi__value">
+                    <h3 th:text="${tauxUtilisation} + '%'">0%</h3>
+                    <span class="kpi__trend kpi__trend--neutral"
+                          th:text="${machinesLouees} + '/' + ${totalMachines} + ' louées'">0/0 louées</span>
+                </div>
+                <div class="progress">
+                    <div class="progress__bar" th:style="'width:' + ${tauxUtilisation} + '%'"></div>
+                </div>
+            </div>
+
+            <!-- Réservations actives -->
+            <div class="card">
+                <div class="kpi__head">
+                    <p class="kpi__label">Réservations actives</p>
+                    <span class="material-symbols-outlined kpi__icon kpi__icon--tertiary">event_available</span>
+                </div>
+                <div class="kpi__value">
+                    <h3 th:text="${reservationsActives}">0</h3>
+                    <span class="kpi__trend kpi__trend--neutral">en cours / validées</span>
+                </div>
+                <p class="kpi__hint">
+                    <span th:text="${reservationsEnAttente}">0</span> en attente ·
+                    <span th:text="${reservationsTotal}">0</span> au total
+                </p>
+            </div>
+
+            <!-- Stock faible -->
+            <div class="card">
+                <div class="kpi__head">
+                    <p class="kpi__label">Produits en stock faible</p>
+                    <span class="material-symbols-outlined kpi__icon kpi__icon--secondary">inventory_2</span>
+                </div>
+                <div class="kpi__value">
+                    <h3 th:text="${produitsStockFaible}">0</h3>
+                    <span class="kpi__trend"
+                          th:classappend="${produitsStockFaible gt 0} ? ' is-down' : ' is-up'"
+                          th:text="${produitsStockFaible gt 0} ? 'à réapprovisionner' : 'stock sain'">—</span>
+                </div>
+                <p class="kpi__hint"><span th:text="${totalProduits}">0</span> produits actifs au catalogue</p>
+            </div>
+        </section>
+
+        <!-- ===== Graphique + Alertes ===== -->
+        <section class="grid-main">
+
+            <!-- Revenus semestriels -->
+            <div class="card card--pad-lg">
+                <div class="section-head">
+                    <div>
+                        <h2>Revenus semestriels</h2>
+                        <p class="subtitle">Chiffre d'affaires facturé par mois</p>
+                    </div>
+                    <div class="chart-legend">
+                        <span><span class="dot" style="background:var(--primary);"></span>Facturé</span>
+                    </div>
+                </div>
+
+                <div class="bar-chart">
+                    <div class="bar-chart__gridline" style="top:0;"></div>
+                    <div class="bar-chart__gridline" style="top:25%;"></div>
+                    <div class="bar-chart__gridline" style="top:50%;"></div>
+                    <div class="bar-chart__gridline" style="top:75%;"></div>
+
+                    <div class="bar-col" th:each="mois : ${revenus}">
+                        <div class="bar-col__tooltip">
+                            <span th:text="${mois.montant}">0</span> Ar
+                        </div>
+                        <div class="bar-col__bar" th:attr="data-height=${mois.pct}"></div>
+                        <span class="bar-col__label" th:text="${mois.label}">MOIS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alertes maintenance -->
+            <div class="card card--pad-lg" style="display:flex; flex-direction:column;">
+                <div class="section-head">
+                    <h2>Alertes maintenance</h2>
+                    <span class="badge badge--error" th:text="${nombreAlertes} + ' alertes'">0 alertes</span>
+                </div>
+
+                <div class="alert-list">
+                    <div th:if="${#lists.isEmpty(alertesMaintenance)}" class="empty-state">
+                        Aucune maintenance planifiée ou en cours.
+                    </div>
+                    <div th:each="a : ${alertesMaintenance}" class="alert"
+                         th:classappend="' alert--' + ${a.statutCode}">
+                        <span class="material-symbols-outlined"
+                              th:text="${a.statutCode == 'en_cours'} ? 'build' : 'schedule'">build</span>
+                        <div>
+                            <p class="alert__title" th:text="${a.machine}">Machine</p>
+                            <p class="alert__desc" th:text="${a.travaux}">Travaux</p>
+                            <p class="alert__meta">
+                                <span th:text="${a.statutLibelle}">Statut</span>
+                                <span th:if="${a.dateDebut != null}"> · dès le <span th:text="${a.dateDebut}">date</span></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <a th:href="@{/admin/maintenances-machine}" class="btn btn--outline"
+                   style="width:100%; justify-content:center; margin-top:16px;">
+                    Voir tout le planning
+                </a>
+            </div>
+        </section>
+
+        <!-- ===== Table : flotte active ===== -->
+        <section class="table-card" style="margin-bottom:32px;">
+            <div class="table-card__head">
+                <h2>Statut de la flotte</h2>
+            </div>
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Modèle</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Localisation</th>
+                        <th>Prix / jour</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(flotte)}">
+                        <td colspan="6" class="muted" style="text-align:center;">Aucune machine enregistrée.</td>
+                    </tr>
+                    <tr th:each="m : ${flotte}">
+                        <td class="strong" th:text="${m.nom}">Nom</td>
+                        <td class="muted" th:text="${m.type}">Type</td>
+                        <td>
+                            <span class="badge" th:classappend="' badge--' + ${m.etatCode}"
+                                  th:text="${m.etatLibelle}">Statut</span>
+                        </td>
+                        <td th:text="${m.localisation}">Localisation</td>
+                        <td><span th:text="${m.prixJour}">0</span> Ar</td>
+                        <td><a th:href="@{/admin/machines}" class="link">Détails</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== Table : dernières réservations ===== -->
+        <section class="table-card">
+            <div class="table-card__head">
+                <h2>Dernières réservations</h2>
+            </div>
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Machine</th>
+                        <th>Période</th>
+                        <th>Statut</th>
+                        <th>Montant</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(dernieresReservations)}">
+                        <td colspan="5" class="muted" style="text-align:center;">Aucune réservation enregistrée.</td>
+                    </tr>
+                    <tr th:each="r : ${dernieresReservations}">
+                        <td class="strong" th:text="${r.client}">Client</td>
+                        <td th:text="${r.machine}">Machine</td>
+                        <td class="muted">
+                            <span th:text="${r.dateDebut}">début</span> →
+                            <span th:text="${r.dateFin}">fin</span>
+                        </td>
+                        <td>
+                            <span class="badge" th:classappend="' badge--' + ${r.statutCode}"
+                                  th:text="${r.statutLibelle}">Statut</span>
+                        </td>
+                        <td><span th:text="${r.prixTotal}">0</span> Ar</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/guide-plantation/cultures}">Guide plantation</a>
+            <a th:href="@{/admin/factures}">Facturation</a>
+        </div>
+    </footer>
+</main>
+
+<script>
+    // Animation des barres du graphique (JS pur, aucune dépendance)
+    document.addEventListener('DOMContentLoaded', function () {
+        var bars = document.querySelectorAll('.bar-col__bar');
+        bars.forEach(function (bar) {
+            var target = bar.getAttribute('data-height') || '0';
+            setTimeout(function () {
+                bar.style.height = target + '%';
+            }, 150);
+        });
+    });
+</script>
+</body>
+</html>

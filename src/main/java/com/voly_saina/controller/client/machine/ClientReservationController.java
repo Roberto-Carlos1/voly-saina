@@ -40,6 +40,7 @@ import com.voly_saina.service.ReservationMachineService;
 import com.voly_saina.service.StatutFactureService;
 import com.voly_saina.service.StatutReservationService;
 import com.voly_saina.service.UtilisateurService;
+import com.voly_saina.service.client.machine.ClientReservationService;
 
 @Controller
 @RequestMapping("/catalogue/reservations")
@@ -71,6 +72,9 @@ public class ClientReservationController {
 
     @Autowired
     private ModePaiementService modePaiementService;
+
+    @Autowired
+    private ClientReservationService clientReservationService;
 
     // ========== MÉTHODES D'AUTHENTIFICATION ==========
 
@@ -109,7 +113,7 @@ public class ClientReservationController {
             @PathVariable Long machineId,
             @AuthenticationPrincipal User user,
             Model model) {
-        
+
         addUtilisateurConnecte(model, user);
         model.addAttribute("machineId", machineId);
         return "client/reservations/form";
@@ -120,10 +124,14 @@ public class ClientReservationController {
             @PathVariable Long id,
             @AuthenticationPrincipal User user,
             Model model) {
-        
+
         addUtilisateurConnecte(model, user);
-        model.addAttribute("reservationId", id);
-        return "client/reservations/annuler-form";
+
+        ReservationMachine reservationMachine = reservationService.findById(id).orElse(null);
+        clientReservationService.annulerReservation(reservationMachine);
+        reservationService.save(reservationMachine);
+
+        return "redirect:/catalogue/reservations/mes-reservations";
     }
 
     @GetMapping("/mes-reservations")
@@ -131,29 +139,29 @@ public class ClientReservationController {
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) String statut,
             Model model) {
-        
+
         Utilisateur utilisateur = getUtilisateurConnecte(user);
         if (utilisateur == null) {
             return "redirect:/connexion";
         }
-        
+
         addUtilisateurConnecte(model, user);
-        
+
         // Récupérer les réservations du client connecté
         List<ReservationMachine> reservations = reservationService.findByClientId(utilisateur.getIdUtilisateur());
-        
+
         // Filtrer par statut si nécessaire
         if (statut != null && !statut.isEmpty()) {
             reservations = reservations.stream()
-                .filter(r -> r.getStatutReservation() != null && 
+                    .filter(r -> r.getStatutReservation() != null &&
                             statut.equals(r.getStatutReservation().getCode()))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         }
-        
+
         List<ReservationClientDTO> reservationDTOs = reservations.stream()
-            .map(this::mapToDTO)
-            .collect(Collectors.toList());
-        
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+
         model.addAttribute("reservations", reservationDTOs);
         model.addAttribute("filtreStatut", statut);
         return "client/reservations/list";
@@ -164,12 +172,12 @@ public class ClientReservationController {
             @PathVariable Long id,
             @AuthenticationPrincipal User user,
             Model model) {
-        
+
         Utilisateur utilisateur = getUtilisateurConnecte(user);
         if (utilisateur == null) {
             return "redirect:/connexion";
         }
-        
+
         addUtilisateurConnecte(model, user);
         model.addAttribute("reservationId", id);
         return "client/reservations/detail";
@@ -180,7 +188,7 @@ public class ClientReservationController {
             @PathVariable Long factureId,
             @AuthenticationPrincipal User user,
             Model model) {
-        
+
         addUtilisateurConnecte(model, user);
         model.addAttribute("factureId", factureId);
         return "client/reservations/facture-detail";
@@ -193,12 +201,12 @@ public class ClientReservationController {
     public ResponseEntity<List<ReservationClientDTO>> getReservationsByClient(
             @PathVariable Long clientId,
             @AuthenticationPrincipal User user) {
-        
+
         Long clientIdConnecte = getClientId(user);
         if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId);
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
@@ -209,17 +217,17 @@ public class ClientReservationController {
             @PathVariable Long clientId,
             @PathVariable String statut,
             @AuthenticationPrincipal User user) {
-        
+
         Long clientIdConnecte = getClientId(user);
         if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         List<ReservationMachine> reservations = reservationService.findByClientId(clientId)
-            .stream()
-            .filter(r -> r.getStatutReservation() != null && 
+                .stream()
+                .filter(r -> r.getStatutReservation() != null &&
                         statut.equals(r.getStatutReservation().getCode()))
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
 
@@ -228,17 +236,17 @@ public class ClientReservationController {
     public ResponseEntity<ReservationClientDTO> getReservationById(
             @PathVariable Long id,
             @AuthenticationPrincipal User user) {
-        
+
         ReservationMachine reservation = reservationService.findById(id).orElse(null);
         if (reservation == null) {
             return ResponseEntity.notFound().build();
         }
-        
+
         Long clientIdConnecte = getClientId(user);
         if (clientIdConnecte == null || !clientIdConnecte.equals(reservation.getClient().getIdUtilisateur())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         return ResponseEntity.ok(mapToDTO(reservation));
     }
 
@@ -247,12 +255,12 @@ public class ClientReservationController {
     public ResponseEntity<List<ReservationClientDTO>> getActiveReservations(
             @PathVariable Long clientId,
             @AuthenticationPrincipal User user) {
-        
+
         Long clientIdConnecte = getClientId(user);
         if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        
+
         List<ReservationMachine> reservations = reservationService.findActiveReservationsByClient(clientId);
         return ResponseEntity.ok(reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
     }
@@ -262,7 +270,7 @@ public class ClientReservationController {
     public ResponseEntity<Map<String, Object>> createReservation(
             @RequestBody Map<String, Object> payload,
             @AuthenticationPrincipal User user) {
-        
+
         try {
             Long clientId = getClientId(user);
             if (clientId == null) {
@@ -274,11 +282,11 @@ public class ClientReservationController {
             Long machineId = Long.valueOf(payload.get("machineId").toString());
             LocalDate dateDebut = LocalDate.parse(payload.get("dateDebut").toString());
             LocalDate dateFin = LocalDate.parse(payload.get("dateFin").toString());
-            String lieuLivraison = payload.containsKey("lieuLivraison") ? 
-                payload.get("lieuLivraison").toString() : null;
+            String lieuLivraison = payload.containsKey("lieuLivraison") ? payload.get("lieuLivraison").toString()
+                    : null;
 
             Utilisateur client = utilisateurService.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+                    .orElseThrow(() -> new RuntimeException("Client non trouvé"));
 
             Machine machine = machineService.findById(machineId);
             if (machine == null) {
@@ -310,7 +318,8 @@ public class ClientReservationController {
             reservation.setLieuLivraison(lieuLivraison);
 
             long jours = ChronoUnit.DAYS.between(dateDebut, dateFin);
-            if (jours == 0) jours = 1;
+            if (jours == 0)
+                jours = 1;
             reservation.setPrixTotal(machine.getPrixJour().multiply(BigDecimal.valueOf(jours)));
 
             reservation.setStatutReservation(statutReservationService.findByCode("en_attente"));
@@ -334,7 +343,7 @@ public class ClientReservationController {
     public ResponseEntity<Map<String, Object>> facturerReservation(
             @PathVariable Long id,
             @AuthenticationPrincipal User user) {
-        
+
         try {
             Long clientId = getClientId(user);
             if (clientId == null) {
@@ -344,7 +353,7 @@ public class ClientReservationController {
             }
 
             ReservationMachine reservation = reservationService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+                    .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
 
             if (!reservation.getClient().getIdUtilisateur().equals(clientId)) {
                 Map<String, Object> error = new HashMap<>();
@@ -371,20 +380,14 @@ public class ClientReservationController {
             facture.setMontantTotal(reservation.getPrixTotal());
             facture.setMontantPaye(BigDecimal.ZERO);
             facture.setStatutFacture(statutFactureService.findById(1L)
-                .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
+                    .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
             facture.setDateLimite(LocalDate.now().plusDays(14));
-            
+
             Facture savedFacture = factureService.save(facture);
 
             reservation.setFacture(savedFacture);
             reservation.setStatutReservation(statutReservationService.findByCode("validee"));
             reservationService.save(reservation);
-
-            OperationMachine op = new OperationMachine();
-            op.setIdMachine(reservation.getMachine());
-            op.setIdFacture(savedFacture);
-            op.setQuantite(1L);
-            operationMachineService.save(op);
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Facture créée avec succès");
@@ -392,7 +395,7 @@ public class ClientReservationController {
             response.put("numero", savedFacture.getNumero());
             response.put("montant", savedFacture.getMontantTotal());
             response.put("reservation", mapToDTO(reservation));
-            
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -408,7 +411,7 @@ public class ClientReservationController {
             @PathVariable Long factureId,
             @RequestBody Map<String, Object> payload,
             @AuthenticationPrincipal User user) {
-        
+
         try {
             Long clientId = getClientId(user);
             if (clientId == null) {
@@ -447,13 +450,13 @@ public class ClientReservationController {
 
             facture.setMontantPaye(facture.getMontantTotal());
             facture.setStatutFacture(statutFactureService.findById(2L)
-                .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
+                    .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
             factureService.save(facture);
 
             List<ReservationMachine> reservations = reservationService.findByClientId(clientId)
-                .stream()
-                .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
-                .collect(Collectors.toList());
+                    .stream()
+                    .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
+                    .collect(Collectors.toList());
 
             for (ReservationMachine r : reservations) {
                 r.setStatutReservation(statutReservationService.findByCode("en_cours"));
@@ -465,7 +468,7 @@ public class ClientReservationController {
             response.put("factureId", facture.getIdFacture());
             response.put("montantPaye", facture.getMontantPaye());
             response.put("statut", facture.getStatutFacture().getLibelle());
-            
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -480,7 +483,7 @@ public class ClientReservationController {
     public ResponseEntity<Map<String, Object>> getReservationsByFacture(
             @PathVariable Long factureId,
             @AuthenticationPrincipal User user) {
-        
+
         try {
             Long clientId = getClientId(user);
             if (clientId == null) {
@@ -495,21 +498,20 @@ public class ClientReservationController {
             }
 
             List<ReservationMachine> reservations = reservationService.findByClientId(clientId)
-                .stream()
-                .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
-                .collect(Collectors.toList());
+                    .stream()
+                    .filter(r -> r.getFacture() != null && r.getFacture().getIdFacture().equals(factureId))
+                    .collect(Collectors.toList());
 
             Map<String, Object> response = new HashMap<>();
             response.put("facture", Map.of(
-                "idFacture", facture.getIdFacture(),
-                "numero", facture.getNumero(),
-                "montantTotal", facture.getMontantTotal(),
-                "montantPaye", facture.getMontantPaye(),
-                "statut", facture.getStatutFacture().getLibelle(),
-                "dateLimite", facture.getDateLimite()
-            ));
+                    "idFacture", facture.getIdFacture(),
+                    "numero", facture.getNumero(),
+                    "montantTotal", facture.getMontantTotal(),
+                    "montantPaye", facture.getMontantPaye(),
+                    "statut", facture.getStatutFacture().getLibelle(),
+                    "dateLimite", facture.getDateLimite()));
             response.put("reservations", reservations.stream().map(this::mapToDTO).collect(Collectors.toList()));
-            
+
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
@@ -525,7 +527,7 @@ public class ClientReservationController {
             @PathVariable Long id,
             @RequestBody(required = false) Map<String, String> payload,
             @AuthenticationPrincipal User user) {
-        
+
         try {
             Long clientId = getClientId(user);
             if (clientId == null) {
@@ -535,9 +537,9 @@ public class ClientReservationController {
             }
 
             String motif = payload != null ? payload.get("motif") : null;
-            
+
             ReservationMachine reservation = reservationService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
+                    .orElseThrow(() -> new RuntimeException("Réservation non trouvée"));
 
             if (reservation.getClient() == null || !reservation.getClient().getIdUtilisateur().equals(clientId)) {
                 Map<String, Object> error = new HashMap<>();
@@ -553,13 +555,14 @@ public class ClientReservationController {
             }
 
             reservation.setStatutReservation(statutReservationService.findByCode("annulee"));
-            if (motif != null) reservation.setMotifRefus(motif);
+            if (motif != null)
+                reservation.setMotifRefus(motif);
             reservationService.save(reservation);
 
             if (reservation.getFacture() != null) {
                 Facture facture = reservation.getFacture();
                 facture.setStatutFacture(statutFactureService.findById(5L)
-                    .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
+                        .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
                 factureService.save(facture);
             }
 
@@ -580,7 +583,7 @@ public class ClientReservationController {
     public ResponseEntity<Map<String, Object>> annulerTout(
             @PathVariable Long clientId,
             @AuthenticationPrincipal User user) {
-        
+
         try {
             Long clientIdConnecte = getClientId(user);
             if (clientIdConnecte == null || !clientIdConnecte.equals(clientId)) {
@@ -597,14 +600,14 @@ public class ClientReservationController {
                 if (!"terminee".equals(statut) && !"annulee".equals(statut)) {
                     r.setStatutReservation(statutReservationService.findByCode("annulee"));
                     reservationService.save(r);
-                    
+
                     if (r.getFacture() != null) {
                         Facture facture = r.getFacture();
                         facture.setStatutFacture(statutFactureService.findById(5L)
-                            .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
+                                .orElseThrow(() -> new RuntimeException("Statut facture non trouvé")));
                         factureService.save(facture);
                     }
-                    
+
                     annulees++;
                 }
             }
@@ -635,37 +638,36 @@ public class ClientReservationController {
         dto.setIdReservation(reservation.getIdReservation());
         dto.setIdMachine(reservation.getMachine().getIdMachine());
         dto.setMachineNom(reservation.getMachine().getNom());
-        
+
         if (reservation.getMachine().getTypeMachine() != null) {
             dto.setMachineType(reservation.getMachine().getTypeMachine().getLibelle());
         }
-        
+
         dto.setPrixJour(reservation.getMachine().getPrixJour());
         dto.setDateDebut(reservation.getDateDebut());
         dto.setDateFin(reservation.getDateFin());
         dto.setLieuLivraison(reservation.getLieuLivraison());
         dto.setPrixTotal(reservation.getPrixTotal());
-        
+
         if (reservation.getStatutReservation() != null) {
             dto.setStatut(reservation.getStatutReservation().getCode());
             dto.setStatutLibelle(reservation.getStatutReservation().getLibelle());
         }
-        
+
         dto.setMotifRefus(reservation.getMotifRefus());
         dto.setDateCreation(reservation.getDateCreation());
-        
-        String statut = reservation.getStatutReservation() != null ? 
-            reservation.getStatutReservation().getCode() : "";
-        
+
+        String statut = reservation.getStatutReservation() != null ? reservation.getStatutReservation().getCode() : "";
+
         dto.setPeutAnnuler("en_attente".equals(statut) || "validee".equals(statut));
         dto.setPeutRetourner("en_cours".equals(statut) || "validee".equals(statut));
         dto.setEstTerminee("terminee".equals(statut) || "annulee".equals(statut));
-        
+
         if (reservation.getFacture() != null) {
             dto.setFactureId(reservation.getFacture().getIdFacture());
             dto.setFactureNumero(reservation.getFacture().getNumero());
         }
-        
+
         return dto;
     }
 }

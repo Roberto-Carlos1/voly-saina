@@ -1,6 +1,9 @@
 package com.voly_saina.service;
 
 import com.voly_saina.entity.Culture;
+import com.voly_saina.entity.FicheCulture;
+import com.voly_saina.entity.Machine;
+import com.voly_saina.entity.Produit;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -60,6 +63,57 @@ public class GuidePlantationExportService {
                 lignes.add("Region / localisation adaptee: " + valeur(culture.getLocalisationRecommandee()));
                 lignes.add("Saison adaptee: " + valeur(culture.getSaisonRecommandee()));
                 lignes.add("");
+            }
+        }
+
+        return construirePdfSimple(lignes);
+    }
+
+    public byte[] exporterFicheCulturePdf(Culture culture, FicheCulture ficheCulture, List<?> outils, List<?> produits) {
+        List<String> lignes = new ArrayList<>();
+        lignes.add("Fiche detaillee - " + valeur(culture.getNom()));
+        lignes.add("");
+        lignes.add("Description: " + valeur(culture.getDescription()));
+        lignes.add("Localisation adaptee: " + valeur(culture.getLocalisationRecommandee()));
+        lignes.add("Saison adaptee: " + valeur(culture.getSaisonRecommandee()));
+        lignes.add("");
+
+        if (ficheCulture == null) {
+            lignes.add("Aucune fiche detaillee disponible pour cette culture.");
+        } else {
+            lignes.add("Periode de plantation: " + valeur(ficheCulture.getPeriodePlantation()));
+            lignes.add("Duree avant recolte: " + valeur(ficheCulture.getDureeAvantRecolte()));
+            lignes.add("Preparation du sol: " + valeur(ficheCulture.getPreparationSol()));
+            lignes.add("Quantite de semence: " + valeur(ficheCulture.getQuantiteSemence()));
+            lignes.add("Engrais recommandes: " + valeur(ficheCulture.getEngraisRecommandes()));
+            lignes.add("Arrosage: " + valeur(ficheCulture.getArrosage()));
+            lignes.add("Maladies courantes: " + valeur(ficheCulture.getMaladiesCourantes()));
+            lignes.add("Conseils pratiques: " + valeur(ficheCulture.getConseilsPratiques()));
+        }
+
+        lignes.add("");
+        lignes.add("Outils recommandes:");
+        if (outils == null || outils.isEmpty()) {
+            lignes.add("- Aucun outil disponible.");
+        } else {
+            for (Object outil : outils) {
+                if (outil instanceof Machine machine) {
+                    lignes.add("- " + valeur(machine.getNom()) + " | " + valeur(machine.getDescription())
+                            + " | " + valeur(machine.getLocalisation()));
+                }
+            }
+        }
+
+        lignes.add("");
+        lignes.add("Produits suggeres:");
+        if (produits == null || produits.isEmpty()) {
+            lignes.add("- Aucun produit disponible.");
+        } else {
+            for (Object produit : produits) {
+                if (produit instanceof Produit produitCulture) {
+                    lignes.add("- " + valeur(produitCulture.getNom()) + " | " + valeur(produitCulture.getDescription())
+                            + " | " + valeur(produitCulture.getConseilUsage()));
+                }
             }
         }
 

@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
-@RequestMapping("/paiements")
+@RequestMapping("/admin/paiements")
 public class PaiementController {
 
     private final PaiementService paiementService;
@@ -107,7 +107,7 @@ public class PaiementController {
 
         paiementService.save(p);
 
-        return "redirect:/factures/" + id;
+        return "redirect:/admin/factures/" + id;
     }
 
     // POST /api/paiements

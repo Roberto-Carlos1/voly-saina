@@ -1,0 +1,431 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AgriElite Admin - Gestion de Flotte</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#9a4614",
+                    "primary-fixed-dim": "#8bd79b",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#ffc1a4",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#e0d9d2",
+                    "on-primary-container": "#93e0a2",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#005226",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#341000",
+                    "inverse-surface": "#33302c",
+                    "inverse-primary": "#8bd79b",
+                    "secondary-container": "#fd925b",
+                    "tertiary-container": "#81492d",
+                    "tertiary": "#653319",
+                    "surface": "#fff8f2",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-primary-fixed": "#00210b",
+                    "on-background": "#1e1b17",
+                    "surface-bright": "#fff8f2",
+                    "on-surface": "#1e1b17",
+                    "on-surface-variant": "#404940",
+                    "surface-container-high": "#eee7e0",
+                    "secondary-fixed": "#ffdbcb",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#f4ede6",
+                    "secondary-fixed-dim": "#ffb693",
+                    "primary-fixed": "#a6f4b5",
+                    "surface-tint": "#1f6c3a",
+                    "inverse-on-surface": "#f7efe9",
+                    "outline-variant": "#bfc9bd",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "background": "#fff8f2",
+                    "on-tertiary-fixed": "#351000",
+                    "surface-container-highest": "#e8e1db",
+                    "on-tertiary-fixed-variant": "#6d391e",
+                    "outline": "#707a6f",
+                    "primary-container": "#166534",
+                    "on-secondary-container": "#712c00",
+                    "surface-container-low": "#faf2eb",
+                    "primary": "#004c22",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "surface-variant": "#e8e1db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "base": "4px",
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "48px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-xl-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar Anchor -->
+<aside class="flex flex-col h-full py-stack-md px-base w-64 shrink-0 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant z-50">
+<div class="px-stack-md mb-stack-lg">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="agriculture">agriculture</span>
+</div>
+<div>
+<h1 class="font-headline-md text-[18px] leading-none font-bold text-primary">Gestion Agricole</h1>
+<p class="font-label-sm text-on-surface-variant">Back-office Admin</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-2">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Tableau de bord</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform duration-150 font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="agriculture">agriculture</span>
+<span>Flotte de matériel</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Réservations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span>Boutique</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span>Clients</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg font-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span>Rapports</span>
+</a>
+</nav>
+<div class="mt-auto px-2 space-y-1">
+<button class="w-full bg-secondary text-on-secondary py-3 px-4 rounded font-label-md mb-stack-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Nouvelle Réservation</span>
+</button>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary underline transition-all duration-150 font-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Aide</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-primary underline transition-all duration-150 font-label-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Déconnexion</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar Anchor -->
+<header class="flex justify-between items-center w-full px-gutter-desktop h-16 sticky top-0 z-40 bg-surface border-b border-outline-variant">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary focus:border-primary font-body-md" placeholder="Rechercher une machine, un numéro de série..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full border border-outline" data-alt="Close up portrait of a professional agricultural fleet administrator in a clean modern office, soft natural lighting, high resolution photography, business attire, professional atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuABOX7bQ_00AZdRmVoOdvIop9vT9gEd6Lb1ljAyCxQOe-xGOppfkgKYDPdC5oJ9v4mtxzooPvluUF1MGRq3rzDTdzG57pQjU_V-yvJK4lcpayiXd8ccbhZgOZNmCGDYWNttWUZtiv3WIqvfe8nED0yMJrRDz_Jtj9EtZGhic4k3Rap_ULYR6gcbCvBzuPvGCPpUa4MLkzvU3cKRsmDxm5D_QmOvHn3-DwMoVYkR__9hOvuWjeKm4AVm">
+<span class="font-label-md hidden lg:block">Admin AgriElite</span>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-gutter-desktop space-y-stack-lg max-w-[1280px] mx-auto w-full">
+<!-- Page Header -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-primary">Gestion de la Flotte</h2>
+<p class="font-body-md text-on-surface-variant">Consultez et gérez l'état opérationnel de vos machines en temps réel.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-md px-6 py-3 rounded flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                    Ajouter une Machine
+                </button>
+</div>
+<!-- Stats Bar (Bento-like hint) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-stack-md">
+<div class="bg-surface-container p-stack-md rounded border border-outline-variant">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Total Machines</p>
+<p class="font-headline-md text-primary mt-1">124</p>
+</div>
+<div class="bg-surface-container p-stack-md rounded border border-outline-variant">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Disponible</p>
+<p class="font-headline-md text-primary mt-1">82</p>
+</div>
+<div class="bg-surface-container p-stack-md rounded border border-outline-variant">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">En Location</p>
+<p class="font-headline-md text-secondary mt-1">34</p>
+</div>
+<div class="bg-surface-container p-stack-md rounded border border-outline-variant">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Maintenance</p>
+<p class="font-headline-md text-error mt-1">8</p>
+</div>
+</div>
+<!-- Filters Section -->
+<div class="bg-white p-stack-md rounded border border-outline-variant flex flex-wrap items-center gap-stack-md">
+<div class="flex items-center gap-2 border-r border-outline-variant pr-stack-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="filter_list">filter_list</span>
+<span class="font-label-md">Filtrer par :</span>
+</div>
+<div class="flex gap-2">
+<select class="bg-surface-container-low border border-outline-variant rounded px-3 py-2 font-label-md focus:ring-1 focus:ring-primary">
+<option>Toutes les catégories</option>
+<option>Tracteurs</option>
+<option>Moissonneuses</option>
+<option>Pulvérisateurs</option>
+<option>Remorques</option>
+</select>
+<select class="bg-surface-container-low border border-outline-variant rounded px-3 py-2 font-label-md focus:ring-1 focus:ring-primary">
+<option>Tous les états</option>
+<option>Disponible</option>
+<option>En location</option>
+<option>Maintenance</option>
+</select>
+</div>
+<div class="flex-1"></div>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</button>
+<button class="p-2 bg-primary-container text-on-primary-container border border-primary rounded transition-colors">
+<span class="material-symbols-outlined" data-icon="list">list</span>
+</button>
+</div>
+</div>
+<!-- Fleet Table -->
+<div class="bg-white border border-outline-variant rounded overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface font-label-md border-b border-outline-variant">
+<th class="px-6 py-4 font-bold">MACHINE</th>
+<th class="px-6 py-4 font-bold">N° SÉRIE</th>
+<th class="px-6 py-4 font-bold">STATUT</th>
+<th class="px-6 py-4 font-bold">LOCALISATION</th>
+<th class="px-6 py-4 font-bold text-right">ACTIONS</th>
+</tr>
+</thead>
+<tbody class="font-body-md divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close up high-quality technical shot of a modern heavy-duty green tractor, parked in a clean workshop, industrial lighting, professional agricultural machinery photography, sharp details on tires and chassis." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQreD2021hKV66hlqxm9aUZhbGiqwKlrww4XJYVKhBnoGMJ6nbbc5b2E8J5xUTSRJYKrWyTzd_4AZ-B_41vv7gmtm3VXM8-doi16TGYWgtN9C6F4LsqcOghSGroKLNDckrKMjjiFSZGkGOxpR67nUXl7DsuoGEP_qTGHIv3b8Kwxyj5gQ5YBndKC6TXqENaegbIm-Fl4T91TGZzIVf_X2-KWR90JItqjHP_pKS08NYx0Vh16H1n7ke">
+</div>
+<div>
+<div class="font-bold text-on-surface">John Deere 8R 410</div>
+<div class="text-on-surface-variant font-label-sm">Tracteur Haute Puissance</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono text-sm">JD-8R-2023-0042</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-primary-container/20 text-primary border border-primary/30 font-label-sm">
+                                    Disponible
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="location_on">location_on</span>
+<span>Entrepôt Nord - Lyon</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Dynamic shot of a large Claas Lexion combine harvester working in a wheat field under a warm sunset sky, dust clouds rising, industrial agriculture power, cinematic lighting, high-end equipment photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqzDUwI3aYwLGuVaMwiBTHa3q6ErQILi29ujVnDXjQbyPbEdOe6Ur7zT8FzxRgJIGlHeWzCwsceyJUIRTuMWxU0nMwQqAAAJbtcj6l177lDGAPNEDCaXzKZpcG20jOERfNDRtweMQFL3B4WBM27HgsCPy_VMQ2UXcRKBU8QL2UnBlWh4_-StShSqpQxJU331KNv5Jn6Rb8OtJMCocnmwv6JOna8nluKbW7KdHsr6nY5gdMF44XSVOQ">
+</div>
+<div>
+<div class="font-bold text-on-surface">Claas Lexion 8900</div>
+<div class="text-on-surface-variant font-label-sm">Moissonneuse-batteuse</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono text-sm">CL-LX-2022-8901</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary border border-secondary/30 font-label-sm">
+                                    En location
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="location_on">location_on</span>
+<span>Exploitation Marais, Dijon</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Fendt 942 Vario tractor in a muddy farm yard, focus on the massive rear wheels and mechanical components, rugged and durable feel, heavy-duty industrial agricultural setting, overcast day lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbCYZcdvWnL7l20eY7y4Wi8_qBvMm3N9fgpDXtrRsWOPcrmql-GSbHKRIVgWo0XSfHELmSbxjsZCkmsWrB2bQgqRQPnDNWvvy20TZHIpu87_mweIX__dltPvzoiq_jxGK8SHlM0ymwqA6kzoLdDo0o0MuM6aD8zpjmQWL9nnbbRsXCxcdcvzTd7VwK8lv2KhOlcvyACUHYc8ICgn54Eky_j3TQF9-CwlMY7MaBsLmB861W7iZmnxKo">
+</div>
+<div>
+<div class="font-bold text-on-surface">Fendt 942 Vario</div>
+<div class="text-on-surface-variant font-label-sm">Tracteur Polyvalent</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono text-sm">FT-942-2024-X11</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-error-container text-on-error-container border border-error/30 font-label-sm">
+                                    Maintenance
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="engineering">engineering</span>
+<span>Atelier Central - Reims</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="High-tech self-propelled agricultural sprayer machine, clean industrial design, vivid colors, standing on a paved farm area, bright daylight, emphasizing precision technology in farming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpo-bmKMZmzTnZWlY3Wfu4vAPOyT541rEHk4KMo2YTqQxkf1FBwUNrhxgdrLOUbvJZ9WSJpnLr7v9tmo4qgTwsGkwYHkCC6m7HemuetSF9inXkCjGmhNTQpct8vwzE3_vjzNgD_VAvY54lMYrsdZQGrn9lFnv1K9RbPf5tvg8QNMSba4n9m6-e9k1Xd9BTzdDv1R5d_9c4pnMZ6Diu4pBZLoyA9RwbOaVFKIuQpS51jUXeS49x4Qmm">
+</div>
+<div>
+<div class="font-bold text-on-surface">Horsch Leeb PT</div>
+<div class="text-on-surface-variant font-label-sm">Pulvérisateur Autotracté</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-on-surface-variant font-mono text-sm">HS-PT-2023-P09</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-primary-container/20 text-primary border border-primary/30 font-label-sm">
+                                    Disponible
+                                </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="location_on">location_on</span>
+<span>Entrepôt Est - Strasbourg</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded transition-all">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="bg-surface-container px-6 py-4 flex items-center justify-between border-t border-outline-variant">
+<span class="font-label-sm text-on-surface-variant">Affichage de 1 à 4 sur 124 machines</span>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-white border border-outline-variant rounded font-label-md opacity-50 cursor-not-allowed">Précédent</button>
+<button class="px-4 py-2 bg-white border border-outline-variant rounded font-label-md hover:bg-surface-container transition-colors">1</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded font-label-md">2</button>
+<button class="px-4 py-2 bg-white border border-outline-variant rounded font-label-md hover:bg-surface-container transition-colors">3</button>
+<button class="px-4 py-2 bg-white border border-outline-variant rounded font-label-md hover:bg-surface-container transition-colors">Suivant</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Anchor -->
+<footer class="flex justify-between items-center w-full px-gutter-desktop py-stack-sm mt-auto bg-surface-container-lowest border-t border-outline-variant">
+<div class="text-on-surface-variant font-label-sm">
+                © 2024 AgriManager Pro. Maintenance Platform v2.4.
+            </div>
+<div class="flex gap-stack-md">
+<a class="text-on-surface-variant font-label-sm hover:text-primary underline" href="#">Support Technique</a>
+<a class="text-on-surface-variant font-label-sm hover:text-primary underline" href="#">Documentation</a>
+<a class="text-on-surface-variant font-label-sm hover:text-primary underline" href="#">Confidentialité</a>
+</div>
+</footer>
+</main>
+<script>
+        // Simple micro-interaction for button states
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

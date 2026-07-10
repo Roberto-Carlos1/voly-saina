@@ -301,10 +301,26 @@
                     </div>
 
                     <div class="mt-auto pt-stack-md border-t border-outline-variant flex gap-stack-sm">
-                        <a th:href="@{/guide-plantation/cultures/{id}(id=${culture.idCulture})}" class="flex-1 bg-primary text-on-primary font-label-md py-2 text-center hover:opacity-90 transition-opacity">
+                        <a th:href="@{/guide-plantation/cultures/{id}(
+                            id=${culture.idCulture},
+                            motCle=${filtres.motCle},
+                            localisation=${filtres.localisation},
+                            saison=${filtres.saison},
+                            page=${culturesPage.number},
+                            size=${size},
+                            tri=${tri}
+                        )}" class="flex-1 bg-primary text-on-primary font-label-md py-2 text-center hover:opacity-90 transition-opacity">
                             Voir Détails
                         </a>
-                        <a th:href="@{/guide-plantation/cultures/{id}/fiche(id=${culture.idCulture})}" class="px-3 border-2 border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-all flex items-center justify-center" title="Télécharger la fiche">
+                        <a th:href="@{/guide-plantation/cultures/{id}/fiche(
+                            id=${culture.idCulture},
+                            motCle=${filtres.motCle},
+                            localisation=${filtres.localisation},
+                            saison=${filtres.saison},
+                            page=${culturesPage.number},
+                            size=${size},
+                            tri=${tri}
+                        )}" class="px-3 border-2 border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-all flex items-center justify-center" title="Télécharger la fiche">
                             <span class="material-symbols-outlined align-middle">download</span>
                         </a>
                     </div>

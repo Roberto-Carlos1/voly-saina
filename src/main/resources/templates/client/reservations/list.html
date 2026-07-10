@@ -140,7 +140,8 @@
                             
                             <!-- Annuler (si possible) -->
                             <a th:if="${reservation.peutAnnuler}" 
-                               th:href="@{/catalogue/reservations/{id}/annuler(id=${reservation.idReservation})}" 
+                               th:href="@{/catalogue/reservations/{id}/annuler(id=${reservation.idReservation})}"
+                                onclick="return confirm('Voulez-vous annuler la réservation ?')"
                                class="bg-red-500 text-white px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition-all btn-primary">
                                 Annuler
                             </a>
@@ -162,7 +163,7 @@
                             
                             <!-- Voir facture -->
                             <a th:if="${reservation.factureId != null}" 
-                               th:href="@{/catalogue/reservations/facture/{factureId}(factureId=${reservation.factureId})}" 
+                               th:href="@{/client/factures/{id}(id=${reservation.factureId}, idClient=${idClient})}" 
                                class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-lg font-label-md hover:bg-surface-container transition-all">
                                 Facture
                             </a>

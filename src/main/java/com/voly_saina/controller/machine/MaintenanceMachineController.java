@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller
-@RequestMapping("/maintenances-machine")
+@RequestMapping("/admin/maintenances-machine")
 public class MaintenanceMachineController {
 
     private final MachineRepository machineRepository;
@@ -65,12 +65,12 @@ public class MaintenanceMachineController {
         Pages p = pageService.findById(1L);
         if (page <= 0) {
             attributes.addFlashAttribute("error", "Entrez un nombre de pages valide");
-            return "redirect:/maintenances-machine";
+            return "redirect:/admin/maintenances-machine";
         } else {
             p.setNombre(page);
             pageService.save(p);
         }
-        return "redirect:/maintenances-machine";
+        return "redirect:/admin/maintenances-machine";
     }
 
     @PostMapping("/api/filtre")
@@ -114,7 +114,7 @@ public class MaintenanceMachineController {
     public String modifyForm(@PathVariable Long id, Model model) {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
         if (maintenance == null) {
-            return "redirect:/maintenances-machine";
+            return "redirect:/admin/maintenances-machine";
         }
         List<Machine> machines = machineService.findAll();
         List<StatutMaintenance> statuts = statutMaintenanceService.findAll();
@@ -135,11 +135,11 @@ public class MaintenanceMachineController {
                 || travaux == null || travaux.trim().isEmpty()
                 || cout == null || cout.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Tous les champs sont obligatoires");
-            return "redirect:/maintenances-machine/ajouter";
+            return "redirect:/admin/maintenances-machine/ajouter";
         }
         if (!dateCreation.matches("\\d{4}-\\d{2}-\\d{2}")) {
             redirectAttributes.addFlashAttribute("error", "Format de date invalide (AAAA-MM-JJ)");
-            return "redirect:/maintenances-machine/ajouter";
+            return "redirect:/admin/maintenances-machine/ajouter";
         }
         double coutVal;
         try {
@@ -147,17 +147,17 @@ public class MaintenanceMachineController {
             if (coutVal < 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
             redirectAttributes.addFlashAttribute("error", "Le coût doit être un nombre positif");
-            return "redirect:/maintenances-machine/ajouter";
+            return "redirect:/admin/maintenances-machine/ajouter";
         }
         if (machineService.findById(idMachine) == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
-            return "redirect:/maintenances-machine/ajouter";
+            return "redirect:/admin/maintenances-machine/ajouter";
         }
 
         MaintenanceMachine saved = maintenanceMachineService.createMaintenanceMachine(
                 idMachine, travaux.trim(), coutVal, LocalDate.parse(dateCreation));
         redirectAttributes.addFlashAttribute("success", "Maintenance créée avec succès");
-        return "redirect:/maintenances-machine";
+        return "redirect:/admin/maintenances-machine";
     }
 
     @PostMapping("/modifier/{id}")
@@ -172,12 +172,12 @@ public class MaintenanceMachineController {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
         if (maintenance == null) {
             redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
-            return "redirect:/maintenances-machine";
+            return "redirect:/admin/maintenances-machine";
         }
 
         if (travaux == null || travaux.trim().isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Le champ travaux est obligatoire");
-            return "redirect:/maintenances-machine/modifier/" + id;
+            return "redirect:/admin/maintenances-machine/modifier/" + id;
         }
         double coutVal;
         try {
@@ -185,12 +185,12 @@ public class MaintenanceMachineController {
             if (coutVal < 0) throw new NumberFormatException();
         } catch (NumberFormatException e) {
             redirectAttributes.addFlashAttribute("error", "Le coût doit être un nombre positif");
-            return "redirect:/maintenances-machine/modifier/" + id;
+            return "redirect:/admin/maintenances-machine/modifier/" + id;
         }
         Machine machine = machineService.findById(idMachine);
         if (machine == null) {
             redirectAttributes.addFlashAttribute("error", "Machine introuvable");
-            return "redirect:/maintenances-machine/modifier/" + id;
+            return "redirect:/admin/maintenances-machine/modifier/" + id;
         }
 
         maintenance.setMachine(machine);
@@ -209,7 +209,7 @@ public class MaintenanceMachineController {
 
         maintenanceMachineService.save(maintenance);
         redirectAttributes.addFlashAttribute("success", "Maintenance modifiée avec succès");
-        return "redirect:/maintenances-machine";
+        return "redirect:/admin/maintenances-machine";
     }
 
     @GetMapping("/supprimer/{id}")
@@ -220,7 +220,7 @@ public class MaintenanceMachineController {
             maintenanceMachineService.deleteById(id);
             redirectAttributes.addFlashAttribute("success", "Maintenance supprimée avec succès");
         }
-        return "redirect:/maintenances-machine";
+        return "redirect:/admin/maintenances-machine";
     }
 
     // ==================== API REST ====================
@@ -248,7 +248,7 @@ public class MaintenanceMachineController {
     public String validateForm(@PathVariable Long id, Model model) {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(id).orElse(null);
         if (maintenance == null) {
-            return "redirect:/maintenances-machine";
+            return "redirect:/admin/maintenances-machine";
         }
         model.addAttribute("maintenance", maintenance);
         return "/machines/maintenance/validation";
@@ -261,15 +261,15 @@ public class MaintenanceMachineController {
         MaintenanceMachine maintenance = maintenanceMachineService.findById(idMaintenance).orElse(null);
         if (maintenance == null) {
             redirectAttributes.addFlashAttribute("error", "Maintenance introuvable");
-            return "redirect:/maintenances-machine";
+            return "redirect:/admin/maintenances-machine";
         }
         if (dateRetourReelle == null || dateRetourReelle.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "La date de retour réelle est obligatoire");
-            return "redirect:/maintenances-machine/valider/" + idMaintenance;
+            return "redirect:/admin/maintenances-machine/valider/" + idMaintenance;
         }
         if (!dateRetourReelle.matches("\\d{4}-\\d{2}-\\d{2}")) {
             redirectAttributes.addFlashAttribute("error", "Format de date invalide (AAAA-MM-JJ)");
-            return "redirect:/maintenances-machine/valider/" + idMaintenance;
+            return "redirect:/admin/maintenances-machine/valider/" + idMaintenance;
         }
         try {
             maintenanceMachineService.validateMaintenanceMachine(
@@ -278,7 +278,7 @@ public class MaintenanceMachineController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur lors de la validation: " + e.getMessage());
         }
-        return "redirect:/maintenances-machine";
+        return "redirect:/admin/maintenances-machine";
     }
 
     // PUT /maintenances-machine/{id}

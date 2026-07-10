@@ -49,10 +49,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/connexion", "/login", "/inscription", "/signup",
-                    "/access-denied", "/css/**", "/js/**", "/images/**", "/webjars/**"
+                    "/access-denied", "/css/**", "/js/**", "/images/**", "/webjars/**", "/catalogue/**"
                 ).permitAll()
                 .requestMatchers("/profil", "/profil/**").authenticated()
-                .requestMatchers("/client/**", "/catalogue/**", "/panier/**").hasAnyRole("CLIENT", "GESTIONNAIRE", "RESPONSABLE", "EMPLOYE")
+                .requestMatchers("/client/**", "/panier/**").hasAnyRole("CLIENT", "GESTIONNAIRE", "RESPONSABLE", "EMPLOYE")
                 .requestMatchers("/admin/**").hasRole("RESPONSABLE")
                 .anyRequest().permitAll()
             )

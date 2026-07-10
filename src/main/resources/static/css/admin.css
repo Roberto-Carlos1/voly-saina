@@ -3,8 +3,23 @@
    Tokens issus de DESIGN.md — aucune dépendance à un framework CSS.
    ===================================================================== */
 
-/* Icônes Material Symbols auto-hébergées (sous-ensemble des icônes utilisées).
-   Évite l'appel au CDN Google Fonts → chargement plus rapide et hors-ligne. */
+/* Icônes Material Symbols auto-hébergées localement (sous-ensemble hors-ligne).
+   ATTENTION : ce fichier .woff2 ne contient qu'un jeu limité d'icônes. Dans les
+   vues admin, n'utiliser QUE des icônes présentes dans ce sous-ensemble, sinon le
+   nom de l'icône s'affiche en toutes lettres (ex. « category », « event_note »).
+   Icônes disponibles : account_balance, account_circle, add, add_shopping_cart,
+   agriculture, arrow_back, arrow_forward, block, bolt, bug_report, build,
+   calendar_month, calendar_today, chat, check_circle, chevron_left, chevron_right,
+   close, contract, dashboard, delete, description, download, edit, event,
+   event_available, event_busy, favorite, filter_alt, filter_list, grain, grass,
+   home, info, inventory_2, landscape, local_gas_station, local_shipping,
+   location_on, lock, login, logout, mail, menu, menu_book, monitoring,
+   notifications, payments, person, photo_library, picture_as_pdf,
+   precision_manufacturing, psychology_alt, public, receipt_long, remove, report,
+   schedule, science, search, search_off, send, settings, settings_applications,
+   shopping_cart, shopping_cart_off, speed, star, storefront, table_view, timer,
+   tips_and_updates, tire_repair, trending_down, trending_up, undo, visibility,
+   water_drop. */
 @font-face {
     font-family: 'Material Symbols Outlined';
     font-style: normal;
@@ -795,12 +810,180 @@ table.data td.muted { color: var(--on-surface-variant); }
 .cal-stat__val { font-weight: 700; color: var(--primary); }
 
 /* =====================================================================
+   Détail machine (fiche équipement) — vue /admin/machines/{id}
+   Toutes ces classes sont indépendantes : faciles à réutiliser/modifier.
+   ===================================================================== */
+/* Grille à deux colonnes (identité à gauche, historique à droite) */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: var(--stack-lg);
+    align-items: start;
+}
+.detail-col { display: flex; flex-direction: column; gap: var(--stack-lg); }
+
+/* Puces d'information sous le titre (état, type, identifiant) */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: var(--radius-lg);
+    font-size: 13px;
+    font-weight: 600;
+    background-color: var(--surface-container-high);
+    color: var(--on-surface-variant);
+}
+.chip .material-symbols-outlined { font-size: 16px; }
+
+/* Boutons d'action de l'en-tête */
+.page-head__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Visuel de la machine : illustration (aucune image stockée en base) */
+.machine-hero {
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background-color: var(--surface-container-lowest);
+}
+.machine-hero__art {
+    position: relative;              /* pour superposer l'image à l'icône de secours */
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--surface-container-high), var(--surface-container-highest));
+    color: var(--primary);
+}
+.machine-hero__art .material-symbols-outlined { font-size: 96px; font-variation-settings: 'FILL' 1; }
+/* L'image recouvre l'icône quand elle se charge ; sinon (onerror) elle est retirée. */
+.machine-hero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.machine-hero__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: var(--stack-md);
+    border-top: 1px solid var(--outline-variant);
+    font-size: 12px;
+    color: var(--on-surface-variant);
+}
+
+/* Liste de spécifications (clé / valeur, lignes alternées) */
+.specs { display: flex; flex-direction: column; }
+.spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px;
+    border-top: 1px solid var(--outline-variant);
+}
+.spec-row:first-child { border-top: none; }
+.spec-row:nth-child(even) { background-color: var(--surface-container-lowest); }
+.spec-row__key {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--on-surface-variant);
+}
+.spec-row__val { font-size: 15px; font-weight: 700; color: var(--on-surface); text-align: right; }
+
+/* Grille d'infos (état opérationnel) */
+.info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--stack-md); }
+.info-box {
+    padding: var(--stack-md);
+    background-color: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+}
+.info-box--wide { grid-column: 1 / -1; }
+.info-box__label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--on-surface-variant);
+    margin-bottom: 6px;
+}
+.info-box__value { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--on-surface); }
+.info-box__value .material-symbols-outlined { font-size: 20px; color: var(--primary); }
+.txt-ok { color: var(--primary); }
+.txt-off { color: var(--error); }
+
+/* Bloc de texte (description) */
+.detail-text { font-size: 15px; line-height: 22px; color: var(--on-surface-variant); margin: 0; }
+
+/* Historique des réservations (cartes chronologiques) */
+.res-list { display: flex; flex-direction: column; gap: var(--stack-md); }
+.res-item {
+    display: flex;
+    gap: var(--stack-md);
+    align-items: center;
+    padding: var(--stack-md);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+    transition: border-color .15s ease;
+}
+.res-item:hover { border-color: var(--outline); }
+.res-date {
+    width: 56px;
+    flex-shrink: 0;
+    text-align: center;
+    background-color: var(--surface-container-high);
+    border-radius: var(--radius);
+    padding: 8px 0;
+}
+.res-date__month { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--on-surface-variant); }
+.res-date__day { display: block; font-size: 22px; font-weight: 700; line-height: 1; color: var(--on-surface); }
+.res-body { flex: 1; min-width: 0; }
+.res-body__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.res-body__client { font-size: 15px; font-weight: 700; margin: 0; }
+.res-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--on-surface-variant); }
+.res-meta span { display: inline-flex; align-items: center; gap: 4px; }
+.res-meta .material-symbols-outlined { font-size: 16px; }
+.res-meta .price { font-weight: 700; color: var(--primary); }
+
+/* Pied de carte (total) */
+.card-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--stack-md);
+    margin-top: var(--stack-md);
+    border-top: 1px solid var(--outline-variant);
+}
+.card-foot__label { font-size: 13px; color: var(--on-surface-variant); }
+.card-foot__value { font-size: 18px; font-weight: 700; color: var(--primary); }
+
+/* Mini-statistiques (deux tuiles) */
+.mini-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--stack-md); }
+.mini-stat { display: flex; align-items: center; gap: 12px; }
+.mini-stat__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--surface-container-high);
+    color: var(--primary);
+    flex-shrink: 0;
+}
+.mini-stat__label { font-size: 12px; color: var(--on-surface-variant); margin: 0; }
+.mini-stat__value { font-size: 16px; font-weight: 700; margin: 2px 0 0; }
+
+/* =====================================================================
    Responsive
    ===================================================================== */
 @media (max-width: 1100px) {
     .grid-kpi { grid-template-columns: repeat(2, 1fr); }
     .grid-main { grid-template-columns: 1fr; }
     .cal-layout { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
     .grid-kpi { grid-template-columns: 1fr; }
@@ -809,4 +992,6 @@ table.data td.muted { color: var(--on-surface-variant); }
     .admin-main { margin-left: 0; }
     .admin-topbar__search { max-width: none; }
     .cal-toolbar { flex-direction: column; align-items: stretch; }
+    .info-grid, .mini-stats { grid-template-columns: 1fr; }
+    .res-body__top { flex-direction: column; }
 }

@@ -1,7 +1,8 @@
 # Liste des routes — Voly Saina+
 
 > Généré depuis les contrôleurs de `src/main/java/com/voly_saina/controller/`.
-> Branche : `dashboard-frontend-dev`.
+> Branche : `detailReservationProduit-frontend-admin`.
+> Dernière vérification : 2026-07-10.
 
 ## Règles de sécurité (rappel — `SecurityConfig`)
 
@@ -150,18 +151,23 @@ Login : `POST /connexion` — paramètres `identifiant` (email ou téléphone) +
 
 ## 4. Espace Back-office (`/admin/**`) — rôle RESPONSABLE
 
+### Tableau de bord (`/admin/dashboard`)
+| Méthode | Route | Contrôleur | Description |
+|---------|-------|-----------|-------------|
+| GET | `/admin/dashboard` | DashboardController | Vue d'ensemble analytique (`admin/dashboard`) |
+
 ### Machines (`/admin/machines`)
-| Méthode | Route | Contrôleur |
-|---------|-------|-----------|
-| GET | `/admin/machines`, `/admin/machines/` | MachineController |
-| POST | `/admin/machines/pages` | MachineController |
-| GET | `/admin/machines/ajouter` | MachineController |
-| POST | `/admin/machines/ajouter` | MachineController |
-| GET | `/admin/machines/modifier/{id}` | MachineController |
-| POST | `/admin/machines/modifier/{id}` | MachineController |
-| GET | `/admin/machines/supprimer/{id}` | MachineController |
-| GET | `/admin/machines/{id}` | MachineController |
-| POST | `/admin/machines/api/filtre` | MachineController |
+| Méthode | Route | Contrôleur | Vue |
+|---------|-------|-----------|-----|
+| GET | `/admin/machines`, `/admin/machines/` | MachineController | `machines/list` (liste de la flotte) |
+| POST | `/admin/machines/pages` | MachineController | — (config. nb/page, redirige) |
+| GET | `/admin/machines/ajouter` | MachineController | `machines/insert-machine` |
+| POST | `/admin/machines/ajouter` | MachineController | — (création, redirige) |
+| GET | `/admin/machines/modifier/{id}` | MachineController | `machines/modify-machine` |
+| POST | `/admin/machines/modifier/{id}` | MachineController | — (modification, redirige) |
+| GET | `/admin/machines/supprimer/{id}` | MachineController | — (suppression, redirige) |
+| GET | `/admin/machines/{id}` | MachineController | `machines/detail-machine` (fiche détail redessinée) |
+| POST | `/admin/machines/api/filtre` | MachineController | JSON `Page<Machine>` (filtre AJAX) |
 
 ### Maintenances (`/admin/maintenances-machine`)
 | Méthode | Route | Contrôleur |

@@ -33,7 +33,7 @@ public class GuidePlantationController {
                                  @RequestParam(required = false) String localisation,
                                  @RequestParam(required = false) String saison,
                                  @RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "10") int size,
+                                 @RequestParam(defaultValue = "9") int size,
                                  @RequestParam(defaultValue = "nom_asc") String tri,
                                  Model model) {
         Map<String, String> filtres = guidePlantationService.construireFiltresCulture(motCle, localisation, saison);
@@ -54,7 +54,7 @@ public class GuidePlantationController {
                                                       @RequestParam(required = false) String localisation,
                                                       @RequestParam(required = false) String saison,
                                                       @RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size,
+                                                      @RequestParam(defaultValue = "9") int size,
                                                       @RequestParam(defaultValue = "nom_asc") String tri) {
         Page<Culture> culturesPage = guidePlantationService.listerCultures(motCle, localisation, saison, page, size, tri);
         byte[] contenu = guidePlantationExportService.exporterCulturesPdf(culturesPage.getContent());
@@ -85,7 +85,7 @@ public class GuidePlantationController {
                                    @RequestParam(required = false) String localisation,
                                    @RequestParam(required = false) String saison,
                                    @RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "9") int size,
                                    @RequestParam(defaultValue = "nom_asc") String tri,
                                    Model model) {
         Culture culture = consulterCultureExistante(idCulture);
@@ -105,7 +105,7 @@ public class GuidePlantationController {
                                         @RequestParam(required = false) String localisation,
                                         @RequestParam(required = false) String saison,
                                         @RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(defaultValue = "9") int size,
                                         @RequestParam(defaultValue = "nom_asc") String tri,
                                         Model model) {
         Culture culture = consulterCultureExistante(idCulture);

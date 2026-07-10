@@ -1,153 +1,307 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machines</title>
-</head>
-
+<!--
+  Vue liste de la flotte — route GET /admin/machines
+  Rendue par MachineController.getAll(...).
+  Données fournies par le contrôleur :
+    - machines        : List<Machine> (page courante)
+    - types           : List<TypeMachine>  (pour le filtre par catégorie)
+    - etatMachine     : List<EtatMachine>  (pour le filtre par état)
+    - derniersStatuts : Map<idMachine, StatutMachine> (état courant de chaque machine)
+    - totalMachines / disponibles / indisponibles : statistiques globales du parc
+    - currentPage / totalPages : pagination
+    - success / error : messages flash
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+  Le filtre et la pagination utilisent l'API POST /admin/machines/api/filtre (AJAX).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Flotte de matériel — Voly Saina +')}"></head>
 <body>
-    <a href="/admin/machines/ajouter">Inserer une machine</a>
-    <a href="/api/exel/template/Machine">Télécharger le template d'importation</a>
-    <a href="/admin/files">Allez a la page d'importation</a>
-    <h1>Liste des machines</h1>
-    <p th:if="${success}" th:text="${success}"></p>
-    <p th:if="${error}" th:text="${error}"></p>
 
-    <h3>Filtre</h3>
-    <form action="/admin/machines/pages" method="post">
-        <p>
-            Éléments par page
-            <input type="number" name="pages" id="">
-            <input type="submit" value="Afficher">
-        </p>
-    </form>
+<!-- Barre latérale (fragment réutilisable, onglet « Flotte de matériel » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('machines')}"></aside>
 
-    <form id="filtreForm">
-        <p>Nom machine <input type="text" name="nomMachine" placeholder="toyota">
+<main class="admin-main">
 
-            Etat machine
-            <select name="etatMachine" id="">
-                <option value="">Vide</option>
-                <option th:each="etat : ${etatMachine}" th:value="${etat.getIdEtatMachine()}"
-                    th:text="${etat.getLibelle()}"></option>
-            </select>
+    <!-- Barre supérieure (fragment réutilisable) -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
 
-            Type machine
-            <select name="typeMachine" id="">
-                <option value="">Vide</option>
-                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}" th:text="${type.getLibelle()}">
-                </option>
-            </select>
+    <div class="admin-canvas">
 
-            <button type="submit">Filtrer</button>
-        </p>
-        <input type="hidden" name="page" value="0" id="numeroPage">
-    </form>
+        <!-- ===== Messages flash ===== -->
+        <div th:if="${success}" class="flash flash--success" th:text="${success}">Succès</div>
+        <div th:if="${error}" class="flash flash--error" th:text="${error}">Erreur</div>
 
-    <table border="1">
-        <tr>
-            <th>Nom machine</th>
-            <th>Type machine</th>
-            <th>Etat</th>
-            <th>Action</th>
-        </tr>
+        <!-- ===== En-tête de page + actions ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Gestion de la flotte</h1>
+                <p>Consultez et gérez l'état opérationnel de vos machines.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/api/exel/template/Machine}">
+                    <span class="material-symbols-outlined">download</span>
+                    Modèle Excel
+                </a>
+                <a class="btn btn--outline" th:href="@{/admin/files}">
+                    <span class="material-symbols-outlined">table_view</span>
+                    Importer
+                </a>
+                <a class="btn btn--primary" th:href="@{/admin/machines/ajouter}">
+                    <span class="material-symbols-outlined">add</span>
+                    Ajouter une machine
+                </a>
+            </div>
+        </div>
 
-        <tbody id="machineLines">
-            <tr th:each="machine : ${machines}">
-                <td th:text=${machine.getNom()}></td>
-                <td th:text=${machine.getTypeMachine().getLibelle()}></td>
-                <td>
-                    <span th:if="${derniersStatuts.containsKey(machine.idMachine)}"
-                        th:text="${derniersStatuts[machine.idMachine].etatMachine.libelle}">
-                    </span>
+        <!-- ===== État global du stock ===== -->
+        <div class="stat-bar">
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">inventory_2</span></div>
+                <div>
+                    <p class="stat-tile__label">Total machines</p>
+                    <p class="stat-tile__value" th:text="${totalMachines}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--ok"><span class="material-symbols-outlined">check_circle</span></div>
+                <div>
+                    <p class="stat-tile__label">Disponibles</p>
+                    <p class="stat-tile__value" th:text="${disponibles}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--off"><span class="material-symbols-outlined">block</span></div>
+                <div>
+                    <p class="stat-tile__label">Indisponibles</p>
+                    <p class="stat-tile__value" th:text="${indisponibles}">0</p>
+                </div>
+            </div>
+        </div>
 
-                    <span th:unless="${derniersStatuts.containsKey(machine.idMachine)}">
-                        Aucun statut
-                    </span>
-                </td>
-                <td>
-                    <a th:href="@{/admin/machines/{id_machine}(id_machine=${machine.getIdMachine()})}">Voir plus</a>
-                    <a th:href="@{/admin/machines/modifier/{id_machine}(id_machine=${machine.getIdMachine()})}">Modifier</a>
-                    <a
-                        th:href="@{/admin/machines/supprimer/{id_machine}(id_machine=${machine.getIdMachine()})}">Supprimer</a>
-                </td>
-            </tr>
-        </tbody>
+        <!-- ===== Barre d'outils : filtre (AJAX) + nombre par page ===== -->
+        <div class="toolbar">
+            <!-- Formulaire de filtre : envoyé en AJAX (voir le script en bas) -->
+            <form id="filtreForm">
+                <span class="toolbar__label"><span class="material-symbols-outlined">filter_list</span> Filtrer</span>
+                <input type="text" name="nomMachine" placeholder="Nom de machine...">
+                <select name="typeMachine">
+                    <option value="">Toutes les catégories</option>
+                    <option th:each="type : ${types}"
+                            th:value="${type.idTypeMachine}"
+                            th:text="${type.libelle}">Catégorie</option>
+                </select>
+                <select name="etatMachine">
+                    <option value="">Tous les états</option>
+                    <option th:each="etat : ${etatMachine}"
+                            th:value="${etat.idEtatMachine}"
+                            th:text="${etat.libelle}">État</option>
+                </select>
+                <button type="submit" class="btn btn--primary">
+                    <span class="material-symbols-outlined">search</span>
+                    Filtrer
+                </button>
+                <input type="hidden" name="page" value="0" id="numeroPage">
+            </form>
 
+            <div class="toolbar__spacer"></div>
 
-    </table>
+            <!-- Nombre d'éléments par page (POST classique) -->
+            <form action="/admin/machines/pages" method="post">
+                <span class="toolbar__label">Par page</span>
+                <input type="number" name="pages" min="1" placeholder="10">
+                <button type="submit" class="btn btn--outline">Appliquer</button>
+            </form>
+        </div>
 
-    <div id="paginationButtons">
-        <button type="button" id="btnPrecedent">Précédent</button>
-        <span id="infoPage" th:text="'Page 1 sur ' + ${totalPages}"></span>
-        <button type="button" id="btnSuivant">Suivant</button>
+        <!-- ===== Tableau de la flotte ===== -->
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Machine</th>
+                        <th>Prix / jour</th>
+                        <th>Statut</th>
+                        <th>Localisation</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="machineLines">
+                    <!-- Ligne vide si aucune machine -->
+                    <tr th:if="${#lists.isEmpty(machines)}">
+                        <td colspan="5" class="empty-state">Aucune machine enregistrée.</td>
+                    </tr>
+                    <!-- Une ligne par machine -->
+                    <tr th:each="machine : ${machines}">
+                        <td>
+                            <div class="m-cell">
+                                <div class="m-avatar"><span class="material-symbols-outlined">agriculture</span></div>
+                                <div>
+                                    <div class="m-name" th:text="${machine.nom}">Nom</div>
+                                    <div class="m-sub" th:text="${machine.typeMachine.libelle}">Type</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="strong" th:text="${machine.prixJour} + ' Ar'">0 Ar</td>
+                        <td>
+                            <span th:if="${derniersStatuts.containsKey(machine.idMachine)}" class="badge"
+                                  th:classappend="' badge--' + ${derniersStatuts[machine.idMachine].etatMachine.code}"
+                                  th:text="${derniersStatuts[machine.idMachine].etatMachine.libelle}">Statut</span>
+                            <span th:unless="${derniersStatuts.containsKey(machine.idMachine)}"
+                                  class="badge badge--disponible">Aucun statut</span>
+                        </td>
+                        <td>
+                            <span class="cell-loc">
+                                <span class="material-symbols-outlined">location_on</span>
+                                <span th:text="${machine.localisation != null and !machine.localisation.isEmpty() ? machine.localisation : '—'}">—</span>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a class="icon-btn" title="Voir le détail"
+                                   th:href="@{/admin/machines/{id}(id=${machine.idMachine})}">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </a>
+                                <a class="icon-btn" title="Modifier"
+                                   th:href="@{/admin/machines/modifier/{id}(id=${machine.idMachine})}">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </a>
+                                <a class="icon-btn icon-btn--danger" title="Supprimer"
+                                   th:href="@{/admin/machines/supprimer/{id}(id=${machine.idMachine})}"
+                                   onclick="return confirm('Supprimer définitivement cette machine ?');">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pager">
+                <span class="pager__info" id="infoPage"
+                      th:text="'Page ' + (${currentPage} + 1) + ' sur ' + ${totalPages}">Page 1 sur 1</span>
+                <div class="pager__btns">
+                    <button type="button" id="btnPrecedent" class="pager__btn">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                        Précédent
+                    </button>
+                    <button type="button" id="btnSuivant" class="pager__btn">
+                        Suivant
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-</body>
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/reservations-machine}">Réservations</a>
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+        </div>
+    </footer>
+</main>
 
 <script>
+    // ================================================================
+    //  Filtre + pagination des machines (JS pur, aucune dépendance).
+    //  Le formulaire de filtre est envoyé en AJAX vers l'API du contrôleur ;
+    //  la réponse (Page<Machine> au format JSON) est réaffichée dans le tableau.
+    // ================================================================
     const form = document.getElementById("filtreForm");
     const numeroPageInput = document.getElementById("numeroPage");
     const lines = document.getElementById("machineLines");
+    const infoPage = document.getElementById("infoPage");
+    const btnPrecedent = document.getElementById("btnPrecedent");
+    const btnSuivant = document.getElementById("btnSuivant");
 
+    // Construit le HTML d'une ligne du tableau à partir d'une machine (JSON).
+    function renderRow(machine) {
+        const type = machine.typeMachine ? machine.typeMachine.libelle : '—';
+        const etat = machine.etatMachine;
+        const badge = etat
+            ? `<span class="badge badge--${etat.code}">${etat.libelle}</span>`
+            : `<span class="badge badge--disponible">Aucun statut</span>`;
+        const loc = (machine.localisation && machine.localisation.trim() !== '')
+            ? machine.localisation : '—';
+        return `
+            <tr>
+                <td>
+                    <div class="m-cell">
+                        <div class="m-avatar"><span class="material-symbols-outlined">agriculture</span></div>
+                        <div>
+                            <div class="m-name">${machine.nom}</div>
+                            <div class="m-sub">${type}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="strong">${machine.prixJour} Ar</td>
+                <td>${badge}</td>
+                <td>
+                    <span class="cell-loc">
+                        <span class="material-symbols-outlined">location_on</span>
+                        <span>${loc}</span>
+                    </span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <a class="icon-btn" title="Voir le détail" href="/admin/machines/${machine.idMachine}">
+                            <span class="material-symbols-outlined">visibility</span></a>
+                        <a class="icon-btn" title="Modifier" href="/admin/machines/modifier/${machine.idMachine}">
+                            <span class="material-symbols-outlined">edit</span></a>
+                        <a class="icon-btn icon-btn--danger" title="Supprimer"
+                           href="/admin/machines/supprimer/${machine.idMachine}"
+                           onclick="return confirm('Supprimer définitivement cette machine ?');">
+                            <span class="material-symbols-outlined">delete</span></a>
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    // Charge une page de machines filtrées et met à jour le tableau + la pagination.
     function chargerMachines(pageCible) {
         numeroPageInput.value = pageCible;
-
         const data = new FormData(form);
-        lines.innerHTML = ""; // Vider le tableau
 
-        fetch("/machines/api/filtre", {
-            method: "POST",
-            body: data
-        })
+        fetch("/admin/machines/api/filtre", { method: "POST", body: data })
             .then(response => response.json())
             .then(pageSpring => {
-                pageSpring.content.forEach(machine => {
-                    var line = document.createElement("tr");
-                    const libelleType = machine.typeMachine ? machine.typeMachine.libelle : 'Aucun';
-                    const libelleEtat = machine.etatMachine ? machine.etatMachine.libelle : 'Aucun statut';
-
-                    line.innerHTML = `
-                <td>${machine.nom}</td>
-                <td>${libelleType}</td>
-                <td>${libelleEtat}</td>
-                <td>
-                    <a href="/admin/machines/${machine.idMachine}">Voir plus</a> 
-                    <a href="/admin/machines/modifier/${machine.idMachine}">Modifier</a>
-                    <a href="/admin/machines/supprimer/${machine.idMachine}">Supprimer</a>
-                </td>`;
-                    lines.appendChild(line);
-                });
-
-                // 2. Mise à jour visuelle des infos de pagination
-                if (pageSpring.number < pageSpring.totalPages) {
-                    document.getElementById("infoPage").textContent = `Page ${pageSpring.number + 1} sur ${pageSpring.totalPages}`;
+                lines.innerHTML = "";
+                if (!pageSpring.content || pageSpring.content.length === 0) {
+                    lines.innerHTML = `<tr><td colspan="5" class="empty-state">Aucune machine trouvée.</td></tr>`;
+                } else {
+                    pageSpring.content.forEach(machine => {
+                        lines.insertAdjacentHTML("beforeend", renderRow(machine));
+                    });
                 }
-
-                // Gestion de l'activation/désactivation des boutons
-                document.getElementById("btnPrecedent").disabled = pageSpring.first;
-                document.getElementById("btnSuivant").disabled = pageSpring.last;
+                const totalPages = Math.max(pageSpring.totalPages, 1);
+                infoPage.textContent = `Page ${pageSpring.number + 1} sur ${totalPages}`;
+                btnPrecedent.disabled = pageSpring.first;
+                btnSuivant.disabled = pageSpring.last;
+            })
+            .catch(() => {
+                lines.innerHTML = `<tr><td colspan="5" class="empty-state">Erreur lors du chargement.</td></tr>`;
             });
     }
 
+    // Soumettre le filtre → repartir de la page 0.
     form.addEventListener("submit", function (event) {
         event.preventDefault();
         chargerMachines(0);
     });
 
-    document.getElementById("btnSuivant").addEventListener("click", function () {
-        let pageActuelle = parseInt(numeroPageInput.value, 10);
-        chargerMachines(pageActuelle + 1);
+    // Boutons de pagination.
+    btnSuivant.addEventListener("click", function () {
+        chargerMachines(parseInt(numeroPageInput.value, 10) + 1);
     });
-
-    document.getElementById("btnPrecedent").addEventListener("click", function () {
-        let pageActuelle = parseInt(numeroPageInput.value, 10);
-        if (pageActuelle > 0) {
-            chargerMachines(pageActuelle - 1);
-        }
+    btnPrecedent.addEventListener("click", function () {
+        const p = parseInt(numeroPageInput.value, 10);
+        if (p > 0) chargerMachines(p - 1);
     });
 </script>
-
+</body>
 </html>

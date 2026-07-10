@@ -1,357 +1,548 @@
 <!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Profil - Voly Saina+</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mon Profil - VolySaina+</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-tint": "#1f6c3a",
+                        "on-primary-fixed-variant": "#005226",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-tertiary-container": "#ffc1a4",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "primary-container": "#166534",
+                        "on-secondary-fixed": "#341000",
+                        "surface-dim": "#e0d9d2",
+                        "tertiary-fixed": "#ffdbcc",
+                        "inverse-on-surface": "#f7efe9",
+                        "primary": "#004c22",
+                        "background": "#fff8f2",
+                        "secondary-fixed": "#ffdbcb",
+                        "on-primary-container": "#93e0a2",
+                        "surface-bright": "#fff8f2",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "primary-fixed-dim": "#8bd79b",
+                        "on-surface": "#1e1b17",
+                        "primary-fixed": "#a6f4b5",
+                        "outline": "#707a6f",
+                        "outline-variant": "#bfc9bd",
+                        "secondary": "#9a4614",
+                        "on-primary": "#ffffff",
+                        "surface": "#fff8f2",
+                        "on-background": "#1e1b17",
+                        "secondary-container": "#fd925b",
+                        "surface-container-low": "#faf2eb",
+                        "on-primary-fixed": "#00210b",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#351000",
+                        "on-surface-variant": "#404940",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#712c00",
+                        "surface-container-highest": "#e8e1db",
+                        "tertiary-container": "#81492d",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#8bd79b",
+                        "tertiary": "#653319",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#eee7e0",
+                        "surface-container": "#f4ede6",
+                        "surface-variant": "#e8e1db",
+                        "inverse-surface": "#33302c"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "gutter-mobile": "16px",
+                        "stack-md": "16px",
+                        "base": "4px",
+                        "gutter-desktop": "24px",
+                        "margin-desktop": "48px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "20px"
+                    },
+                    fontFamily: {
+                        "headline-xl-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-        }
-        body {
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .navbar-brand, .nav-link {
-            color: white !important;
-        }
-        .profile-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 40px 0;
-            margin-bottom: 30px;
-            border-radius: 0 0 20px 20px;
-        }
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin: 0 auto 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        body { font-family: 'Inter', sans-serif; background-color: #fff8f2; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .form-control:focus, .form-select:focus {
+            border-color: #166534;
+            box-shadow: 0 0 0 0.25rem rgba(22, 101, 52, 0.25);
         }
         .nav-tabs .nav-link {
-            color: #666;
+            color: #404940;
             border: none;
-            padding: 15px 20px;
-            font-weight: 500;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
         }
         .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
+            color: #004c22;
+            background: none;
+            border-bottom: 3px solid #004c22;
         }
         .nav-tabs .nav-link:hover {
-            color: var(--primary-color);
+            color: #004c22;
         }
-        .card {
+        .btn-primary-agri {
+            background-color: #004c22;
+            color: white;
             border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-radius: 10px;
+            transition: all 150ms ease;
         }
-        .stat-card {
-            text-align: center;
-            padding: 20px;
+        .btn-primary-agri:hover {
+            background-color: #166534;
+            color: white;
+            transform: translateY(-1px);
         }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
+        .card-agri {
+            border: 1px solid #bfc9bd;
+            border-radius: 0.25rem;
+            box-shadow: none;
+            background-color: #ffffff;
         }
-        .stat-label {
-            color: #666;
-            font-size: 0.9rem;
+        /* Style pour les onglets Bootstrap */
+        .tab-pane {
+            display: none;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-        }
-        .btn-outline-primary {
-            color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        .btn-outline-primary:hover {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
+        .tab-pane.show.active {
+            display: block;
         }
     </style>
 </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/client/accueil}">Voly Saina+</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/client/accueil}">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/catalogue/machines/catalogue}">Machines</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/catalogue/produits/catalogue}">Produits</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/catalogue/reservations/mes-reservations}">Réservations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/client/factures}">Factures</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i>
-                            <span th:text="${utilisateur.nom}">Utilisateur</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" th:href="@{/client/profil}">Mon profil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" th:href="@{/logout}">Déconnexion</a></li>
-                        </ul>
-                    </li>
-                </ul>
+
+<body class="bg-surface text-on-surface">
+
+    <!-- TopNavBar -->
+    <nav class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-margin-desktop py-stack-sm max-w-[1280px] mx-auto">
+            <div class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</div>
+            <div class="hidden md:flex items-center gap-stack-lg">
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" th:href="@{/}">Accueil</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" th:href="@{/catalogue/machines/catalogue}">Machines</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" th:href="@{/catalogue/produits/catalogue}">Produits</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" th:href="@{/catalogue/reservations/mes-reservations}">Réservations</a>
+                <a class="text-primary border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Mon Profil</a>
+            </div>
+            <div class="flex items-center gap-stack-md">
+                <span class="material-symbols-outlined text-primary cursor-pointer text-[28px]">account_circle</span>
             </div>
         </div>
     </nav>
 
-    <!-- Header Profil -->
-    <div class="profile-header">
-        <div class="container text-center">
-            <div class="profile-avatar">
-                <i class="fas fa-user"></i>
-            </div>
-            <h2 th:text="${utilisateur.nom}">Nom Utilisateur</h2>
-            <p class="mb-0" th:text="${utilisateur.email}">email@example.com</p>
-        </div>
-    </div>
+    <main class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
 
-    <!-- Contenu Principal -->
-    <div class="container mb-5">
-        <!-- Statistiques rapides -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Réservations en cours</div>
-                </div>
+        <!-- Section 1: Header -->
+        <div class="flex flex-col md:flex-row items-center gap-stack-md mb-stack-lg bg-primary-container p-stack-lg rounded-lg text-on-primary-container">
+            <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-headline-lg">
+                <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">person</span>
             </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Commandes</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Factures en attente</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="stat-number">0 Ar</div>
-                    <div class="stat-label">Total dépensé</div>
-                </div>
+            <div class="text-center md:text-left">
+                <h1 class="font-headline-lg text-headline-lg mb-1" th:text="${utilisateur.nom}">Nom Utilisateur</h1>
+                <p class="font-body-md text-body-md opacity-90" th:text="${utilisateur.email}">email@example.com</p>
+                <div class="mt-2 inline-block px-3 py-1 bg-white/20 rounded-full text-label-sm font-semibold uppercase tracking-wider">Membre VolySaina+</div>
             </div>
         </div>
 
-        <!-- Onglets -->
-        <div class="card">
-            <div class="card-body">
-                <ul class="nav nav-tabs" id="profilTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="informations-tab" data-bs-toggle="tab" 
-                                data-bs-target="#informations" type="button" role="tab">
-                            <i class="fas fa-user me-2"></i>Informations
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="reservations-tab" data-bs-toggle="tab" 
-                                data-bs-target="#reservations" type="button" role="tab">
-                            <i class="fas fa-calendar-alt me-2"></i>Réservations
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="commandes-tab" data-bs-toggle="tab" 
-                                data-bs-target="#commandes" type="button" role="tab">
-                            <i class="fas fa-shopping-cart me-2"></i>Commandes
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="factures-tab" data-bs-toggle="tab" 
-                                data-bs-target="#factures" type="button" role="tab">
-                            <i class="fas fa-file-invoice me-2"></i>Factures
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="parametres-tab" data-bs-toggle="tab" 
-                                data-bs-target="#parametres" type="button" role="tab">
-                            <i class="fas fa-cog me-2"></i>Paramètres
-                        </button>
-                    </li>
-                </ul>
+        <!-- Section 2: Quick Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-desktop mb-stack-lg">
+            <div class="card-agri p-4 text-center">
+                <span class="material-symbols-outlined text-primary mb-2 text-[32px]">calendar_month</span>
+                <div class="font-label-sm text-on-surface-variant uppercase mb-1">Réservations</div>
+                <div class="font-headline-md text-primary" th:text="${nbReservations != null ? nbReservations : 0}">0</div>
+            </div>
+            <div class="card-agri p-4 text-center">
+                <span class="material-symbols-outlined text-primary mb-2 text-[32px]">shopping_cart</span>
+                <div class="font-label-sm text-on-surface-variant uppercase mb-1">Commandes</div>
+                <div class="font-headline-md text-primary" th:text="${nbCommandes != null ? nbCommandes : 0}">0</div>
+            </div>
+            <div class="card-agri p-4 text-center">
+                <span class="material-symbols-outlined text-primary mb-2 text-[32px]">description</span>
+                <div class="font-label-sm text-on-surface-variant uppercase mb-1">Factures</div>
+                <div class="font-headline-md text-primary" th:text="${nbFactures != null ? nbFactures : 0}">0</div>
+            </div>
+            <div class="card-agri p-4 text-center">
+                <span class="material-symbols-outlined text-primary mb-2 text-[32px]">payments</span>
+                <div class="font-label-sm text-on-surface-variant uppercase mb-1">Total Dépensé</div>
+                <div class="font-headline-md text-primary" th:text="${totalDepense != null ? totalDepense + ' Ar' : '0 Ar'}">0 Ar</div>
+            </div>
+        </div>
 
-                <div class="tab-content mt-4" id="profilTabsContent">
-                    <!-- Onglet Informations -->
-                    <div class="tab-pane fade show active" id="informations" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="mb-3">Informations personnelles</h5>
-                                <form th:action="@{/client/profil/informations}" method="post">
-                                    <div class="mb-3">
-                                        <label class="form-label">Nom complet</label>
-                                        <input type="text" class="form-control" name="nom" 
-                                               th:value="${utilisateur.nom}" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email</label>
-                                        <input type="email" class="form-control" name="email" 
-                                               th:value="${utilisateur.email}" disabled>
-                                        <small class="text-muted">L'email ne peut pas être modifié</small>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Téléphone</label>
-                                        <input type="tel" class="form-control" name="telephone" 
-                                               th:value="${utilisateur.telephone}">
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-1"></i>Enregistrer
-                                    </button>
-                                </form>
+
+        <!-- Section 3: Tabbed Interface -->
+        <div class="card-agri bg-white">
+            <!-- Navigation des onglets -->
+            <ul class="nav nav-tabs border-b border-outline-variant px-stack-md" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active font-label-md" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+                        Informations
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link font-label-md" id="res-tab" data-bs-toggle="tab" data-bs-target="#res" type="button" role="tab" aria-controls="res" aria-selected="false">
+                        Réservations
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link font-label-md" id="cmd-tab" data-bs-toggle="tab" data-bs-target="#cmd" type="button" role="tab" aria-controls="cmd" aria-selected="false">
+                        Commandes
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link font-label-md" id="fac-tab" data-bs-toggle="tab" data-bs-target="#fac" type="button" role="tab" aria-controls="fac" aria-selected="false">
+                        Factures
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link font-label-md" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+                        Paramètres
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Contenu des onglets -->
+            <div class="tab-content p-stack-lg" id="profileTabsContent">
+
+                <!-- Onglet Informations -->
+                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                    <form method="POST" th:action="@{/client/profil/informations}">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-desktop">
+                            <!-- Colonne gauche -->
+                            <div class="border-e border-outline-variant pr-md-4">
+                                <h3 class="font-headline-md text-primary mb-stack-md flex items-center gap-2">
+                                    <span class="material-symbols-outlined">badge</span>
+                                    Informations personnelles
+                                </h3>
+                                <div class="mb-3">
+                                    <label class="form-label font-label-md text-on-surface-variant">Nom complet</label>
+                                    <input class="form-control rounded-none" name="nom" 
+                                           th:value="${utilisateur.nom}" type="text" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-label-md text-on-surface-variant">Email (Identifiant)</label>
+                                    <input class="form-control rounded-none bg-surface-container-low" 
+                                           name="email" th:value="${utilisateur.email}" type="email" disabled/>
+                                    <small class="text-muted">L'email ne peut pas être modifié</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-label-md text-on-surface-variant">Téléphone</label>
+                                    <input class="form-control rounded-none" name="telephone" 
+                                           th:value="${utilisateur.telephone}" type="tel"/>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <h5 class="mb-3">Profil détaillé</h5>
-                                <form th:action="@{/client/profil/informations}" method="post">
-                                    <div class="mb-3">
-                                        <label class="form-label">Genre</label>
-                                        <select class="form-select" name="genre">
+
+                            <!-- Colonne droite -->
+                            <div class="pl-md-4">
+                                <h3 class="font-headline-md text-primary mb-stack-md flex items-center gap-2">
+                                    <span class="material-symbols-outlined">analytics</span>
+                                    Profil détaillé
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="form-label font-label-md text-on-surface-variant">Genre</label>
+                                        <select class="form-select rounded-none" name="genre">
                                             <option value="">Sélectionner</option>
                                             <option value="HOMME" th:selected="${profil.genre == 'HOMME'}">Homme</option>
                                             <option value="FEMME" th:selected="${profil.genre == 'FEMME'}">Femme</option>
+                                            <option value="AUTRE" th:selected="${profil.genre == 'AUTRE'}">Autre</option>
                                         </select>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Âge</label>
-                                        <input type="number" class="form-control" name="age" 
-                                               th:value="${profil.age}">
+                                    <div>
+                                        <label class="form-label font-label-md text-on-surface-variant">Âge</label>
+                                        <input class="form-control rounded-none" name="age" 
+                                               th:value="${profil.age}" type="number" min="0" max="120"/>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Catégorie socio-professionnelle</label>
-                                        <input type="text" class="form-control" name="csp" 
-                                               th:value="${profil.csp}">
+                                    <div class="col-span-2">
+                                        <label class="form-label font-label-md text-on-surface-variant">Catégorie Socio-Professionnelle (CSP)</label>
+                                        <input class="form-control rounded-none" name="csp" 
+                                               th:value="${profil.csp}" type="text" placeholder="Agriculteur, Gérant, etc."/>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Localisation</label>
-                                        <input type="text" class="form-control" name="localisation" 
-                                               th:value="${profil.localisation}">
+                                    <div class="col-span-2">
+                                        <label class="form-label font-label-md text-on-surface-variant">Localisation</label>
+                                        <input class="form-control rounded-none" name="localisation" 
+                                               th:value="${profil.localisation}" type="text" placeholder="Département ou ville"/>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-1"></i>Enregistrer
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Onglet Réservations -->
-                    <div class="tab-pane fade" id="reservations" role="tabpanel">
-                        <div class="text-center py-5">
-                            <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                            <h5>Mes réservations</h5>
-                            <p class="text-muted">Consultez et gérez vos réservations de machines</p>
-                            <a th:href="@{/catalogue/reservations/mes-reservations}" class="btn btn-outline-primary">
-                                Voir mes réservations
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Onglet Commandes -->
-                    <div class="tab-pane fade" id="commandes" role="tabpanel">
-                        <div class="text-center py-5">
-                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                            <h5>Mes commandes</h5>
-                            <p class="text-muted">Consultez vos commandes de produits</p>
-                            <a th:href="@{/panier/recap}" class="btn btn-outline-primary">
-                                Voir mes commandes
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Onglet Factures -->
-                    <div class="tab-pane fade" id="factures" role="tabpanel">
-                        <div class="text-center py-5">
-                            <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
-                            <h5>Mes factures</h5>
-                            <p class="text-muted">Consultez et téléchargez vos factures</p>
-                            <a th:href="@{/client/factures}" class="btn btn-outline-primary">
-                                Voir mes factures
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Onglet Paramètres -->
-                    <div class="tab-pane fade" id="parametres" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5 class="mb-3">Modifier le mot de passe</h5>
-                                <form th:action="@{/client/profil/mot-de-passe}" method="post">
-                                    <div class="mb-3">
-                                        <label class="form-label">Mot de passe actuel</label>
-                                        <input type="password" class="form-control" name="oldPassword" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Nouveau mot de passe</label>
-                                        <input type="password" class="form-control" name="newPassword" required minlength="6">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Confirmer le nouveau mot de passe</label>
-                                        <input type="password" class="form-control" name="confirmPassword" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-key me-1"></i>Modifier le mot de passe
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="col-md-6">
-                                <h5 class="mb-3">Danger Zone</h5>
-                                <div class="alert alert-danger">
-                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Supprimer le compte</h6>
-                                    <p class="mb-2">Cette action est irréversible. Toutes vos données seront perdues.</p>
-                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete()">
-                                        <i class="fas fa-trash me-1"></i>Supprimer mon compte
-                                    </button>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-stack-lg flex justify-end">
+                            <button class="btn-primary-agri px-5 py-2 font-label-md uppercase tracking-wider" type="submit">
+                                Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Onglet Réservations -->
+                <div class="tab-pane fade" id="res" role="tabpanel" aria-labelledby="res-tab">
+                    <div th:if="${reservations == null or #lists.isEmpty(reservations)}" class="text-center py-stack-lg">
+                        <span class="material-symbols-outlined text-[64px] text-outline-variant">event_busy</span>
+                        <p class="font-body-md text-on-surface-variant mt-2">Aucune réservation en cours.</p>
+                        <a th:href="@{/catalogue/machines/catalogue}" class="btn-primary-agri mt-3 px-4 py-2 inline-block">
+                            Parcourir les équipements
+                        </a>
+                    </div>
+                    <div th:if="${reservations != null and not #lists.isEmpty(reservations)}" class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low border-b border-outline-variant">
+                                    <th class="p-stack-md font-label-md">Machine</th>
+                                    <th class="p-stack-md font-label-md">Période</th>
+                                    <th class="p-stack-md font-label-md">Lieu</th>
+                                    <th class="p-stack-md font-label-md">Statut</th>
+                                    <th class="p-stack-md font-label-md text-right">Prix</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="reservation : ${reservations}" class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                    <td class="p-stack-md font-body-md font-semibold" th:text="${reservation.machine.nom}">Machine</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant" 
+                                        th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')} + ' au ' + ${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}">
+                                        Date
+                                    </td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${reservation.lieuLivraison}">Lieu</td>
+                                    <td class="p-stack-md">
+                                        <span class="px-2 py-1 text-[10px] rounded uppercase font-bold"
+                                              th:classappend="${reservation.statut == 'ACTIVE'} ? 'bg-primary-container text-on-primary-container' : 
+                                                              ${reservation.statut == 'TERMINEE'} ? 'bg-surface-container-highest text-on-surface-variant' : 
+                                                              'bg-error-container text-on-error-container'"
+                                              th:text="${reservation.statut}">
+                                            Statut
+                                        </span>
+                                    </td>
+                                    <td class="p-stack-md text-right font-bold" th:text="${reservation.prixTotal + ' Ar'}">0 Ar</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Onglet Commandes -->
+                <div class="tab-pane fade" id="cmd" role="tabpanel" aria-labelledby="cmd-tab">
+                    <div th:if="${commandes == null or #lists.isEmpty(commandes)}" class="text-center py-stack-lg">
+                        <span class="material-symbols-outlined text-[64px] text-outline-variant">shopping_basket</span>
+                        <p class="font-body-md text-on-surface-variant mt-2">Historique des commandes vide.</p>
+                        <a th:href="@{/catalogue/produits/catalogue}" class="btn-primary-agri mt-3 px-4 py-2 inline-block">
+                            Découvrir les produits
+                        </a>
+                    </div>
+                    <div th:if="${commandes != null and not #lists.isEmpty(commandes)}" class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low border-b border-outline-variant">
+                                    <th class="p-stack-md font-label-md">Référence</th>
+                                    <th class="p-stack-md font-label-md">Date</th>
+                                    <th class="p-stack-md font-label-md">Produits</th>
+                                    <th class="p-stack-md font-label-md">Statut</th>
+                                    <th class="p-stack-md font-label-md text-right">Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="commande : ${commandes}" class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                    <td class="p-stack-md font-body-md font-semibold" th:text="'#CMD-' + ${commande.idCommande}">#CMD-001</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant" 
+                                        th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">Date</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${commande.nbArticles} + ' article(s)'">0</td>
+                                    <td class="p-stack-md">
+                                        <span class="px-2 py-1 text-[10px] rounded uppercase font-bold"
+                                              th:classappend="${commande.statut == 'PAYEE'} ? 'bg-primary-container text-on-primary-container' : 
+                                                              ${commande.statut == 'EN_ATTENTE'} ? 'bg-error-container text-on-error-container' : 
+                                                              'bg-surface-container-highest text-on-surface-variant'"
+                                              th:text="${commande.statut}">
+                                            Statut
+                                        </span>
+                                    </td>
+                                    <td class="p-stack-md text-right font-bold" th:text="${commande.montantTotal + ' Ar'}">0 Ar</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Onglet Factures -->
+                <div class="tab-pane fade" id="fac" role="tabpanel" aria-labelledby="fac-tab">
+                    <div th:if="${factures == null or #lists.isEmpty(factures)}" class="text-center py-stack-lg">
+                        <span class="material-symbols-outlined text-[64px] text-outline-variant">receipt_long</span>
+                        <p class="font-body-md text-on-surface-variant mt-2">Aucune facture disponible.</p>
+                    </div>
+                    <div th:if="${factures != null and not #lists.isEmpty(factures)}" class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low border-b border-outline-variant">
+                                    <th class="p-stack-md font-label-md">Référence</th>
+                                    <th class="p-stack-md font-label-md">Date</th>
+                                    <th class="p-stack-md font-label-md">Statut</th>
+                                    <th class="p-stack-md font-label-md text-right">Montant</th>
+                                    <th class="p-stack-md font-label-md text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="facture : ${factures}" class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                                    <td class="p-stack-md font-body-md font-semibold" th:text="${facture.reference}">INV-2024-001</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant" 
+                                        th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}">Date</td>
+                                    <td class="p-stack-md">
+                                        <span class="px-2 py-1 text-[10px] rounded uppercase font-bold"
+                                              th:classappend="${facture.statut == 'PAYEE'} ? 'bg-primary-container text-on-primary-container' : 
+                                                              ${facture.statut == 'EN_ATTENTE'} ? 'bg-error-container text-on-error-container' : 
+                                                              'bg-surface-container-highest text-on-surface-variant'"
+                                              th:text="${facture.statut}">
+                                            Statut
+                                        </span>
+                                    </td>
+                                    <td class="p-stack-md text-right font-bold" th:text="${facture.montant + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-center">
+                                        <a th:href="@{/client/factures/{id}/telecharger(id=${facture.idFacture})}" 
+                                           class="text-primary hover:underline font-label-sm text-label-sm">
+                                            Télécharger
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Onglet Paramètres -->
+                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-desktop">
+                        <div class="border-e border-outline-variant">
+                            <h3 class="font-headline-md text-primary mb-stack-md">Changer le mot de passe</h3>
+                            <form method="POST" th:action="@{/client/profil/securite}">
+                                <div class="mb-3">
+                                    <label class="form-label font-label-md text-on-surface-variant">Mot de passe actuel</label>
+                                    <input class="form-control rounded-none" name="oldPassword" type="password" required/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-label-md text-on-surface-variant">Nouveau mot de passe</label>
+                                    <input class="form-control rounded-none" name="newPassword" type="password" required minlength="6"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label font-label-md text-on-surface-variant">Confirmer le nouveau mot de passe</label>
+                                    <input class="form-control rounded-none" name="confirmPassword" type="password" required/>
+                                </div>
+                                <button class="btn border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all px-4 py-2" type="submit">
+                                    Mettre à jour le mot de passe
+                                </button>
+                            </form>
+                        </div>
+
+                        <div>
+                            <div class="bg-error-container p-stack-md rounded-lg h-full flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-headline-md text-on-error-container mb-2 flex items-center gap-2">
+                                        <span class="material-symbols-outlined">warning</span>
+                                        Zone de danger
+                                    </h3>
+                                    <p class="font-body-md text-on-error-container opacity-80 mb-stack-md">
+                                        La suppression de votre compte est définitive. Toutes vos données, réservations et factures seront supprimées de nos serveurs conformément au RGPD.
+                                    </p>
+                                </div>
+                                <form method="post" onsubmit="return confirm('Êtes-vous certain de vouloir supprimer votre compte VolySaina+ ?');" 
+                                      th:action="@{/profil/supprimer}">
+                                    <button class="btn btn-outline-danger w-fit px-4 py-2 uppercase font-bold text-label-sm" type="submit">
+                                        Supprimer définitivement mon compte
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest border-t border-outline-variant mt-stack-lg">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-lg gap-stack-md max-w-[1280px] mx-auto">
+            <div class="flex flex-col items-center md:items-start">
+                <div class="font-headline-md text-headline-md font-bold text-primary mb-2">VolySaina+</div>
+                <p class="font-body-md text-body-md text-on-surface-variant">Excellence en Agriculture Durable.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-stack-md">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Conditions d'utilisation</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Politique de confidentialité</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Contact Support</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Partenaires</a>
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant opacity-75">
+                © 2024 VolySaina+. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function confirmDelete() {
-            if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.')) {
-                // TODO: Implémenter la suppression de compte
-                alert('Fonctionnalité en cours de développement');
+        // Micro-interaction for tabs
+        document.querySelectorAll('.nav-link').forEach(tab => {
+            tab.addEventListener('click', () => {
+                tab.classList.add('scale-95');
+                setTimeout(() => tab.classList.remove('scale-95'), 150);
+            });
+        });
+
+        // Vérifier que Bootstrap fonctionne
+        document.addEventListener('DOMContentLoaded', function() {
+            // S'assurer que le premier onglet est actif
+            var firstTab = document.querySelector('#profileTabs .nav-link.active');
+            if (!firstTab) {
+                var tabs = document.querySelectorAll('#profileTabs .nav-link');
+                if (tabs.length > 0) {
+                    tabs[0].classList.add('active');
+                    var target = tabs[0].getAttribute('data-bs-target');
+                    if (target) {
+                        var pane = document.querySelector(target);
+                        if (pane) {
+                            pane.classList.add('show', 'active');
+                        }
+                    }
+                }
             }
-        }
+        });
     </script>
+
 </body>
 </html>

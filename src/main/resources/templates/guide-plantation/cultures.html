@@ -110,24 +110,39 @@
 <body class="bg-background text-on-background min-h-screen flex flex-col">
 
     <!-- TopNavBar -->
-    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
-        <div class="flex justify-between items-center w-full px-margin-desktop py-base max-w-[1280px] mx-auto">
-            <div class="font-headline-md text-headline-md font-bold text-primary">
-                VolySaina+
-            </div>
-            <nav class="hidden md:flex items-center gap-stack-lg">
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Location</a>
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="/catalogue/produits/catalogue">Achat</a>
-                <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="/guide-plantation">Encyclopédie</a>
-            </nav>
-            <div class="flex items-center gap-stack-md">
-                <button class="material-symbols-outlined text-primary p-2 hover:bg-surface-container rounded-full transition-colors">
-                    account_circle
-                </button>
-            </div>
-        </div>
-    </header>
+<!-- TopNavBar - Pleine largeur avec répartition gauche-droite -->
+<header class="w-full z-50 flex justify-between items-center px-6 md:px-12 h-20 bg-surface border-b border-outline-variant">
+    
+    <!-- Groupe GAUCHE : Logo + Navigation -->
+    <div class="flex items-center gap-8 flex-shrink-0">
+        <span class="font-headline-lg text-headline-lg font-bold text-primary">
+            <a class="font-headline-lg text-headline-lg font-bold text-primary" href="/">VolySaina+</a>
+        </span>
+        <nav class="hidden md:flex items-center gap-8">
+            <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="/catalogue/machines/catalogue">Location</a>
+            <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="/catalogue/produits/catalogue">Boutique</a>
+            <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="/guide-plantation">Encyclopédie</a>
+        </nav>
+    </div>
 
+    <!-- Groupe CENTRE : Barre de recherche (prend tout l'espace disponible) -->
+    <div class="flex-1 max-w-2xl mx-8 relative hidden lg:block">
+        <form method="get" th:action="@{/guide-plantation/cultures}">
+            <input type="text" name="motCle" th:value="${filtres.motCle}"
+                   class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" 
+                   placeholder="Rechercher une culture"/>
+            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                <span class="material-symbols-outlined">search</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Groupe DROITE : Icônes panier et compte -->
+        <a class="p-2 hover:bg-surface-container rounded-full transition-colors" th:href="@{/client/profil}">
+            <span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+        </a>
+    </div>
+</header>
     <main class="flex-grow max-w-[1280px] mx-auto w-full px-margin-desktop py-stack-lg">
 
         <!-- Header Section -->
@@ -226,7 +241,7 @@
                         <input type="hidden" name="localisation" th:value="${filtres.localisation}" />
                         <input type="hidden" name="saison" th:value="${filtres.saison}" />
                         <input type="hidden" name="size" th:value="${size}" />
-                        <select name="tri" onchange="this.form.submit()" class="bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-1 px-stack-sm">
+                        <select name="tri" onchange="this.form.submit()" class="bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-1 px-stack">
                             <option value="nom_asc" th:selected="${tri == 'nom_asc'}">Nom A-Z</option>
                             <option value="nom_desc" th:selected="${tri == 'nom_desc'}">Nom Z-A</option>
                         </select>
@@ -240,7 +255,7 @@
                         <input type="hidden" name="localisation" th:value="${filtres.localisation}" />
                         <input type="hidden" name="saison" th:value="${filtres.saison}" />
                         <input type="hidden" name="tri" th:value="${tri}" />
-                        <input type="number" name="size" min="1" max="100" th:value="${size}"
+                        <input type="number" name="size" min="1" max="100" th:value="${size - 1}"
                                onchange="this.form.submit()"
                                class="w-20 bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-1 px-stack-sm" />
                     </form>
@@ -376,7 +391,7 @@
                     VolySaina+
                 </div>
                 <p class="font-label-sm text-label-sm text-on-surface-variant">
-                    © 2024 VolySaina+. Excellence en Agriculture Durable.
+                    © 2026 VolySaina+. Excellence en Agriculture Durable.
                 </p>
             </div>
             <div class="flex flex-wrap justify-center gap-stack-md">

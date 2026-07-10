@@ -3,7 +3,12 @@ package com.voly_saina.controller.client;
 import com.voly_saina.entity.ProfilUtilisateur;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.client.ClientProfilService;
+import com.voly_saina.service.client.ClientStatistiqueService;
+
+import com.voly_saina.dto.StatistiquesClientDTO;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,22 +27,39 @@ import java.util.Map;
 public class ClientProfilController {
 
     private final ClientProfilService clientProfilService;
+    private final ClientStatistiqueService clientStatistiqueService;
 
-    public ClientProfilController(ClientProfilService clientProfilService) {
+    public ClientProfilController(ClientProfilService clientProfilService, ClientStatistiqueService clientStatistiqueService) {
         this.clientProfilService = clientProfilService;
+        this.clientStatistiqueService = clientStatistiqueService;
     }
+
 
     @GetMapping
     public String profilPrincipal(@AuthenticationPrincipal User user, Model model) {
         // Récupérer l'utilisateur connecté
         User userDetails = (User) user;
         Utilisateur utilisateur = clientProfilService.getUtilisateurByEmail(userDetails.getUsername());
-        
+
         model.addAttribute("utilisateur", utilisateur);
         model.addAttribute("profil", clientProfilService.getProfilUtilisateur(utilisateur.getIdUtilisateur()));
-        
+
+        // Quick stats (valeurs réelles)
+        com.voly_saina.dto.StatistiquesClientDTO stats = clientStatistiqueService.genererStatistiquesClient(
+                utilisateur.getIdUtilisateur(),
+                null,
+                null
+        );
+
+        model.addAttribute("nbReservations", stats.getNombreLocations());
+        model.addAttribute("nbCommandes", stats.getNombreCommandes());
+        model.addAttribute("nbFactures", stats.getNombreFactures());
+        model.addAttribute("totalDepense", stats.getTotalDepenses());
+
         return "client/profil/index";
     }
+
+
 
     // Getter helper
     private Utilisateur getUtilisateur(@AuthenticationPrincipal User user) {

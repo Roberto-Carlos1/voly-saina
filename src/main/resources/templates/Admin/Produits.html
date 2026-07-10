@@ -1,0 +1,470 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AgriManager Pro - Gestion de l'Inventaire Boutique</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#9a4614",
+                    "primary-fixed-dim": "#8bd79b",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#ffc1a4",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#e0d9d2",
+                    "on-primary-container": "#93e0a2",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#005226",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#341000",
+                    "inverse-surface": "#33302c",
+                    "inverse-primary": "#8bd79b",
+                    "secondary-container": "#fd925b",
+                    "tertiary-container": "#81492d",
+                    "tertiary": "#653319",
+                    "surface": "#fff8f2",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-primary-fixed": "#00210b",
+                    "on-background": "#1e1b17",
+                    "surface-bright": "#fff8f2",
+                    "on-surface": "#1e1b17",
+                    "on-surface-variant": "#404940",
+                    "surface-container-high": "#eee7e0",
+                    "secondary-fixed": "#ffdbcb",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#f4ede6",
+                    "secondary-fixed-dim": "#ffb693",
+                    "primary-fixed": "#a6f4b5",
+                    "surface-tint": "#1f6c3a",
+                    "inverse-on-surface": "#f7efe9",
+                    "outline-variant": "#bfc9bd",
+                    "on-secondary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "background": "#fff8f2",
+                    "on-tertiary-fixed": "#351000",
+                    "surface-container-highest": "#e8e1db",
+                    "on-tertiary-fixed-variant": "#6d391e",
+                    "outline": "#707a6f",
+                    "primary-container": "#166534",
+                    "on-secondary-container": "#712c00",
+                    "surface-container-low": "#faf2eb",
+                    "primary": "#004c22",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "surface-variant": "#e8e1db"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "stack-sm": "8px",
+                    "gutter-mobile": "16px",
+                    "gutter-desktop": "24px",
+                    "base": "4px",
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "48px"
+            },
+            "fontFamily": {
+                    "label-md": ["Inter"],
+                    "headline-xl-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #707a6f; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r border-outline-variant flex flex-col py-stack-md px-base shrink-0 z-50">
+<div class="flex items-center gap-3 px-stack-md mb-stack-lg">
+<div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">agriculture</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Gestion Agricole</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Back-office Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-base overflow-y-auto custom-scrollbar">
+<!-- Navigation Items with Active State Logic -->
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Tableau de bord</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined">agriculture</span>
+<span class="font-label-md text-label-md">Flotte de matériel</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-md text-label-md">Réservations</span>
+</a>
+<!-- Active Tab: Boutique -->
+<a class="flex items-center gap-3 px-stack-md py-3 bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform duration-150 shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-label-md text-label-md">Boutique</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 group" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-md text-label-md">Rapports</span>
+</a>
+</nav>
+<div class="mt-auto px-base pt-stack-md border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold flex items-center justify-center gap-2 mb-stack-md hover:bg-primary-container hover:text-on-primary-container transition-colors active:scale-95">
+<span class="material-symbols-outlined">add</span>
+<span class="font-label-md text-label-md">Nouvelle Réservation</span>
+</button>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:text-primary underline font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Aide</span>
+</a>
+<a class="flex items-center gap-3 px-stack-md py-3 text-on-surface-variant hover:text-primary underline font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Déconnexion</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col">
+<!-- TopNavBar (Authority Source: JSON) -->
+<header class="sticky top-0 z-40 bg-surface border-b border-outline-variant flex justify-between items-center w-full px-gutter-desktop h-16">
+<div class="flex items-center gap-stack-md w-1/3">
+<div class="relative w-full max-w-sm">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline rounded-lg pl-10 pr-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="Rechercher un produit..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-base"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right hidden sm:block">
+<p class="font-label-md text-label-md font-bold">Admin AgriElite</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Superviseur Stock</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-stone-300 border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of an agricultural operations manager, wearing a clean work shirt and a baseball cap, set against a blurred background of a modern industrial farm warehouse. The lighting is bright and natural, suggesting a reliable and professional personality in line with the rugged industrial brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnzgNR2GAQr3aOkF1QvDiAME6kCYsFeEFmVA8_i8DAv6AUyJ3BQO_Uk3Oy2M1m_9lDQyd9ToQgXV-Z19Cfww3tta185vcFAToia18iAGV_P8NqBUSHdTjSzXOhH6tbrJYEKlAPDeiwzSmV7TbMmmVJjk2XsyClvtkqonluCi724rOUSxUu70j5xABgbHSYlc6t8B0KmDgkEurD3xuASsMV07GSewelQN8Ixc3Wr2o-PIR2MA80IDMp">
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<section class="p-gutter-desktop max-w-[1280px] mx-auto w-full flex-1">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-lg">
+<div>
+<nav class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm mb-base">
+<a class="hover:text-primary" href="#">Boutique</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-bold">Inventaire &amp; Stocks</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Gestion des Stocks</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl">Supervisez vos pièces détachées, systèmes de guidage et accessoires. Suivez les niveaux de stock en temps réel pour éviter les ruptures.</p>
+</div>
+<button class="bg-primary text-on-primary px-gutter-desktop h-12 rounded shadow-sm hover:bg-primary-container hover:text-on-primary-container flex items-center gap-2 font-label-md text-label-md transition-all active:scale-95 group">
+<span class="material-symbols-outlined group-hover:rotate-90 transition-transform">add_circle</span>
+                    Ajouter un nouveau produit
+                </button>
+</div>
+<!-- Stats Bar (Rugged Tonal Layers) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-stack-md mb-stack-lg">
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Total Références</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold">1,482</span>
+<span class="text-primary font-label-sm text-label-sm">+12 cette semaine</span>
+</div>
+</div>
+<div class="bg-error-container border border-error p-stack-md rounded">
+<p class="font-label-sm text-label-sm text-on-error-container mb-1 uppercase tracking-wider">Alertes Stock Bas</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold text-error">24</span>
+<span class="text-error font-label-sm text-label-sm">Action requise</span>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Valeur Inventaire</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold">452,300 €</span>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Mouvement (24h)</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md font-bold">186</span>
+<span class="text-primary font-label-sm text-label-sm">Unités sorties</span>
+</div>
+</div>
+</div>
+<!-- Products Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-stack-md">
+<!-- Product Card 1: Critical Stock -->
+<div class="bg-white border-2 border-error rounded overflow-hidden flex flex-col group transition-all hover:shadow-lg">
+<div class="h-48 relative overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A macro photograph of a high-precision metal agricultural gear part, showing its intricate teeth and heavy-duty industrial finish. The lighting highlights the texture of the steel, set against a clean, technical background of a workshop. The style is sharp, clean, and professional, emphasizing durability and mechanical quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwqIFrp4oGNgJd6RQ8mPsAfnUaMs8CcSEW1Z38ude2G0HvbDo3vojyJvwZYqT05GaZFzoxOXg2S7ntPBG3OvpFWuiUaap-4fRMFlFezx7Y-VgZ_3pnhu675Y6GpilHkdIRhpT9oMpg72zAtiGDitxLLw4p94ujjWu2DOxyZeXnYwyC96mAzI6X5vfsGIZmxePFZO5eo8y1A0hl7Kjdve5kTkLXGOrwg5jI56BuHSiONtEH-x7oBrG6">
+<div class="absolute top-2 right-2 bg-error text-on-error px-2 py-1 rounded font-label-sm text-label-sm font-bold uppercase">
+                            Stock Faible
+                        </div>
+</div>
+<div class="p-stack-md flex-1 flex flex-col">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">PIÈCE TRANSMISSION</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm leading-tight">Kit Engrenage X-450</h3>
+<div class="mt-auto pt-stack-sm border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Stock:</span>
+<span class="font-label-md text-label-md text-error font-bold">3 unités</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Prix:</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">845,00 €</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-error text-on-error py-3 font-bold hover:bg-on-error-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">shopping_cart_checkout</span>
+                        Réapprovisionner
+                    </button>
+</div>
+<!-- Product Card 2: GPS System -->
+<div class="bg-white border border-outline-variant rounded overflow-hidden flex flex-col group transition-all hover:border-primary hover:shadow-md">
+<div class="h-48 relative overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A high-tech digital GPS monitor for a tractor, displaying a vibrant satellite map with field boundaries. The screen is clear and bright, reflecting a modern agricultural workspace. The image is taken in a professional field environment during golden hour, emphasizing the blend of high technology and rugged outdoor utility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXciWByFDMPXaqvYSNagZjsL0O2xkLx6HuIcrxpRobhYfav1FnOsfq_5wyO11kJyGGzJGzuGcDZ_N5X2c-KaLPHjpwONKFskhe5tJWSHlOwCSmajzK8cQ80fLjJvysIPBaWm_saXRGWGuBhv5vGOv_JgaM92vIE6Ld-w4cHIdx729aWH-g6XwxWeo6cWkRDGxCDBNzt4d_gQHA8f6_gpiZxh2x7l3D4O0pPv0WYpCXIwYhhTbRHoRx">
+<div class="absolute top-2 right-2 bg-primary text-on-primary px-2 py-1 rounded font-label-sm text-label-sm font-bold uppercase">
+                            Premium
+                        </div>
+</div>
+<div class="p-stack-md flex-1 flex flex-col">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">TECHNOLOGIE GPS</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm leading-tight">Terminal Trimble GFX-750</h3>
+<div class="mt-auto pt-stack-sm border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Stock:</span>
+<span class="font-label-md text-label-md text-primary font-bold">12 unités</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Prix:</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">2,490,00 €</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-surface-container-high text-on-surface py-3 font-bold hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">edit</span>
+                        Modifier
+                    </button>
+</div>
+<!-- Product Card 3: Hydraulic -->
+<div class="bg-white border border-outline-variant rounded overflow-hidden flex flex-col group transition-all hover:border-primary hover:shadow-md">
+<div class="h-48 relative overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A heavy-duty hydraulic cylinder and pump assembly for agricultural machinery, showing robust construction and chrome finishing. The image features high contrast lighting in a clean warehouse, highlighting the industrial strength and reliability of the hardware. Corporate modern aesthetic with professional technical focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAl6VgJuwG8vlU20m0MmlYbF5z6ajql5RfwicRQlK_BbkmyJ0368v-cLo4Kz-aU_BIt4LT4XTpLf7wvJTr4298LhQxw6piv68h-WHjS_xMK2FE5Nqq2s7-lPyVTJUn59pnVrSrFUs8mXXtgYyDftON80HxGbCVEZy7QD_cRCv9qzUlGQ9tVv0VwTvTEtPOBUmTkstjm_j1-ba4b-NOLdo_JSsNEaRkcLIQ5vJLvhEi_1_NF0mScbZJY">
+</div>
+<div class="p-stack-md flex-1 flex flex-col">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">HYDRAULIQUE</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm leading-tight">Vérin Double Effet 120mm</h3>
+<div class="mt-auto pt-stack-sm border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Stock:</span>
+<span class="font-label-md text-label-md text-primary font-bold">45 unités</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Prix:</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">312,00 €</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-surface-container-high text-on-surface py-3 font-bold hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">edit</span>
+                        Modifier
+                    </button>
+</div>
+<!-- Product Card 4: Lighting -->
+<div class="bg-white border-2 border-error rounded overflow-hidden flex flex-col group transition-all hover:shadow-lg">
+<div class="h-48 relative overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="Close-up of a high-intensity LED work light for tractors, with a multi-diode array and rugged aluminum heat sink casing. The lighting is crisp, showing the precision of the optics. Modern industrial style, reflecting high-end equipment standards for night-time agricultural work." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtk86abFCHY7kbcN20sVBZEIl-jAEsV7ZnrjCkfirURnmylPKt0uLWirw-B999MCmc6s-O8fWNNYUaW53RqKFgMuHHtKGUnN1qQe8_6TrHkFEDvmBYlVXfsEMN-CHjotONafm85IRhJymTwS0qoObfqOWMR4vaGKEarYv2mv_D90LXBxR_RyrwTCcOPTEpvyAJaXPaQfNLxzphkuRv5tmemg11qfrtewV5QfV7PU7UPw-VHqOSaJ2-">
+<div class="absolute top-2 right-2 bg-error text-on-error px-2 py-1 rounded font-label-sm text-label-sm font-bold uppercase">
+                            Stock Faible
+                        </div>
+</div>
+<div class="p-stack-md flex-1 flex flex-col">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">ÉCLAIRAGE</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm leading-tight">Phare LED Travail 4800lm</h3>
+<div class="mt-auto pt-stack-sm border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Stock:</span>
+<span class="font-label-md text-label-md text-error font-bold">1 unité</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Prix:</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">89,00 €</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-error text-on-error py-3 font-bold hover:bg-on-error-container transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">shopping_cart_checkout</span>
+                        Réapprovisionner
+                    </button>
+</div>
+<!-- Product Card 5: Engine Parts -->
+<div class="bg-white border border-outline-variant rounded overflow-hidden flex flex-col group transition-all hover:border-primary hover:shadow-md">
+<div class="h-48 relative overflow-hidden bg-stone-100">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A brand new agricultural engine oil filter in its distinctive green and yellow branding, set against a background of stacked filters in a clean agricultural warehouse. The image is professional and sharp, emphasizing the availability and variety of maintenance parts in an organized inventory system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRNR2p4UdgoTrrKHKldH80FcSscsI7-MxnDnk6s4bVIoPn0NsmFlu8HzZqi5er28SWO2A00180uXs-MXA40vlokDrzLvbtPPTweEAWmLeo0h1zxGzXb0UEpsASngo0MeoVBL4E5jWWqMxJIjjE217-ehlWCNd4G_H9nsbY8qSTk_Kpd_BaAlAZEIh1rFAKBhwiSWtSsPQBV9k-6lTrFc09gUypzIcDoBJVcR--xVvhLg1-5pnLP0oA">
+</div>
+<div class="p-stack-md flex-1 flex flex-col">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">FILTRATION</p>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm leading-tight">Filtre à Huile Haute Capacité</h3>
+<div class="mt-auto pt-stack-sm border-t border-outline-variant">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Stock:</span>
+<span class="font-label-md text-label-md text-primary font-bold">142 unités</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Prix:</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">24,50 €</span>
+</div>
+</div>
+</div>
+<button class="w-full bg-surface-container-high text-on-surface py-3 font-bold hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">edit</span>
+                        Modifier
+                    </button>
+</div>
+</div>
+<!-- Technical Specs Section (Rugged Table) -->
+<div class="mt-stack-lg bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden">
+<div class="p-stack-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-primary">Derniers Mouvements d'Inventaire</h3>
+<button class="text-primary font-label-md text-label-md hover:underline flex items-center gap-1">
+                        Voir tout l'historique
+                        <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high border-b border-outline-variant">
+<th class="p-4 font-label-md text-label-md text-on-surface uppercase">Date &amp; Heure</th>
+<th class="p-4 font-label-md text-label-md text-on-surface uppercase">Produit</th>
+<th class="p-4 font-label-md text-label-md text-on-surface uppercase">Type</th>
+<th class="p-4 font-label-md text-label-md text-on-surface uppercase">Quantité</th>
+<th class="p-4 font-label-md text-label-md text-on-surface uppercase">Responsable</th>
+<th class="p-4 font-label-md text-label-md text-on-surface uppercase text-right">Statut</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<tr class="border-b border-outline-variant hover:bg-white transition-colors">
+<td class="p-4 text-on-surface-variant">24/05/2024 - 14:30</td>
+<td class="p-4 font-bold">Kit Engrenage X-450</td>
+<td class="p-4">Sortie (Vente)</td>
+<td class="p-4 text-error font-bold">-2</td>
+<td class="p-4">J. Dupont</td>
+<td class="p-4 text-right">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-label-sm font-bold">Complété</span>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest border-b border-outline-variant hover:bg-white transition-colors">
+<td class="p-4 text-on-surface-variant">24/05/2024 - 11:15</td>
+<td class="p-4 font-bold">Filtre à Huile HC</td>
+<td class="p-4">Entrée (Réappro)</td>
+<td class="p-4 text-primary font-bold">+50</td>
+<td class="p-4">System Auto</td>
+<td class="p-4 text-right">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-label-sm font-bold">Complété</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-white transition-colors">
+<td class="p-4 text-on-surface-variant">23/05/2024 - 16:45</td>
+<td class="p-4 font-bold">Terminal Trimble GFX</td>
+<td class="p-4">Sortie (Location)</td>
+<td class="p-4 text-error font-bold">-1</td>
+<td class="p-4">M. Lefebvre</td>
+<td class="p-4 text-right">
+<span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-label-sm font-bold">En cours</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Footer (Authority Source: JSON) -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant flex justify-between items-center w-full px-gutter-desktop py-stack-sm mt-auto">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 AgriManager Pro. Maintenance Platform v2.4.</p>
+<div class="flex gap-stack-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Support Technique</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Confidentialité</a>
+</div>
+</footer>
+</main>
+<!-- Floating Action Button (FAB) logic from JSON - Suppressed because this is an Admin list, but used as "Add New" in header above -->
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('.active\\:scale-95').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Search highlight mock
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary');
+        });
+    </script>
+</body></html>

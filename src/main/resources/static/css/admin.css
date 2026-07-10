@@ -977,6 +977,150 @@ table.data td.muted { color: var(--on-surface-variant); }
 .mini-stat__value { font-size: 16px; font-weight: 700; margin: 2px 0 0; }
 
 /* =====================================================================
+   Liste de la flotte (machines) — vue /admin/machines
+   Composants autonomes, réutilisables et faciles à ajuster.
+   ===================================================================== */
+/* Messages flash (succès / erreur) */
+.flash {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: var(--stack-md);
+    border-left: 4px solid transparent;
+}
+.flash--success { background-color: var(--primary-container); color: #fff; border-left-color: var(--on-primary-fixed-variant); }
+.flash--error { background-color: var(--error-container); color: var(--on-error-container); border-left-color: var(--error); }
+
+/* Barre de statistiques globales du parc */
+.stat-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--stack-md); }
+.stat-tile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--surface-container);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+    padding: var(--stack-md);
+}
+.stat-tile__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--surface-container-highest);
+    color: var(--primary);
+    flex-shrink: 0;
+}
+.stat-tile__icon--ok { color: var(--primary); }
+.stat-tile__icon--off { color: var(--error); }
+.stat-tile__label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--on-surface-variant); margin: 0; }
+.stat-tile__value { font-size: 24px; font-weight: 700; color: var(--on-surface); margin: 2px 0 0; }
+
+/* Barre d'outils / filtres */
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--stack-md);
+    background-color: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+    padding: var(--stack-md);
+}
+.toolbar form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+.toolbar__label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--on-surface-variant); }
+.toolbar__spacer { flex: 1; }
+.toolbar select,
+.toolbar input[type="text"],
+.toolbar input[type="number"] {
+    background-color: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--on-surface);
+    outline: none;
+    transition: border-color .15s ease;
+}
+.toolbar select:focus,
+.toolbar input:focus { border-color: var(--primary); }
+.toolbar input[type="number"] { width: 90px; }
+
+/* Cellule « machine » (vignette + nom + type) */
+.m-cell { display: flex; align-items: center; gap: 12px; }
+.m-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    background-color: var(--surface-container-high);
+    border: 1px solid var(--outline-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+.m-name { font-weight: 700; color: var(--on-surface); }
+.m-sub { font-size: 12px; color: var(--on-surface-variant); }
+.cell-loc { display: inline-flex; align-items: center; gap: 4px; }
+.cell-loc .material-symbols-outlined { font-size: 18px; color: var(--on-surface-variant); }
+
+/* Actions en ligne (icônes) */
+.row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--on-surface-variant);
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+}
+.icon-btn:hover { background-color: var(--surface-container-high); color: var(--primary); }
+.icon-btn--danger:hover { background-color: var(--error-container); color: var(--on-error-container); }
+.icon-btn .material-symbols-outlined { font-size: 20px; }
+
+/* Pagination */
+.pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: var(--stack-md);
+    border-top: 1px solid var(--outline-variant);
+    background-color: var(--surface-container-low);
+}
+.pager__info { font-size: 13px; color: var(--on-surface-variant); }
+.pager__btns { display: flex; gap: 8px; align-items: center; }
+.pager__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+    background-color: var(--surface-container-lowest);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--on-surface);
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+.pager__btn:hover:not(:disabled) { background-color: var(--surface-container-high); }
+.pager__btn:disabled { opacity: .5; cursor: not-allowed; }
+.pager__btn .material-symbols-outlined { font-size: 18px; }
+
+/* =====================================================================
    Responsive
    ===================================================================== */
 @media (max-width: 1100px) {
@@ -984,6 +1128,7 @@ table.data td.muted { color: var(--on-surface-variant); }
     .grid-main { grid-template-columns: 1fr; }
     .cal-layout { grid-template-columns: 1fr; }
     .detail-grid { grid-template-columns: 1fr; }
+    .stat-bar { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
     .grid-kpi { grid-template-columns: 1fr; }
@@ -994,4 +1139,5 @@ table.data td.muted { color: var(--on-surface-variant); }
     .cal-toolbar { flex-direction: column; align-items: stretch; }
     .info-grid, .mini-stats { grid-template-columns: 1fr; }
     .res-body__top { flex-direction: column; }
+    .toolbar__spacer { display: none; }
 }

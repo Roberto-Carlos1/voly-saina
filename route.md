@@ -1,7 +1,7 @@
 # Liste des routes — Voly Saina+
 
 > Généré depuis les contrôleurs de `src/main/java/com/voly_saina/controller/`.
-> Branche : `detailReservationProduit-frontend-admin`.
+> Branche : `flottemachines-frontend-admin-dev`.
 > Dernière vérification : 2026-07-10.
 
 ## Règles de sécurité (rappel — `SecurityConfig`)

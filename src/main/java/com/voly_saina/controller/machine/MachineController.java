@@ -94,6 +94,16 @@ public class MachineController {
         model.addAttribute("types", types);
         model.addAttribute("derniersStatuts", derniersStatuts);
 
+        // Statistiques globales du parc (état global du stock).
+        // Calculées uniquement à partir de méthodes déjà existantes :
+        //  - getTotalElements() : nombre total de machines (déjà connu via la pagination)
+        //  - findDisponibles()  : machines dont l'indicateur "disponible" est vrai
+        long totalMachines = machinePage.getTotalElements();
+        long disponibles = machineService.findDisponibles().size();
+        model.addAttribute("totalMachines", totalMachines);
+        model.addAttribute("disponibles", disponibles);
+        model.addAttribute("indisponibles", totalMachines - disponibles);
+
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", machinePage.getTotalPages());
         return "machines/list";

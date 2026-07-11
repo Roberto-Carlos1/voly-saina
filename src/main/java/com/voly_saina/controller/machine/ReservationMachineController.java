@@ -1,7 +1,7 @@
 package com.voly_saina.controller.machine;
 
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,29 +56,28 @@ public class ReservationMachineController {
     // GET /admin/reservations-machine/{id} — page de détail d'une réservation
     @GetMapping("/{id}")
     public String getById(@PathVariable Long id, Model model) {
-        ReservationMachine reservation = reservationMachineService.findById(id).orElse(null);
-        if (reservation == null) {
-            return "redirect:/admin/reservations-machine";
+        Optional<ReservationMachine> reservationOpt = reservationMachineService.findById(id);
+        if (reservationOpt.isEmpty()) {
+            return "redirect:/catalogue/reservations/mes-reservations";
         }
+        
+        ReservationMachine reservation = reservationOpt.get();
         model.addAttribute("reservation", reservation);
-
-        // Historique des réservations de la même machine (méthode de service existante).
-        if (reservation.getMachine() != null) {
-            model.addAttribute("historique",
-                    reservationMachineService.findMachine(reservation.getMachine().getIdMachine()));
+        model.addAttribute("reservationId", id);
+        model.addAttribute("clientId", reservation.getClient().getIdUtilisateur());
+        
+        // Ajouter les infos pour le statut et les actions
+        String statutCode = reservation.getStatutReservation() != null ? 
+            reservation.getStatutReservation().getCode() : "";
+        model.addAttribute("statut", statutCode);
+        
+        // Vérifier si une facture existe
+        if (reservation.getFacture() != null) {
+            model.addAttribute("factureId", reservation.getFacture().getIdFacture());
+            model.addAttribute("factureNumero", reservation.getFacture().getNumero());
         }
-        // Durée de location en jours (calcul simple).
-        if (reservation.getDateDebut() != null && reservation.getDateFin() != null) {
-            model.addAttribute("dureeJours",
-                    ChronoUnit.DAYS.between(reservation.getDateDebut(), reservation.getDateFin()));
-        }
-        // Reste à payer, uniquement si la réservation a déjà une facture.
-        if (reservation.getFacture() != null && reservation.getFacture().getMontantTotal() != null) {
-            model.addAttribute("reste",
-                    reservation.getFacture().getMontantTotal()
-                            .subtract(reservation.getFacture().getMontantPaye()));
-        }
-        return "reservation/detail";
+        
+        return "client/reservations/detail";
     }
 
     // POST /api/reservations-machine

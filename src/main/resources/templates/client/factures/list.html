@@ -1,117 +1,333 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes factures - Voly Saina+</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mes factures - VolySaina+</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#005226",
+                        "on-primary-fixed": "#00210b",
+                        "surface-container": "#f4ede6",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#faf2eb",
+                        "outline": "#707a6f",
+                        "inverse-surface": "#33302c",
+                        "on-secondary-container": "#712c00",
+                        "surface-tint": "#1f6c3a",
+                        "secondary": "#9a4614",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "outline-variant": "#bfc9bd",
+                        "tertiary-container": "#81492d",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e8e1db",
+                        "on-tertiary-fixed-variant": "#6d391e",
+                        "on-surface-variant": "#404940",
+                        "on-primary-container": "#93e0a2",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "inverse-on-surface": "#f7efe9",
+                        "surface-variant": "#e8e1db",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#341000",
+                        "surface-dim": "#e0d9d2",
+                        "secondary-fixed": "#ffdbcb",
+                        "primary": "#004c22",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface": "#fff8f2",
+                        "inverse-primary": "#8bd79b",
+                        "on-surface": "#1e1b17",
+                        "secondary-container": "#fd925b",
+                        "primary-container": "#166534",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-fixed-dim": "#8bd79b",
+                        "background": "#fff8f2",
+                        "surface-container-high": "#eee7e0",
+                        "primary-fixed": "#a6f4b5",
+                        "on-background": "#1e1b17",
+                        "tertiary": "#653319",
+                        "surface-bright": "#fff8f2",
+                        "on-tertiary-fixed": "#351000"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.125rem",
+                        lg: "0.25rem",
+                        xl: "0.5rem",
+                        full: "0.75rem"
+                    },
+                    spacing: {
+                        "gutter-desktop": "24px",
+                        "gutter-mobile": "16px",
+                        "margin-mobile": "20px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "base": "4px",
+                        "stack-sm": "8px",
+                        "margin-desktop": "48px"
+                    },
+                    fontFamily: {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { background-color: #f5f5f5; padding: 20px 0; }
-        .container { max-width: 1400px; }
-        .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0 !important; }
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-block; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
         .badge-green { background: #dcfce7; color: #166534; }
         .badge-orange { background: #fed7aa; color: #9a3412; }
         .badge-blue { background: #dbeafe; color: #1e40af; }
         .badge-red { background: #fecaca; color: #991b1b; }
         .badge-gray { background: #f3f4f6; color: #4b5563; }
-        .btn { padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; white-space: nowrap; margin-right: 4px; }
-        .btn-primary { background: #2563eb; color: white; border: none; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-success { background: #059669; color: white; border: none; }
-        .btn-success:hover { background: #047857; }
-        .text-red { color: #dc2626; }
-        .back-link { color: white; text-decoration: none; font-weight: 500; }
-        .back-link:hover { color: #e0e7ff; }
-        table { margin-bottom: 0; }
-        th { background: #f9fafb; font-weight: 600; border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
-        td { vertical-align: middle; }
-        
-        @media (max-width: 768px) {
-            .table-responsive { font-size: 12px; }
-            .btn { padding: 4px 8px; font-size: 11px; }
-        }
+        .text-red { color: #ba1a1a; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="card">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Mes factures</h4>
-                <a th:href="@{/client/accueil(idClient=${idClient})}" class="back-link">
-                    ← Retour à l'accueil
+
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+
+    <!-- TopNavBar -->
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+        <div class="flex justify-between items-center w-full px-margin-desktop py-base max-w-[1280px] mx-auto">
+            <div class="flex items-center gap-stack-md">
+                <span class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</span>
+            </div>
+            <nav class="hidden md:flex items-center gap-gutter-desktop">
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/}">Accueil</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/catalogue/machines/catalogue}">Machines</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/catalogue/produits/catalogue}">Produits</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/catalogue/reservations/mes-reservations}">Réservations</a>
+            </nav>
+            <div class="flex items-center gap-stack-sm">
+                <a th:href="@{/client/profil}" class="p-2 hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-150">
+                    <span class="material-symbols-outlined text-primary">account_circle</span>
                 </a>
             </div>
-            <div class="card-body p-4">
-                <form th:action="@{/client/factures}" method="get" class="row g-3 mb-4">
-                    <input type="hidden" name="idClient" th:value="${idClient}" />
-                    <div class="col-md-4">
-                        <select name="statut" class="form-select">
-                            <option value="">Tous les statuts</option>
-                            <option value="en_attente" th:selected="${filtreStatut == 'en_attente'}">En attente</option>
-                            <option value="payee" th:selected="${filtreStatut == 'payee'}">Payée</option>
-                            <option value="partiellement_payee" th:selected="${filtreStatut == 'partiellement_payee'}">Partiellement payée</option>
-                            <option value="en_retard" th:selected="${filtreStatut == 'en_retard'}">En retard</option>
-                            <option value="annulee" th:selected="${filtreStatut == 'annulee'}">Annulée</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
-                    </div>
-                </form>
-                
-                <div th:if="${factures == null or factures.empty}" class="text-center py-5 text-muted">
-                    Vous n'avez pas encore de factures.
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
+
+        <!-- Breadcrumb & Title -->
+        <div class="flex items-center justify-between mb-stack-lg">
+            <div class="flex flex-col gap-base">
+                <a class="flex items-center text-primary font-label-md text-label-md hover:underline decoration-primary" th:href="@{/client/accueil(idClient=${idClient})}">
+                    <span class="material-symbols-outlined mr-2">arrow_back</span>
+                    Retour à l'accueil
+                </a>
+                <h1 class="font-headline-xl text-headline-xl text-on-surface">Mes factures</h1>
+            </div>
+
+            <!-- Technical Status Summary Card -->
+            <div class="bg-surface-container-low border border-outline-variant p-stack-md rounded flex gap-gutter-desktop shadow-sm">
+                <div class="flex flex-col">
+                    <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Total à régler</span>
+                    <span class="text-headline-md font-headline-md text-secondary" th:text="${totalARegler != null ? #numbers.formatDecimal(totalARegler, 0, 'COMMA', 2, 'POINT') + ' MGA' : '0 MGA'}">
+                        4,500,000 MGA
+                    </span>
                 </div>
-                
-                <div class="table-responsive" th:if="${factures != null and not factures.empty}">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th style="width: 12%;">Numéro</th>
-                                <th style="width: 8%;">Type</th>
-                                <th style="width: 10%;">Date</th>
-                                <th style="width: 12%;">Montant total</th>
-                                <th style="width: 12%;">Montant payé</th>
-                                <th style="width: 12%;">Montant restant</th>
-                                <th style="width: 10%;">Date limite</th>
-                                <th style="width: 14%;">Statut</th>
-                                <th style="width: 10%;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="facture : ${factures}">
-                                <td th:text="${facture.numero}"></td>
-                                <td th:text="${facture.typeOperation == 'location' ? 'Location' : 'Commande'}"></td>
-                                <td th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}"></td>
-                                <td th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></td>
-                                <td th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></td>
-                                <td th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT')} + ' MGA'"></td>
-                                <td th:class="${facture.enRetard ? 'text-red' : ''}" 
-                                    th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '-'}"></td>
-                                <td>
-                                    <span class="badge" 
-                                          th:classappend="${facture.statutCode == 'payee' ? 'badge-green' : 
-                                                           facture.statutCode == 'en_attente' ? 'badge-orange' : 
-                                                           facture.statutCode == 'partiellement_payee' ? 'badge-blue' : 
-                                                           facture.statutCode == 'en_retard' ? 'badge-red' : 'badge-gray'}"
-                                          th:text="${facture.statutLibelle}"></span>
-                                </td>
-                                <td>
-                                    <a th:href="@{/client/factures/{id}(id=${facture.idFacture}, idClient=${idClient})}" 
-                                       class="btn btn-primary">Voir</a>
-                                    <a th:href="@{/client/factures/{id}/pdf(id=${facture.idFacture}, idClient=${idClient})}" 
-                                       class="btn btn-success">PDF</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="w-px bg-outline-variant"></div>
+                <div class="flex flex-col">
+                    <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Factures en retard</span>
+                    <span class="text-headline-md font-headline-md text-error" th:text="${nbFacturesEnRetard != null ? nbFacturesEnRetard : 0}">02</span>
                 </div>
             </div>
         </div>
-    </div>
-    
+
+        <!-- Filter Section -->
+        <section class="bg-white border border-outline-variant rounded-lg p-stack-md mb-stack-lg shadow-sm">
+            <form class="flex flex-wrap items-end gap-stack-md" method="get" th:action="@{/client/factures}">
+                <input type="hidden" name="idClient" th:value="${idClient}" />
+                <div class="flex flex-col gap-stack-sm min-w-[200px]">
+                    <label class="font-label-md text-label-md text-on-surface-variant" for="statut">Filtrer par statut</label>
+                    <select class="bg-surface-container-low border-outline-variant rounded focus:border-primary focus:ring-primary text-body-md py-2 px-3" id="statut" name="statut">
+                        <option value="">Tous les statuts</option>
+                        <option value="en_attente" th:selected="${filtreStatut == 'en_attente'}">En attente</option>
+                        <option value="payee" th:selected="${filtreStatut == 'payee'}">Payée</option>
+                        <option value="partiellement_payee" th:selected="${filtreStatut == 'partiellement_payee'}">Partiellement payée</option>
+                        <option value="en_retard" th:selected="${filtreStatut == 'en_retard'}">En retard</option>
+                        <option value="annulee" th:selected="${filtreStatut == 'annulee'}">Annulée</option>
+                    </select>
+                </div>
+                <button class="bg-primary text-on-primary px-stack-lg py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-95" type="submit">
+                    Filtrer
+                </button>
+            </form>
+        </section>
+
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-20 bg-surface-container-lowest border border-dashed border-outline-variant rounded-lg" th:if="${factures == null or #lists.isEmpty(factures)}">
+            <span class="material-symbols-outlined text-6xl text-outline-variant mb-stack-md">receipt_long</span>
+            <p class="font-headline-md text-headline-md text-on-surface-variant">Vous n'avez pas encore de factures.</p>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="bg-white border border-outline-variant rounded-lg overflow-hidden shadow-sm" th:if="${factures != null and not #lists.isEmpty(factures)}">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-surface-container-highest border-b border-outline-variant">
+                        <tr>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Numéro</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Type</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Date</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Montant Total</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Payé</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Restant</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Date Limite</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Statut</th>
+                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant">
+                        <tr th:each="facture : ${factures}" class="hover:bg-surface-container-low transition-colors group">
+                            <!-- Numéro -->
+                            <td class="px-gutter-mobile py-stack-md font-label-md text-on-surface" th:text="${facture.numero}">FACT-2024-001</td>
+
+                            <!-- Type -->
+                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${facture.typeOperation == 'location' ? 'Location' : 'Commande'}">Location</td>
+
+                            <!-- Date -->
+                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}">12/05/2024</td>
+
+                            <!-- Montant Total -->
+                            <td class="px-gutter-mobile py-stack-md font-bold text-on-surface" th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 'COMMA', 2, 'POINT') + ' MGA'}">2,500,000 MGA</td>
+
+                            <!-- Montant Payé -->
+                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 'COMMA', 2, 'POINT') + ' MGA'}">2,500,000 MGA</td>
+
+                            <!-- Montant Restant -->
+                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</td>
+
+                            <!-- Date Limite -->
+                            <td class="px-gutter-mobile py-stack-md text-body-md" th:class="${facture.enRetard ? 'text-red' : ''}" th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '-'}">26/05/2024</td>
+
+                            <!-- Statut -->
+                            <td class="px-gutter-mobile py-stack-md">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase"
+                                      th:classappend="${facture.statutCode == 'payee'} ? 'badge-green' : 
+                                                       ${facture.statutCode == 'en_attente'} ? 'badge-orange' : 
+                                                       ${facture.statutCode == 'partiellement_payee'} ? 'badge-blue' : 
+                                                       ${facture.statutCode == 'en_retard'} ? 'badge-red' : 'badge-gray'"
+                                      th:text="${facture.statutLibelle}">
+                                    Payée
+                                </span>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="px-gutter-mobile py-stack-md text-right">
+                                <div class="flex justify-end gap-stack-sm">
+                                    <a class="p-2 text-primary hover:bg-primary-container/20 rounded-full transition-all" 
+                                       th:href="@{/client/factures/{id}(id=${facture.idFacture}, idClient=${idClient})}" 
+                                       title="Voir les détails">
+                                        <span class="material-symbols-outlined">visibility</span>
+                                    </a>
+                                    <a class="p-2 text-secondary hover:bg-secondary-container/20 rounded-full transition-all" 
+                                       th:href="@{/client/factures/{id}/pdf(id=${facture.idFacture}, idClient=${idClient})}" 
+                                       title="Télécharger PDF">
+                                        <span class="material-symbols-outlined">picture_as_pdf</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div th:if="${totalPages != null and totalPages > 1}" class="flex justify-between items-center mt-stack-lg pt-stack-md border-t border-outline-variant">
+            <div class="text-label-sm text-on-surface-variant">
+                Page <span class="font-bold text-on-surface" th:text="${page + 1}">1</span> 
+                sur <span th:text="${totalPages}">8</span>
+            </div>
+            <div class="flex gap-2">
+                <!-- Précédent -->
+                <a class="w-10 h-10 border border-outline-variant flex items-center justify-center rounded hover:bg-surface-container transition-colors" 
+                   th:classappend="${page == 0} ? 'opacity-50 pointer-events-none' : ''" 
+                   th:href="@{/client/factures(page=${page - 1}, size=${size}, statut=${filtreStatut}, idClient=${idClient})}">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </a>
+
+                <!-- Numéros de pages -->
+                <div class="flex gap-1 hidden sm:flex">
+                    <a th:each="p : ${#numbers.sequence(0, totalPages - 1)}" 
+                       th:href="@{/client/factures(page=${p}, size=${size}, statut=${filtreStatut}, idClient=${idClient})}"
+                       th:classappend="${p == page} ? 'bg-primary text-on-primary' : 'border border-outline-variant hover:bg-surface-container'"
+                       class="w-10 h-10 flex items-center justify-center rounded font-label-md transition-colors"
+                       th:text="${p + 1}">
+                        1
+                    </a>
+                </div>
+
+                <!-- Suivant -->
+                <a class="w-10 h-10 border border-outline-variant flex items-center justify-center rounded hover:bg-surface-container transition-colors" 
+                   th:classappend="${page + 1 >= totalPages} ? 'opacity-50 pointer-events-none' : ''" 
+                   th:href="@{/client/factures(page=${page + 1}, size=${size}, statut=${filtreStatut}, idClient=${idClient})}">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Action FAB -->
+        <div class="fixed bottom-margin-desktop right-margin-desktop flex flex-col gap-stack-sm">
+            <button class="bg-primary text-on-primary h-14 w-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+                <span class="material-symbols-outlined">support_agent</span>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-highest border-t border-outline-variant mt-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-lg gap-stack-md max-w-[1280px] mx-auto">
+            <div class="flex flex-col items-center md:items-start gap-base">
+                <span class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</span>
+                <p class="font-body-md text-body-md text-on-surface-variant">© 2024 VolySaina+. Excellence en Agriculture Durable.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-gutter-desktop">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150 hover:opacity-80" href="#">Conditions d'utilisation</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150 hover:opacity-80" href="#">Politique de confidentialité</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150 hover:opacity-80" href="#">Contact Support</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150 hover:opacity-80" href="#">Partenaires</a>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => el.classList.add('scale-95'));
+            el.addEventListener('mouseup', () => el.classList.remove('scale-95'));
+            el.addEventListener('mouseleave', () => el.classList.remove('scale-95'));
+        });
+    </script>
+
 </body>
 </html>

@@ -14,53 +14,52 @@
             theme: {
                 extend: {
                     colors: {
-                        "surface-tint": "#1f6c3a",
                         "on-primary-fixed-variant": "#005226",
-                        "secondary-fixed-dim": "#ffb693",
-                        "on-tertiary-container": "#ffc1a4",
+                        "on-primary-fixed": "#00210b",
+                        "surface-container": "#f4ede6",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#faf2eb",
+                        "outline": "#707a6f",
+                        "inverse-surface": "#33302c",
+                        "on-secondary-container": "#712c00",
+                        "surface-tint": "#1f6c3a",
+                        "secondary": "#9a4614",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "outline-variant": "#bfc9bd",
+                        "tertiary-container": "#81492d",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#e8e1db",
                         "on-tertiary-fixed-variant": "#6d391e",
-                        "primary-container": "#166534",
+                        "on-surface-variant": "#404940",
+                        "on-primary-container": "#93e0a2",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "inverse-on-surface": "#f7efe9",
+                        "surface-variant": "#e8e1db",
+                        "surface-container-lowest": "#ffffff",
                         "on-secondary-fixed": "#341000",
                         "surface-dim": "#e0d9d2",
-                        "tertiary-fixed": "#ffdbcc",
-                        "inverse-on-surface": "#f7efe9",
-                        "primary": "#004c22",
-                        "background": "#fff8f2",
                         "secondary-fixed": "#ffdbcb",
-                        "on-primary-container": "#93e0a2",
-                        "surface-bright": "#fff8f2",
+                        "primary": "#004c22",
                         "on-tertiary": "#ffffff",
-                        "on-secondary-fixed-variant": "#7a3000",
-                        "tertiary-fixed-dim": "#ffb694",
-                        "primary-fixed-dim": "#8bd79b",
-                        "on-surface": "#1e1b17",
-                        "primary-fixed": "#a6f4b5",
-                        "outline": "#707a6f",
-                        "outline-variant": "#bfc9bd",
-                        "secondary": "#9a4614",
-                        "on-primary": "#ffffff",
-                        "surface": "#fff8f2",
-                        "on-background": "#1e1b17",
-                        "secondary-container": "#fd925b",
-                        "surface-container-low": "#faf2eb",
-                        "on-primary-fixed": "#00210b",
-                        "on-error-container": "#93000a",
-                        "error": "#ba1a1a",
-                        "on-tertiary-fixed": "#351000",
-                        "on-surface-variant": "#404940",
-                        "error-container": "#ffdad6",
-                        "surface-container-lowest": "#ffffff",
-                        "on-secondary-container": "#712c00",
-                        "surface-container-highest": "#e8e1db",
-                        "tertiary-container": "#81492d",
                         "on-secondary": "#ffffff",
+                        "surface": "#fff8f2",
                         "inverse-primary": "#8bd79b",
-                        "tertiary": "#653319",
-                        "on-error": "#ffffff",
+                        "on-surface": "#1e1b17",
+                        "secondary-container": "#fd925b",
+                        "primary-container": "#166534",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-fixed-dim": "#8bd79b",
+                        "background": "#fff8f2",
                         "surface-container-high": "#eee7e0",
-                        "surface-container": "#f4ede6",
-                        "surface-variant": "#e8e1db",
-                        "inverse-surface": "#33302c"
+                        "primary-fixed": "#a6f4b5",
+                        "on-background": "#1e1b17",
+                        "tertiary": "#653319",
+                        "surface-bright": "#fff8f2",
+                        "on-tertiary-fixed": "#351000"
                     },
                     borderRadius: {
                         DEFAULT: "0.125rem",
@@ -106,8 +105,8 @@
         body { font-family: 'Inter', sans-serif; background-color: #fff8f2; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .form-control:focus, .form-select:focus {
-            border-color: #166534;
-            box-shadow: 0 0 0 0.25rem rgba(22, 101, 52, 0.25);
+            border-color: #004c22;
+            box-shadow: 0 0 0 0.25rem rgba(0, 76, 34, 0.25);
         }
         .nav-tabs .nav-link {
             color: #404940;
@@ -115,6 +114,7 @@
             padding: 1rem 1.5rem;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         .nav-tabs .nav-link.active {
             color: #004c22;
@@ -123,6 +123,7 @@
         }
         .nav-tabs .nav-link:hover {
             color: #004c22;
+            background-color: #f4ede6;
         }
         .btn-primary-agri {
             background-color: #004c22;
@@ -137,16 +138,101 @@
         }
         .card-agri {
             border: 1px solid #bfc9bd;
-            border-radius: 0.25rem;
+            border-radius: 0.5rem;
             box-shadow: none;
             background-color: #ffffff;
+            transition: all 0.2s ease;
         }
-        /* Style pour les onglets Bootstrap */
+        .card-agri:hover {
+            border-color: #004c22;
+            box-shadow: 0 4px 12px rgba(0, 76, 34, 0.08);
+        }
         .tab-pane {
             display: none;
         }
         .tab-pane.show.active {
             display: block;
+        }
+        .btn-danger-agri {
+            background-color: #ba1a1a;
+            color: white;
+            border: none;
+            transition: all 150ms ease;
+        }
+        .btn-danger-agri:hover {
+            background-color: #93000a;
+            transform: translateY(-1px);
+        }
+        .badge-statut {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-statut.active {
+            background-color: #166534;
+            color: #93e0a2;
+        }
+        .badge-statut.terminee {
+            background-color: #e8e1db;
+            color: #404940;
+        }
+        .badge-statut.en_attente {
+            background-color: #fd925b;
+            color: #341000;
+        }
+        .badge-statut.payee {
+            background-color: #a6f4b5;
+            color: #00210b;
+        }
+        .badge-statut.en_retard {
+            background-color: #ffdad6;
+            color: #93000a;
+        }
+        /* Couleurs de texte personnalisées */
+        .text-primary {
+            color: #004c22 !important;
+        }
+        .text-secondary {
+            color: #9a4614 !important;
+        }
+        .text-error {
+            color: #ba1a1a !important;
+        }
+        .bg-primary {
+            background-color: #004c22 !important;
+        }
+        .bg-primary-container {
+            background-color: #166534 !important;
+        }
+        .bg-surface-container {
+            background-color: #f4ede6 !important;
+        }
+        .border-primary {
+            border-color: #004c22 !important;
+        }
+        .border-outline-variant {
+            border-color: #bfc9bd !important;
+        }
+        .hover\:text-primary:hover {
+            color: #004c22 !important;
+        }
+        .hover\:bg-primary:hover {
+            background-color: #004c22 !important;
+        }
+        .hover\:bg-primary-container:hover {
+            background-color: #166534 !important;
+        }
+        .hover\:border-primary:hover {
+            border-color: #004c22 !important;
+        }
+        .focus\:border-primary:focus {
+            border-color: #004c22 !important;
+        }
+        .focus\:ring-primary:focus {
+            --tw-ring-color: #004c22 !important;
         }
     </style>
 </head>
@@ -174,18 +260,18 @@
 
         <!-- Section 1: Header -->
         <div class="flex flex-col md:flex-row items-center gap-stack-md mb-stack-lg bg-primary-container p-stack-lg rounded-lg text-on-primary-container">
-            <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-headline-lg">
+            <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-headline-lg shadow-lg">
                 <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">person</span>
             </div>
             <div class="text-center md:text-left">
-                <h1 class="font-headline-lg text-headline-lg mb-1" th:text="${utilisateur.nom}">Nom Utilisateur</h1>
-                <p class="font-body-md text-body-md opacity-90" th:text="${utilisateur.email}">email@example.com</p>
-                <div class="mt-2 inline-block px-3 py-1 bg-white/20 rounded-full text-label-sm font-semibold uppercase tracking-wider">Membre VolySaina+</div>
+                <h1 class="font-headline-lg text-headline-lg mb-1 text-white" th:text="${utilisateur.nom}">Nom Utilisateur</h1>
+                <p class="font-body-md text-body-md opacity-90 text-white" th:text="${utilisateur.email}">email@example.com</p>
+                <div class="mt-2 inline-block px-3 py-1 bg-white/20 rounded-full text-label-sm font-semibold uppercase tracking-wider text-white">Membre VolySaina+</div>
             </div>
         </div>
 
         <!-- Section 2: Quick Stats -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-desktop mb-stack-lg">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-desktop mb-stack-lg">
             <div class="card-agri p-4 text-center">
                 <span class="material-symbols-outlined text-primary mb-2 text-[32px]">calendar_month</span>
                 <div class="font-label-sm text-on-surface-variant uppercase mb-1">Réservations</div>
@@ -208,33 +294,37 @@
             </div>
         </div>
 
-
         <!-- Section 3: Tabbed Interface -->
         <div class="card-agri bg-white">
             <!-- Navigation des onglets -->
             <ul class="nav nav-tabs border-b border-outline-variant px-stack-md" id="profileTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active font-label-md" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">person</span>
                         Informations
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link font-label-md" id="res-tab" data-bs-toggle="tab" data-bs-target="#res" type="button" role="tab" aria-controls="res" aria-selected="false">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">calendar_month</span>
                         Réservations
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link font-label-md" id="cmd-tab" data-bs-toggle="tab" data-bs-target="#cmd" type="button" role="tab" aria-controls="cmd" aria-selected="false">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">shopping_bag</span>
                         Commandes
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link font-label-md" id="fac-tab" data-bs-toggle="tab" data-bs-target="#fac" type="button" role="tab" aria-controls="fac" aria-selected="false">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">description</span>
                         Factures
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link font-label-md" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">settings</span>
                         Paramètres
                     </button>
                 </li>
@@ -255,19 +345,19 @@
                                 </h3>
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Nom complet</label>
-                                    <input class="form-control rounded-none" name="nom" 
-                                           th:value="${utilisateur.nom}" type="text" required/>
+                                    <input class="form-control rounded-none border-outline-variant focus:border-primary" 
+                                           name="nom" th:value="${utilisateur.nom}" type="text" required/>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Email (Identifiant)</label>
-                                    <input class="form-control rounded-none bg-surface-container-low" 
+                                    <input class="form-control rounded-none bg-surface-container-low border-outline-variant" 
                                            name="email" th:value="${utilisateur.email}" type="email" disabled/>
                                     <small class="text-muted">L'email ne peut pas être modifié</small>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Téléphone</label>
-                                    <input class="form-control rounded-none" name="telephone" 
-                                           th:value="${utilisateur.telephone}" type="tel"/>
+                                    <input class="form-control rounded-none border-outline-variant focus:border-primary" 
+                                           name="telephone" th:value="${utilisateur.telephone}" type="tel"/>
                                 </div>
                             </div>
 
@@ -280,7 +370,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
                                         <label class="form-label font-label-md text-on-surface-variant">Genre</label>
-                                        <select class="form-select rounded-none" name="genre">
+                                        <select class="form-select rounded-none border-outline-variant focus:border-primary" name="genre">
                                             <option value="">Sélectionner</option>
                                             <option value="HOMME" th:selected="${profil.genre == 'HOMME'}">Homme</option>
                                             <option value="FEMME" th:selected="${profil.genre == 'FEMME'}">Femme</option>
@@ -289,25 +379,26 @@
                                     </div>
                                     <div>
                                         <label class="form-label font-label-md text-on-surface-variant">Âge</label>
-                                        <input class="form-control rounded-none" name="age" 
-                                               th:value="${profil.age}" type="number" min="0" max="120"/>
+                                        <input class="form-control rounded-none border-outline-variant focus:border-primary" 
+                                               name="age" th:value="${profil.age}" type="number" min="0" max="120"/>
                                     </div>
                                     <div class="col-span-2">
                                         <label class="form-label font-label-md text-on-surface-variant">Catégorie Socio-Professionnelle (CSP)</label>
-                                        <input class="form-control rounded-none" name="csp" 
-                                               th:value="${profil.csp}" type="text" placeholder="Agriculteur, Gérant, etc."/>
+                                        <input class="form-control rounded-none border-outline-variant focus:border-primary" 
+                                               name="csp" th:value="${profil.csp}" type="text" placeholder="Agriculteur, Gérant, etc."/>
                                     </div>
                                     <div class="col-span-2">
                                         <label class="form-label font-label-md text-on-surface-variant">Localisation</label>
-                                        <input class="form-control rounded-none" name="localisation" 
-                                               th:value="${profil.localisation}" type="text" placeholder="Département ou ville"/>
+                                        <input class="form-control rounded-none border-outline-variant focus:border-primary" 
+                                               name="localisation" th:value="${profil.localisation}" type="text" placeholder="Département ou ville"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-stack-lg flex justify-end">
-                            <button class="btn-primary-agri px-5 py-2 font-label-md uppercase tracking-wider" type="submit">
+                            <button class="btn-primary-agri px-5 py-2 font-label-md uppercase tracking-wider rounded-lg" type="submit">
+                                <span class="material-symbols-outlined text-[18px] align-middle mr-1">save</span>
                                 Enregistrer les modifications
                             </button>
                         </div>
@@ -319,7 +410,7 @@
                     <div th:if="${reservations == null or #lists.isEmpty(reservations)}" class="text-center py-stack-lg">
                         <span class="material-symbols-outlined text-[64px] text-outline-variant">event_busy</span>
                         <p class="font-body-md text-on-surface-variant mt-2">Aucune réservation en cours.</p>
-                        <a th:href="@{/catalogue/machines/catalogue}" class="btn-primary-agri mt-3 px-4 py-2 inline-block">
+                        <a th:href="@{/catalogue/machines/catalogue}" class="btn-primary-agri mt-3 px-4 py-2 inline-block rounded-lg">
                             Parcourir les équipements
                         </a>
                     </div>
@@ -327,11 +418,11 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-surface-container-low border-b border-outline-variant">
-                                    <th class="p-stack-md font-label-md">Machine</th>
-                                    <th class="p-stack-md font-label-md">Période</th>
-                                    <th class="p-stack-md font-label-md">Lieu</th>
-                                    <th class="p-stack-md font-label-md">Statut</th>
-                                    <th class="p-stack-md font-label-md text-right">Prix</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Machine</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Période</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Lieu</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Statut</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant text-right">Prix</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -343,15 +434,15 @@
                                     </td>
                                     <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${reservation.lieuLivraison}">Lieu</td>
                                     <td class="p-stack-md">
-                                        <span class="px-2 py-1 text-[10px] rounded uppercase font-bold"
-                                              th:classappend="${reservation.statut == 'ACTIVE'} ? 'bg-primary-container text-on-primary-container' : 
-                                                              ${reservation.statut == 'TERMINEE'} ? 'bg-surface-container-highest text-on-surface-variant' : 
-                                                              'bg-error-container text-on-error-container'"
+                                        <span class="badge-statut"
+                                              th:classappend="${reservation.statut == 'ACTIVE'} ? 'active' : 
+                                                              ${reservation.statut == 'TERMINEE'} ? 'terminee' : 
+                                                              'en_attente'"
                                               th:text="${reservation.statut}">
                                             Statut
                                         </span>
                                     </td>
-                                    <td class="p-stack-md text-right font-bold" th:text="${reservation.prixTotal + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${reservation.prixTotal + ' Ar'}">0 Ar</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -363,7 +454,7 @@
                     <div th:if="${commandes == null or #lists.isEmpty(commandes)}" class="text-center py-stack-lg">
                         <span class="material-symbols-outlined text-[64px] text-outline-variant">shopping_basket</span>
                         <p class="font-body-md text-on-surface-variant mt-2">Historique des commandes vide.</p>
-                        <a th:href="@{/catalogue/produits/catalogue}" class="btn-primary-agri mt-3 px-4 py-2 inline-block">
+                        <a th:href="@{/catalogue/produits/catalogue}" class="btn-primary-agri mt-3 px-4 py-2 inline-block rounded-lg">
                             Découvrir les produits
                         </a>
                     </div>
@@ -371,11 +462,11 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-surface-container-low border-b border-outline-variant">
-                                    <th class="p-stack-md font-label-md">Référence</th>
-                                    <th class="p-stack-md font-label-md">Date</th>
-                                    <th class="p-stack-md font-label-md">Produits</th>
-                                    <th class="p-stack-md font-label-md">Statut</th>
-                                    <th class="p-stack-md font-label-md text-right">Montant</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Référence</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Date</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Produits</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Statut</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant text-right">Montant</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -385,15 +476,15 @@
                                         th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">Date</td>
                                     <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${commande.nbArticles} + ' article(s)'">0</td>
                                     <td class="p-stack-md">
-                                        <span class="px-2 py-1 text-[10px] rounded uppercase font-bold"
-                                              th:classappend="${commande.statut == 'PAYEE'} ? 'bg-primary-container text-on-primary-container' : 
-                                                              ${commande.statut == 'EN_ATTENTE'} ? 'bg-error-container text-on-error-container' : 
-                                                              'bg-surface-container-highest text-on-surface-variant'"
+                                        <span class="badge-statut"
+                                              th:classappend="${commande.statut == 'PAYEE'} ? 'payee' : 
+                                                              ${commande.statut == 'EN_ATTENTE'} ? 'en_attente' : 
+                                                              'terminee'"
                                               th:text="${commande.statut}">
                                             Statut
                                         </span>
                                     </td>
-                                    <td class="p-stack-md text-right font-bold" th:text="${commande.montantTotal + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${commande.montantTotal + ' Ar'}">0 Ar</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -410,11 +501,11 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-surface-container-low border-b border-outline-variant">
-                                    <th class="p-stack-md font-label-md">Référence</th>
-                                    <th class="p-stack-md font-label-md">Date</th>
-                                    <th class="p-stack-md font-label-md">Statut</th>
-                                    <th class="p-stack-md font-label-md text-right">Montant</th>
-                                    <th class="p-stack-md font-label-md text-center">Action</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Référence</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Date</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant">Statut</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant text-right">Montant</th>
+                                    <th class="p-stack-md font-label-md text-on-surface-variant text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -423,18 +514,20 @@
                                     <td class="p-stack-md text-body-md text-on-surface-variant" 
                                         th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}">Date</td>
                                     <td class="p-stack-md">
-                                        <span class="px-2 py-1 text-[10px] rounded uppercase font-bold"
-                                              th:classappend="${facture.statut == 'PAYEE'} ? 'bg-primary-container text-on-primary-container' : 
-                                                              ${facture.statut == 'EN_ATTENTE'} ? 'bg-error-container text-on-error-container' : 
-                                                              'bg-surface-container-highest text-on-surface-variant'"
+                                        <span class="badge-statut"
+                                              th:classappend="${facture.statut == 'PAYEE'} ? 'payee' : 
+                                                              ${facture.statut == 'EN_ATTENTE'} ? 'en_attente' : 
+                                                              ${facture.statut == 'EN_RETARD'} ? 'en_retard' : 
+                                                              'terminee'"
                                               th:text="${facture.statut}">
                                             Statut
                                         </span>
                                     </td>
-                                    <td class="p-stack-md text-right font-bold" th:text="${facture.montant + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${facture.montant + ' Ar'}">0 Ar</td>
                                     <td class="p-stack-md text-center">
                                         <a th:href="@{/client/factures/{id}/telecharger(id=${facture.idFacture})}" 
-                                           class="text-primary hover:underline font-label-sm text-label-sm">
+                                           class="text-primary hover:text-primary-container hover:underline font-label-sm text-label-sm transition-colors">
+                                            <span class="material-symbols-outlined text-[18px] align-middle mr-1">download</span>
                                             Télécharger
                                         </a>
                                     </td>
@@ -448,31 +541,35 @@
                 <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-desktop">
                         <div class="border-e border-outline-variant">
-                            <h3 class="font-headline-md text-primary mb-stack-md">Changer le mot de passe</h3>
+                            <h3 class="font-headline-md text-primary mb-stack-md flex items-center gap-2">
+                                <span class="material-symbols-outlined">key</span>
+                                Changer le mot de passe
+                            </h3>
                             <form method="POST" th:action="@{/client/profil/securite}">
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Mot de passe actuel</label>
-                                    <input class="form-control rounded-none" name="oldPassword" type="password" required/>
+                                    <input class="form-control rounded-none border-outline-variant focus:border-primary" name="oldPassword" type="password" required/>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Nouveau mot de passe</label>
-                                    <input class="form-control rounded-none" name="newPassword" type="password" required minlength="6"/>
+                                    <input class="form-control rounded-none border-outline-variant focus:border-primary" name="newPassword" type="password" required minlength="6"/>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Confirmer le nouveau mot de passe</label>
-                                    <input class="form-control rounded-none" name="confirmPassword" type="password" required/>
+                                    <input class="form-control rounded-none border-outline-variant focus:border-primary" name="confirmPassword" type="password" required/>
                                 </div>
-                                <button class="btn border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all px-4 py-2" type="submit">
+                                <button class="btn-primary-agri px-4 py-2 rounded-lg font-label-md transition-all" type="submit">
+                                    <span class="material-symbols-outlined text-[18px] align-middle mr-1">update</span>
                                     Mettre à jour le mot de passe
                                 </button>
                             </form>
                         </div>
 
                         <div>
-                            <div class="bg-error-container p-stack-md rounded-lg h-full flex flex-col justify-between">
+                            <div class="bg-error-container p-stack-md rounded-lg h-full flex flex-col justify-between border border-error/20">
                                 <div>
                                     <h3 class="font-headline-md text-on-error-container mb-2 flex items-center gap-2">
-                                        <span class="material-symbols-outlined">warning</span>
+                                        <span class="material-symbols-outlined text-error">warning</span>
                                         Zone de danger
                                     </h3>
                                     <p class="font-body-md text-on-error-container opacity-80 mb-stack-md">
@@ -481,7 +578,8 @@
                                 </div>
                                 <form method="post" onsubmit="return confirm('Êtes-vous certain de vouloir supprimer votre compte VolySaina+ ?');" 
                                       th:action="@{/profil/supprimer}">
-                                    <button class="btn btn-outline-danger w-fit px-4 py-2 uppercase font-bold text-label-sm" type="submit">
+                                    <button class="btn-danger-agri px-4 py-2 rounded-lg font-label-md transition-all" type="submit">
+                                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">delete_forever</span>
                                         Supprimer définitivement mon compte
                                     </button>
                                 </form>
@@ -503,10 +601,10 @@
                 <p class="font-body-md text-body-md text-on-surface-variant">Excellence en Agriculture Durable.</p>
             </div>
             <div class="flex flex-wrap justify-center gap-stack-md">
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Conditions d'utilisation</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Politique de confidentialité</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Contact Support</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Partenaires</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Conditions d'utilisation</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Politique de confidentialité</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Support</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Partenaires</a>
             </div>
             <div class="font-label-sm text-label-sm text-on-surface-variant opacity-75">
                 © 2024 VolySaina+. Tous droits réservés.
@@ -526,7 +624,6 @@
 
         // Vérifier que Bootstrap fonctionne
         document.addEventListener('DOMContentLoaded', function() {
-            // S'assurer que le premier onglet est actif
             var firstTab = document.querySelector('#profileTabs .nav-link.active');
             if (!firstTab) {
                 var tabs = document.querySelectorAll('#profileTabs .nav-link');

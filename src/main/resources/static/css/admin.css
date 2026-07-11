@@ -249,35 +249,11 @@ a { text-decoration: none; color: inherit; }
 }
 .admin-topbar__menu:hover { background-color: var(--surface-container-low); color: var(--primary); }
 
-.admin-topbar__search {
-    position: relative;
-    width: 100%;
-    max-width: 420px;
-}
-.admin-topbar__search .material-symbols-outlined {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--on-surface-variant);
-}
-.admin-topbar__search input {
-    width: 100%;
-    padding: 8px 16px 8px 42px;
-    background-color: var(--surface-container-low);
-    border: 1px solid var(--outline);
-    border-radius: var(--radius);
-    font: inherit;
-    font-size: 15px;
-    outline: none;
-    transition: border-color .15s ease;
-}
-.admin-topbar__search input:focus { border-color: var(--primary); }
-
 .admin-user {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin-left: auto;
 }
 .admin-user__name { font-size: 14px; font-weight: 700; margin: 0; }
 .admin-user__role { font-size: 12px; color: var(--on-surface-variant); margin: 0; }
@@ -290,7 +266,10 @@ a { text-decoration: none; color: inherit; }
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: filter .15s ease;
 }
+.admin-user__avatar:hover { filter: brightness(1.1); }
 
 .admin-canvas {
     padding: var(--gutter-desktop);
@@ -1197,6 +1176,54 @@ table.data tbody tr.is-selected { background-color: var(--surface-container-high
 .crumb a:hover { text-decoration: underline; }
 
 /* =====================================================================
+   Page « Mon profil » (/profil) — réutilise la charte admin sans sidebar
+   ===================================================================== */
+/* Coquille de page autonome : occupe toute la largeur (pas de marge sidebar) */
+.page-shell { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* Grille : résumé du compte (gauche) / formulaire (droite) */
+.profil-grid { display: grid; grid-template-columns: 1fr 2fr; gap: var(--stack-lg); align-items: start; }
+
+/* En-tête d'identité (avatar + nom + rôle) */
+.profil-id { display: flex; align-items: center; gap: 16px; margin-bottom: var(--stack-md); }
+.profil-id__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-full);
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.profil-id__avatar .material-symbols-outlined { font-size: 40px; font-variation-settings: 'FILL' 1; }
+.profil-id__name { font-size: 20px; font-weight: 700; margin: 0 0 6px; }
+
+/* Formulaire : champs sur deux colonnes */
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--stack-md); }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field--wide { grid-column: 1 / -1; }
+.form-field label { font-size: 13px; font-weight: 600; color: var(--on-surface-variant); }
+.form-field input,
+.form-field select {
+    padding: 10px 12px;
+    background-color: var(--surface-container-low);
+    border: 1px solid var(--outline);
+    border-radius: var(--radius);
+    font: inherit;
+    font-size: 15px;
+    color: var(--on-surface);
+    outline: none;
+    transition: border-color .15s ease;
+}
+.form-field input:focus,
+.form-field select:focus { border-color: var(--primary); }
+
+/* Rangée de boutons */
+.btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* =====================================================================
    Responsive
    ===================================================================== */
 @media (max-width: 1100px) {
@@ -1207,6 +1234,7 @@ table.data tbody tr.is-selected { background-color: var(--surface-container-high
     .res-layout { grid-template-columns: 1fr; }
     .res-detail { position: static; }
     .rd-grid { grid-template-columns: 1fr; }
+    .profil-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
     .grid-kpi { grid-template-columns: 1fr; }
@@ -1215,10 +1243,12 @@ table.data tbody tr.is-selected { background-color: var(--surface-container-high
     .admin-topbar__menu { display: inline-flex; }
     .admin-main { margin-left: 0; }
     .admin-canvas { padding: 16px; }
-    .admin-topbar__search { max-width: none; }
     .page-head__actions { width: 100%; }
     .cal-toolbar { flex-direction: column; align-items: stretch; }
     .info-grid, .mini-stats { grid-template-columns: 1fr; }
     .res-body__top { flex-direction: column; }
     .toolbar__spacer { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+    .page-head__actions { width: 100%; }
+    .page-head__actions .btn { flex: 1; justify-content: center; }
 }

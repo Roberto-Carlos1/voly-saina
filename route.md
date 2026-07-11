@@ -33,7 +33,7 @@ Login : `POST /connexion` — paramètres `identifiant` (email ou téléphone) +
 | POST | `/signup` | AuthController | Création de compte |
 | GET | `/access-denied` | AuthController | Page accès refusé |
 | POST | `/deconnexion` | (Spring Security) | Déconnexion |
-| GET | `/profil` | ProfilPageController | Profil utilisateur |
+| GET | `/profil` | ProfilPageController | Profil utilisateur (vue `profil/page02`, charte admin, bouton dashboard si RESPONSABLE) |
 | POST | `/profil/enregistrer` | ProfilPageController | Enregistrer le profil |
 
 ---
@@ -154,6 +154,7 @@ Login : `POST /connexion` — paramètres `identifiant` (email ou téléphone) +
 ### Tableau de bord (`/admin/dashboard`)
 | Méthode | Route | Contrôleur | Description |
 |---------|-------|-----------|-------------|
+| GET | `/admin` | AdminRedirectController | Redirige vers `/admin/dashboard` |
 | GET | `/admin/dashboard` | DashboardController | Vue d'ensemble analytique (`admin/dashboard`) |
 
 ### Machines (`/admin/machines`)

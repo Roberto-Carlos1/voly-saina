@@ -90,18 +90,15 @@
             onclick="document.getElementById('adminSidebar').classList.toggle('is-open')">
         <span class="material-symbols-outlined">menu</span>
     </button>
-    <div class="admin-topbar__search">
-        <span class="material-symbols-outlined">search</span>
-        <input type="text" placeholder="Rechercher une machine, un client...">
-    </div>
     <div class="admin-user">
         <div style="text-align:right;">
             <p class="admin-user__name">Administrateur</p>
             <p class="admin-user__role">Back-office</p>
         </div>
-        <div class="admin-user__avatar">
+        <!-- Clic sur l'avatar → page « Mon profil » -->
+        <a class="admin-user__avatar" th:href="@{/profil}" href="/profil" title="Mon profil" aria-label="Mon profil">
             <span class="material-symbols-outlined">person</span>
-        </div>
+        </a>
     </div>
 </header>
 

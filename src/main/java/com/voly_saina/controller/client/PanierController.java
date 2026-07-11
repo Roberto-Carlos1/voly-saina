@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,22 +54,29 @@ public class PanierController {
     @Autowired
     private CommandeService commandeService;
 
-    private Long resolveClientId(Long clientId) {
-        return clientId != null ? clientId : 1L;
+    private Long getClientId(User user) {
+        if (user == null) {
+            throw new PanierException(PanierException.NON_CONNECTE);
+        }
+        Utilisateur utilisateur = utilisateurService.findByEmail(user.getUsername());
+        if (utilisateur == null) {
+            throw new PanierException(PanierException.CLIENT_INTROUVABLE);
+        }
+        return utilisateur.getIdUtilisateur();
     }
 
     @GetMapping("/ajouter")
     public String ajouterAuPanier(
             @RequestParam("produitId") Long produitId,
             @RequestParam(value = "quantite", required = false, defaultValue = "1") BigDecimal quantite,
-            @RequestParam(value = "idClient", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
 
         try {
             if (quantite.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new PanierException(PanierException.QUANTITE_INVALIDE);
             }
-            panierService.ajouterAuPanier(resolveClientId(clientId), produitId, quantite);
+            panierService.ajouterAuPanier(getClientId(user), produitId, quantite);
             return "redirect:/panier";
         } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());
@@ -77,11 +86,11 @@ public class PanierController {
 
     @GetMapping
     public String voirProduitsPanier(
-            @RequestParam(value = "idClient", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
 
         try {
-            Long idClientFinal = resolveClientId(clientId);
+            Long idClientFinal = getClientId(user);
 
             Utilisateur client = utilisateurService.findById(idClientFinal)
                     .orElseThrow(() -> new PanierException(PanierException.CLIENT_INTROUVABLE));
@@ -127,11 +136,11 @@ public class PanierController {
 
     @GetMapping("/details")
     public String voirPanier(
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
 
         try {
-            Long idClientFinal = resolveClientId(clientId);
+            Long idClientFinal = getClientId(user);
 
             utilisateurService.findById(idClientFinal)
                     .orElseThrow(() -> new PanierException(PanierException.CLIENT_INTROUVABLE));
@@ -164,12 +173,12 @@ public class PanierController {
     @PostMapping("/supprimer")
     public String supprimerLigne(
             @RequestParam("ligneId") Long ligneId,
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
 
         try {
 
-            Long idClientFinal = resolveClientId(clientId);
+            Long idClientFinal = getClientId(user);
             panierService.supprimerLigne(ligneId, idClientFinal);
 
             Panier panier = panierService.findCurrentPanierByIdClient(idClientFinal);
@@ -190,10 +199,10 @@ public class PanierController {
     public String mettreAJourQuantite(
             @RequestParam("ligneId") Long ligneId,
             @RequestParam(value = "quantite", required = false) String quantiteStr,
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
 
-        Long idClientFinal = resolveClientId(clientId);
+        Long idClientFinal = getClientId(user);
 
         try {
             if (quantiteStr == null || quantiteStr.trim().isEmpty()) {
@@ -232,12 +241,12 @@ public class PanierController {
     @PostMapping("/valider")
     public String cloturerPanier(
             @RequestParam("adresseLivraison") String adresseLivraison,
-            @RequestParam(value = "clientId", required = false) Long clientId,
             @RequestParam(value = "idPanier", required = false) Long idPanier,
+            @AuthenticationPrincipal User user,
             Model model) {
 
         try {
-            Long idClientFinal = resolveClientId(clientId);
+            Long idClientFinal = getClientId(user);
             if (idPanier == null) {
                 throw new PanierException(PanierException.PANIER_INTROUVABLE);
             }
@@ -255,11 +264,11 @@ public class PanierController {
     @GetMapping("/recap")
     public String recapCommande(
             @RequestParam("commandeId") Long commandeId,
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
 
         try {
-            Long idClientFinal = resolveClientId(clientId);
+            Long idClientFinal = getClientId(user);
 
             Commande commande = panierService.findCommandeById(commandeId, idClientFinal);
 

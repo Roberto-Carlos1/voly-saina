@@ -21,6 +21,7 @@ public class PanierException extends RuntimeException {
 
     // 👤 Messages liés aux Utilisateurs
     public static final String CLIENT_INTROUVABLE = "Le profil client est introuvable.";
+    public static final String NON_CONNECTE = "Vous devez être connecté pour accéder à votre panier.";
 
     // Constructeurs
     public static final String ERREUR_INTERNE = "Une erreur est survenue lors du traitement de votre panier.";

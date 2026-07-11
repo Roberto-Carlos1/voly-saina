@@ -1,85 +1,148 @@
 <!DOCTYPE html>
+<!--
+  Vue « Mon profil » — route GET /profil (ProfilPageController.afficherProfil).
+  Reprend la charte de l'espace admin (design tokens de /css/admin.css) pour
+  rester cohérente, responsive et lisible, sans la barre latérale d'admin
+  (cette page est accessible à tous les utilisateurs connectés).
+
+  Données fournies par le contrôleur :
+    - utilisateur    : le compte connecté (nom, email, telephone, role)
+    - profil         : ProfilUtilisateur (genre, age, csp, localisation, niveauConnexion)
+    - roleCode       : code du rôle (ex. RESPONSABLE) — pilote l'accès admin
+    - recommandation : texte de recommandation personnalisé
+    - idClient       : identifiant utilisé par l'espace client
+-->
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>VOLY SAINA+ - Profil utilisateur</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<head th:replace="~{fragments/admin-sidebar :: head('Mon profil — Voly Saina +')}"></head>
+<body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-success">
-    <div class="container">
-        <a class="navbar-brand fw-bold" th:href="@{/client/profil}">VOLY SAINA+</a>
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-light btn-sm" th:href="@{/client/accueil(idClient=${idClient})}">Espace client</a>
-            <a class="btn btn-light btn-sm" th:href="@{/deconnexion}">Déconnexion</a>
+<!-- ===== Page autonome (même charte que l'admin, sans barre latérale) ===== -->
+<div class="page-shell">
+
+    <!-- Barre supérieure : marque + utilisateur -->
+    <header class="admin-topbar">
+        <div class="admin-sidebar__brand" style="margin:0; padding:0;">
+            <div class="admin-sidebar__logo">
+                <span class="material-symbols-outlined">agriculture</span>
+            </div>
+            <div>
+                <h1 class="admin-sidebar__title">Voly Saina +</h1>
+                <p class="admin-sidebar__subtitle">Mon espace</p>
+            </div>
         </div>
-    </div>
-</nav>
+        <div class="admin-user">
+            <div style="text-align:right;">
+                <p class="admin-user__name" th:text="${utilisateur.nom}">Utilisateur</p>
+                <p class="admin-user__role" th:text="${roleCode}">Rôle</p>
+            </div>
+            <a class="admin-user__avatar" th:href="@{/profil}" title="Mon profil" aria-label="Mon profil">
+                <span class="material-symbols-outlined">person</span>
+            </a>
+        </div>
+    </header>
 
-<main class="container py-5">
-    <div class="mb-4">
-        <h1 class="fw-bold text-success">Page 02 - Profil utilisateur</h1>
-        <p class="text-muted mb-0">
-            Complète le profil pour personnaliser les recommandations, le guide de plantation et l’affichage selon la connexion.
-        </p>
-    </div>
+    <div class="admin-canvas">
 
-    <div th:if="${success}" class="alert alert-success shadow-sm" th:text="${success}"></div>
-    <div th:if="${error}" class="alert alert-danger shadow-sm" th:text="${error}"></div>
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Mon profil</h1>
+                <p>Complète tes informations pour personnaliser tes recommandations et ton guide de plantation.</p>
+            </div>
+            <div class="page-head__actions">
+                <!-- Accès au back-office : visible uniquement pour les comptes admin (rôle RESPONSABLE),
+                     masqué pour les comptes client. Pointe vers /admin qui redirige vers le tableau de bord. -->
+                <a th:if="${roleCode == 'RESPONSABLE'}" class="btn btn--primary" th:href="@{/admin}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Espace administrateur
+                </a>
+                <a class="btn btn--outline" th:href="@{/client/accueil(idClient=${idClient})}">
+                    <span class="material-symbols-outlined">home</span>
+                    Espace client
+                </a>
+                <a class="btn btn--outline" th:href="@{/deconnexion}">
+                    <span class="material-symbols-outlined">logout</span>
+                    Déconnexion
+                </a>
+            </div>
+        </div>
 
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-header bg-success text-white">
-                    <h2 class="h5 mb-0">Compte connecté</h2>
+        <!-- Messages flash -->
+        <div th:if="${success}" class="flash flash--success" th:text="${success}"></div>
+        <div th:if="${error}" class="flash flash--error" th:text="${error}"></div>
+
+        <!-- ===== Grille : résumé (gauche) / formulaire (droite) ===== -->
+        <div class="profil-grid">
+
+            <!-- ---------- Colonne gauche : compte + recommandation ---------- -->
+            <div class="detail-col">
+
+                <!-- Compte connecté -->
+                <div class="card card--pad-lg">
+                    <div class="profil-id">
+                        <div class="profil-id__avatar">
+                            <span class="material-symbols-outlined">account_circle</span>
+                        </div>
+                        <div>
+                            <p class="profil-id__name" th:text="${utilisateur.nom}">Nom utilisateur</p>
+                            <span class="badge badge--validee" th:text="${roleCode}">Rôle</span>
+                        </div>
+                    </div>
+                    <div class="specs">
+                        <div class="spec-row">
+                            <span class="spec-row__key">Email</span>
+                            <span class="spec-row__val" th:text="${utilisateur.email != null and !utilisateur.email.isEmpty() ? utilisateur.email : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Téléphone</span>
+                            <span class="spec-row__val" th:text="${utilisateur.telephone != null and !utilisateur.telephone.isEmpty() ? utilisateur.telephone : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Localisation</span>
+                            <span class="spec-row__val" th:text="${profil.localisation != null and !profil.localisation.isEmpty() ? profil.localisation : 'Non renseignée'}">—</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="mb-2"><strong>Nom :</strong><br><span th:text="${utilisateur.nom}">Nom</span></p>
-                    <p class="mb-2"><strong>Email :</strong><br><span th:text="${utilisateur.email}">email</span></p>
-                    <p class="mb-2"><strong>Téléphone :</strong><br><span th:text="${utilisateur.telephone}">tel</span></p>
-                    <p class="mb-0"><strong>Rôle :</strong><br><span class="badge bg-success" th:text="${roleCode}">client</span></p>
+
+                <!-- Recommandation personnalisée -->
+                <div class="card card--pad-lg">
+                    <div class="section-head" style="margin-bottom:8px;">
+                        <h4>Recommandation</h4>
+                        <span class="material-symbols-outlined" style="color:var(--secondary);">tips_and_updates</span>
+                    </div>
+                    <p class="detail-text" th:text="${recommandation}">Complète le profil pour activer les recommandations.</p>
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-warning">
-                    <h2 class="h6 mb-0">Recommandation</h2>
-                </div>
-                <div class="card-body">
-                    <p class="mb-0" th:text="${recommandation}">Complète le profil pour activer les recommandations.</p>
-                </div>
-            </div>
-        </div>
+            <!-- ---------- Colonne droite : formulaire profil agricole ---------- -->
+            <div class="detail-col">
+                <div class="card card--pad-lg">
+                    <div class="section-head">
+                        <h2>Profil agricole</h2>
+                        <span class="material-symbols-outlined" style="color:var(--primary);">grass</span>
+                    </div>
 
-        <div class="col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="h5 mb-0">Profil agricole</h2>
-                </div>
-                <div class="card-body p-4">
                     <form th:action="@{/profil/enregistrer}" method="post">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Genre</label>
-                                <select name="genre" class="form-select">
-                                    <option value="">-- Choisir --</option>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="genre">Genre</label>
+                                <select id="genre" name="genre">
+                                    <option value="">— Choisir —</option>
                                     <option value="Homme" th:selected="${profil.genre == 'Homme'}">Homme</option>
                                     <option value="Femme" th:selected="${profil.genre == 'Femme'}">Femme</option>
                                     <option value="Autre" th:selected="${profil.genre == 'Autre'}">Autre</option>
                                 </select>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Âge</label>
-                                <input type="number" name="age" class="form-control" min="0" th:value="${profil.age}">
+                            <div class="form-field">
+                                <label for="age">Âge</label>
+                                <input id="age" type="number" name="age" min="0" th:value="${profil.age}">
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Catégorie / CSP</label>
-                                <select name="csp" class="form-select">
-                                    <option value="">-- Choisir --</option>
+                            <div class="form-field">
+                                <label for="csp">Catégorie / CSP</label>
+                                <select id="csp" name="csp">
+                                    <option value="">— Choisir —</option>
                                     <option value="Agriculteur" th:selected="${profil.csp == 'Agriculteur'}">Agriculteur</option>
                                     <option value="Commerçant" th:selected="${profil.csp == 'Commerçant'}">Commerçant</option>
                                     <option value="Coopérative" th:selected="${profil.csp == 'Coopérative'}">Coopérative</option>
@@ -88,10 +151,10 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Niveau de connexion</label>
-                                <select name="niveauConnexion" class="form-select">
-                                    <option value="">-- Choisir --</option>
+                            <div class="form-field">
+                                <label for="niveauConnexion">Niveau de connexion</label>
+                                <select id="niveauConnexion" name="niveauConnexion">
+                                    <option value="">— Choisir —</option>
                                     <option value="aucune" th:selected="${profil.niveauConnexion == 'aucune'}">Aucune connexion</option>
                                     <option value="faible" th:selected="${profil.niveauConnexion == 'faible'}">Connexion faible</option>
                                     <option value="moyenne" th:selected="${profil.niveauConnexion == 'moyenne'}">Connexion moyenne</option>
@@ -99,36 +162,56 @@
                                 </select>
                             </div>
 
-                            <div class="col-12 mb-4">
-                                <label class="form-label">Localisation</label>
-                                <input type="text" name="localisation" class="form-control"
+                            <div class="form-field form-field--wide">
+                                <label for="localisation">Localisation</label>
+                                <input id="localisation" type="text" name="localisation"
                                        placeholder="Exemple : Antananarivo, Toamasina, Mahajanga..."
                                        th:value="${profil.localisation}">
                             </div>
                         </div>
 
-                        <div class="d-flex flex-wrap gap-2">
-                            <button type="submit" class="btn btn-success">Enregistrer le profil</button>
-                            <a class="btn btn-outline-primary" th:href="@{/guide-plantation/cultures}">Guide de plantation</a>
-                            <a class="btn btn-outline-primary" th:href="@{/catalogue/machines/catalogue}">Catalogue machines</a>
-                            <a class="btn btn-outline-primary" th:href="@{/catalogue/produits/catalogue}">Catalogue produits</a>
+                        <div class="btn-row" style="margin-top:var(--stack-lg);">
+                            <button type="submit" class="btn btn--primary">
+                                <span class="material-symbols-outlined">check_circle</span>
+                                Enregistrer le profil
+                            </button>
                         </div>
                     </form>
                 </div>
-            </div>
 
-            <div class="card border-0 shadow-sm mt-4">
-                <div class="card-body">
-                    <h3 class="h6 text-success fw-bold">Rôle de cette page</h3>
-                    <p class="mb-0 text-muted">
-                        Cette page correspond à la page 02 de la conception. Elle permet de personnaliser les recommandations selon le profil,
-                        la localisation et le niveau de connexion de l’utilisateur.
-                    </p>
+                <!-- Raccourcis -->
+                <div class="card card--pad-lg">
+                    <div class="section-head" style="margin-bottom:8px;">
+                        <h4>Accès rapides</h4>
+                    </div>
+                    <div class="btn-row">
+                        <a class="btn btn--outline" th:href="@{/guide-plantation/cultures}">
+                            <span class="material-symbols-outlined">menu_book</span>
+                            Guide de plantation
+                        </a>
+                        <a class="btn btn--outline" th:href="@{/catalogue/machines/catalogue}">
+                            <span class="material-symbols-outlined">agriculture</span>
+                            Catalogue machines
+                        </a>
+                        <a class="btn btn--outline" th:href="@{/catalogue/produits/catalogue}">
+                            <span class="material-symbols-outlined">storefront</span>
+                            Catalogue produits
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</main>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/guide-plantation/cultures}">Guide de plantation</a>
+            <a th:href="@{/catalogue/machines/catalogue}">Catalogue machines</a>
+        </div>
+    </footer>
+</div>
 
 </body>
 </html>

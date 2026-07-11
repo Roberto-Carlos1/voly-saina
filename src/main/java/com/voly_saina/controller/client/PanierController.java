@@ -134,41 +134,41 @@ public class PanierController {
         }
     }
 
-    @GetMapping("/details")
-    public String voirPanier(
-            @AuthenticationPrincipal User user,
-            Model model) {
+    // @GetMapping("/details")
+    // public String voirPanier(
+    //         @AuthenticationPrincipal User user,
+    //         Model model) {
 
-        try {
-            Long idClientFinal = getClientId(user);
+    //     try {
+    //         Long idClientFinal = getClientId(user);
 
-            utilisateurService.findById(idClientFinal)
-                    .orElseThrow(() -> new PanierException(PanierException.CLIENT_INTROUVABLE));
+    //         utilisateurService.findById(idClientFinal)
+    //                 .orElseThrow(() -> new PanierException(PanierException.CLIENT_INTROUVABLE));
 
-            Commande commandePanier = panierService.findPendingCommande(idClientFinal);
+    //         Commande commandePanier = panierService.findPendingCommande(idClientFinal);
 
-            if (commandePanier == null) {
-                throw new PanierException(PanierException.COMMANDE_INTROUVABLE);
-            }
+    //         if (commandePanier == null) {
+    //             throw new PanierException(PanierException.COMMANDE_INTROUVABLE);
+    //         }
 
-            List<LigneCommande> lignes = panierService
-                    .getLignesByPanierId(panierService.findCurrentPanierByIdClient(idClientFinal).getIdPanier());
+    //         List<LigneCommande> lignes = panierService
+    //                 .getLignesByPanierId(panierService.findCurrentPanierByIdClient(idClientFinal).getIdPanier());
 
-            model.addAttribute("commande", commandePanier);
-            model.addAttribute("lignes", lignes);
-            model.addAttribute("montantTotal",
-                    commandePanier.getMontantTotal() == null
-                            ? BigDecimal.ZERO
-                            : commandePanier.getMontantTotal());
-            model.addAttribute("modePaiements", modePaiementService.findAll());
+    //         model.addAttribute("commande", commandePanier);
+    //         model.addAttribute("lignes", lignes);
+    //         model.addAttribute("montantTotal",
+    //                 commandePanier.getMontantTotal() == null
+    //                         ? BigDecimal.ZERO
+    //                         : commandePanier.getMontantTotal());
+    //         model.addAttribute("modePaiements", modePaiementService.findAll());
 
-            return "client/panier/commandePanier";
+    //         return "client/panier/commandePanier";
 
-        } catch (PanierException e) {
-            model.addAttribute("error", e.getMessage());
-            return "client/panier/commandePanier";
-        }
-    }
+    //     } catch (PanierException e) {
+    //         model.addAttribute("error", e.getMessage());
+    //         return "client/panier/commandePanier";
+    //     }
+    // }
 
     @PostMapping("/supprimer")
     public String supprimerLigne(
@@ -229,7 +229,7 @@ public class PanierController {
             }
 
             panierService.mettreAJourQuantite(ligneId, quantite, idClientFinal);
-            return "redirect:/panier/details";
+            return "redirect:/panier";
 
         } catch (PanierException e) {
             model.addAttribute("error", e.getMessage());

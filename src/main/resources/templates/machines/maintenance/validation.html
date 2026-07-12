@@ -1,35 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validation maintenance</title>
-</head>
-
+<!--
+  Validation d'une maintenance — route GET /admin/maintenances-machine/valider/{id}
+  Rendu par MaintenanceMachineController.validateForm.
+  Données fournies par le contrôleur :
+    - maintenance : MaintenanceMachine à clôturer (machine, travaux, dates, coût)
+    - error       : message flash éventuel
+  Le formulaire poste vers POST /admin/maintenances-machine/valider avec la date de
+  retour réelle, ce qui clôture l'intervention côté service.
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Valider une maintenance — Voly Saina +')}"></head>
 <body>
-    <a href="/admin/maintenances-machine">Retour à la liste</a>
-    <h1>Validation de la maintenance</h1>
 
-    <p th:if="${error}" th:text="${error}" style="color: red;"></p>
+<!-- Barre latérale (onglet « Maintenances » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('maintenances')}"></aside>
 
-    <div th:if="${maintenance != null}">
-        <p><strong>Machine :</strong> <span th:text="${maintenance.getMachine().getNom()}"></span></p>
-        <p><strong>Travaux :</strong> <span th:text="${maintenance.getTravaux()}"></span></p>
-        <p><strong>Date début :</strong> <span th:text="${maintenance.getDateDebut()}"></span></p>
-        <p><strong>Date retour prévue :</strong> <span th:text="${maintenance.getDateRetourPrevue()}"></span></p>
-        <p><strong>Coût :</strong> <span th:text="${maintenance.getCout()}"></span> Ar</p>
+<main class="admin-main">
 
-        <form th:action="@{/maintenances-machine/valider}" method="post">
-            <input type="hidden" name="idMaintenance" th:value="${maintenance.idMaintenance}">
-            <label for="dateRetourReelle">Date retour réelle *</label>
-            <input type="date" id="dateRetourReelle" name="dateRetourReelle"
-                   th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
-            <br><br>
-            <button type="submit">Valider la maintenance</button>
-            <a href="/admin/maintenances-machine">Annuler</a>
-        </form>
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- Fil d'Ariane -->
+        <p class="crumb">
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+            <span> / </span>
+            <span>Validation</span>
+        </p>
+
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Valider la maintenance</h1>
+                <p>Confirmez la clôture de l'intervention en indiquant la date de retour réelle.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/maintenances-machine}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+
+        <!-- Message flash -->
+        <div th:if="${error}" class="flash flash--error" th:text="${error}"></div>
+
+        <!-- ===== Carte de validation ===== -->
+        <div class="card card--pad-lg" th:if="${maintenance != null}" style="max-width:640px;">
+            <div class="section-head" style="margin-bottom:var(--stack-md);">
+                <h2 th:text="${maintenance.machine != null ? maintenance.machine.nom : 'Machine'}">Machine</h2>
+                <span th:if="${maintenance.statutMaintenance != null}" class="badge"
+                      th:classappend="' badge--' + ${maintenance.statutMaintenance.code}"
+                      th:text="${maintenance.statutMaintenance.libelle}">Statut</span>
+            </div>
+
+            <!-- Récapitulatif de l'intervention -->
+            <div class="specs" style="margin-bottom:var(--stack-lg);">
+                <div class="spec-row">
+                    <span class="spec-row__key">Travaux</span>
+                    <span class="spec-row__val" th:text="${maintenance.travaux}">—</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-row__key">Date début</span>
+                    <span class="spec-row__val"
+                          th:text="${maintenance.dateDebut != null ? #temporals.format(maintenance.dateDebut, 'dd/MM/yyyy') : '—'}">—</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-row__key">Retour prévu</span>
+                    <span class="spec-row__val"
+                          th:text="${maintenance.dateRetourPrevue != null ? #temporals.format(maintenance.dateRetourPrevue, 'dd/MM/yyyy') : '—'}">—</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-row__key">Coût</span>
+                    <span class="spec-row__val" th:text="${maintenance.cout} + ' Ar'">0 Ar</span>
+                </div>
+            </div>
+
+            <!-- Formulaire de validation -->
+            <form th:action="@{/admin/maintenances-machine/valider}" method="post">
+                <input type="hidden" name="idMaintenance" th:value="${maintenance.idMaintenance}">
+                <div class="form-grid">
+                    <div class="form-field form-field--wide">
+                        <label for="dateRetourReelle">Date de retour réelle *</label>
+                        <input type="date" id="dateRetourReelle" name="dateRetourReelle"
+                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                </div>
+                <div class="btn-row" style="margin-top:var(--stack-lg);">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        Valider la maintenance
+                    </button>
+                    <a class="btn btn--outline" th:href="@{/admin/maintenances-machine}">Annuler</a>
+                </div>
+            </form>
+        </div>
     </div>
-</body>
 
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+            <a th:href="@{/admin/machines}">Flotte</a>
+        </div>
+    </footer>
+</main>
+
+</body>
 </html>

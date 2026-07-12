@@ -50,9 +50,11 @@
                 <p>Complète tes informations pour personnaliser tes recommandations et ton guide de plantation.</p>
             </div>
             <div class="page-head__actions">
-                <!-- Accès au back-office : visible uniquement pour les comptes admin (rôle RESPONSABLE),
-                     masqué pour les comptes client. Pointe vers /admin qui redirige vers le tableau de bord. -->
-                <a th:if="${roleCode == 'RESPONSABLE'}" class="btn btn--primary" th:href="@{/admin}">
+                <!-- Accès au back-office : visible pour tout compte non-client (responsable,
+                     gestionnaire, employé, admin...), masqué pour les clients.
+                     Pointe vers /admin qui redirige vers le tableau de bord. -->
+                <a th:if="${roleCode != null and !#strings.equalsIgnoreCase(roleCode, 'client')}"
+                   class="btn btn--primary" th:href="@{/admin}">
                     <span class="material-symbols-outlined">dashboard</span>
                     Espace administrateur
                 </a>

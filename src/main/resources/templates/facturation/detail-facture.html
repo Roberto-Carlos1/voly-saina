@@ -1,57 +1,201 @@
-<div class="container">
+<!DOCTYPE html>
+<!--
+  Vue détail d'une facture — route GET /admin/factures/{id}
+  Rendue par FactureController.getFactureById(...).
+  Données fournies par le contrôleur :
+    - facture    : Facture (numero, typeOperation, client, montantTotal, montantPaye,
+                   statutFacture, dateFacture, dateLimite)
+    - operations : List<FactureFille> (lignes de la facture : type, id, date, montant, statut)
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Détail facture — Voly Saina +')}"></head>
+<body>
 
-    <a href="/admin/factures" class="button"> Retour </a>
-    <a th:href="@{/admin/paiements/facture/{id_facture}(id_facture=${facture.getIdFacture()})}" class="button"> Historique de paiement </a>
+<!-- Barre latérale (onglet « Factures » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('factures')}"></aside>
 
-    <h2 th:text=" 'À propos du ' + ${facture.getNumero()}"></h2>
+<main class="admin-main">
 
-    <div class="liste">
-        <ul>
-            <li th:text=" 'Client : ' + ${facture.getClient().getNom()}"></li>
-            <li th:text=" 'Type operation : ' + ${facture.getTypeOperation()}"></li>
-            <li th:text=" 'Montant paye : ' + ${facture.getMontantPaye()} + ' Ar'"></li>
-            <li th:text=" 'Montant total : ' + ${facture.getMontantTotal()} + ' Ar'"></li>
-            <li>
-                <span th:text="'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar '"></span>
-                <a th:href="@{/admin/paiements/reste/{id_facture}(id_facture=${facture.getIdFacture()})}" th:if="${(facture.montantTotal - facture.montantPaye) > 0}" th:text="'Payez le reste'"></a>
-            </li>
-        </ul>
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
 
-    </div>
+    <div class="admin-canvas"
+         th:with="reste=${facture.montantTotal - facture.montantPaye}">
 
-    <a th:href="@{/admin/factures/exportFacture/{id_facture}/{id_client} (id_facture = ${facture.getIdFacture()}, id_client = ${facture.getClient.getIdUtilisateur()})}">Exporter en PDF</a>
-
-    <div class="statut-facture">
-        <h2 th:text="${facture.getStatutFacture() != null ? facture.getStatutFacture().getLibelle() : 'Aucun état'}">
-        </h2>
-    </div>
-
-    <h3>Operations de la facture</h3>
-    <div class="table-operations">
-        <p th:if="${#lists.isEmpty(operations)}">
-            Aucune opération pour cette facture
+        <!-- Fil d'Ariane -->
+        <p class="crumb">
+            <a th:href="@{/admin/factures}">Factures</a>
+            <span> / </span>
+            <span th:text="${facture.numero}">Numéro</span>
         </p>
 
-        <table th:unless="${#lists.isEmpty(operations)}" border="1">
-            <tr>
-                <th>Type</th>
-                <th>ID Opération</th>
-                <th>Date</th>
-                <th>Montant</th>
-                <th>Statut</th>
-            </tr>
+        <!-- ===== En-tête de page + actions ===== -->
+        <div class="page-head">
+            <div>
+                <h1 th:text="'Facture ' + ${facture.numero}">Facture</h1>
+                <p>Détail de la facturation et des opérations rattachées.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/factures}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour
+                </a>
+                <a class="btn btn--outline" th:href="@{/admin/paiements/facture/{id}(id=${facture.idFacture})}">
+                    <span class="material-symbols-outlined">payments</span>
+                    Historique de paiement
+                </a>
+                <a class="btn btn--outline"
+                   th:href="@{/admin/factures/exportFacture/{idF}/{idC}(idF=${facture.idFacture},idC=${facture.client != null ? facture.client.idUtilisateur : 0})}">
+                    <span class="material-symbols-outlined">picture_as_pdf</span>
+                    Exporter en PDF
+                </a>
+                <a class="btn btn--primary" th:if="${reste > 0}"
+                   th:href="@{/admin/paiements/reste/{id}(id=${facture.idFacture})}">
+                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                    Payer le reste
+                </a>
+            </div>
+        </div>
 
-            <tr th:each="op : ${operations}">
-                <td th:text="${op.typeOperation}"></td>
-                <td>
-                    <span th:text="${op.typeOperation + ' #' + op.idOperation}"></span>
-                </td>
-                <td th:text="${op.dateOperation}"></td>
-                <td th:text="${op.montantTotal} + ' Ar'"></td>
-                <td th:text="${op.statut}"></td>
-            </tr>
-        </table>
+        <!-- ===== Grille : synthèse (gauche) / opérations (droite) ===== -->
+        <div class="detail-grid">
+
+            <!-- ---------- Colonne gauche : client + montants ---------- -->
+            <div class="detail-col">
+
+                <!-- Client & statut -->
+                <div class="card card--pad-lg">
+                    <div class="section-head" style="margin-bottom:12px;">
+                        <h2 th:text="${facture.client != null ? facture.client.nom : '—'}">Client</h2>
+                        <span th:if="${facture.statutFacture != null}" class="badge"
+                              th:classappend="' badge--' + ${facture.statutFacture.code}"
+                              th:text="${facture.statutFacture.libelle}">Statut</span>
+                        <span th:unless="${facture.statutFacture != null}" class="badge">Aucun état</span>
+                    </div>
+                    <div class="specs">
+                        <div class="spec-row">
+                            <span class="spec-row__key">Type d'opération</span>
+                            <span class="spec-row__val" th:text="${facture.typeOperation}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Email</span>
+                            <span class="spec-row__val"
+                                  th:text="${facture.client != null and facture.client.email != null and !facture.client.email.isEmpty() ? facture.client.email : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Téléphone</span>
+                            <span class="spec-row__val"
+                                  th:text="${facture.client != null and facture.client.telephone != null and !facture.client.telephone.isEmpty() ? facture.client.telephone : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Date facture</span>
+                            <span class="spec-row__val"
+                                  th:text="${facture.dateFacture != null ? #temporals.format(facture.dateFacture, 'dd/MM/yyyy') : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Échéance</span>
+                            <span class="spec-row__val"
+                                  th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '—'}">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Montants -->
+                <div class="card card--pad-lg">
+                    <div class="section-head" style="margin-bottom:12px;">
+                        <h4>Règlement</h4>
+                        <span class="material-symbols-outlined" style="color:var(--primary);">payments</span>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <span class="info-box__label">Montant total</span>
+                            <span class="info-box__value" th:text="${facture.montantTotal} + ' Ar'">0 Ar</span>
+                        </div>
+                        <div class="info-box">
+                            <span class="info-box__label">Déjà payé</span>
+                            <span class="info-box__value txt-ok" th:text="${facture.montantPaye} + ' Ar'">0 Ar</span>
+                        </div>
+                        <div class="info-box info-box--wide">
+                            <span class="info-box__label">Reste à payer</span>
+                            <span class="info-box__value"
+                                  th:classappend="${reste > 0} ? ' txt-off' : ' txt-ok'"
+                                  th:text="${reste} + ' Ar'">0 Ar</span>
+                        </div>
+                    </div>
+                    <div class="card-foot" th:if="${reste > 0}">
+                        <span class="card-foot__label">Paiement incomplet</span>
+                        <a class="btn btn--primary" th:href="@{/admin/paiements/reste/{id}(id=${facture.idFacture})}">
+                            <span class="material-symbols-outlined">add_shopping_cart</span>
+                            Payer le reste
+                        </a>
+                    </div>
+                    <div class="card-foot" th:unless="${reste > 0}">
+                        <span class="card-foot__label">Statut du règlement</span>
+                        <span class="card-foot__value">Soldée</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------- Colonne droite : opérations ---------- -->
+            <div class="detail-col">
+                <div class="card card--pad-lg">
+                    <div class="section-head" style="margin-bottom:12px;">
+                        <h2>Opérations de la facture</h2>
+                        <span class="material-symbols-outlined" style="color:var(--secondary);">description</span>
+                    </div>
+
+                    <p th:if="${#lists.isEmpty(operations)}" class="empty-state" style="border:none;">
+                        Aucune opération rattachée à cette facture.
+                    </p>
+
+                    <div class="table-scroll" th:unless="${#lists.isEmpty(operations)}">
+                        <table class="data">
+                            <thead>
+                            <tr>
+                                <th>Opération</th>
+                                <th>Date</th>
+                                <th style="text-align:right;">Montant</th>
+                                <th>Statut</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="op : ${operations}">
+                                <td>
+                                    <div class="m-cell">
+                                        <div class="m-avatar"><span class="material-symbols-outlined">contract</span></div>
+                                        <div>
+                                            <div class="m-name" th:text="${op.typeOperation + ' #' + op.idOperation}">Type #0</div>
+                                            <div class="m-sub" th:text="${op.numero}">Numéro</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${op.dateOperation != null ? #temporals.format(op.dateOperation, 'dd/MM/yyyy') : '—'}">—</td>
+                                <td class="strong" style="text-align:right;" th:text="${op.montantTotal} + ' Ar'">0 Ar</td>
+                                <td>
+                                    <span th:if="${op.statut != null}" class="badge"
+                                          th:classappend="' badge--' + ${op.statut}"
+                                          th:text="${op.statut}">Statut</span>
+                                    <span th:unless="${op.statut != null}" class="badge">—</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-</div>
-</div>
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/factures}">Toutes les factures</a>
+            <a th:href="@{/admin/machines}">Flotte</a>
+        </div>
+    </footer>
+</main>
+
+</body>
+</html>

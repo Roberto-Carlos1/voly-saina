@@ -47,25 +47,42 @@
                 <h2 class="font-headline-md text-headline-md text-on-surface mb-6">État de la machine</h2>
 
                 <!-- Options d'état -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div th:each="etat : ${etatsPossibles}" 
-                         class="border border-outline-variant rounded-lg p-4 cursor-pointer hover:border-primary transition-all"
-                         onclick="selectEtat('${etat.code}')">
-                        <input type="radio" name="etatRetour" th:value="${etat.code}" 
-                               th:id="'etat_' + ${etat.code}" class="hidden">
-                        <label th:for="'etat_' + ${etat.code}" class="cursor-pointer flex items-start gap-3">
-                            <span class="material-symbols-outlined" 
-                                  th:text="${etat.icon}" 
-                                  th:classappend="${etat.color}"></span>
-                            <div>
-                                <p class="font-label-md text-label-md font-bold" th:text="${etat.libelle}">Bon état</p>
-                                <p class="text-label-sm text-on-surface-variant" th:text="${etat.description}">Description</p>
-                                <p class="text-label-sm text-primary font-bold mt-1" 
-                                   th:if="${etat.penalite > 0}" 
-                                   th:text="'Pénalité : ' + ${etat.penalite} + ' €'">
-                                </p>
-                            </div>
-                        </label>
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('bon')">
+                        <input type="radio" name="etatRetour" value="bon" id="etat_bon" class="hidden" checked>
+                        <span class="material-symbols-outlined text-green-500">check_circle</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Bon état</p>
+                            <p class="text-label-sm text-on-surface-variant">Aucun dommage constaté</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('endommage')">
+                        <input type="radio" name="etatRetour" value="endommage" id="etat_endommage" class="hidden">
+                        <span class="material-symbols-outlined text-orange-500">warning</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Endommagé</p>
+                            <p class="text-label-sm text-on-surface-variant">Dommages importants constatés</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('casse')">
+                        <input type="radio" name="etatRetour" value="casse" id="etat_casse" class="hidden">
+                        <span class="material-symbols-outlined text-red-500">broken_image</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Cassé</p>
+                            <p class="text-label-sm text-on-surface-variant">Machine non fonctionnelle</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('perdu')">
+                        <input type="radio" name="etatRetour" value="perdu" id="etat_perdu" class="hidden">
+                        <span class="material-symbols-outlined text-red-700">search_off</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Perdu</p>
+                            <p class="text-label-sm text-on-surface-variant">Machine non restituée</p>
+                        </div>
                     </div>
                 </div>
 
@@ -86,11 +103,11 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="font-body-md text-body-md text-on-surface-variant">Pénalité</span>
-                        <span class="font-body-md text-body-md font-bold text-red-500" id="penaliteRetour">0 €</span>
+                        <span class="font-body-md text-body-md font-bold text-red-500" id="penaliteRetour">0 Ar</span>
                     </div>
                     <div class="flex justify-between border-t border-outline-variant pt-2 mt-2">
                         <span class="font-body-md text-body-md text-on-surface-variant">Total à payer</span>
-                        <span class="font-headline-md text-headline-md text-primary" id="totalRetour">0 €</span>
+                        <span class="font-headline-md text-headline-md text-primary" id="totalRetour">0 Ar</span>
                     </div>
                 </div>
 
@@ -157,17 +174,17 @@
                                 <div class="flex flex-wrap gap-4 mt-2 text-sm text-on-surface-variant">
                                     <span>📍 ${data.lieuLivraison || 'Lieu non spécifié'}</span>
                                     <span>📅 ${data.dateDebut || ''} → ${data.dateFin || ''}</span>
-                                    <span class="font-bold text-primary">${data.prixTotal || 0} €</span>
+                                    <span class="font-bold text-primary">${data.prixTotal || 0} Ar</span>
                                 </div>
-                                ${data.estRetard ? `<div class="mt-2 text-red-500 font-bold">⚠️ Retard : ${data.joursRetard} jour(s) - Pénalité : ${data.penaliteRetard} €</div>` : ''}
+                                ${data.estRetard ? `<div class="mt-2 text-red-500 font-bold">⚠️ Retard : ${data.joursRetard} jour(s) - Pénalité : ${data.penaliteRetard} Ar</div>` : ''}
                             </div>
                         </div>
                     `;
 
                     // Mettre à jour le résumé
                     document.getElementById('dateRetour').textContent = data.dateRetour || new Date().toLocaleDateString('fr-FR');
-                    document.getElementById('penaliteRetour').textContent = (data.penaliteRetard || 0) + ' €';
-                    document.getElementById('totalRetour').textContent = (data.prixTotal || 0) + (data.penaliteRetard || 0) + ' €';
+                    document.getElementById('penaliteRetour').textContent = (data.penaliteRetard || 0) + ' Ar';
+                    document.getElementById('totalRetour').textContent = (data.prixTotal || 0) + (data.penaliteRetard || 0) + ' Ar';
                     penaliteSelectionnee = data.penaliteRetard || 0;
 
                     // Afficher le formulaire
@@ -198,26 +215,21 @@
 
         // Sélectionner un état
         function selectEtat(code) {
-            // Désélectionner tous
             document.querySelectorAll('input[name="etatRetour"]').forEach(input => {
                 input.checked = false;
                 input.closest('.border').classList.remove('border-primary', 'bg-primary/5');
             });
             
-            // Sélectionner le bon
             const input = document.querySelector(`input[name="etatRetour"][value="${code}"]`);
             if (input) {
                 input.checked = true;
                 input.closest('.border').classList.add('border-primary', 'bg-primary/5');
-                
-                // Mettre à jour le résumé
-                const etat = reservationData?.etatsPossibles?.find(e => e.code === code);
-                if (etat) {
-                    penaliteSelectionnee = etat.penalite || 0;
-                    document.getElementById('penaliteRetour').textContent = penaliteSelectionnee + ' €';
-                    const total = (reservationData?.prixTotal || 0) + penaliteSelectionnee;
-                    document.getElementById('totalRetour').textContent = total + ' €';
-                }
+
+                const penalites = { bon: 0, use: 0, endommage: 50000, casse: 250000, perdu: 1000000 };
+                penaliteSelectionnee = penalites[code] || 0;
+                document.getElementById('penaliteRetour').textContent = penaliteSelectionnee + ' Ar';
+                const total = (reservationData?.prixTotal || 0) + penaliteSelectionnee;
+                document.getElementById('totalRetour').textContent = total + ' Ar';
             }
         }
 
@@ -271,16 +283,16 @@
                     <div class="border border-primary-container bg-primary-container/10 p-4 rounded-lg text-primary">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            <span class="font-bold">✅ ${data.message || 'Retour enregistré avec succès !'}</span>
+                            <span class="font-bold"> ${data.message || 'Retour enregistré avec succès !'}</span>
                         </div>
                         <div class="mt-3 grid grid-cols-2 gap-4 bg-white p-3 rounded-lg">
                             <div>
                                 <p class="text-label-sm text-on-surface-variant">Pénalité</p>
-                                <p class="font-bold text-red-500">${penalite} €</p>
+                                <p class="font-bold text-red-500">${penalite} Ar</p>
                             </div>
                             <div>
                                 <p class="text-label-sm text-on-surface-variant">Total à payer</p>
-                                <p class="font-headline-md text-primary">${montantTotal} €</p>
+                                <p class="font-headline-md text-primary">${montantTotal} Ar</p>
                             </div>
                         </div>
                         <div class="mt-4 flex flex-wrap gap-3">

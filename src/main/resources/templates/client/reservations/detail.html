@@ -142,7 +142,8 @@
 
                         <div id="actionsContent" class="hidden space-y-3">
                             <!-- Retourner - uniquement si en_cours ou validee -->
-                            <a id="btnRetourner" href="#" 
+                            <!-- get id from request get spring-->
+                            <a id="btnRetourner" th:href="@{/catalogue/retours/{id}/nouveau(id=${reservationId})}"
                                class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-md text-center hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined">undo</span>
                                 Retourner la machine

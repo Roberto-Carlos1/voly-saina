@@ -33,4 +33,8 @@ public class StatutFactureService {
     public void deleteById(Long id) {
         statutFactureRepository.deleteById(id);
     }
+
+    public Optional<StatutFacture> findByCode(String code) {
+        return statutFactureRepository.findByCode(code);
+    }
 }

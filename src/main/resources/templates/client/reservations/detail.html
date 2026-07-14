@@ -12,16 +12,57 @@
             <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
                 <a href="/client/accueil" class="hover:text-primary">Accueil</a>
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <a href="/catalogue/reservations/mes-reservations" class="hover:text-primary">Mes réservations</a>
+                <a th:href="@{/catalogue/reservations/mes-reservations(idClient=${idClient})}" class="hover:text-primary">Mes réservations</a>
                 <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <span class="text-on-surface font-semibold">Détail réservation</span>
+                <span class="text-on-surface font-semibold" id="pageTitle">Détail réservation</span>
             </nav>
+
+            <!-- Message d'erreur -->
+            <div id="errorMessage" class="hidden bg-red-50 border border-red-200 rounded-xl p-6 text-red-700 mb-6">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-red-500">error</span>
+                    <div>
+                        <h3 class="font-headline-md text-headline-md">Erreur de chargement</h3>
+                        <p id="errorText" class="font-body-md">Impossible de charger les détails de la réservation.</p>
+                    </div>
+                </div>
+                <div class="mt-4 flex gap-3">
+                    <button onclick="loadReservation()" class="bg-primary text-white px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition">
+                        <span class="material-symbols-outlined text-[16px] align-middle">refresh</span>
+                        Réessayer
+                    </button>
+                    <a th:href="@{/catalogue/reservations/mes-reservations(idClient=${idClient})}" 
+                       class="border border-primary text-primary px-4 py-2 rounded-lg font-label-md hover:bg-primary/10 transition">
+                        Retour à la liste
+                    </a>
+                </div>
+            </div>
 
             <!-- Contenu principal -->
             <div id="detailReservation" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Colonne gauche -->
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white border border-outline-variant rounded-xl p-6">
+                    <!-- Carte de chargement -->
+                    <div id="loadingCard" class="bg-white border border-outline-variant rounded-xl p-6">
+                        <div class="animate-pulse flex flex-col gap-4">
+                            <div class="flex justify-between">
+                                <div class="space-y-2">
+                                    <div class="h-6 bg-surface-container-high rounded w-48"></div>
+                                    <div class="h-4 bg-surface-container-high rounded w-24"></div>
+                                </div>
+                                <div class="h-8 bg-surface-container-high rounded w-24"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="h-20 bg-surface-container-high rounded"></div>
+                                <div class="h-20 bg-surface-container-high rounded"></div>
+                                <div class="h-20 bg-surface-container-high rounded"></div>
+                                <div class="h-20 bg-surface-container-high rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Carte de la réservation -->
+                    <div id="reservationCard" class="bg-white border border-outline-variant rounded-xl p-6 hidden">
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <h2 class="font-headline-md text-headline-md text-on-surface" id="machineNom">Chargement...</h2>
@@ -49,6 +90,15 @@
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Date de création</p>
                                 <p class="font-body-md text-body-md" id="dateCreation">--/--/----</p>
                             </div>
+                        </div>
+                        
+                        <!-- Message d'annulation -->
+                        <div id="annulationMessage" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg hidden">
+                            <div class="flex items-center gap-2 text-red-700">
+                                <span class="material-symbols-outlined">info</span>
+                                <span class="font-label-md">Cette réservation a été annulée. Aucune facture ne peut être générée.</span>
+                            </div>
+                            <p class="text-sm text-red-600 mt-1" id="motifAnnulation"></p>
                         </div>
                     </div>
 
@@ -82,29 +132,48 @@
                     <div class="bg-white border-2 border-primary/10 rounded-xl p-6 sticky top-24">
                         <h3 class="font-headline-md text-headline-md text-on-surface mb-4">Actions</h3>
                         
-                        <a id="btnRetourner" href="#" 
-                           class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-md text-center hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2 mb-3">
-                            <span class="material-symbols-outlined">undo</span>
-                            Retourner la machine
-                        </a>
+                        <div id="actionsContainer">
+                            <div class="animate-pulse space-y-3">
+                                <div class="h-12 bg-surface-container-high rounded-lg"></div>
+                                <div class="h-12 bg-surface-container-high rounded-lg"></div>
+                                <div class="h-12 bg-surface-container-high rounded-lg"></div>
+                            </div>
+                        </div>
 
-                        <button id="btnAnnuler" 
-                                class="w-full bg-red-500 text-white py-3 rounded-lg font-label-md hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2 mb-3">
-                            <span class="material-symbols-outlined">close</span>
-                            Annuler la réservation
-                        </button>
+                        <div id="actionsContent" class="hidden space-y-3">
+                            <!-- Retourner - uniquement si en_cours ou validee -->
+                            <a id="btnRetourner" href="#" 
+                               class="w-full bg-secondary text-on-secondary py-3 rounded-lg font-label-md text-center hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">undo</span>
+                                Retourner la machine
+                            </a>
 
-                        <button id="btnFacturer" 
-                                class="w-full bg-blue-500 text-white py-3 rounded-lg font-label-md hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2 mb-3">
-                            <span class="material-symbols-outlined">receipt_long</span>
-                            Générer la facture
-                        </button>
+                            <!-- Annuler - uniquement si en_attente ou validee -->
+                            <button id="btnAnnuler" 
+                                    class="w-full bg-red-500 text-white py-3 rounded-lg font-label-md hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">close</span>
+                                Annuler la réservation
+                            </button>
 
-                        <a href="/catalogue/machines/catalogue" 
-                           class="w-full border border-outline-variant text-on-surface-variant py-3 rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined">search</span>
-                            Voir dans le catalogue
-                        </a>
+                            <!-- Facturer - UNIQUEMENT si en_attente et pas de facture -->
+                            <button id="btnFacturer" 
+                                    class="w-full bg-blue-500 text-white py-3 rounded-lg font-label-md hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">receipt_long</span>
+                                Générer la facture
+                            </button>
+
+                            <!-- Message pour les réservations annulées -->
+                            <div id="actionAnnulee" class="hidden w-full bg-gray-100 text-gray-500 py-3 rounded-lg font-label-md text-center cursor-not-allowed flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">block</span>
+                                Aucune action disponible
+                            </div>
+
+                            <a href="/catalogue/machines/catalogue" 
+                               class="w-full border border-outline-variant text-on-surface-variant py-3 rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">search</span>
+                                Voir dans le catalogue
+                            </a>
+                        </div>
 
                         <div id="actionMessage" class="mt-4"></div>
                     </div>
@@ -117,37 +186,94 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 
     <script>
-        const reservationId = /*[[${reservationId != null ? reservationId : 1}]]*/ 1;
-        const clientId = /*[[${clientId != null ? clientId : 1}]]*/ 1;
+        // Récupération des paramètres de l'URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                id: params.get('id'),
+                idClient: params.get('idClient') || '1'
+            };
+        }
+
+        // Récupération de l'ID de réservation depuis l'URL
+        function getReservationId() {
+            const params = getUrlParams();
+            if (params.id) return parseInt(params.id);
+            
+            const pathParts = window.location.pathname.split('/');
+            const lastPart = pathParts[pathParts.length - 1];
+            if (!isNaN(lastPart) && parseInt(lastPart) > 0) {
+                return parseInt(lastPart);
+            }
+            
+            return 1;
+        }
+
+        const reservationId = getReservationId();
+        const clientId = getUrlParams().idClient;
 
         console.log('🔍 Reservation ID:', reservationId);
         console.log('🔍 Client ID:', clientId);
 
+        let reservationData = null;
+
         function loadReservation() {
-            fetch('/catalogue/reservations/api/' + reservationId)
+            document.getElementById('loadingCard').classList.remove('hidden');
+            document.getElementById('reservationCard').classList.add('hidden');
+            document.getElementById('factureCard').style.display = 'none';
+            document.getElementById('actionsContent').classList.add('hidden');
+            document.getElementById('actionsContainer').classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('actionMessage').innerHTML = '';
+            document.getElementById('annulationMessage').classList.add('hidden');
+            document.getElementById('actionAnnulee').classList.add('hidden');
+
+            document.getElementById('pageTitle').textContent = 'Détail réservation #' + reservationId;
+
+            const url = '/catalogue/reservations/api/' + reservationId;
+            console.log('📡 Appel API:', url);
+
+            fetch(url)
                 .then(r => {
-                    if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
+                    if (!r.ok) {
+                        if (r.status === 404) {
+                            throw new Error('Réservation non trouvée (ID: ' + reservationId + ')');
+                        }
+                        throw new Error('Erreur HTTP ' + r.status);
+                    }
                     return r.json();
                 })
                 .then(data => {
-                    console.log('📦 Réservation:', data);
+                    console.log('📦 Données reçues:', data);
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    reservationData = data;
                     displayReservation(data);
                 })
                 .catch(err => {
-                    console.error('❌ Erreur:', err);
-                    document.getElementById('detailReservation').innerHTML = `
-                        <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-red-700 col-span-3">
-                            <h3 class="font-headline-md text-headline-md">❌ Erreur</h3>
-                            <p class="font-body-md">${err.message}</p>
-                            <button onclick="loadReservation()" class="mt-4 bg-primary text-white px-6 py-2 rounded-lg btn-primary">
-                                Réessayer
-                            </button>
-                        </div>
-                    `;
+                    console.error(' Erreur:', err);
+                    document.getElementById('loadingCard').classList.add('hidden');
+                    document.getElementById('errorText').textContent = err.message;
+                    document.getElementById('errorMessage').classList.remove('hidden');
                 });
         }
 
         function displayReservation(data) {
+            document.getElementById('loadingCard').classList.add('hidden');
+            document.getElementById('reservationCard').classList.remove('hidden');
+            document.getElementById('actionsContent').classList.remove('hidden');
+            document.getElementById('actionsContainer').classList.add('hidden');
+
+            if (data.idReservation && data.idReservation !== reservationId) {
+                console.warn('⚠️ Les données chargées ne correspondent pas à l\'ID demandé:', {
+                    demande: reservationId,
+                    recu: data.idReservation
+                });
+            }
+
             document.getElementById('machineNom').textContent = data.machineNom || 'Machine inconnue';
             document.getElementById('machineType').textContent = data.machineType || 'Type inconnu';
             
@@ -178,46 +304,144 @@
             };
             statutBadge.className = 'px-3 py-1 rounded-full font-label-sm text-label-sm ' + (classes[statut] || 'bg-gray-200 text-gray-700');
             
-            // Facture
-            if (data.factureId) {
-                document.getElementById('factureCard').style.display = 'block';
-                document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
-                document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
-                document.getElementById('factureStatut').textContent = 'Générée';
-                // document.getElementById('voirFactureBtn').href = '/catalogue/reservations/facture/' + data.factureId;
-                document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId ;
-            } else {
-                document.getElementById('factureCard').style.display = 'none';
-            }
+            // ============ GESTION DES ACTIONS SELON LE STATUT ============
             
-            // Actions
             const btnRetourner = document.getElementById('btnRetourner');
             const btnAnnuler = document.getElementById('btnAnnuler');
             const btnFacturer = document.getElementById('btnFacturer');
-            
-            if (data.peutRetourner) {
-                btnRetourner.style.display = 'block';
-                btnRetourner.href = '/catalogue/retours/' + reservationId + '/nouveau';
-            } else {
+            const actionAnnulee = document.getElementById('actionAnnulee');
+            const annulationMessage = document.getElementById('annulationMessage');
+            const motifAnnulation = document.getElementById('motifAnnulation');
+
+            // 1. CAS : Réservation ANNULÉE
+            if (statut === 'annulee') {
+                // Cacher tous les boutons
                 btnRetourner.style.display = 'none';
-            }
-            
-            if (data.peutAnnuler) {
-                btnAnnuler.style.display = 'block';
-            } else {
                 btnAnnuler.style.display = 'none';
-            }
-            
-            if (!data.factureId && statut === 'en_attente') {
-                btnFacturer.style.display = 'block';
-            } else {
                 btnFacturer.style.display = 'none';
+                
+                // Afficher le message "Aucune action disponible"
+                actionAnnulee.classList.remove('hidden');
+                
+                // Afficher le message d'annulation
+                annulationMessage.classList.remove('hidden');
+                if (data.motifRefus) {
+                    motifAnnulation.textContent = 'Motif : ' + data.motifRefus;
+                } else {
+                    motifAnnulation.textContent = 'Cette réservation a été annulée.';
+                }
+                
+                // Cacher la facture si elle existe (elle devrait être annulée aussi)
+                document.getElementById('factureCard').style.display = 'none';
+                
+                console.log('🔒 Réservation annulée - Aucune action disponible');
+                return;
             }
+
+            // 2. CAS : Réservation TERMINÉE
+            if (statut === 'terminee') {
+                btnRetourner.style.display = 'none';
+                btnAnnuler.style.display = 'none';
+                btnFacturer.style.display = 'none';
+                actionAnnulee.classList.add('hidden');
+                annulationMessage.classList.add('hidden');
+                
+                // Afficher la facture si elle existe
+                if (data.factureId) {
+                    document.getElementById('factureCard').style.display = 'block';
+                    document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureStatut').textContent = 'Payée';
+                    document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
+                }
+                return;
+            }
+
+            // 3. CAS : Réservation EN COURS
+            if (statut === 'en_cours') {
+                btnRetourner.style.display = 'flex';  // On peut retourner
+                btnAnnuler.style.display = 'none';    // On ne peut PAS annuler
+                btnFacturer.style.display = 'none';   // Facture déjà générée
+                actionAnnulee.classList.add('hidden');
+                annulationMessage.classList.add('hidden');
+                
+                // Afficher la facture
+                if (data.factureId) {
+                    document.getElementById('factureCard').style.display = 'block';
+                    document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureStatut').textContent = 'Payée';
+                    document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
+                }
+                return;
+            }
+
+            // 4. CAS : Réservation VALIDÉE
+            if (statut === 'validee') {
+                btnRetourner.style.display = 'flex';  // On peut retourner
+                btnAnnuler.style.display = 'flex';    // On peut annuler
+                // Facture déjà générée, on ne peut pas refacturer
+                btnFacturer.style.display = 'none';
+                actionAnnulee.classList.add('hidden');
+                annulationMessage.classList.add('hidden');
+                
+                // Afficher la facture
+                if (data.factureId) {
+                    document.getElementById('factureCard').style.display = 'block';
+                    document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureStatut').textContent = 'En attente de paiement';
+                    document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
+                }
+                return;
+            }
+
+            // 5. CAS : Réservation EN ATTENTE (statut par défaut)
+            if (statut === 'en_attente') {
+                btnRetourner.style.display = 'none';  // Pas encore commencé, on ne peut pas retourner
+                btnAnnuler.style.display = 'flex';    // On peut annuler
+                
+                // Facturation possible UNIQUEMENT si pas de facture
+                if (!data.factureId) {
+                    btnFacturer.style.display = 'flex';
+                } else {
+                    btnFacturer.style.display = 'none';
+                }
+                
+                actionAnnulee.classList.add('hidden');
+                annulationMessage.classList.add('hidden');
+                
+                // Afficher la facture si elle existe déjà
+                if (data.factureId) {
+                    document.getElementById('factureCard').style.display = 'block';
+                    document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureStatut').textContent = 'En attente de paiement';
+                    document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
+                } else {
+                    document.getElementById('factureCard').style.display = 'none';
+                }
+                return;
+            }
+
+            // 6. CAS : Autre statut (fallback)
+            console.warn('⚠️ Statut non géré:', statut);
+            btnRetourner.style.display = 'none';
+            btnAnnuler.style.display = 'none';
+            btnFacturer.style.display = 'none';
         }
 
         // Annuler
         document.getElementById('btnAnnuler')?.addEventListener('click', function() {
-            if (!confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) return;
+            if (!confirm('Êtes-vous sûr de vouloir annuler cette réservation ? Cette action est irréversible.')) return;
+            
+            const msgDiv = document.getElementById('actionMessage');
+            msgDiv.innerHTML = `
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg text-blue-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined animate-spin">sync</span>
+                    Annulation en cours...
+                </div>
+            `;
             
             fetch('/catalogue/reservations/api/' + reservationId + '/annuler', {
                 method: 'PUT',
@@ -227,63 +451,104 @@
             .then(r => r.json())
             .then(data => {
                 if (data.error) {
-                    document.getElementById('actionMessage').innerHTML = `
-                        <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700">
-                            ❌ ${data.error}
-                        </div>
-                    `;
-                } else {
-                    document.getElementById('actionMessage').innerHTML = `
-                        <div class="bg-green-50 border border-green-200 p-3 rounded-lg text-green-700">
-                            ✅ Réservation annulée
-                        </div>
-                    `;
-                    setTimeout(() => window.location.reload(), 2000);
+                    throw new Error(data.error);
                 }
+                msgDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-lg text-green-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                         Réservation annulée avec succès
+                    </div>
+                `;
+                setTimeout(() => window.location.reload(), 1500);
             })
             .catch(err => {
-                document.getElementById('actionMessage').innerHTML = `
-                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700">
-                        ❌ Erreur: ${err.message}
+                console.error(' Erreur:', err);
+                msgDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                         ${err.message}
                     </div>
                 `;
             });
         });
 
-        // Facturer
+        // Facturer - UNIQUEMENT si en_attente et pas de facture
         document.getElementById('btnFacturer')?.addEventListener('click', function() {
+            // Vérifier que la réservation est bien en attente
+            if (reservationData && reservationData.statut !== 'en_attente') {
+                document.getElementById('actionMessage').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                         Impossible de générer une facture : la réservation n'est plus en attente.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Vérifier qu'il n'y a pas déjà une facture
+            if (reservationData && reservationData.factureId) {
+                document.getElementById('actionMessage').innerHTML = `
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                         Une facture existe déjà pour cette réservation.
+                    </div>
+                `;
+                return;
+            }
+
+            const msgDiv = document.getElementById('actionMessage');
+            msgDiv.innerHTML = `
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg text-blue-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined animate-spin">sync</span>
+                    Génération de la facture en cours...
+                </div>
+            `;
+            
             fetch('/catalogue/reservations/api/' + reservationId + '/facturer', {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
+                return r.json();
+            })
             .then(data => {
                 if (data.error) {
-                    document.getElementById('actionMessage').innerHTML = `
-                        <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700">
-                            ❌ ${data.error}
-                        </div>
-                    `;
-                } else {
-                    document.getElementById('actionMessage').innerHTML = `
-                        <div class="bg-green-50 border border-green-200 p-3 rounded-lg text-green-700">
-                            ✅ ${data.message}
-                            <br>
-                            <span class="font-label-sm">Facture #${data.numero} - ${data.montant} €</span>
-                        </div>
-                    `;
-                    setTimeout(() => window.location.reload(), 2000);
+                    throw new Error(data.error);
                 }
+                msgDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-lg text-green-700">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                             ${data.message || 'Facture générée avec succès !'}
+                        </div>
+                        <div class="mt-2 flex gap-3">
+                            <a href="/client/factures/${data.factureId}?idClient=${clientId}" 
+                               class="bg-primary text-on-primary px-4 py-1 rounded-lg font-label-md hover:opacity-90 transition">
+                                Voir la facture
+                            </a>
+                            <button onclick="window.location.reload()" 
+                                    class="border border-primary text-primary px-4 py-1 rounded-lg font-label-md hover:bg-primary/10 transition">
+                                Rafraîchir
+                            </button>
+                        </div>
+                    </div>
+                `;
             })
             .catch(err => {
-                document.getElementById('actionMessage').innerHTML = `
-                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700">
-                        ❌ Erreur: ${err.message}
+                console.error(' Erreur:', err);
+                msgDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 p-3 rounded-lg text-red-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                         ${err.message}
                     </div>
                 `;
             });
         });
 
-        loadReservation();
+        document.addEventListener('DOMContentLoaded', function() {
+            loadReservation();
+        });
     </script>
 </body>
 </html>

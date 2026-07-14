@@ -41,6 +41,7 @@ public class GuidePlantationController {
 
         model.addAttribute("culturesPage", culturesPage);
         model.addAttribute("cultures", culturesPage.getContent());
+        model.addAttribute("imagesCultures", guidePlantationService.listerImagesCultures(culturesPage.getContent()));
         model.addAttribute("filtres", filtres);
         model.addAttribute("localisationsDisponibles", guidePlantationService.listerLocalisationsDisponibles());
         model.addAttribute("saisonsDisponibles", guidePlantationService.listerSaisonsDisponibles());
@@ -57,7 +58,9 @@ public class GuidePlantationController {
                                                       @RequestParam(defaultValue = "9") int size,
                                                       @RequestParam(defaultValue = "nom_asc") String tri) {
         Page<Culture> culturesPage = guidePlantationService.listerCultures(motCle, localisation, saison, page, size, tri);
-        byte[] contenu = guidePlantationExportService.exporterCulturesPdf(culturesPage.getContent());
+        byte[] contenu = guidePlantationExportService.exporterCulturesPdf(
+                culturesPage.getContent(),
+                guidePlantationService.listerImagesCultures(culturesPage.getContent()));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=guide-plantation-cultures.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
@@ -95,6 +98,7 @@ public class GuidePlantationController {
 
         model.addAttribute("culture", culture);
         model.addAttribute("ficheCulture", ficheCulture);
+        model.addAttribute("imageCulture", guidePlantationService.trouverImageCulture(culture));
         ajouterParametresRetour(model, motCle, localisation, saison, page, size, tri);
         return "guide-plantation/detail-culture";
     }
@@ -115,6 +119,7 @@ public class GuidePlantationController {
 
         model.addAttribute("culture", culture);
         model.addAttribute("ficheCulture", ficheCulture);
+        model.addAttribute("imageCulture", guidePlantationService.trouverImageCulture(culture));
         model.addAttribute("outils", guidePlantationService.listerSuggestions("outil", idCulture));
         model.addAttribute("produits", guidePlantationService.listerSuggestions("produit", idCulture));
         ajouterParametresRetour(model, motCle, localisation, saison, page, size, tri);
@@ -131,7 +136,8 @@ public class GuidePlantationController {
                 culture,
                 ficheCulture,
                 guidePlantationService.listerSuggestions("outil", idCulture),
-                guidePlantationService.listerSuggestions("produit", idCulture));
+                guidePlantationService.listerSuggestions("produit", idCulture),
+                guidePlantationService.trouverImageCulture(culture));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=fiche-culture-" + idCulture + ".pdf")

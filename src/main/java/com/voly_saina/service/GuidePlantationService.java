@@ -5,6 +5,7 @@ import com.voly_saina.entity.FicheCulture;
 import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.Produit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +61,24 @@ public class GuidePlantationService {
     @Transactional(readOnly = true)
     public List<String> listerSaisonsDisponibles() {
         return cultureService.findSaisonsDisponibles();
+    }
+
+    public Map<Long, String> listerImagesCultures(List<Culture> cultures) {
+        Map<Long, String> images = new HashMap<>();
+        Map<String, String> imagesDisponibles = listerImagesCulturesDisponibles();
+
+        for (Culture culture : cultures) {
+            String image = trouverImageCulture(culture, imagesDisponibles);
+            if (image != null) {
+                images.put(culture.getIdCulture(), image);
+            }
+        }
+
+        return images;
+    }
+
+    public String trouverImageCulture(Culture culture) {
+        return trouverImageCulture(culture, listerImagesCulturesDisponibles());
     }
 
     @Transactional(readOnly = true)
@@ -162,5 +184,46 @@ public class GuidePlantationService {
         int taillePage = Math.max(1, Math.min(size, 100));
         Sort.Direction direction = "nom_desc".equals(tri) ? Sort.Direction.DESC : Sort.Direction.ASC;
         return PageRequest.of(pageCourante, taillePage, Sort.by(direction, "nom"));
+    }
+
+    private String trouverImageCulture(Culture culture, Map<String, String> imagesDisponibles) {
+        if (culture == null || culture.getNom() == null) {
+            return null;
+        }
+        return imagesDisponibles.get(normaliserNomImage(culture.getNom()));
+    }
+
+    private Map<String, String> listerImagesCulturesDisponibles() {
+        Map<String, String> images = new HashMap<>();
+
+        try {
+            File dossier = new ClassPathResource("static/img/cultures").getFile();
+            File[] fichiers = dossier.listFiles(File::isFile);
+            if (fichiers == null) {
+                return images;
+            }
+
+            for (File fichier : fichiers) {
+                String nomFichier = fichier.getName();
+                int positionExtension = nomFichier.lastIndexOf('.');
+                if (positionExtension <= 0) {
+                    continue;
+                }
+                String nomSansExtension = nomFichier.substring(0, positionExtension);
+                images.put(normaliserNomImage(nomSansExtension), "/img/cultures/" + nomFichier);
+            }
+        } catch (IOException ignored) {
+            return images;
+        }
+
+        return images;
+    }
+
+    private String normaliserNomImage(String valeur) {
+        String sansAccent = Normalizer.normalize(valeur, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return sansAccent.toLowerCase()
+                .replaceAll("[^a-z0-9]+", "_")
+                .replaceAll("^_+|_+$", "");
     }
 }

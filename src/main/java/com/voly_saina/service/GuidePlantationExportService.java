@@ -9,6 +9,7 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
@@ -19,12 +20,16 @@ import com.lowagie.text.pdf.PdfWriter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.awt.Color;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GuidePlantationExportService {
@@ -70,6 +75,10 @@ public class GuidePlantationExportService {
     }
 
     public byte[] exporterCulturesPdf(List<Culture> cultures) {
+        return exporterCulturesPdf(cultures, Collections.emptyMap());
+    }
+
+    public byte[] exporterCulturesPdf(List<Culture> cultures, Map<Long, String> imagesCultures) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Document document = creerDocument(outputStream);
@@ -80,13 +89,15 @@ public class GuidePlantationExportService {
             if (cultures.isEmpty()) {
                 ajouterMessageVide(document, "Aucune culture disponible pour ces criteres.");
             } else {
-                PdfPTable table = creerTableau(new float[]{22f, 38f, 22f, 18f});
+                PdfPTable table = creerTableau(new float[]{18f, 20f, 34f, 16f, 12f});
+                ajouterCelluleEntete(table, "Image");
                 ajouterCelluleEntete(table, "Culture");
                 ajouterCelluleEntete(table, "Description");
                 ajouterCelluleEntete(table, "Localisation");
                 ajouterCelluleEntete(table, "Saison");
 
                 for (Culture culture : cultures) {
+                    ajouterCelluleImage(table, imagesCultures.get(culture.getIdCulture()), 70, 46);
                     ajouterCellule(table, valeur(culture.getNom()), true);
                     ajouterCellule(table, valeur(culture.getDescription()), false);
                     ajouterCellule(table, valeur(culture.getLocalisationRecommandee()), false);
@@ -104,11 +115,16 @@ public class GuidePlantationExportService {
     }
 
     public byte[] exporterFicheCulturePdf(Culture culture, FicheCulture ficheCulture, List<?> outils, List<?> produits) {
+        return exporterFicheCulturePdf(culture, ficheCulture, outils, produits, null);
+    }
+
+    public byte[] exporterFicheCulturePdf(Culture culture, FicheCulture ficheCulture, List<?> outils, List<?> produits, String imageCulture) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Document document = creerDocument(outputStream);
 
             ajouterEntete(document, "Fiche detaillee", valeur(culture.getNom()));
+            ajouterImagePrincipale(document, imageCulture, culture);
             ajouterCarteCulture(document, culture);
 
             if (ficheCulture == null) {
@@ -240,6 +256,64 @@ public class GuidePlantationExportService {
         cellule.setPadding(6);
         cellule.setBackgroundColor(Color.WHITE);
         table.addCell(cellule);
+    }
+
+    private void ajouterImagePrincipale(Document document, String cheminImage, Culture culture) throws DocumentException {
+        Image image = chargerImageCulture(cheminImage, 510, 160);
+        if (image == null) {
+            return;
+        }
+
+        PdfPTable table = new PdfPTable(1);
+        table.setWidthPercentage(100);
+        PdfPCell cellule = new PdfPCell(image, true);
+        cellule.setBorderColor(BORDURE);
+        cellule.setBackgroundColor(SURFACE_CONTAINER);
+        cellule.setPadding(4);
+        cellule.setFixedHeight(170);
+        cellule.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellule.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        table.addCell(cellule);
+        table.setSpacingAfter(10);
+        document.add(table);
+    }
+
+    private void ajouterCelluleImage(PdfPTable table, String cheminImage, float largeur, float hauteur) {
+        Image image = chargerImageCulture(cheminImage, largeur, hauteur);
+        PdfPCell cellule;
+
+        if (image == null) {
+            cellule = new PdfPCell(new Phrase("-", new Font(Font.HELVETICA, 9, Font.NORMAL, TEXTE_MUTED)));
+        } else {
+            cellule = new PdfPCell(image, true);
+        }
+
+        cellule.setBorderColor(BORDURE);
+        cellule.setBackgroundColor(SURFACE_CONTAINER);
+        cellule.setPadding(4);
+        cellule.setFixedHeight(56);
+        cellule.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cellule.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        table.addCell(cellule);
+    }
+
+    private Image chargerImageCulture(String cheminImage, float largeur, float hauteur) {
+        if (cheminImage == null || cheminImage.isBlank()) {
+            return null;
+        }
+
+        try {
+            String cheminRessource = cheminImage.startsWith("/") ? "static" + cheminImage : "static/" + cheminImage;
+            Image image;
+            try (InputStream inputStream = new ClassPathResource(cheminRessource).getInputStream()) {
+                image = Image.getInstance(inputStream.readAllBytes());
+            }
+            image.scaleToFit(largeur, hauteur);
+            image.setAlignment(Element.ALIGN_CENTER);
+            return image;
+        } catch (IOException | DocumentException exception) {
+            return null;
+        }
     }
 
     private void ajouterEquipements(Document document, List<?> outils) throws DocumentException {

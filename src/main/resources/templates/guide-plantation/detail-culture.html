@@ -161,9 +161,12 @@
         <section class="max-w-[1280px] mx-auto px-margin-desktop pb-stack-lg">
 
             <div class="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-outline-variant shadow-sm mb-stack-lg">
-                <!-- Image de fond dynamique -->
                 <div class="w-full h-full bg-primary-fixed flex items-center justify-center">
-                    <span class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
+                    <img th:if="${imageCulture != null}"
+                         th:src="@{${imageCulture}}"
+                         th:alt="${culture.nom}"
+                         class="w-full h-full object-cover" />
+                    <span th:unless="${imageCulture != null}" class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-margin-desktop">
                     <span class="inline-block bg-primary-container text-on-primary-container font-label-md text-label-md px-stack-md py-base rounded-full w-fit mb-stack-sm">
@@ -190,10 +193,18 @@
                     <!-- Visual Assets Section -->
                     <div class="grid grid-cols-2 gap-gutter-desktop">
                         <div class="aspect-square rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low flex items-center justify-center">
-                            <span class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30">seed</span>
+                            <img th:if="${imageCulture != null}"
+                                 th:src="@{${imageCulture}}"
+                                 th:alt="${culture.nom}"
+                                 class="w-full h-full object-cover" />
+                            <span th:unless="${imageCulture != null}" class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30">seed</span>
                         </div>
                         <div class="aspect-square rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low flex items-center justify-center">
-                            <span class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30">grass</span>
+                            <img th:if="${imageCulture != null}"
+                                 th:src="@{${imageCulture}}"
+                                 th:alt="${culture.nom}"
+                                 class="w-full h-full object-cover opacity-90" />
+                            <span th:unless="${imageCulture != null}" class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30">grass</span>
                         </div>
                     </div>
 

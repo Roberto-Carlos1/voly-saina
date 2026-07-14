@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Mes factures - VolySaina+</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <title>VolySaina+ - Mes factures</title>
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -85,15 +88,15 @@
                         "label-sm": ["Inter"]
                     },
                     fontSize: {
-                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
                     }
-                }
-            }
+                },
+            },
         }
     </script>
     <style>
@@ -105,35 +108,31 @@
         .badge-blue { background: #dbeafe; color: #1e40af; }
         .badge-red { background: #fecaca; color: #991b1b; }
         .badge-gray { background: #f3f4f6; color: #4b5563; }
-        .text-red { color: #ba1a1a; }
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; display: inline-block; }
+        .text-red { color: #dc2626; }
     </style>
 </head>
-
 <body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
-
     <!-- TopNavBar -->
-    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50">
+    <header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline sticky top-0 z-50">
         <div class="flex justify-between items-center w-full px-margin-desktop py-base max-w-[1280px] mx-auto">
             <div class="flex items-center gap-stack-md">
-                <span class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</span>
+                <span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">VolySaina+</span>
             </div>
             <nav class="hidden md:flex items-center gap-gutter-desktop">
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/}">Accueil</a>
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/catalogue/machines/catalogue}">Machines</a>
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/catalogue/produits/catalogue}">Produits</a>
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" th:href="@{/catalogue/reservations/mes-reservations}">Réservations</a>
+                <a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-150" href="#">Location</a>
+                <a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-150" href="#">Achat</a>
+                <a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-150" href="#">Encyclopédie</a>
             </nav>
             <div class="flex items-center gap-stack-sm">
-                <a th:href="@{/client/profil}" class="p-2 hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-150">
-                    <span class="material-symbols-outlined text-primary">account_circle</span>
-                </a>
+                <button class="p-2 hover:bg-surface-container-high rounded-full transition-colors active:scale-95 duration-150">
+                    <span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim">account_circle</span>
+                </button>
             </div>
         </div>
     </header>
-
     <!-- Main Content -->
     <main class="flex-grow w-full max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
-
         <!-- Breadcrumb & Title -->
         <div class="flex items-center justify-between mb-stack-lg">
             <div class="flex flex-col gap-base">
@@ -143,23 +142,19 @@
                 </a>
                 <h1 class="font-headline-xl text-headline-xl text-on-surface">Mes factures</h1>
             </div>
-
-            <!-- Technical Status Summary Card -->
+            <!-- Technical Status Summary Card (Bento-style element) -->
             <div class="bg-surface-container-low border border-outline-variant p-stack-md rounded flex gap-gutter-desktop shadow-sm">
                 <div class="flex flex-col">
                     <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Total à régler</span>
-                    <span class="text-headline-md font-headline-md text-secondary" th:text="${totalARegler != null ? #numbers.formatDecimal(totalARegler, 0, 'COMMA', 2, 'POINT') + ' MGA' : '0 MGA'}">
-                        4,500,000 MGA
-                    </span>
+                    <span class="text-headline-md font-headline-md text-secondary" th:text="${totalRestant != null ? #numbers.formatDecimal(totalRestant, 0, 'COMMA', 2, 'POINT') + ' MGA' : '0 MGA'}">4,500,000 MGA</span>
                 </div>
                 <div class="w-px bg-outline-variant"></div>
                 <div class="flex flex-col">
                     <span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Factures en retard</span>
-                    <span class="text-headline-md font-headline-md text-error" th:text="${nbFacturesEnRetard != null ? nbFacturesEnRetard : 0}">02</span>
+                    <span class="text-headline-md font-headline-md text-error" th:text="${nbFacturesEnRetard != null ? nbFacturesEnRetard : '0'}">02</span>
                 </div>
             </div>
         </div>
-
         <!-- Filter Section -->
         <section class="bg-white border border-outline-variant rounded-lg p-stack-md mb-stack-lg shadow-sm">
             <form class="flex flex-wrap items-end gap-stack-md" method="get" th:action="@{/client/factures}">
@@ -180,135 +175,71 @@
                 </button>
             </form>
         </section>
-
         <!-- Empty State -->
-        <div class="flex flex-col items-center justify-center py-20 bg-surface-container-lowest border border-dashed border-outline-variant rounded-lg" th:if="${factures == null or #lists.isEmpty(factures)}">
+        <div class="flex flex-col items-center justify-center py-20 bg-surface-container-lowest border border-dashed border-outline-variant rounded-lg" th:if="${factures == null or factures.empty}">
             <span class="material-symbols-outlined text-6xl text-outline-variant mb-stack-md">receipt_long</span>
             <p class="font-headline-md text-headline-md text-on-surface-variant">Vous n'avez pas encore de factures.</p>
         </div>
-
         <!-- Data Table Section -->
-        <div class="bg-white border border-outline-variant rounded-lg overflow-hidden shadow-sm" th:if="${factures != null and not #lists.isEmpty(factures)}">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-surface-container-highest border-b border-outline-variant">
-                        <tr>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Numéro</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Type</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Date</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Montant Total</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Payé</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Restant</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Date Limite</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Statut</th>
-                            <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-outline-variant">
-                        <tr th:each="facture : ${factures}" class="hover:bg-surface-container-low transition-colors group">
-                            <!-- Numéro -->
-                            <td class="px-gutter-mobile py-stack-md font-label-md text-on-surface" th:text="${facture.numero}">FACT-2024-001</td>
-
-                            <!-- Type -->
-                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${facture.typeOperation == 'location' ? 'Location' : 'Commande'}">Location</td>
-
-                            <!-- Date -->
-                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}">12/05/2024</td>
-
-                            <!-- Montant Total -->
-                            <td class="px-gutter-mobile py-stack-md font-bold text-on-surface" th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 'COMMA', 2, 'POINT') + ' MGA'}">2,500,000 MGA</td>
-
-                            <!-- Montant Payé -->
-                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 'COMMA', 2, 'POINT') + ' MGA'}">2,500,000 MGA</td>
-
-                            <!-- Montant Restant -->
-                            <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</td>
-
-                            <!-- Date Limite -->
-                            <td class="px-gutter-mobile py-stack-md text-body-md" th:class="${facture.enRetard ? 'text-red' : ''}" th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '-'}">26/05/2024</td>
-
-                            <!-- Statut -->
-                            <td class="px-gutter-mobile py-stack-md">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase"
-                                      th:classappend="${facture.statutCode == 'payee'} ? 'badge-green' : 
-                                                       ${facture.statutCode == 'en_attente'} ? 'badge-orange' : 
-                                                       ${facture.statutCode == 'partiellement_payee'} ? 'badge-blue' : 
-                                                       ${facture.statutCode == 'en_retard'} ? 'badge-red' : 'badge-gray'"
-                                      th:text="${facture.statutLibelle}">
-                                    Payée
-                                </span>
-                            </td>
-
-                            <!-- Actions -->
-                            <td class="px-gutter-mobile py-stack-md text-right">
-                                <div class="flex justify-end gap-stack-sm">
-                                    <a class="p-2 text-primary hover:bg-primary-container/20 rounded-full transition-all" 
-                                       th:href="@{/client/factures/{id}(id=${facture.idFacture}, idClient=${idClient})}" 
-                                       title="Voir les détails">
-                                        <span class="material-symbols-outlined">visibility</span>
-                                    </a>
-                                    <a class="p-2 text-secondary hover:bg-secondary-container/20 rounded-full transition-all" 
-                                       th:href="@{/client/factures/{id}/pdf(id=${facture.idFacture}, idClient=${idClient})}" 
-                                       title="Télécharger PDF">
-                                        <span class="material-symbols-outlined">picture_as_pdf</span>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="bg-white border border-outline-variant rounded-lg overflow-hidden shadow-sm" th:if="${factures != null and not factures.empty}">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-surface-container-highest border-b border-outline-variant">
+                    <tr>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Numéro</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Type</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Date</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Montant Total</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Payé</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Restant</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Date Limite</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant">Statut</th>
+                        <th class="px-gutter-mobile py-stack-md font-label-md text-label-md text-on-surface-variant text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant">
+                    <tr th:each="facture : ${factures}" class="hover:bg-surface-container-low transition-colors group">
+                        <td class="px-gutter-mobile py-stack-md font-label-md text-on-surface" th:text="${facture.numero}">FACT-2024-001</td>
+                        <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${facture.typeOperation == 'location' ? 'Location' : 'Commande'}">Location</td>
+                        <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}">12/05/2024</td>
+                        <td class="px-gutter-mobile py-stack-md font-bold text-on-surface" th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 'COMMA', 2, 'POINT')} + ' MGA'">2,500,000.00 MGA</td>
+                        <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 'COMMA', 2, 'POINT')} + ' MGA'">2,500,000.00 MGA</td>
+                        <td class="px-gutter-mobile py-stack-md text-body-md" th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT')} + ' MGA'">0.00 MGA</td>
+                        <td class="px-gutter-mobile py-stack-md text-body-md" th:class="${facture.enRetard ? 'text-red' : ''}" th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '-'}">26/05/2024</td>
+                        <td class="px-gutter-mobile py-stack-md">
+                            <span class="badge" 
+                                  th:classappend="${facture.statutCode == 'payee' ? 'badge-green' : 
+                                                   facture.statutCode == 'en_attente' ? 'badge-orange' : 
+                                                   facture.statutCode == 'partiellement_payee' ? 'badge-blue' : 
+                                                   facture.statutCode == 'en_retard' ? 'badge-red' : 'badge-gray'}"
+                                  th:text="${facture.statutLibelle}">Payée</span>
+                        </td>
+                        <td class="px-gutter-mobile py-stack-md text-right">
+                            <div class="flex justify-end gap-stack-sm">
+                                <a class="p-2 text-primary hover:bg-primary-container/20 rounded-full transition-all" href="#" th:href="@{/client/factures/{id}(id=${facture.idFacture}, idClient=${idClient})}" title="Voir les détails">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </a>
+                                <a class="p-2 text-secondary hover:bg-secondary-container/20 rounded-full transition-all" href="#" th:href="@{/client/factures/{id}/pdf(id=${facture.idFacture}, idClient=${idClient})}" title="Télécharger PDF">
+                                    <span class="material-symbols-outlined">picture_as_pdf</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <!-- Pagination -->
-        <div th:if="${totalPages != null and totalPages > 1}" class="flex justify-between items-center mt-stack-lg pt-stack-md border-t border-outline-variant">
-            <div class="text-label-sm text-on-surface-variant">
-                Page <span class="font-bold text-on-surface" th:text="${page + 1}">1</span> 
-                sur <span th:text="${totalPages}">8</span>
-            </div>
-            <div class="flex gap-2">
-                <!-- Précédent -->
-                <a class="w-10 h-10 border border-outline-variant flex items-center justify-center rounded hover:bg-surface-container transition-colors" 
-                   th:classappend="${page == 0} ? 'opacity-50 pointer-events-none' : ''" 
-                   th:href="@{/client/factures(page=${page - 1}, size=${size}, statut=${filtreStatut}, idClient=${idClient})}">
-                    <span class="material-symbols-outlined">chevron_left</span>
-                </a>
-
-                <!-- Numéros de pages -->
-                <div class="flex gap-1 hidden sm:flex">
-                    <a th:each="p : ${#numbers.sequence(0, totalPages - 1)}" 
-                       th:href="@{/client/factures(page=${p}, size=${size}, statut=${filtreStatut}, idClient=${idClient})}"
-                       th:classappend="${p == page} ? 'bg-primary text-on-primary' : 'border border-outline-variant hover:bg-surface-container'"
-                       class="w-10 h-10 flex items-center justify-center rounded font-label-md transition-colors"
-                       th:text="${p + 1}">
-                        1
-                    </a>
-                </div>
-
-                <!-- Suivant -->
-                <a class="w-10 h-10 border border-outline-variant flex items-center justify-center rounded hover:bg-surface-container transition-colors" 
-                   th:classappend="${page + 1 >= totalPages} ? 'opacity-50 pointer-events-none' : ''" 
-                   th:href="@{/client/factures(page=${page + 1}, size=${size}, statut=${filtreStatut}, idClient=${idClient})}">
-                    <span class="material-symbols-outlined">chevron_right</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Action FAB -->
+        <!-- Action FAB (Focus on making payment or contact support) -->
         <div class="fixed bottom-margin-desktop right-margin-desktop flex flex-col gap-stack-sm">
             <button class="bg-primary text-on-primary h-14 w-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
                 <span class="material-symbols-outlined">support_agent</span>
             </button>
         </div>
-
     </main>
-
     <!-- Footer -->
-    <footer class="bg-surface-container-highest border-t border-outline-variant mt-auto">
+    <footer class="bg-surface-container-highest dark:bg-surface-container-high border-t border-outline-variant dark:border-outline mt-auto">
         <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-lg gap-stack-md max-w-[1280px] mx-auto">
             <div class="flex flex-col items-center md:items-start gap-base">
-                <span class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</span>
-                <p class="font-body-md text-body-md text-on-surface-variant">© 2024 VolySaina+. Excellence en Agriculture Durable.</p>
+                <span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">VolySaina+</span>
+                <p class="font-body-md text-body-md text-on-surface-variant" th:text="'© 2024 VolySaina+. Excellence en Agriculture Durable.'">© 2024 VolySaina+. Excellence en Agriculture Durable.</p>
             </div>
             <div class="flex flex-wrap justify-center gap-gutter-desktop">
                 <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary transition-opacity duration-150 hover:opacity-80" href="#">Conditions d'utilisation</a>
@@ -318,16 +249,5 @@
             </div>
         </div>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Micro-interaction for buttons
-        document.querySelectorAll('button, a').forEach(el => {
-            el.addEventListener('mousedown', () => el.classList.add('scale-95'));
-            el.addEventListener('mouseup', () => el.classList.remove('scale-95'));
-            el.addEventListener('mouseleave', () => el.classList.remove('scale-95'));
-        });
-    </script>
-
 </body>
 </html>

@@ -141,4 +141,9 @@ public class ClientFactureController {
                 .headers(headers)
                 .body(pdfBytes);
     }
+    @GetMapping("/api/client/{idClient}/factures")
+    public ResponseEntity<List<FactureClientDTO>> getFacturesByClient(@PathVariable Long idClient) {
+        List<FactureClientDTO> factures = clientFactureService.listerFacturesClient(idClient, null);
+        return ResponseEntity.ok(factures);
+    }
 }

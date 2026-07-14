@@ -349,6 +349,10 @@ a { text-decoration: none; color: inherit; }
 .badge--refusee, .badge--annulee { background-color: var(--error-container); color: var(--on-error-container); }
 .badge--prevue { background-color: var(--secondary-container); color: var(--on-secondary-container); }
 .badge--error { background-color: var(--error-container); color: var(--on-error-container); }
+/* Statuts de facture : payee (réglée), partiellement_payee (en cours), en_retard (échéance dépassée) */
+.badge--payee { background-color: var(--primary-container); color: #fff; }
+.badge--partiellement_payee { background-color: var(--secondary-container); color: var(--on-secondary-container); }
+.badge--en_retard { background-color: var(--error-container); color: var(--on-error-container); }
 
 /* =====================================================================
    Cartes & grilles
@@ -1064,6 +1068,8 @@ table.data td.muted { color: var(--on-surface-variant); }
 }
 .m-name { font-weight: 700; color: var(--on-surface); }
 .m-sub { font-size: 12px; color: var(--on-surface-variant); }
+/* Sous-libellé tronqué sur une ligne (ex. description des travaux de maintenance) */
+.m-sub--clip { display: block; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cell-loc { display: inline-flex; align-items: center; gap: 4px; }
 .cell-loc .material-symbols-outlined { font-size: 18px; color: var(--on-surface-variant); }
 
@@ -1206,7 +1212,8 @@ table.data tbody tr.is-selected { background-color: var(--surface-container-high
 .form-field--wide { grid-column: 1 / -1; }
 .form-field label { font-size: 13px; font-weight: 600; color: var(--on-surface-variant); }
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
     padding: 10px 12px;
     background-color: var(--surface-container-low);
     border: 1px solid var(--outline);
@@ -1217,8 +1224,14 @@ table.data tbody tr.is-selected { background-color: var(--surface-container-high
     outline: none;
     transition: border-color .15s ease;
 }
+/* La zone de texte (travaux de maintenance) reprend le style des champs, sans redimensionnement horizontal. */
+.form-field textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
 .form-field input:focus,
-.form-field select:focus { border-color: var(--primary); }
+.form-field select:focus,
+.form-field textarea:focus { border-color: var(--primary); }
+
+/* Message d'erreur sous un champ de formulaire (masqué par défaut, affiché en JS) */
+.form-error { display: none; font-size: 12px; font-weight: 600; color: var(--error); }
 
 /* Rangée de boutons */
 .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }

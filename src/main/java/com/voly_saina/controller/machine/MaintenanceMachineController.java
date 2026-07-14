@@ -52,9 +52,12 @@ public class MaintenanceMachineController {
         Page<MaintenanceMachine> maintenancePage = maintenanceMachineService.findAllByPage(pageable);
 
         List<StatutMaintenance> statuts = statutMaintenanceService.findAll();
+        // Liste des machines pour le filtre par nom (menu déroulant) de la vue liste.
+        List<Machine> machines = machineService.findAll();
 
         model.addAttribute("maintenances", maintenancePage.getContent());
         model.addAttribute("statuts", statuts);
+        model.addAttribute("machines", machines);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", maintenancePage.getTotalPages());
         return "/machines/maintenance/list";

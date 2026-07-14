@@ -183,17 +183,15 @@ public class PanierReservationService {
             throw new RuntimeException("Panier vide");
         }
 
-        List<PanierDetails> details = panierDetailsService.findByPanierId(panier.getIdPanier());
+        List<PanierDetails> details = panierDetailsService.findReservationByPanier(panier.getIdPanier());
         int count = 0;
 
         for (PanierDetails pd : details) {
-            if (pd.getReservationMachine() != null) {
-                ReservationMachine r = pd.getReservationMachine();
-                if ("en_attente".equals(r.getStatutReservation().getCode())) {
-                    r.setStatutReservation(statutReservationService.findByCode("annulee"));
-                    reservationMachineService.save(r);
-                    count++;
-                }
+            ReservationMachine r = pd.getReservationMachine();
+            if ("en_attente".equals(r.getStatutReservation().getCode())) {
+                r.setStatutReservation(statutReservationService.findByCode("annulee"));
+                reservationMachineService.save(r);
+                count++;
             }
             panierDetailsService.deleteById(pd.getIdPanierDetails());
         }

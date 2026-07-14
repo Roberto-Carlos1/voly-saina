@@ -91,7 +91,7 @@ public class PanierCommandeService {
 
         Panier panier = panierService.findCurrentPanierByIdClient(clientId);
 
-        List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
+        List<PanierDetails> panierDetails = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
 
         boolean present = false;
 

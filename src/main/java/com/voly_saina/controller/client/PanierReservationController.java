@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.entity.Utilisateur;
+import com.voly_saina.exception.PanierException;
 import com.voly_saina.service.PanierService;
+import com.voly_saina.service.UtilisateurService;
 
 @Controller
 @RequestMapping("/panier/reservations")
@@ -27,37 +32,48 @@ public class PanierReservationController {
     @Autowired
     private PanierService panierService;
 
-    private Long resolveClientId(Long clientId) {
-        return clientId != null ? clientId : 1L;
+    @Autowired
+    private UtilisateurService utilisateurService;
+
+    private Long getClientId(User user) {
+        if (user == null) {
+            throw new PanierException(PanierException.NON_CONNECTE);
+        }
+        Utilisateur utilisateur = utilisateurService.findByEmail(user.getUsername());
+        if (utilisateur == null) {
+            throw new PanierException(PanierException.CLIENT_INTROUVABLE);
+        }
+        return utilisateur.getIdUtilisateur();
     }
 
     @PostMapping("/ajouter")
     public String ajouterReservationAuPanier(
-            @RequestParam("clientId") Long clientId,
             @RequestParam("machineId") Long machineId,
             @RequestParam("dateDebut") String dateDebut,
             @RequestParam("dateFin") String dateFin,
             @RequestParam(value = "lieuLivraison", required = false) String lieuLivraison,
+            @AuthenticationPrincipal User user,
             RedirectAttributes redirectAttributes) {
         try {
             panierService.ajouterReservationAuPanier(
-                    clientId, machineId,
+                    getClientId(user), machineId,
                     LocalDate.parse(dateDebut), LocalDate.parse(dateFin),
                     lieuLivraison);
             redirectAttributes.addFlashAttribute("success", "Réservation ajoutée au panier");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/panier?clientId=" + clientId;
+        return "redirect:/panier";
     }
 
     @PostMapping("/api/ajouter")
     @ResponseBody
     public Map<String, Object> ajouterReservationAuPanierAPI(
-            @RequestBody Map<String, Object> payload) {
+            @RequestBody Map<String, Object> payload,
+            @AuthenticationPrincipal User user) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long clientId = Long.valueOf(payload.get("clientId").toString());
+            Long clientId = getClientId(user);
             Long machineId = Long.valueOf(payload.get("machineId").toString());
             LocalDate dateDebut = LocalDate.parse(payload.get("dateDebut").toString());
             LocalDate dateFin = LocalDate.parse(payload.get("dateFin").toString());
@@ -83,15 +99,15 @@ public class PanierReservationController {
     @PostMapping("/supprimer")
     public String supprimerReservation(
             @RequestParam("reservationId") Long reservationId,
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             RedirectAttributes redirectAttributes) {
         try {
-            panierService.supprimerReservationDuPanier(reservationId, resolveClientId(clientId));
+            panierService.supprimerReservationDuPanier(reservationId, getClientId(user));
             redirectAttributes.addFlashAttribute("success", "Réservation supprimée du panier");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier";
     }
 
     @PostMapping("/modifier-dates")
@@ -99,50 +115,50 @@ public class PanierReservationController {
             @RequestParam("reservationId") Long reservationId,
             @RequestParam("dateDebut") String dateDebut,
             @RequestParam("dateFin") String dateFin,
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             RedirectAttributes redirectAttributes) {
         try {
             panierService.modifierDatesReservation(
-                    reservationId, resolveClientId(clientId),
+                    reservationId, getClientId(user),
                     LocalDate.parse(dateDebut), LocalDate.parse(dateFin));
             redirectAttributes.addFlashAttribute("success", "Dates modifiées avec succès");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier";
     }
 
     @PostMapping("/valider-tout")
     public String validerToutesReservations(
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             RedirectAttributes redirectAttributes) {
         try {
-            int count = panierService.validerReservationsDuPanier(resolveClientId(clientId));
+            int count = panierService.validerReservationsDuPanier(getClientId(user));
             redirectAttributes.addFlashAttribute("success", count + " réservation(s) validée(s)");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier";
     }
 
     @PostMapping("/vider")
     public String viderToutesReservations(
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             RedirectAttributes redirectAttributes) {
         try {
-            int count = panierService.viderReservationsDuPanier(resolveClientId(clientId));
+            int count = panierService.viderReservationsDuPanier(getClientId(user));
             redirectAttributes.addFlashAttribute("success", count + " réservation(s) supprimée(s)");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/panier?clientId=" + resolveClientId(clientId);
+        return "redirect:/panier";
     }
 
     @GetMapping("/api/liste")
     public String getReservationsPanier(
-            @RequestParam(value = "clientId", required = false) Long clientId,
+            @AuthenticationPrincipal User user,
             Model model) {
-        Long idClientFinal = resolveClientId(clientId);
+        Long idClientFinal = getClientId(user);
         List<ReservationMachine> reservations = panierService.getReservationsEnAttente(idClientFinal);
         BigDecimal totalReservations = reservations.stream()
                 .map(ReservationMachine::getPrixTotal)

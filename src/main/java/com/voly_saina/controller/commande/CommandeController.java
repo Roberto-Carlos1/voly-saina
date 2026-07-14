@@ -1,5 +1,7 @@
 package com.voly_saina.controller.commande;
 
+import com.voly_saina.dto.CommandeClientDTO;
+import com.voly_saina.dto.LigneCommandeDTO;
 import com.voly_saina.entity.Commande;
 import com.voly_saina.service.CommandeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,19 @@ public class CommandeController {
         }
         commandeService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+    // GET /api/commandes/client/{idClient}
+    @GetMapping("/client/{idClient}")
+    public ResponseEntity<List<CommandeClientDTO>> getCommandesByClient(@PathVariable Long idClient) {
+        List<CommandeClientDTO> commandes = commandeService.getCommandesByClient(idClient);
+        return ResponseEntity.ok(commandes);    
+    }
+
+    // GET /api/lignes-commande/commande/{idCommande}
+    @GetMapping("client/{idCommande}/lignes-commandes")
+    public ResponseEntity<List<LigneCommandeDTO>> getLignesByCommande(@PathVariable Long idCommande) {
+        List<LigneCommandeDTO> lignes = commandeService.getLignesCommandesByClient(idCommande);
+        return ResponseEntity.ok(lignes);
     }
 
 }

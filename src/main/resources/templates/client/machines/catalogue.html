@@ -8,7 +8,7 @@
 
     <!-- Main Content -->
     <div class="flex flex-1 pt-20">
-        <!-- Sidebar Filters -->
+        <!-- Sidebar Filters - CORRIGÉE -->
         <aside class="w-72 min-h-[calc(100vh-80px)] bg-surface-container-low border-r border-outline-variant overflow-y-auto flex-shrink-0 hidden lg:block">
             <div class="p-6">
                 <!-- Categories -->
@@ -17,7 +17,7 @@
                     <p class="font-label-sm text-label-sm text-on-surface-variant mb-4">Équipements Spécialisés</p>
                     <div class="flex flex-col space-y-1">
                         <div th:each="type : ${types}" class="w-full">
-                            <a th:href="@{/catalogue/machines/catalogue(typeId=${type.idTypeMachine}, disponible=${disponibleOnly}, prixMax=${prixMax}, page=${currentPage})}" 
+                            <a th:href="@{/catalogue/machines/catalogue(typeId=${type.idTypeMachine})}" 
                                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all w-full"
                                th:classappend="${param.typeId != null and param.typeId[0] == type.idTypeMachine.toString()} ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant hover:bg-surface-container-high'">
                                 <span class="material-symbols-outlined text-[20px]">agriculture</span>
@@ -87,9 +87,9 @@
                     <div class="flex items-center gap-3 flex-shrink-0">
                         <span class="font-label-md text-label-md">Trier par :</span>
                         <select class="bg-white border border-outline-variant rounded-lg py-2 px-4 font-label-md focus:ring-primary outline-none" id="triSelect">
-                            <option value="nom" th:selected="${param.tri == null or param.tri[0] == 'nom'}">Nom</option>
-                            <option value="prix_asc" th:selected="${param.tri != null and param.tri[0] == 'prix_asc'}">Prix croissant</option>
-                            <option value="prix_desc" th:selected="${param.tri != null and param.tri[0] == 'prix_desc'}">Prix décroissant</option>
+                            <option value="nom">Nom</option>
+                            <option value="prix_asc">Prix croissant</option>
+                            <option value="prix_desc">Prix décroissant</option>
                         </select>
                     </div>
                 </div>
@@ -97,22 +97,29 @@
 
             <!-- Machines Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Affichage des machines -->
                 <div th:each="machine : ${machines}" 
-                    class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col">
+                     class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col">
                     
+                    <!-- Image / Icône -->
                     <div class="relative h-48 bg-gradient-to-br from-surface-container-high to-surface-container flex items-center justify-center overflow-hidden">
+                        <!-- Badge statut -->
                         <span th:if="${machine.disponible}" 
-                            class="absolute top-3 left-3 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
-                            Disponible
+                              class="absolute top-3 left-3 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
+                            ✅ Disponible
                         </span>
                         <span th:unless="${machine.disponible}" 
-                            class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
-                            Indisponible
+                              class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
+                            ❌ Indisponible
                         </span>
+                        
+                        <!-- Icône -->
                         <span class="material-symbols-outlined text-outline text-[64px]">agriculture</span>
                     </div>
                     
+                    <!-- Corps de la carte -->
                     <div class="p-5 flex flex-col flex-1">
+                        <!-- En-tête -->
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex-1 min-w-0">
                                 <p class="text-secondary text-xs uppercase tracking-wider font-semibold" 
@@ -131,11 +138,13 @@
                             </div>
                         </div>
                         
+                        <!-- Description -->
                         <p class="text-sm text-on-surface-variant mt-1 line-clamp-2 flex-1" 
                            th:text="${machine.description != null ? machine.description : 'Aucune description'}">
                             Description
                         </p>
                         
+                        <!-- Infos rapides -->
                         <div class="flex justify-between mt-3 pt-3 border-t border-gray-100 text-sm text-on-surface-variant">
                             <span class="flex items-center gap-1">
                                 <span class="material-symbols-outlined text-[16px]">location_on</span>
@@ -151,6 +160,7 @@
                             </span>
                         </div>
                         
+                        <!-- Actions -->
                         <div class="flex gap-2 mt-4">
                             <a th:href="@{/catalogue/machines/detail(id=${machine.idMachine})}" 
                                class="flex-1 bg-primary text-white text-center py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition">
@@ -187,21 +197,21 @@
             <!-- Pagination -->
             <div th:if="${totalPages != null and totalPages > 1}" 
                  class="mt-8 flex justify-center items-center gap-2">
-                <a th:href="@{/catalogue/machines/catalogue(page=${currentPage - 1}, typeId=${param.typeId != null ? param.typeId[0] : ''}, disponible=${disponibleOnly}, prixMax=${prixMax}, tri=${param.tri != null ? param.tri[0] : 'nom'})}" 
+                <a th:href="@{/catalogue/machines/catalogue(page=${currentPage - 1})}" 
                    th:classappend="${currentPage == 0} ? 'opacity-50 pointer-events-none' : ''"
                    class="w-10 h-10 border border-outline-variant rounded flex items-center justify-center hover:bg-surface-container-high transition-colors">
                     <span class="material-symbols-outlined">chevron_left</span>
                 </a>
                 
                 <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
-                   th:href="@{/catalogue/machines/catalogue(page=${i}, typeId=${param.typeId != null ? param.typeId[0] : ''}, disponible=${disponibleOnly}, prixMax=${prixMax}, tri=${param.tri != null ? param.tri[0] : 'nom'})}"
+                   th:href="@{/catalogue/machines/catalogue(page=${i})}"
                    th:classappend="${i == currentPage} ? 'bg-primary text-on-primary' : 'border border-outline-variant hover:bg-surface-container-high'"
                    class="w-10 h-10 rounded font-label-md flex items-center justify-center transition-colors"
                    th:text="${i + 1}">
                     1
                 </a>
                 
-                <a th:href="@{/catalogue/machines/catalogue(page=${currentPage + 1}, typeId=${param.typeId != null ? param.typeId[0] : ''}, disponible=${disponibleOnly}, prixMax=${prixMax}, tri=${param.tri != null ? param.tri[0] : 'nom'})}" 
+                <a th:href="@{/catalogue/machines/catalogue(page=${currentPage + 1})}" 
                    th:classappend="${currentPage >= totalPages - 1} ? 'opacity-50 pointer-events-none' : ''"
                    class="w-10 h-10 border border-outline-variant rounded flex items-center justify-center hover:bg-surface-container-high transition-colors">
                     <span class="material-symbols-outlined">chevron_right</span>
@@ -220,13 +230,11 @@
             return {
                 typeId: params.get('typeId'),
                 page: params.get('page') || 0,
-                disponible: params.get('disponible') === 'true',
-                prixMax: params.get('prixMax') || null,
-                tri: params.get('tri') || 'nom'
+                disponible: params.get('disponible'),
+                prixMax: params.get('prixMax'),
+                tri: params.get('tri')
             };
         }
-
-        const urlParams = getUrlParams();
 
         // Gérer le filtre de disponibilité
         document.getElementById('filtreDisponible')?.addEventListener('change', function() {
@@ -236,7 +244,6 @@
             } else {
                 url.searchParams.delete('disponible');
             }
-            url.searchParams.delete('page'); // Retour à la première page
             window.location.href = url.toString();
         });
 
@@ -244,33 +251,30 @@
         const prixRange = document.getElementById('prixRange');
         const prixLabel = document.getElementById('prixLabel');
         
-        if (prixRange) {
-            prixRange.addEventListener('input', function() {
-                prixLabel.textContent = this.value + ' €';
-            });
-            
-            prixRange.addEventListener('change', function() {
-                const url = new URL(window.location.href);
-                url.searchParams.set('prixMax', this.value);
-                url.searchParams.delete('page');
-                window.location.href = url.toString();
-            });
-        }
+        prixRange?.addEventListener('input', function() {
+            prixLabel.textContent = this.value + ' €';
+        });
+        
+        prixRange?.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('prixMax', this.value);
+            window.location.href = url.toString();
+        });
 
         // Gérer le tri
         document.getElementById('triSelect')?.addEventListener('change', function() {
             const url = new URL(window.location.href);
             url.searchParams.set('tri', this.value);
-            url.searchParams.delete('page');
             window.location.href = url.toString();
         });
 
         // Sélectionner la bonne option de tri
-        if (urlParams.tri) {
+        const params = getUrlParams();
+        if (params.tri) {
             const select = document.getElementById('triSelect');
             if (select) {
                 for (let option of select.options) {
-                    if (option.value === urlParams.tri) {
+                    if (option.value === params.tri) {
                         option.selected = true;
                         break;
                     }
@@ -278,7 +282,7 @@
             }
         }
 
-        console.log('🔍 Paramètres URL:', urlParams);
+        console.log('🔍 Paramètres URL:', getUrlParams());
         console.log('📦 Nombre de machines affichées:', document.querySelectorAll('.bg-white.border').length);
     </script>
 </body>

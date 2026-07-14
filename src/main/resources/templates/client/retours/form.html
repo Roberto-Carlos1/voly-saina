@@ -1,241 +1,119 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head(pageTitle='Retourner une machine - VolySaina+')}">
+<head>
+    <title>Retourner</title>
 </head>
 <body>
-    <!-- Header -->
-    <div th:replace="~{fragments/header :: header}"></div>
 
-    <main class="pt-20">
-        <div class="max-w-[768px] mx-auto px-margin-desktop py-stack-lg">
-            <!-- Breadcrumb -->
-            <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
-                <a href="/client/accueil" class="hover:text-primary">Accueil</a>
-                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <a th:href="@{/catalogue/reservations/mes-reservations(idClient=${clientId})}" class="hover:text-primary">Mes réservations</a>
-                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-                <span class="text-on-surface font-semibold">Retourner une machine</span>
-            </nav>
+    <h1>🔄 Retourner une machine</h1>
 
-            <!-- Header -->
-            <div class="bg-white border-2 border-secondary/20 rounded-xl p-6 mb-6">
-                <h1 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
-                    <span class="material-symbols-outlined text-secondary">undo</span>
-                    Retourner une machine
-                </h1>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-2">
-                    Veuillez évaluer l'état de la machine et confirmer son retour.
-                </p>
-            </div>
+    <div id="infoReservation">
+        <p>⏳ Chargement des informations...</p>
+    </div>
 
-            <!-- Informations réservation -->
-            <div id="infoReservation" class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
-                <div class="flex items-center gap-4">
-                    <div class="animate-pulse flex gap-4">
-                        <div class="w-16 h-16 bg-surface-container-high rounded-xl"></div>
-                        <div class="flex-1 space-y-2">
-                            <div class="h-4 bg-surface-container-high rounded w-3/4"></div>
-                            <div class="h-3 bg-surface-container-high rounded w-1/2"></div>
-                        </div>
-                    </div>
-                    <p class="text-on-surface-variant">⏳ Chargement des informations...</p>
-                </div>
-            </div>
-
-            <!-- Formulaire -->
-            <form id="formRetour" class="bg-white border-2 border-primary/10 rounded-xl shadow-lg p-6" style="display:none;">
-                <h2 class="font-headline-md text-headline-md text-on-surface mb-6">État de la machine</h2>
-
-                <!-- Options d'état -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div th:each="etat : ${etatsPossibles}" 
-                         class="border border-outline-variant rounded-lg p-4 cursor-pointer hover:border-primary transition-all"
-                         onclick="selectEtat('${etat.code}')">
-                        <input type="radio" name="etatRetour" th:value="${etat.code}" 
-                               th:id="'etat_' + ${etat.code}" class="hidden">
-                        <label th:for="'etat_' + ${etat.code}" class="cursor-pointer flex items-start gap-3">
-                            <span class="material-symbols-outlined" 
-                                  th:text="${etat.icon}" 
-                                  th:classappend="${etat.color}"></span>
-                            <div>
-                                <p class="font-label-md text-label-md font-bold" th:text="${etat.libelle}">Bon état</p>
-                                <p class="text-label-sm text-on-surface-variant" th:text="${etat.description}">Description</p>
-                                <p class="text-label-sm text-primary font-bold mt-1" 
-                                   th:if="${etat.penalite > 0}" 
-                                   th:text="'Pénalité : ' + ${etat.penalite} + ' €'">
-                                </p>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Remarque -->
-                <div class="mb-6">
-                    <label class="block font-label-sm text-on-surface-variant mb-2">Remarque (optionnelle)</label>
-                    <textarea name="remarque" rows="3" 
-                              class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                              placeholder="Décrivez l'état de la machine, les éventuels dommages..."></textarea>
-                </div>
-
-                <!-- Résumé -->
-                <div id="resumeRetour" class="bg-surface-container-low p-4 rounded-lg mb-6">
-                    <h4 class="font-label-md text-label-md text-on-surface mb-2">Résumé du retour</h4>
-                    <div class="flex justify-between">
-                        <span class="font-body-md text-body-md text-on-surface-variant">Date de retour</span>
-                        <span class="font-body-md text-body-md font-bold" id="dateRetour">--/--/----</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="font-body-md text-body-md text-on-surface-variant">Pénalité</span>
-                        <span class="font-body-md text-body-md font-bold text-red-500" id="penaliteRetour">0 €</span>
-                    </div>
-                    <div class="flex justify-between border-t border-outline-variant pt-2 mt-2">
-                        <span class="font-body-md text-body-md text-on-surface-variant">Total à payer</span>
-                        <span class="font-headline-md text-headline-md text-primary" id="totalRetour">0 €</span>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button type="submit" id="btnEnregistrer" 
-                            class="flex-1 bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all btn-primary flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                        Enregistrer le retour
-                    </button>
-                    <a th:href="@{/catalogue/reservations/mes-reservations(idClient=${clientId})}" 
-                       class="px-6 py-4 border border-outline-variant rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
-                        Annuler
-                    </a>
-                </div>
-            </form>
-
-            <!-- Message -->
-            <div id="message" class="mt-4"></div>
+    <form id="formRetour" style="display:none;">
+        <div>
+            <label><strong>État de la machine:</strong></label><br>
+            <input type="radio" name="etatRetour" value="bon" checked> Bon état<br>
+            <input type="radio" name="etatRetour" value="use"> Usure normale<br>
+            <input type="radio" name="etatRetour" value="endommage"> Endommagé<br>
+            <input type="radio" name="etatRetour" value="casse"> Cassé<br>
+            <input type="radio" name="etatRetour" value="perdu"> Perdu
         </div>
-    </main>
+        <br>
+        <div>
+            <label>Remarque:</label><br>
+            <textarea name="remarque" rows="3" cols="40"></textarea>
+        </div>
+        <br>
+        <button type="submit">Enregistrer</button>
+        <button type="button" onclick="window.location.href='/catalogue/reservations/mes-reservations?clientId=1'">Annuler</button>
+    </form>
 
-    <!-- Footer -->
-    <div th:replace="~{fragments/footer :: footer}"></div>
+    <div id="message" style="margin-top:20px;"></div>
 
     <script>
-        // Récupération des paramètres
-        const pathParts = window.location.pathname.split('/');
-        const reservationId = pathParts[3] || 1;
-        const clientId = /*[[${clientId != null ? clientId : 1}]]*/ 1;
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        function getReservationIdFromPath() {
+            const path = window.location.pathname;
+            const parts = path.split('/');
+            return parts[3] || null;
+        }
+
+        const reservationId = getReservationIdFromPath() || getUrlParam('id') || 1;
+        const clientId = getUrlParam('clientId') || 1;
 
         console.log('🔍 Reservation ID:', reservationId);
         console.log('🔍 Client ID:', clientId);
 
-        let reservationData = null;
-        let penaliteSelectionnee = 0;
+        // ✅ Timeout pour éviter le chargement infini
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes max
 
-        // Charger les informations
-        function loadReservationInfo() {
-            const infoDiv = document.getElementById('infoReservation');
-            
-            fetch('/catalogue/retours/api/form/' + reservationId)
-                .then(r => {
-                    if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
-                    return r.json();
-                })
-                .then(data => {
-                    console.log('📦 Données:', data);
-                    reservationData = data;
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-                    
-                    // Afficher les informations
-                    infoDiv.innerHTML = `
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-xl bg-surface-container-high flex items-center justify-center">
-                                <span class="material-symbols-outlined text-outline text-[32px]">agriculture</span>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-headline-md text-headline-md text-on-surface">${data.machineNom || 'Machine'}</h3>
-                                <p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">${data.machineType || 'Type inconnu'}</p>
-                                <div class="flex flex-wrap gap-4 mt-2 text-sm text-on-surface-variant">
-                                    <span>📍 ${data.lieuLivraison || 'Lieu non spécifié'}</span>
-                                    <span>📅 ${data.dateDebut || ''} → ${data.dateFin || ''}</span>
-                                    <span class="font-bold text-primary">${data.prixTotal || 0} €</span>
-                                </div>
-                                ${data.estRetard ? `<div class="mt-2 text-red-500 font-bold">⚠️ Retard : ${data.joursRetard} jour(s) - Pénalité : ${data.penaliteRetard} €</div>` : ''}
-                            </div>
-                        </div>
-                    `;
-
-                    // Mettre à jour le résumé
-                    document.getElementById('dateRetour').textContent = data.dateRetour || new Date().toLocaleDateString('fr-FR');
-                    document.getElementById('penaliteRetour').textContent = (data.penaliteRetard || 0) + ' €';
-                    document.getElementById('totalRetour').textContent = (data.prixTotal || 0) + (data.penaliteRetard || 0) + ' €';
-                    penaliteSelectionnee = data.penaliteRetard || 0;
-
-                    // Afficher le formulaire
-                    document.getElementById('formRetour').style.display = 'block';
-                })
-                .catch(err => {
-                    console.error('❌ Erreur:', err);
-                    infoDiv.innerHTML = `
-                        <div class="border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container">
-                            <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined">error</span>
-                                ❌ ${err.message}
-                            </div>
-                            <div class="mt-3 flex gap-3">
-                                <button onclick="loadReservationInfo()" 
-                                        class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition">
-                                    Réessayer
-                                </button>
-                                <a href="/catalogue/reservations/mes-reservations?idClient=${clientId}" 
-                                   class="border border-primary text-primary px-4 py-2 rounded-lg font-label-md hover:bg-primary/10 transition">
-                                    Retour à la liste
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                });
-        }
-
-        // Sélectionner un état
-        function selectEtat(code) {
-            // Désélectionner tous
-            document.querySelectorAll('input[name="etatRetour"]').forEach(input => {
-                input.checked = false;
-                input.closest('.border').classList.remove('border-primary', 'bg-primary/5');
-            });
-            
-            // Sélectionner le bon
-            const input = document.querySelector(`input[name="etatRetour"][value="${code}"]`);
-            if (input) {
-                input.checked = true;
-                input.closest('.border').classList.add('border-primary', 'bg-primary/5');
+        // Charger les informations avec timeout
+        fetch('/catalogue/retours/api/form/' + reservationId, {
+            signal: controller.signal
+        })
+            .then(r => {
+                clearTimeout(timeoutId);
+                if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
+                return r.json();
+            })
+            .then(data => {
+                console.log('📦 Données reçues:', data);
                 
-                // Mettre à jour le résumé
-                const etat = reservationData?.etatsPossibles?.find(e => e.code === code);
-                if (etat) {
-                    penaliteSelectionnee = etat.penalite || 0;
-                    document.getElementById('penaliteRetour').textContent = penaliteSelectionnee + ' €';
-                    const total = (reservationData?.prixTotal || 0) + penaliteSelectionnee;
-                    document.getElementById('totalRetour').textContent = total + ' €';
+                if (data.error) {
+                    document.getElementById('infoReservation').innerHTML = '❌ ' + data.error;
+                    return;
                 }
-            }
-        }
+                
+                // Afficher les informations
+                document.getElementById('infoReservation').innerHTML = `
+                    <div style="border:1px solid #ccc;padding:15px;margin:10px;border-radius:5px;">
+                        <h3>${data.machineNom}</h3>
+                        <p><strong>Type:</strong> ${data.machineType}</p>
+                        <p><strong>Période:</strong> ${data.dateDebut} au ${data.dateFin}</p>
+                        <p><strong>Prix total:</strong> ${data.prixTotal} MGA</p>
+                        ${data.estRetard ? '<p style="color:red;">⚠️ Retard: ' + data.joursRetard + ' jour(s) - Pénalité: ' + data.penaliteRetard + ' MGA</p>' : ''}
+                        <p><strong>Réservation ID:</strong> ${data.reservationId}</p>
+                    </div>
+                `;
+                
+                // Afficher le formulaire
+                document.getElementById('formRetour').style.display = 'block';
+            })
+            .catch(err => {
+                clearTimeout(timeoutId);
+                console.error('❌ Erreur:', err);
+                
+                let message = err.message;
+                if (err.name === 'AbortError') {
+                    message = '⏱️ Le serveur ne répond pas. Veuillez réessayer.';
+                }
+                
+                document.getElementById('infoReservation').innerHTML = `
+                    <div style="border:1px solid red;padding:15px;margin:10px;border-radius:5px;background:#f8d7da;">
+                        <h3 style="color:red;">❌ Erreur</h3>
+                        <p>${message}</p>
+                        <button onclick="location.reload()" 
+                                style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
+                            🔄 Réessayer
+                        </button>
+                    </div>
+                `;
+                
+                // Afficher le formulaire quand même pour permettre l'enregistrement
+                document.getElementById('formRetour').style.display = 'block';
+            });
 
-        // Soumettre le formulaire
+        // Envoyer le retour
         document.getElementById('formRetour').onsubmit = function(e) {
             e.preventDefault();
             
-            const etatSelectionne = document.querySelector('input[name="etatRetour"]:checked');
-            if (!etatSelectionne) {
-                document.getElementById('message').innerHTML = `
-                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container flex items-center gap-2">
-                        <span class="material-symbols-outlined">warning</span>
-                        Veuillez sélectionner un état pour la machine.
-                    </div>
-                `;
-                return;
-            }
-
             const formData = new FormData(this);
             const data = {
                 reservationId: Number(reservationId),
@@ -243,12 +121,9 @@
                 remarque: formData.get('remarque') || ''
             };
 
-            const btn = document.getElementById('btnEnregistrer');
-            const msgDiv = document.getElementById('message');
-            
-            btn.disabled = true;
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Enregistrement...';
-            msgDiv.innerHTML = '';
+            console.log('📤 Envoi:', data);
+
+            document.getElementById('message').innerHTML = '⏳ Envoi en cours...';
 
             fetch('/catalogue/retours/api', {
                 method: 'POST',
@@ -260,60 +135,36 @@
                 return r.json();
             })
             .then(data => {
+                console.log('📦 Réponse:', data);
+                
                 if (data.error) {
-                    throw new Error(data.error);
+                    document.getElementById('message').innerHTML = '❌ ' + data.error;
+                    return;
                 }
                 
-                const penalite = data.retour?.penalite || data.penalite || 0;
-                const montantTotal = data.montantTotal || (reservationData?.prixTotal || 0) + penalite;
+                const penalite = data.retour ? data.retour.penalite : (data.penalite || 0);
+                const montantTotal = data.montantTotal || 0;
                 
-                msgDiv.innerHTML = `
-                    <div class="border border-primary-container bg-primary-container/10 p-4 rounded-lg text-primary">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            <span class="font-bold">✅ ${data.message || 'Retour enregistré avec succès !'}</span>
-                        </div>
-                        <div class="mt-3 grid grid-cols-2 gap-4 bg-white p-3 rounded-lg">
-                            <div>
-                                <p class="text-label-sm text-on-surface-variant">Pénalité</p>
-                                <p class="font-bold text-red-500">${penalite} €</p>
-                            </div>
-                            <div>
-                                <p class="text-label-sm text-on-surface-variant">Total à payer</p>
-                                <p class="font-headline-md text-primary">${montantTotal} €</p>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex flex-wrap gap-3">
-                            <a href="/catalogue/reservations/mes-reservations?idClient=${clientId}" 
-                               class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition">
-                                Voir mes réservations
-                            </a>
-                            <a href="/catalogue/reservations/${reservationId}?idClient=${clientId}" 
-                               class="border border-primary text-primary px-4 py-2 rounded-lg font-label-md hover:bg-primary/10 transition">
-                                Voir le détail
-                            </a>
-                        </div>
+                document.getElementById('message').innerHTML = `
+                    <div style="border:1px solid green;padding:15px;background:#d4edda;border-radius:5px;">
+                        <h3 style="color:green;">✅ ${data.message}</h3>
+                        <p><strong>Pénalité:</strong> ${penalite} MGA</p>
+                        <p><strong>Total à payer:</strong> ${montantTotal} MGA</p>
+                        <br>
+                        <button onclick="window.location.href='/catalogue/reservations/mes-reservations?clientId=${clientId}'" 
+                                style="padding:8px 15px;background:#007bff;color:white;border:none;border-radius:4px;cursor:pointer;">
+                            Voir mes réservations
+                        </button>
                     </div>
                 `;
-                
                 document.getElementById('formRetour').style.display = 'none';
-                btn.style.display = 'none';
             })
             .catch(err => {
                 console.error('❌ Erreur:', err);
-                msgDiv.innerHTML = `
-                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container flex items-center gap-2">
-                        <span class="material-symbols-outlined">error</span>
-                        ❌ ${err.message}
-                    </div>
-                `;
-                btn.disabled = false;
-                btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">check_circle</span> Enregistrer le retour';
+                document.getElementById('message').innerHTML = '❌ Erreur: ' + err.message;
             });
         };
-
-        // Charger au démarrage
-        loadReservationInfo();
     </script>
+
 </body>
 </html>

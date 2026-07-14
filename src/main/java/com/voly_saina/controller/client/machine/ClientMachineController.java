@@ -1,7 +1,9 @@
-// ClientMachineController.java
 package com.voly_saina.controller.client.machine;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.MachineService;
 import com.voly_saina.service.TypeMachineService;
-import com.voly_saina.service.client.machine.ClientMachineService;
+import com.voly_saina.service.client.ClientProfilService;
 
 @Controller
 @RequestMapping("/catalogue/machines")
@@ -34,16 +36,28 @@ public class ClientMachineController {
     private TypeMachineService typeMachineService;
 
     @Autowired
-    private ClientMachineService clientMachineService;
+    private ClientProfilService clientProfilService;
 
     // ========== MÉTHODES D'AUTHENTIFICATION ==========
 
     private Utilisateur getUtilisateurConnecte(@AuthenticationPrincipal User user) {
-        return clientMachineService.getUtilisateurConnecte(user);
+        if (user == null) {
+            return null;
+        }
+        return clientProfilService.getUtilisateurByEmail(user.getUsername());
     }
 
     private void addUtilisateurConnecte(Model model, @AuthenticationPrincipal User user) {
-        clientMachineService.addUtilisateurConnecte(model, user);
+        Utilisateur utilisateur = getUtilisateurConnecte(user);
+        if (utilisateur != null) {
+            model.addAttribute("utilisateur", utilisateur);
+            model.addAttribute("clientId", utilisateur.getIdUtilisateur());
+            model.addAttribute("idClient", utilisateur.getIdUtilisateur());
+            model.addAttribute("isAuthenticated", true);
+        } else {
+            model.addAttribute("isAuthenticated", false);
+            model.addAttribute("clientId", null);
+        }
     }
 
     // ========== PAGES HTML ==========
@@ -65,19 +79,48 @@ public class ClientMachineController {
         
         addUtilisateurConnecte(model, user);
         
-        // Déléguer la logique métier au service
-        var result = clientMachineService.getCatalogueWithFilters(typeId, disponible, prixMax, page);
+        List<Machine> machines = machineService.findAll();
         
-        model.addAttribute("machines", result.getMachines());
+        // Appliquer les filtres
+        if (typeId != null) {
+            machines = machines.stream()
+                .filter(m -> m.getTypeMachine() != null && 
+                            m.getTypeMachine().getIdTypeMachine().equals(typeId))
+                .collect(Collectors.toList());
+        }
+        
+        if (disponible != null && disponible) {
+            machines = machines.stream()
+                .filter(m -> m.getDisponible() != null && m.getDisponible())
+                .collect(Collectors.toList());
+        }
+        
+        if (prixMax != null) {
+            machines = machines.stream()
+                .filter(m -> m.getPrixJour() != null && 
+                            m.getPrixJour().compareTo(BigDecimal.valueOf(prixMax)) <= 0)
+                .collect(Collectors.toList());
+        }
+        
+        // Pagination
+        int pageSize = 9;
+        int total = machines.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        int start = page * pageSize;
+        int end = Math.min(start + pageSize, total);
+        List<Machine> pageMachines = start < total ? machines.subList(start, end) : new ArrayList<>();
+        
+        model.addAttribute("machines", pageMachines);
         model.addAttribute("types", typeMachineService.findAll());
-        model.addAttribute("currentPage", result.getCurrentPage());
-        model.addAttribute("totalPages", result.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("disponibleOnly", disponible != null && disponible);
         model.addAttribute("prixMax", prixMax);
         
         return "client/machines/catalogue";
     }
 
+    // ⚠️ MÉTHODE CORRIGÉE - avec @RequestParam Long id
     @GetMapping("/detail")
     public String detail(
             @AuthenticationPrincipal User user,
@@ -86,7 +129,9 @@ public class ClientMachineController {
         
         addUtilisateurConnecte(model, user);
         
-        Machine machine = clientMachineService.getMachineDetail(id);
+        // Récupérer la machine par son ID
+        Machine machine = machineService.findById(id);
+        
         if (machine == null) {
             return "redirect:/catalogue/machines/catalogue";
         }
@@ -102,34 +147,71 @@ public class ClientMachineController {
     @GetMapping("/api/types")
     @ResponseBody
     public ResponseEntity<List<TypeMachine>> getTypes() {
-        return ResponseEntity.ok(typeMachineService.findAll());
+        List<TypeMachine> types = typeMachineService.findAll();
+        return ResponseEntity.ok(types);
     }
 
     @GetMapping("/api/catalogue")
     @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getCatalogue() {
-        return ResponseEntity.ok(clientMachineService.getAllMachinesForCatalogue());
+        List<Machine> machines = machineService.findAll();
+        List<MachineCatalogueDTO> response = machines.stream()
+            .map(this::mapToCatalogueDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/disponibles")
     @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getMachinesDisponibles() {
-        return ResponseEntity.ok(clientMachineService.getAvailableMachinesForCatalogue());
+        List<Machine> machines = machineService.findAvailableMachines();
+        List<MachineCatalogueDTO> response = machines.stream()
+            .map(this::mapToCatalogueDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/type/{typeId}")
     @ResponseBody
     public ResponseEntity<List<MachineCatalogueDTO>> getMachinesByType(@PathVariable Long typeId) {
-        return ResponseEntity.ok(clientMachineService.getMachinesByTypeForCatalogue(typeId));
+        List<Machine> machines = machineService.findByTypeMachine(typeId);
+        List<MachineCatalogueDTO> response = machines.stream()
+            .map(this::mapToCatalogueDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<MachineCatalogueDTO> getMachineById(@PathVariable Long id) {
-        MachineCatalogueDTO dto = clientMachineService.getMachineCatalogueDTOById(id);
-        if (dto == null) {
+        Machine machine = machineService.findById(id);
+        if (machine == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(mapToCatalogueDTO(machine));
+    }
+
+    // ========== MÉTHODES PRIVÉES ==========
+
+    private MachineCatalogueDTO mapToCatalogueDTO(Machine machine) {
+        MachineCatalogueDTO dto = new MachineCatalogueDTO();
+        dto.setIdMachine(machine.getIdMachine());
+        dto.setNom(machine.getNom());
+        dto.setDescription(machine.getDescription());
+        dto.setPrixJour(machine.getPrixJour());
+        dto.setLocalisation(machine.getLocalisation());
+        
+        if (machine.getTypeMachine() != null) {
+            dto.setTypeMachine(machine.getTypeMachine().getLibelle());
+        }
+        
+        if (machine.getEtatMachine() != null) {
+            dto.setEtatMachine(machine.getEtatMachine().getLibelle());
+        }
+        
+        dto.setDisponible(machine.getDisponible());
+        dto.setImageUrl(null);
+        
+        return dto;
     }
 }

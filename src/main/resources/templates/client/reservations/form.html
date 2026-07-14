@@ -19,23 +19,25 @@
 
             <!-- Machine Info -->
             <div id="machineInfo" class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
-                <div class="flex items-center gap-4">
+                <div id="machineDetail" class="flex items-center gap-4">
                     <div class="w-20 h-20 rounded-xl bg-surface-container-high flex items-center justify-center overflow-hidden">
                         <span class="material-symbols-outlined text-outline text-[40px]">agriculture</span>
                     </div>
                     <div>
-                        <h2 class="font-headline-md text-headline-md text-on-surface" id="nomMachine">Chargement...</h2>
-                        <p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest" id="typeMachine">Type</p>
-                        <p class="font-headline-md text-headline-md text-primary mt-1" id="prixMachine">0 € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+                        <h2 id="nomMachine" class="font-headline-md text-headline-md text-on-surface">Chargement...</h2>
+                        <p id="typeMachine" class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Type</p>
+                        <p id="prixMachine" class="font-headline-md text-headline-md text-primary mt-1">0 € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
                     </div>
                 </div>
+                <div id="machineError" class="hidden mt-4"></div>
             </div>
 
             <!-- Formulaire -->
             <div class="bg-white border-2 border-primary/10 rounded-xl shadow-lg p-6">
                 <h2 class="font-headline-md text-headline-md text-on-surface mb-6">Informations de réservation</h2>
 
-                <form id="reservationForm" action="/catalogue/reservations/api" method="POST">
+                <form id="reservationForm">
+                    <input type="hidden" name="clientId" th:value="${clientId != null ? clientId : 1}">
                     <input type="hidden" name="machineId" th:value="${machineId}">
 
                     <!-- Dates -->
@@ -77,12 +79,12 @@
 
                     <!-- Actions -->
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <button type="submit" class="flex-1 bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all btn-primary">
+                        <button type="submit" id="btnReserver" class="flex-1 bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all btn-primary flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_available</span>
                             Réserver
                         </button>
                         <button type="button" id="ajouterPanierBtn" 
-                                class="flex-1 bg-secondary text-on-secondary py-4 rounded-lg font-headline-md hover:opacity-90 transition-all btn-primary">
+                                class="flex-1 bg-secondary text-on-secondary py-4 rounded-lg font-headline-md hover:opacity-90 transition-all btn-primary flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined">add_shopping_cart</span>
                             Ajouter au panier
                         </button>
@@ -100,202 +102,276 @@
 
     <!-- Footer -->
     <div th:replace="~{fragments/footer :: footer}"></div>
+<script th:inline="javascript">
+    (function() {
+        'use strict';
 
-    <script th:inline="javascript">
-        const machineId = /*[[${machineId}]]*/ 1;
+        const machineId = /*[[${machineId}]]*/ null;
+        const clientId = /*[[${clientId != null ? clientId : 1}]]*/ 1;
         let prixJour = 0;
 
-        // Charger les infos de la machine
+        if (!machineId || isNaN(machineId)) {
+            const info = document.getElementById('machineInfo');
+            if (info) {
+                info.innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container">
+                        Identifiant de machine invalide.
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        // ===== RÉFÉRENCES DOM =====
+        const $ = (id) => document.getElementById(id);
+        const messageDiv = $('message');
+        const btnReserver = $('btnReserver');
+        const btnPanier = $('ajouterPanierBtn');
+
+        // ===== AFFICHAGE DES MESSAGES =====
+        function showMessage(msg, type) {
+            if (!messageDiv) return;
+            const color = type === 'error' ? 'error-container' : 'primary-container';
+            const textColor = type === 'error' ? 'on-error-container' : 'primary';
+            const icon = type === 'error' ? 'warning' : 'check_circle';
+            messageDiv.innerHTML = `
+                <div class="border border-${color} bg-${color}/10 p-3 rounded-lg text-${textColor} flex items-center gap-2">
+                    <span class="material-symbols-outlined">${icon}</span>
+                    ${msg}
+                </div>
+            `;
+        }
+
+        function clearMessage() {
+            if (messageDiv) messageDiv.innerHTML = '';
+        }
+
+        // ===== CHARGEMENT MACHINE =====
         function loadMachine() {
+            console.log('🔍 Chargement machine ID:', machineId);
+
+            const detailEl = document.getElementById('machineDetail');
+            if (detailEl) {
+                detailEl.innerHTML = `
+                    <div class="w-20 h-20 rounded-xl bg-surface-container-high flex items-center justify-center overflow-hidden">
+                        <span class="material-symbols-outlined text-outline text-[40px] animate-pulse">agriculture</span>
+                    </div>
+                    <div>
+                        <h2 id="nomMachine" class="font-headline-md text-headline-md text-on-surface">Chargement...</h2>
+                        <p id="typeMachine" class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Type</p>
+                        <p id="prixMachine" class="font-headline-md text-headline-md text-primary mt-1">0 € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+                    </div>
+                `;
+            }
+
+            const errorEl = document.getElementById('machineError');
+            if (errorEl) errorEl.classList.add('hidden');
+
             fetch('/catalogue/machines/api/' + machineId)
-                .then(r => {
-                    if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
-                    return r.json();
+                .then(response => {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
                 })
                 .then(data => {
-                    document.getElementById('nomMachine').textContent = data.nom || 'Machine inconnue';
-                    document.getElementById('typeMachine').textContent = data.typeMachine || 'Type inconnu';
+                    console.log('📦 Données reçues:', data);
+
+                    const nomEl = document.getElementById('nomMachine');
+                    const typeEl = document.getElementById('typeMachine');
+                    const prixEl = document.getElementById('prixMachine');
+
+                    if (nomEl) nomEl.textContent = data.nom || 'Machine sans nom';
+                    if (typeEl) typeEl.textContent = data.typeMachine || 'Type inconnu';
+
                     prixJour = data.prixJour || 0;
-                    document.getElementById('prixMachine').innerHTML = prixJour + ' € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span>';
+                    if (prixEl) {
+                        prixEl.innerHTML = prixJour + ' € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span>';
+                    }
+
+                    if (errorEl) errorEl.classList.add('hidden');
+                    calculerTotal();
                 })
-                .catch(err => {
-                    console.error('❌ Erreur:', err);
-                    document.getElementById('machineInfo').innerHTML = `
-                        <div class="border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container">
-                            ❌ ${err.message}
-                            <button onclick="loadMachine()" class="ml-4 bg-primary text-on-primary px-4 py-2 rounded-lg btn-primary">
-                                Réessayer
-                            </button>
-                        </div>
-                    `;
+                .catch(error => {
+                    console.error('❌ Erreur:', error);
+                    if (errorEl) {
+                        errorEl.classList.remove('hidden');
+                        errorEl.innerHTML = `
+                            <div class="border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined">error</span>
+                                    <span>${error.message}</span>
+                                </div>
+                                <button onclick="window.loadMachine()" class="mt-3 bg-primary text-on-primary px-4 py-2 rounded-lg btn-primary">
+                                    Réessayer
+                                </button>
+                            </div>
+                        `;
+                    }
                 });
         }
 
-        // Calculer le total
+        // ===== CALCUL TOTAL =====
         function calculerTotal() {
-            const dateDebut = document.getElementById('dateDebut').value;
-            const dateFin = document.getElementById('dateFin').value;
+            const dateDebut = document.getElementById('dateDebut');
+            const dateFin = document.getElementById('dateFin');
             const resumeContainer = document.getElementById('resumeContainer');
+            const nbJours = document.getElementById('nbJours');
+            const totalEstime = document.getElementById('totalEstime');
 
-            if (!dateDebut || !dateFin || prixJour === 0) {
+            if (!dateDebut || !dateFin || !resumeContainer) return;
+            
+            const debutVal = dateDebut.value;
+            const finVal = dateFin.value;
+            
+            if (!debutVal || !finVal || prixJour === 0) {
                 resumeContainer.style.display = 'none';
                 return;
             }
 
-            const debut = new Date(dateDebut);
-            const fin = new Date(dateFin);
+            const debut = new Date(debutVal);
+            const fin = new Date(finVal);
             
             if (fin <= debut) {
-                document.getElementById('message').innerHTML = `
-                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
-                        La date de fin doit être postérieure à la date de début.
-                    </div>
-                `;
                 resumeContainer.style.display = 'none';
                 return;
             }
 
             const jours = Math.ceil((fin - debut) / (1000 * 60 * 60 * 24));
             const total = jours * prixJour;
-
-            document.getElementById('nbJours').textContent = jours;
-            document.getElementById('totalEstime').textContent = total + ' €';
+            
+            if (nbJours) nbJours.textContent = jours;
+            if (totalEstime) totalEstime.textContent = total + ' €';
             resumeContainer.style.display = 'block';
-            document.getElementById('message').innerHTML = '';
         }
 
-        // Événements pour le calcul
-        document.getElementById('dateDebut').addEventListener('change', function() {
-            document.getElementById('dateFin').min = this.value;
-            calculerTotal();
-        });
-        document.getElementById('dateFin').addEventListener('change', calculerTotal);
-
-        // Définir date min
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('dateDebut').min = today;
-        document.getElementById('dateFin').min = today;
-
-        // Soumettre le formulaire
-        document.getElementById('reservationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const dateDebut = document.getElementById('dateDebut').value;
-            const dateFin = document.getElementById('dateFin').value;
-
-            if (!dateDebut || !dateFin) {
-                document.getElementById('message').innerHTML = `
-                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
-                        Veuillez sélectionner les dates de location.
-                    </div>
-                `;
-                return;
-            }
-
-            const formData = new FormData(this);
-            const data = {
-                machineId: Number(formData.get('machineId')),
-                dateDebut: dateDebut,
-                dateFin: dateFin,
-                lieuLivraison: formData.get('lieuLivraison') || ''
-            };
-
-            document.getElementById('message').innerHTML = '<div class="text-primary">⏳ Envoi en cours...</div>';
-
-            fetch('/catalogue/reservations/api', {
+        // ===== CRÉER UNE RÉSERVATION =====
+        function creerReservation(data) {
+            return fetch('/catalogue/reservations/api', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(r => r.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('message').innerHTML = `
-                        <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
-                            ❌ ${data.error}
-                        </div>
-                    `;
-                } else {
-                    document.getElementById('message').innerHTML = `
-                        <div class="border border-primary-container bg-primary-container/10 p-3 rounded-lg text-primary">
-                            ✅ ${data.message}
-                            <br>
-                            <a href="/catalogue/reservations/mes-reservations"
-                               class="text-primary font-bold underline mt-2 inline-block">
-                                Voir mes réservations
-                            </a>
-                        </div>
-                    `;
-                    document.getElementById('reservationForm').style.opacity = '0.7';
-                }
-            })
-            .catch(err => {
-                document.getElementById('message').innerHTML = `
-                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
-                        ❌ Erreur: ${err.message}
-                    </div>
-                `;
+            .then(response => {
+                if (!response.ok) throw new Error('Erreur serveur');
+                return response.json();
             });
-        });
-
-        // Ajouter au panier
-        document.getElementById('ajouterPanierBtn')?.addEventListener('click', function() {
-            const dateDebut = document.getElementById('dateDebut').value;
-            const dateFin = document.getElementById('dateFin').value;
-
-            if (!dateDebut || !dateFin) {
-                document.getElementById('message').innerHTML = `
-                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
-                        Veuillez sélectionner les dates de location.
-                    </div>
-                `;
-                return;
-            }
-
-            const form = document.getElementById('reservationForm');
-            const formData = new FormData(form);
-
-    const data = {
-        machineId: Number(formData.get('machineId')),
-        dateDebut: dateDebut,
-        dateFin: dateFin,
-        lieuLivraison: formData.get('lieuLivraison') || ''
-    };
-
-    fetch('/panier/reservations/api/ajouter', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(response => {
-        if (response.error) {
-            document.getElementById('message').innerHTML = `
-                <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container">
-                     ${response.error}
-                </div>
-            `;
-        } else {
-            document.getElementById('message').innerHTML = `
-                <div class="border border-primary-container bg-primary-container/10 p-3 rounded-lg text-primary">
-                     ${response.message}
-                    <br>
-                    <a href="/panier"
-                       class="text-primary font-bold underline mt-2 inline-block">
-                        Voir mon panier
-                    </a>
-                </div>
-            `;
         }
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
-});
-        // Charger au démarrage
+
+        // ===== ÉVÉNEMENTS DATES =====
+        const dateDebut = document.getElementById('dateDebut');
+        const dateFin = document.getElementById('dateFin');
+
+        if (dateDebut && dateFin) {
+            dateDebut.addEventListener('change', function() {
+                dateFin.min = this.value;
+                calculerTotal();
+            });
+            dateFin.addEventListener('change', calculerTotal);
+
+            const today = new Date().toISOString().split('T')[0];
+            dateDebut.min = today;
+            dateFin.min = today;
+        }
+
+        // ===== SOUMISSION - RÉSERVER =====
+        const form = document.getElementById('reservationForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const debutVal = dateDebut ? dateDebut.value : '';
+                const finVal = dateFin ? dateFin.value : '';
+                const lieu = document.getElementById('lieuLivraison') ? document.getElementById('lieuLivraison').value : '';
+
+                if (!debutVal || !finVal) {
+                    showMessage('Veuillez sélectionner les dates de location.', 'error');
+                    return;
+                }
+
+                const data = {
+                    clientId: clientId,
+                    machineId: machineId,
+                    dateDebut: debutVal,
+                    dateFin: finVal,
+                    lieuLivraison: lieu
+                };
+
+                console.log('📤 Envoi réservation:', data);
+
+                if (btnReserver) {
+                    btnReserver.disabled = true;
+                    btnReserver.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> En cours...';
+                }
+                clearMessage();
+
+                creerReservation(data)
+                    .then(res => {
+                        console.log('✅ Réponse:', res);
+                        showMessage(res.message || 'Réservation créée avec succès !', 'success');
+                        if (btnReserver) btnReserver.style.display = 'none';
+                    })
+                    .catch(err => {
+                        console.error('❌ Erreur:', err);
+                        showMessage(err.message || 'Erreur lors de la réservation', 'error');
+                        if (btnReserver) {
+                            btnReserver.disabled = false;
+                            btnReserver.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">event_available</span> Réserver';
+                        }
+                    });
+            });
+        }
+
+        // ===== AJOUTER AU PANIER =====
+        if (btnPanier) {
+            btnPanier.addEventListener('click', function() {
+                const debutVal = dateDebut ? dateDebut.value : '';
+                const finVal = dateFin ? dateFin.value : '';
+                const lieu = document.getElementById('lieuLivraison') ? document.getElementById('lieuLivraison').value : '';
+
+                if (!debutVal || !finVal) {
+                    showMessage('Veuillez sélectionner les dates de location.', 'error');
+                    return;
+                }
+
+                const data = {
+                    clientId: clientId,
+                    machineId: machineId,
+                    dateDebut: debutVal,
+                    dateFin: finVal,
+                    lieuLivraison: lieu
+                };
+
+                console.log('🛒 Ajout au panier:', data);
+
+                btnPanier.disabled = true;
+                btnPanier.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Ajout en cours...';
+                clearMessage();
+
+                creerReservation(data)
+                    .then(res => {
+                        console.log('✅ Réponse panier:', res);
+                        showMessage('Réservation ajoutée au panier ! (en attente de validation)', 'success');
+                        btnPanier.style.display = 'none';
+                    })
+                    .catch(err => {
+                        console.error('❌ Erreur panier:', err);
+                        showMessage(err.message || 'Erreur lors de l\'ajout au panier', 'error');
+                        btnPanier.disabled = false;
+                        btnPanier.innerHTML = '<span class="material-symbols-outlined">add_shopping_cart</span> Ajouter au panier';
+                    });
+            });
+        }
+
+        // ===== EXPOSER =====
+        window.loadMachine = loadMachine;
+        window.calculerTotal = calculerTotal;
+
+        // ===== CHARGER =====
         loadMachine();
-    </script>
+
+        console.log('📌 Machine ID:', machineId);
+        console.log('📌 Client ID:', clientId);
+
+    })();
+</script>
 </body>
 </html>

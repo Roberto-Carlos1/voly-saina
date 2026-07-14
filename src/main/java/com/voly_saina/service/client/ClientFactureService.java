@@ -107,7 +107,10 @@ public class ClientFactureService {
         List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
         List<LigneCommande> ligneCommande = ligneCommandeService.findAll();
         List<ReservationMachine> reservationMachines = reservationMachineService.findAll();
-
+        if(reservationMachines == null) {
+            reservationMachines = new ArrayList<>();
+            reservationMachines.add(reservationMachineService.findByIdFacture(idFacture));
+        }
         List<LigneCommande> lignes = new ArrayList<>();
         List<ReservationMachine> ligneReservation = new ArrayList<>();
 

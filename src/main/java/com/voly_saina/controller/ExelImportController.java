@@ -31,11 +31,10 @@ public class ExelImportController {
 
     @GetMapping("/template/{tableName}")
     public ResponseEntity<byte[]> downloadTemplate(@PathVariable String tableName) throws IOException {
-        try {
-            Class<?> entityClass = Class.forName(tableName);
+            // Class<?> entityClass = Class.forName(tableName);
             ExelImport.UniversalTemplateGenerator generator = exelImport.new UniversalTemplateGenerator();
             // machine.class chage selon le controller
-            List<Class<?>> entities = List.of(entityClass); // You can add more entities if needed
+            List<Class<?>> entities = List.of(Machine.class); // You can add more entities if needed
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             generator.generateMultiEntityTemplate(baos, entities);
@@ -44,9 +43,7 @@ public class ExelImportController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=template_machine.xlsx")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(baos.toByteArray());
-        } catch (ClassNotFoundException e) {
-            return ResponseEntity.badRequest().body(("Classe non trouvée: " + tableName).getBytes());
-        }
+
     }
 
     @PostMapping("/import")

@@ -2,6 +2,8 @@
 package com.voly_saina.controller.client.machine;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import com.voly_saina.entity.Machine;
 import com.voly_saina.entity.TypeMachine;
 import com.voly_saina.entity.Utilisateur;
 import com.voly_saina.service.MachineService;
+import com.voly_saina.service.MachineImageService;
 import com.voly_saina.service.TypeMachineService;
 import com.voly_saina.service.client.machine.ClientMachineService;
 
@@ -35,6 +38,9 @@ public class ClientMachineController {
 
     @Autowired
     private ClientMachineService clientMachineService;
+
+    @Autowired
+    private MachineImageService machineImageService;
 
     // ========== MÉTHODES D'AUTHENTIFICATION ==========
 
@@ -74,6 +80,15 @@ public class ClientMachineController {
         model.addAttribute("totalPages", result.getTotalPages());
         model.addAttribute("disponibleOnly", disponible != null && disponible);
         model.addAttribute("prixMax", prixMax);
+
+        // Image mapping for machine cards
+        Map<Long, String> imageMap = result.getMachines().stream()
+                .filter(m -> m.getIdMachine() != null)
+                .collect(Collectors.toMap(
+                        Machine::getIdMachine,
+                        m -> machineImageService.getImagePath(m.getIdMachine())
+                ));
+        model.addAttribute("machineImages", imageMap);
         
         return "client/machines/catalogue";
     }
@@ -93,6 +108,7 @@ public class ClientMachineController {
         
         model.addAttribute("machine", machine);
         model.addAttribute("clientId", model.getAttribute("clientId"));
+        model.addAttribute("machineImage", machineImageService.getImagePath(machine.getIdMachine()));
         
         return "client/machines/detail";
     }

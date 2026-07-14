@@ -7,6 +7,7 @@ import com.lowagie.text.Font;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.voly_saina.controller.machine.ReservationMachineController;
 import java.awt.Color;
 
 import java.io.ByteArrayOutputStream;
@@ -108,19 +109,23 @@ public class ClientFactureService {
 
         List<LigneCommande> lignes = new ArrayList<>();
         List<ReservationMachine> ligneReservation = new ArrayList<>();
-
+        
         for (LigneCommande ligne : ligneCommande) {
             for (PanierDetails panierDet : panierDetails) {
                 if (panierDet.getCommande() != null
                         && (panierDet.getCommande().getIdCommande() == ligne.getCommande().getIdCommande())) {
                     lignes.add(ligne);
-                }
+                }      
             }
         }
-
-        for (ReservationMachine reserve : reservationMachines) {
-            if (reserve.getFacture().getIdFacture() == facture.getIdFacture()) {
-                ligneReservation.add(reserve);
+        if (reservationMachines != null) {
+            for (ReservationMachine reserve : reservationMachines) {
+                for (PanierDetails panierDet : panierDetails) {
+                    if (panierDet.getReservationMachine() != null
+                            && (panierDet.getReservationMachine().getIdReservation() == reserve.getIdReservation())) {
+                        ligneReservation.add(reserve);
+                    }
+                }
             }
         }
 

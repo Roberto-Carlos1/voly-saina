@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.query.common.FetchClauseType;
 
 import java.time.LocalDateTime;
 import java.util.List;

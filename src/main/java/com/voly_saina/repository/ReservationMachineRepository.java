@@ -64,4 +64,6 @@ public interface ReservationMachineRepository extends JpaRepository<ReservationM
 
     List<ReservationMachine> findByClientIdUtilisateurAndDateDebutBetweenAndStatutReservationCodeIn(Long idClient, LocalDate debut, LocalDate fin, List<String> statuts);
 
+    @Query("select r from ReservationMachine r where r.facture.idFacture = :idFacture")
+    ReservationMachine findByIdFacture(@Param("idFacture") Long idFacture);
 }

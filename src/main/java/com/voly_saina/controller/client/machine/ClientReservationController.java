@@ -338,7 +338,7 @@ public class ClientReservationController {
         }
     }
 
-    @PostMapping("/api/{id}/facturer")
+    @GetMapping("/api/{id}/facturer")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> facturerReservation(
             @PathVariable Long id,

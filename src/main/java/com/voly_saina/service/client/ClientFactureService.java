@@ -26,6 +26,7 @@ import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.exception.ReservationException;
 import com.voly_saina.exception.ResourceNotFoundException;
 import com.voly_saina.repository.FactureRepository;
 import com.voly_saina.service.FactureService;
@@ -135,7 +136,7 @@ public class ClientFactureService {
 
     }
 
-    public byte[] exporterFacturePDF(Long idFacture, Long idClient) throws Exception {
+    public byte[] exporterFacturePDF(Long idFacture, Long idClient) throws ReservationException {
         Facture facture = factureService.findById(idFacture);
 
         Panier panier = facture.getPanier();
@@ -148,7 +149,7 @@ public class ClientFactureService {
         if (panier == null) {
             ReservationMachine reservation = reservationMachineService.findByIdFacture(idFacture);
             if (reservation == null) {
-                throw new Exception("cette reservation doit d'abord etre facturee");
+                throw new ReservationException("cette reservation doit d'abord etre facturee");
             }
             PanierDetails detail = new PanierDetails();
             detail.setReservationMachine(reservation);

@@ -1,68 +1,35 @@
 package com.voly_saina.controller.client;
 
-import com.voly_saina.dto.StatistiquesClientDTO;
-import com.voly_saina.entity.Utilisateur;
-import com.voly_saina.service.client.ClientProfilService;
-import com.voly_saina.service.client.ClientStatistiqueService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/client/statistiques")
 @RequiredArgsConstructor
 public class ClientStatistiqueController {
 
-    private final ClientStatistiqueService clientStatistiqueService;
-    private final ClientProfilService clientProfilService;
-
-    private Utilisateur getUtilisateurConnecte(@AuthenticationPrincipal User user) {
-        return clientProfilService.getUtilisateurByEmail(user.getUsername());
-    }
-
+    // Les statistiques client sont désormais intégrées à la page profil
+    // (onglet "Statistiques") : on y redirige en conservant les filtres.
     @GetMapping
     public String statistiques(
-            @AuthenticationPrincipal User user,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateDebut,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateFin,
+            @RequestParam(required = false) String dateDebut,
+            @RequestParam(required = false) String dateFin,
             @RequestParam(required = false) String periode,
-            Model model) {
-        Utilisateur utilisateur = getUtilisateurConnecte(user);
-        
-        LocalDate debut = dateDebut;
-        LocalDate fin = dateFin;
-        
+            RedirectAttributes redirectAttributes) {
+        redirectAttributes.addAttribute("tab", "stats");
         if (periode != null && !periode.isEmpty()) {
-            var periodes = clientStatistiqueService.periodesDisponibles();
-            if (periodes.containsKey(periode)) {
-                LocalDate[] dates = periodes.get(periode);
-                debut = dates[0];
-                fin = dates[1];
-            }
+            redirectAttributes.addAttribute("periode", periode);
         }
-        
-        if (debut == null || fin == null) {
-            LocalDate[] periodeDefaut = clientStatistiqueService.periodeDefaut();
-            debut = periodeDefaut[0];
-            fin = periodeDefaut[1];
+        if (dateDebut != null && !dateDebut.isEmpty()) {
+            redirectAttributes.addAttribute("dateDebut", dateDebut);
         }
-        
-        StatistiquesClientDTO stats = clientStatistiqueService.genererStatistiquesClient(utilisateur.getIdUtilisateur(), debut, fin);
-        
-        model.addAttribute("stats", stats);
-        model.addAttribute("dateDebut", debut);
-        model.addAttribute("dateFin", fin);
-        model.addAttribute("idClient", utilisateur.getIdUtilisateur());
-        model.addAttribute("periodeSelectionnee", periode);
-        
-        return "client/statistiques/index";
+        if (dateFin != null && !dateFin.isEmpty()) {
+            redirectAttributes.addAttribute("dateFin", dateFin);
+        }
+        return "redirect:/client/profil";
     }
 }

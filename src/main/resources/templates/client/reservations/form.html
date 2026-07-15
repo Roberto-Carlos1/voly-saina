@@ -26,7 +26,7 @@
                     <div>
                         <h2 id="nomMachine" class="font-headline-md text-headline-md text-on-surface">Chargement...</h2>
                         <p id="typeMachine" class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Type</p>
-                        <p id="prixMachine" class="font-headline-md text-headline-md text-primary mt-1">0 € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+                        <p id="prixMachine" class="font-headline-md text-headline-md text-primary mt-1">0 Ar <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
                     </div>
                 </div>
                 <div id="machineError" class="hidden mt-4"></div>
@@ -73,7 +73,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="font-body-md text-body-md text-on-surface-variant">Total</span>
-                            <span class="font-headline-md text-headline-md text-primary" id="totalEstime">0 €</span>
+                            <span class="font-headline-md text-headline-md text-primary" id="totalEstime">0 Ar</span>
                         </div>
                     </div>
 
@@ -159,7 +159,7 @@
                     <div>
                         <h2 id="nomMachine" class="font-headline-md text-headline-md text-on-surface">Chargement...</h2>
                         <p id="typeMachine" class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">Type</p>
-                        <p id="prixMachine" class="font-headline-md text-headline-md text-primary mt-1">0 € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
+                        <p id="prixMachine" class="font-headline-md text-headline-md text-primary mt-1">0 Ar <span class="text-label-sm font-normal text-on-surface-variant">/jour</span></p>
                     </div>
                 `;
             }
@@ -184,7 +184,7 @@
 
                     prixJour = data.prixJour || 0;
                     if (prixEl) {
-                        prixEl.innerHTML = prixJour + ' € <span class="text-label-sm font-normal text-on-surface-variant">/jour</span>';
+                        prixEl.innerHTML = prixJour + ' Ar <span class="text-label-sm font-normal text-on-surface-variant">/jour</span>';
                     }
 
                     if (errorEl) errorEl.classList.add('hidden');
@@ -239,7 +239,7 @@
             const total = jours * prixJour;
             
             if (nbJours) nbJours.textContent = jours;
-            if (totalEstime) totalEstime.textContent = total + ' €';
+            if (totalEstime) totalEstime.textContent = total + ' Ar';
             resumeContainer.style.display = 'block';
         }
 

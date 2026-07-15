@@ -1,166 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title th:text="'VolySaina+ - ' + ${culture.nom}">VolySaina+ - Détails Culture</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "on-background": "#1e1b17",
-                        "primary-container": "#166534",
-                        "surface-container-high": "#eee7e0",
-                        "surface": "#fff8f2",
-                        "on-secondary-fixed": "#341000",
-                        "secondary-fixed-dim": "#ffb693",
-                        "error-container": "#ffdad6",
-                        "secondary-fixed": "#ffdbcb",
-                        "on-surface-variant": "#404940",
-                        "on-error": "#ffffff",
-                        "surface-variant": "#e8e1db",
-                        "on-primary-fixed-variant": "#005226",
-                        "tertiary-fixed-dim": "#ffb694",
-                        "on-secondary-fixed-variant": "#7a3000",
-                        "on-secondary-container": "#712c00",
-                        "on-secondary": "#ffffff",
-                        "tertiary": "#653319",
-                        "secondary-container": "#fd925b",
-                        "inverse-on-surface": "#f7efe9",
-                        "on-tertiary-container": "#ffc1a4",
-                        "surface-dim": "#e0d9d2",
-                        "surface-container-highest": "#e8e1db",
-                        "on-primary-fixed": "#00210b",
-                        "on-primary": "#ffffff",
-                        "on-tertiary-fixed": "#351000",
-                        "on-surface": "#1e1b17",
-                        "surface-tint": "#1f6c3a",
-                        "secondary": "#9a4614",
-                        "error": "#ba1a1a",
-                        "primary-fixed-dim": "#8bd79b",
-                        "tertiary-container": "#81492d",
-                        "primary": "#004c22",
-                        "on-primary-container": "#93e0a2",
-                        "outline-variant": "#bfc9bd",
-                        "primary-fixed": "#a6f4b5",
-                        "on-tertiary": "#ffffff",
-                        "on-error-container": "#93000a",
-                        "inverse-surface": "#33302c",
-                        "background": "#fff8f2",
-                        "surface-bright": "#fff8f2",
-                        "outline": "#707a6f",
-                        "on-tertiary-fixed-variant": "#6d391e",
-                        "tertiary-fixed": "#ffdbcc",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-low": "#faf2eb",
-                        "inverse-primary": "#8bd79b",
-                        "surface-container": "#f4ede6"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.125rem",
-                        lg: "0.25rem",
-                        xl: "0.5rem",
-                        full: "0.75rem"
-                    },
-                    spacing: {
-                        "stack-sm": "8px",
-                        "gutter-desktop": "24px",
-                        "margin-mobile": "20px",
-                        "stack-md": "16px",
-                        "stack-lg": "32px",
-                        "gutter-mobile": "16px",
-                        "base": "4px",
-                        "margin-desktop": "48px"
-                    },
-                    fontFamily: {
-                        "body-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "label-md": ["Inter"],
-                        "headline-xl-mobile": ["Inter"],
-                        "headline-xl": ["Inter"]
-                    },
-                    fontSize: {
-                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
-                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        body {
-            background-color: theme('colors.background');
-            color: theme('colors.on-background');
-        }
-        .hero-gradient {
-            background: linear-gradient(180deg, rgba(0,76,34,0.1) 0%, rgba(255,248,242,0) 100%);
-        }
-    </style>
-</head>
+
+<head th:replace="~{fragments/header :: head(pageTitle='Détail culture - Voly Saina+')}"></head>
 
 <body class="font-body-md text-body-md">
 
-    <!-- TopNavBar -->
-    <nav class="bg-surface border-b border-outline-variant sticky top-0 z-50">
-        <div class="flex justify-between items-center w-full px-margin-desktop py-base max-w-[1280px] mx-auto">
-            <div class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</div>
-            <div class="hidden md:flex items-center gap-stack-lg">
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="">Location</a>
-                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-150" href="/catalogue/produits/catalogue">Boutique</a>
-                <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="/guide-plantation">Encyclopédie</a>
-            </div>
-            <div class="flex items-center gap-stack-md">
-                <div class="hidden md:flex items-center bg-surface-container-low px-stack-md py-stack-sm rounded-lg border border-outline-variant">
-                    <span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
-                    <input class="bg-transparent border-none focus:ring-0 text-label-md ml-base" placeholder="Rechercher..." type="text"/>
-                </div>
-                <button class="flex items-center justify-center p-base text-primary hover:scale-95 duration-150">
-                    <span class="material-symbols-outlined text-[32px]">account_circle</span>
-                </button>
-            </div>
-        </div>
-    </nav>
+    <!-- ===== HEADER ===== -->
+    <div th:replace="~{fragments/header :: header}"></div>
 
-    <main class="min-h-screen">
+    <main class="pt-20 min-h-screen">
 
         <!-- Breadcrumb / Back Link -->
-        <div class="max-w-[1280px] mx-auto px-margin-desktop py-stack-md">
-            <a class="inline-flex items-center gap-base font-label-md text-label-md text-primary hover:underline group" th:href="@{/guide-plantation/cultures(
-                motCle=${filtres.motCle},
-                localisation=${filtres.localisation},
-                saison=${filtres.saison},
-                page=${page},
-                size=${size},
-                tri=${tri}
-            )}">
+        <div class="max-w-[1280px] mx-auto px-6 md:px-12 py-4">
+            <a class="inline-flex items-center gap-2 font-semibold text-sm text-primary hover:underline group" 
+               th:href="@{/guide-plantation/cultures(
+                   motCle=${filtres.motCle},
+                   localisation=${filtres.localisation},
+                   saison=${filtres.saison},
+                   page=${page},
+                   size=${size},
+                   tri=${tri}
+               )}">
                 <span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
                 Retour à la liste
             </a>
         </div>
 
         <!-- Hero Section -->
-        <section class="max-w-[1280px] mx-auto px-margin-desktop pb-stack-lg">
+        <section class="max-w-[1280px] mx-auto px-6 md:px-12 pb-8">
 
-            <div class="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-outline-variant shadow-sm mb-stack-lg">
+            <div class="relative w-full aspect-[21/9] rounded-xl overflow-hidden border border-outline-variant shadow-sm mb-6">
                 <div class="w-full h-full bg-primary-fixed flex items-center justify-center">
                     <img th:if="${imageCulture != null}"
                          th:src="@{${imageCulture}}"
@@ -168,30 +37,30 @@
                          class="w-full h-full object-cover" />
                     <span th:unless="${imageCulture != null}" class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
                 </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-margin-desktop">
-                    <span class="inline-block bg-primary-container text-on-primary-container font-label-md text-label-md px-stack-md py-base rounded-full w-fit mb-stack-sm">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                    <span class="inline-block bg-primary-container text-on-primary-container font-semibold text-sm px-4 py-2 rounded-full w-fit mb-2">
                         Catégorie : <span th:text="${culture.saisonRecommandee}">Céréales</span>
                     </span>
-                    <h1 class="font-headline-xl text-headline-xl text-white" th:text="${culture.nom}">Nom de la Culture</h1>
+                    <h1 class="text-4xl md:text-5xl font-bold text-white" th:text="${culture.nom}">Nom de la Culture</h1>
                 </div>
             </div>
 
             <!-- Bento Grid Layout -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter-desktop">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
 
                 <!-- Main Content Column -->
-                <div class="md:col-span-8 flex flex-col gap-stack-lg">
+                <div class="md:col-span-8 flex flex-col gap-6">
 
                     <!-- Description Card -->
-                    <div class="bg-surface border border-outline-variant p-stack-lg rounded-xl">
-                        <h2 class="font-headline-md text-headline-md mb-stack-md text-primary">Description de la culture</h2>
-                        <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed" th:text="${culture.description}">
+                    <div class="bg-surface border border-outline-variant p-6 rounded-xl">
+                        <h2 class="text-2xl font-bold mb-4 text-primary">Description de la culture</h2>
+                        <p class="text-lg text-on-surface-variant leading-relaxed" th:text="${culture.description}">
                             Ceci est une description détaillée de la culture, incluant ses caractéristiques biologiques, ses besoins spécifiques et son importance économique dans le secteur agricole durable.
                         </p>
                     </div>
 
                     <!-- Visual Assets Section -->
-                    <div class="grid grid-cols-2 gap-gutter-desktop">
+                    <div class="grid grid-cols-2 gap-6">
                         <div class="aspect-square rounded-xl overflow-hidden border border-outline-variant bg-surface-container-low flex items-center justify-center">
                             <img th:if="${imageCulture != null}"
                                  th:src="@{${imageCulture}}"
@@ -211,40 +80,39 @@
                 </div>
 
                 <!-- Sidebar Info Column -->
-                <div class="md:col-span-4 flex flex-col gap-stack-lg">
+                <div class="md:col-span-4 flex flex-col gap-6">
 
                     <!-- Tech Specs Table -->
                     <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-                        <div class="bg-primary text-white p-stack-md">
-                            <h3 class="font-label-md text-label-md uppercase tracking-wider">Fiche d'Identité Technique</h3>
+                        <div class="bg-primary text-white p-4">
+                            <h3 class="font-semibold text-sm uppercase tracking-wider">Fiche d'Identité Technique</h3>
                         </div>
-                        <div class="p-base">
+                        <div class="p-2">
                             <div class="flex flex-col">
-                                <div class="bg-surface-container-low p-stack-md flex justify-between items-center">
-                                    <span class="font-label-md text-label-md text-on-surface-variant uppercase">Localisation</span>
-                                    <span class="font-body-md text-body-md text-on-background font-semibold text-right" th:text="${culture.localisationRecommandee}">Régions Tempérées</span>
+                                <div class="bg-surface-container-low p-4 flex justify-between items-center">
+                                    <span class="font-semibold text-sm text-on-surface-variant uppercase">Localisation</span>
+                                    <span class="text-base text-on-background font-semibold text-right" th:text="${culture.localisationRecommandee}">Régions Tempérées</span>
                                 </div>
-                                <div class="bg-white p-stack-md flex justify-between items-center border-t border-outline-variant">
-                                    <span class="font-label-md text-label-md text-on-surface-variant uppercase">Saison</span>
-                                    <span class="font-body-md text-body-md text-on-background font-semibold text-right" th:text="${culture.saisonRecommandee}">Printemps / Été</span>
+                                <div class="bg-white p-4 flex justify-between items-center border-t border-outline-variant">
+                                    <span class="font-semibold text-sm text-on-surface-variant uppercase">Saison</span>
+                                    <span class="text-base text-on-background font-semibold text-right" th:text="${culture.saisonRecommandee}">Printemps / Été</span>
                                 </div>
-                                <div class="bg-surface-container-low p-stack-md flex justify-between items-center border-t border-outline-variant">
-                                    <span class="font-label-md text-label-md text-on-surface-variant uppercase">Type de Sol</span>
-                                    <span class="font-body-md text-body-md text-on-background font-semibold text-right">Argilo-limoneux</span>
+                                <div class="bg-surface-container-low p-4 flex justify-between items-center border-t border-outline-variant">
+                                    <span class="font-semibold text-sm text-on-surface-variant uppercase">Type de Sol</span>
+                                    <span class="text-base text-on-background font-semibold text-right">Argilo-limoneux</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Fiche Technique Action -->
-                    <div class="bg-surface-container-highest border border-outline-variant p-stack-lg rounded-xl flex flex-col items-center text-center">
-                        <span class="material-symbols-outlined text-[48px] text-primary mb-stack-md" style="font-variation-settings: 'FILL' 1;">description</span>
-                        <h4 class="font-headline-md text-headline-md mb-stack-sm text-on-surface">Guide Expert</h4>
+                    <div class="bg-surface-container-highest border border-outline-variant p-6 rounded-xl flex flex-col items-center text-center">
+                        <span class="material-symbols-outlined text-[48px] text-primary mb-4" style="font-variation-settings: 'FILL' 1;">description</span>
+                        <h4 class="text-2xl font-bold mb-2 text-on-surface">Guide Expert</h4>
 
-                        <!-- Dynamisation avec Thymeleaf -->
                         <div class="w-full" th:if="${ficheCulture != null}">
-                            <p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">Téléchargez le guide complet pour optimiser vos rendements.</p>
-                            <a class="inline-flex w-full justify-center items-center px-stack-lg py-stack-md bg-primary text-white font-label-md text-label-md rounded-lg hover:bg-primary-container transition-all duration-150 active:scale-95 shadow-md" 
+                            <p class="text-base text-on-surface-variant mb-4">Téléchargez le guide complet pour optimiser vos rendements.</p>
+                            <a class="inline-flex w-full justify-center items-center px-4 py-4 bg-primary text-white font-semibold text-sm rounded-lg hover:bg-primary-container transition-all duration-150 active:scale-95 shadow-md" 
                                th:href="@{/guide-plantation/cultures/{id}/fiche(
                                    id=${culture.idCulture},
                                    motCle=${filtres.motCle},
@@ -259,10 +127,20 @@
                         </div>
 
                         <div class="w-full" th:if="${ficheCulture == null}">
-                            <p class="font-body-md text-body-md text-error italic p-stack-md bg-error-container/30 border border-error/20 rounded-lg">
+                            <p class="text-base text-error italic p-4 bg-error-container/30 border border-error/20 rounded-lg">
                                 Aucune fiche détaillée disponible pour cette culture.
                             </p>
                         </div>
+                    </div>
+
+                    <!-- Industrial Contact Banner -->
+                    <div class="bg-on-background p-6 rounded-xl text-white">
+                        <span class="font-semibold text-sm uppercase text-primary-fixed-dim mb-2 block">Service VolySaina+</span>
+                        <h5 class="text-2xl font-bold mb-4">Besoin de conseils techniques ?</h5>
+                        <p class="text-base text-surface-variant/80 mb-4">Nos agronomes experts sont disponibles pour vous accompagner dans votre projet de culture.</p>
+                        <button class="w-full border-2 border-outline py-3 rounded-lg hover:bg-white hover:text-on-background transition-colors font-semibold">
+                            Contact Support
+                        </button>
                     </div>
 
                 </div>
@@ -272,30 +150,17 @@
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-surface-container-highest border-t border-outline-variant mt-stack-lg">
-        <div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-stack-lg gap-stack-md max-w-[1280px] mx-auto">
-            <div class="flex flex-col gap-base items-center md:items-start">
-                <div class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</div>
-                <p class="font-label-sm text-label-sm text-on-surface-variant">© 2026 VolySaina+. Excellence en Agriculture Durable.</p>
-            </div>
-            <div class="flex flex-wrap justify-center gap-stack-md">
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Conditions d'utilisation</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Politique de confidentialité</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Contact Support</a>
-                <a class="font-label-sm text-label-sm text-on-surface-variant hover:underline decoration-primary" href="#">Partenaires</a>
-            </div>
-        </div>
-    </footer>
+    <!-- ===== FOOTER ===== -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
     <script>
-        // Micro-interaction for technical spec rows hover
-        document.querySelectorAll('.flex.flex-col > div').forEach(row => {
-            row.addEventListener('mouseenter', () => {
-                row.classList.add('bg-primary/5');
-            });
-            row.addEventListener('mouseleave', () => {
-                row.classList.remove('bg-primary/5');
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === 'guide-plantation') {
+                    link.classList.add('active');
+                }
             });
         });
     </script>

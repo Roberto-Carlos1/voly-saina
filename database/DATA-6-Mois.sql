@@ -16,25 +16,25 @@ SET search_path TO voly_saina;
 -- =====================================================================
 
 INSERT INTO utilisateur(nom, telephone, email, mot_de_passe, id_role, id_statut_compte, date_creation) VALUES
-('Solofo', '+261340000001', 'solofo@volysaina.mg', '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 2, 1, '2026-01-02'),  -- gestionnaire
-('Fenitra', '+261340000002', 'fenitra@volysaina.mg', '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 4, 1, '2026-01-02'), -- employé
-('Njaka', '+261340000003', 'njaka@volysaina.mg', '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 4, 1, '2026-01-02');   -- employé
+('Solofo', '+261340000001', 'solofo@volysaina.mg', '123', 2, 1, '2026-01-02'),  -- gestionnaire
+('Fenitra', '+261340000002', 'fenitra@volysaina.mg', '123', 4, 1, '2026-01-02'), -- employé
+('Njaka', '+261340000003', 'njaka@volysaina.mg', '123', 4, 1, '2026-01-02');   -- employé
 
 INSERT INTO utilisateur(nom, telephone, email, mot_de_passe, id_role, id_statut_compte, date_creation) VALUES
-('Rasoa',     '+261341000001', 'rasoa@mail.mg',     '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-03'),
-('Andry',     '+261341000002', 'andry@mail.mg',     '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-04'),
-('Voahangy',  '+261341000003', 'voahangy@mail.mg',  '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-05'),
-('Tojo',      '+261341000004', 'tojo@mail.mg',      '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-08'),
-('Nirina',    '+261341000005', 'nirina@mail.mg',    '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-15'),
-('Fanja',     '+261341000006', 'fanja@mail.mg',     '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-20'),
-('Hery',      '+261341000007', 'hery@mail.mg',      '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-02-01'),
-('Miora',     '+261341000008', 'miora@mail.mg',     '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-02-05'),
-('Tiana',     '+261341000009', 'tiana@mail.mg',     '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-02-10'),
-('Faly',      '+261341000010', 'faly@mail.mg',      '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-01-02'),
-('Vola',      '+261341000011', 'vola@mail.mg',      '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-03-01'),
-('Zo',        '+261341000012', 'zo@mail.mg',        '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-04-01'),
-('Lala',      '+261341000013', 'lala@mail.mg',      '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 1, '2026-05-01'),
-('Dina',      '+261341000014', 'dina@mail.mg',      '$2a$10$7EqJtq98hPqEX7fNZaFWoOhi5L0trkA6.5NxxTPXQnaAe9YHntdIu', 1, 3, '2026-03-10'); -- compte bloqué
+('Rasoa',     '+261341000001', 'rasoa@mail.mg',     '123', 1, 1, '2026-01-03'),
+('Andry',     '+261341000002', 'andry@mail.mg',     '123', 1, 1, '2026-01-04'),
+('Voahangy',  '+261341000003', 'voahangy@mail.mg',  '123', 1, 1, '2026-01-05'),
+('Tojo',      '+261341000004', 'tojo@mail.mg',      '123', 1, 1, '2026-01-08'),
+('Nirina',    '+261341000005', 'nirina@mail.mg',    '123', 1, 1, '2026-01-15'),
+('Fanja',     '+261341000006', 'fanja@mail.mg',     '123', 1, 1, '2026-01-20'),
+('Hery',      '+261341000007', 'hery@mail.mg',      '123', 1, 1, '2026-02-01'),
+('Miora',     '+261341000008', 'miora@mail.mg',     '123', 1, 1, '2026-02-05'),
+('Tiana',     '+261341000009', 'tiana@mail.mg',     '123', 1, 1, '2026-02-10'),
+('Faly',      '+261341000010', 'faly@mail.mg',      '123', 1, 1, '2026-01-02'),
+('Vola',      '+261341000011', 'vola@mail.mg',      '123', 1, 1, '2026-03-01'),
+('Zo',        '+261341000012', 'zo@mail.mg',        '123', 1, 1, '2026-04-01'),
+('Lala',      '+261341000013', 'lala@mail.mg',      '123', 1, 1, '2026-05-01'),
+('Dina',      '+261341000014', 'dina@mail.mg',      '123', 1, 3, '2026-03-10'); -- compte bloqué
 
 -- Profils utilisateur (création partielle, comme dans la vraie logique "lazy creation")
 INSERT INTO profil_utilisateur(id_utilisateur, genre, age, csp, localisation, niveau_connexion, date_mise_a_jour)

@@ -226,7 +226,9 @@ public class ClientFactureService {
                             + facture.getDateFacture().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     normalFont));
             rightHeader.addElement(new Paragraph(
-                    "Date limite : " + facture.getDateLimite().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    "Date limite : " + (facture.getDateLimite() != null
+                            ? facture.getDateLimite().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            : "-"),
                     normalFont));
             headerTable.addCell(rightHeader);
 

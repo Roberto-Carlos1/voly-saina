@@ -91,8 +91,8 @@ public class ClientStatistiqueService {
                 );
             })
             .sorted(Comparator
-                .comparing(TopMachineDTO::getNombreLocations).reversed()
-                .thenComparing(TopMachineDTO::getTotalDepense).reversed()
+                .comparing(TopMachineDTO::getNombreLocations, Comparator.reverseOrder())
+                .thenComparing(TopMachineDTO::getTotalDepense, Comparator.reverseOrder())
                 .thenComparing(TopMachineDTO::getNomMachine))
             .limit(5)
             .collect(Collectors.toList());
@@ -122,8 +122,8 @@ public class ClientStatistiqueService {
                 );
             })
             .sorted(Comparator
-                .comparing(TopProduitDTO::getQuantiteTotale).reversed()
-                .thenComparing(TopProduitDTO::getTotalDepense).reversed()
+                .comparing(TopProduitDTO::getQuantiteTotale, Comparator.reverseOrder())
+                .thenComparing(TopProduitDTO::getTotalDepense, Comparator.reverseOrder())
                 .thenComparing(TopProduitDTO::getNomProduit))
             .limit(5)
             .collect(Collectors.toList());

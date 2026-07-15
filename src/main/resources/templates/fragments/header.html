@@ -192,17 +192,18 @@
                     Voly Saina +
                 </a>
                 <div class="hidden md:flex gap-6 items-center">
-                    <a href="/catalogue/machines/catalogue" class="font-label-md text-label-md text-secondary border-b-2 border-secondary pb-1">
+                    <a href="/guide-plantation" class="nav-link font-label-md text-primary font-bold transition-colors duration-200" data-page="guide-plantation">
+                        Encyclopédie
+                    </a>
+                    <a href="/catalogue/machines/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200" data-page="machines">
                         Catalogue Machines
                     </a>
-                    <a href="/catalogue/produits/catalogue" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200">
+                    <a href="/catalogue/produits/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200" data-page="produits">
                         Boutique
                     </a>
-                    
                     <!-- Mes Réservations -->
                     <a href="/catalogue/reservations/mes-reservations" 
-                       class="nav-link font-label-md text-label-md transition-colors duration-200"
-                       data-page="reservations">
+                       class="nav-link font-label-md text-label-md transition-colors duration-200" data-page="reservations">
                         Mes Réservations
                     </a>
                 </div>
@@ -210,14 +211,13 @@
             
             <!-- Right Side -->
             <div class="flex items-center gap-4">
-                <div class="hidden lg:flex relative">
-                    <input class="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-2 w-64 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" 
-                           placeholder="Rechercher une machine..." type="text">
-                    <span class="material-symbols-outlined absolute right-3 top-2.5 text-outline">search</span>
-                </div>
-                <a href="/client/profil" class="bg-primary text-on-primary px-6 py-2 rounded-lg font-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+                <a href="/client/profil" class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-md hover:opacity-90 transition-opacity flex items-center gap-2 relative" style="text-decoration: none;">
                     <span class="material-symbols-outlined text-[20px]">person</span>
-                    Mon Compte
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                </a>
+                <a href="/deconnexion" class="text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-2 text-sm" style="text-decoration: none;">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                    Déconnexion
                 </a>
             </div>
         </nav>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="light" lang="fr">
-  <head>
-    <meta charset="utf-8" />
+<head th:replace="~{fragments/header :: head(pageTitle='VolySaina+ | Excellence en Machinerie Agricole')}">
+      <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>VolySaina+ | Excellence en Machinerie Agricole</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
@@ -143,51 +143,13 @@
         },
       };
     </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #fff8f2;
-        color: #1e1b17;
-      }
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-      }
-      .glass-panel {
-        background: rgba(255, 248, 242, 0.85);
-        backdrop-filter: blur(8px);
-      }
-    </style>
+<!doctype html>
+<html class="light" lang="fr" xmlns:th="http://www.thymeleaf.org">  
   </head>
   <body class="bg-background">
     <!-- TopNavBar Shell -->
-    <header
-      class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm h-20"
-    >
-      <div
-        class="max-w-[1280px] mx-auto px-margin-desktop flex justify-between items-center h-full"
-      >
-        <div class="flex items-center gap-stack-lg">
-          <span
-            class="font-display-lg text-[32px] font-extrabold text-primary tracking-tight"
-            >VolySaina+</span
-          >
-        </div>
-        <div class="flex items-center gap-stack-md">
-          <div class="relative hidden lg:block">
-          </div>
-          <button
-            class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-all active:scale-95"
-          onclick="window.location.href='/client/profil'"
-          >
-            Mon Compte
-          </button>
-        </div>
-      </div>
-    </header>
+<!-- Header Navigation - Importé depuis fragments/header -->
+<header th:replace="~{fragments/header :: header}"></header>
     <main class="pt-20">
       <!-- Hero Section -->
       <section
@@ -226,6 +188,59 @@
           </div>
         </div>
       </section>
+
+      <!-- NOUVELLE SECTION : Services / Avantages -->
+      <section class="bg-primary text-on-primary py-16">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop">
+          <div class="text-center mb-12">
+            <h2 class="font-headline-lg text-headline-lg text-white mb-4">
+              Pourquoi Choisir VolySaina+ ?
+            </h2>
+            <p class="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto">
+              Des services conçus pour répondre aux besoins des agriculteurs modernes
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl text-white">verified</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-white mb-2">Qualité Certifiée</h3>
+              <p class="font-body-md text-body-md text-white/80">
+                Machines rigoureusement inspectées
+              </p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl text-white">support_agent</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-white mb-2">Support 24/7</h3>
+              <p class="font-body-md text-body-md text-white/80">
+                Assistance technique à toute heure
+              </p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl text-white">payments</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-white mb-2">Prix Compétitifs</h3>
+              <p class="font-body-md text-body-md text-white/80">
+                Les meilleurs tarifs du marché
+              </p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-3xl text-white">local_shipping</span>
+              </div>
+              <h3 class="font-headline-md text-headline-md text-white mb-2">Livraison Rapide</h3>
+              <p class="font-body-md text-body-md text-white/80">
+                Service de livraison sur tout Madagascar
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Categories Section (Bento Style) -->
       <section class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
         <div class="flex items-center justify-between mb-stack-lg">
@@ -317,6 +332,86 @@
           </a>
         </div>
       </section>
+
+      <!-- NOUVELLE SECTION : Témoignages -->
+      <section class="bg-surface-container-low py-16">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop">
+          <div class="text-center mb-12">
+            <h2 class="font-headline-lg text-headline-lg text-primary mb-4">
+              Ce que disent nos clients
+            </h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+              Des agriculteurs satisfaits qui ont fait confiance à VolySaina+
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-surface p-8 rounded-xl border border-outline-variant">
+              <div class="flex text-secondary mb-4">
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface mb-4">
+                "Grâce à VolySaina+, j'ai pu équiper ma ferme avec du matériel de qualité à des prix abordables. Service impeccable !"
+              </p>
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                  RM
+                </div>
+                <div>
+                  <p class="font-label-md text-label-md text-on-surface">Rakoto M.</p>
+                  <p class="font-label-sm text-label-sm text-on-surface-variant">Agriculteur, Antananarivo</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-surface p-8 rounded-xl border border-outline-variant">
+              <div class="flex text-secondary mb-4">
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface mb-4">
+                "La livraison rapide et le support technique 24/7 font toute la différence. Je recommande vivement !"
+              </p>
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-bold">
+                  JR
+                </div>
+                <div>
+                  <p class="font-label-md text-label-md text-on-surface">Jean R.</p>
+                  <p class="font-label-sm text-label-sm text-on-surface-variant">Producteur, Fianarantsoa</p>
+                </div>
+              </div>
+            </div>
+            <div class="bg-surface p-8 rounded-xl border border-outline-variant">
+              <div class="flex text-secondary mb-4">
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star</span>
+                <span class="material-symbols-outlined text-yellow-400">star_half</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface mb-4">
+                "Une équipe professionnelle et à l'écoute. La plateforme est facile à utiliser et les prix sont transparents."
+              </p>
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-tertiary/20 flex items-center justify-center text-tertiary font-bold">
+                  MN
+                </div>
+                <div>
+                  <p class="font-label-md text-label-md text-on-surface">Mireille N.</p>
+                  <p class="font-label-sm text-label-sm text-on-surface-variant">Agricultrice, Mahajanga</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Featured Machinery -->
       <section class="bg-surface-container-low py-stack-lg">
         <div class="max-w-[1280px] mx-auto px-margin-desktop">
@@ -337,251 +432,67 @@
             <div id="featuredEmpty" class="md:col-span-3 text-center py-10 text-on-surface-variant hidden">
               Aucune machine disponible pour le moment.
             </div>
+          </div>
+        </div>
+      </section>
 
-            <!-- Machine Cards injectées dynamiquement ici -->
-            <script>
-              (function () {
-                const grid = document.getElementById('featuredMachinesGrid');
-                const loading = document.getElementById('featuredLoading');
-                const empty = document.getElementById('featuredEmpty');
-                if (!grid) return;
-
-                function fmtPrice(p) {
-                  if (p === null || p === undefined || p === '') return '—';
-                  return p + ' MGA / JOUR';
-                }
-
-                function makeCard(m) {
-                  const disponible = !!m.disponible;
-                  const badgeClass = disponible ? 'bg-primary text-on-primary' : 'bg-secondary text-on-secondary';
-                  const badgeText = disponible ? 'DISPONIBLE' : 'INDISPONIBLE';
-                  const img = m.imageUrl || '/img/tracteur.jpg';
-
-                  const typeLabel = m.typeMachine || '—';
-                  const etatLabel = m.etatMachine || '—';
-                  const localisation = m.localisation || '—';
-                  const nom = m.nom || '—';
-
-                  const wrapper = document.createElement('div');
-                  wrapper.className = 'bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300';
-                  wrapper.innerHTML = `
-                    <div class="relative h-64 overflow-hidden">
-                      <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image:url('${img}');"></div>
-                      <div class="absolute top-4 left-4 px-3 py-1 rounded text-label-sm font-label-md ${badgeClass}">${badgeText}</div>
-                      <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-secondary px-3 py-1 rounded text-label-sm font-bold shadow-sm">${fmtPrice(m.prixJour)}</div>
-                    </div>
-                    <div class="p-6">
-                      <div class="flex justify-between items-start mb-2">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">${nom}</h3>
-                        <span class="material-symbols-outlined text-outline">favorite</span>
-                      </div>
-                      <div class="flex gap-4 mb-6">
-                        <div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">bolt</span><span class="text-label-sm">${typeLabel}</span></div>
-                        <div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">schedule</span><span class="text-label-sm">${etatLabel}</span></div>
-                        <div class="flex items-center gap-1 text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">location_on</span><span class="text-label-sm">${localisation}</span></div>
-                      </div>
-                      <a href="/catalogue/machines/detail?id=${m.idMachine}" class="w-full block text-center py-3 border-2 border-outline-variant rounded-lg font-label-md text-label-md text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-all">Voir les Détails</a>
-                    </div>
-                  `;
-                  return wrapper;
-                }
-
-                fetch('/catalogue/machines/api/disponibles', { headers: { 'Accept': 'application/json' } })
-                  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-                  .then(machines => {
-                    if (loading) loading.classList.add('hidden');
-                    const list = Array.isArray(machines) ? machines : [];
-                    if (!list.length) {
-                      if (empty) empty.classList.remove('hidden');
-                      return;
-                    }
-                    // remove static placeholders (old cards) except loading/empty
-                    [...grid.querySelectorAll('.bg-surface.border')].forEach(el => el.remove());
-                    list.slice(0, 6).forEach(m => grid.appendChild(makeCard(m)));
-                  })
-                  .catch(() => {
-                    if (loading) loading.textContent = 'Erreur de chargement';
-                    if (empty) empty.classList.remove('hidden');
-                  });
-              })();
-            </script>
-
-            <!-- Anciennes cartes hardcodées (désactivées) -->
-            <template aria-hidden="true">
-              <div
-                class="hidden bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300"
-              >
-              <div class="relative h-64 overflow-hidden">
-                <div
-                  class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-                  data-alt="A front-facing view of a powerful green tractor with dual tires on a gravel path. The machinery looks brand new and meticulously maintained, captured in natural daylight with a focused professional depth of field. The background shows a clean farm facility, emphasizing a high-end corporate agricultural service."
-                  style="
-                    background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCOcwyBLfRQBtnISG3wkDBtcjCzy6ReeOjMNtTgTc0yiHn8jNYgrB0eVi24QbNuNBvR9-0ibOdwd5ioYz4dYtnarjcHHFUDJaBvATIPiDheHi__TZvv55K4hrMhwc8zTCZfb7v250KLVlm5-T3laoBbWlkc0fcwAfA4trgqRsklcuqOWLrJqr150r_LrSBPTyN7i63717HD_yDP92Wqk3hTxhHTjAhpDdCGIbz6oXCG-q1xDXENMQw-&quot;);
-                  "
-                ></div>
-                <div
-                  class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-secondary px-3 py-1 rounded text-label-sm font-bold shadow-sm"
-                >
-                  350 Ar / JOUR
-                </div>
-              </div>
-              <div class="p-6">
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-headline-md text-headline-md text-on-surface">
-                    John Deere 8R 410
-                  </h3>
-                  <span class="material-symbols-outlined text-outline"
-                    >favorite</span
-                  >
-                </div>
-                <div class="flex gap-4 mb-6">
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >bolt</span
-                    >
-                    <span class="text-label-sm">410 CV</span>
-                  </div>
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >schedule</span
-                    >
-                    <span class="text-label-sm">1,200 Hrs</span>
-                  </div>
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >location_on</span
-                    >
-                    <span class="text-label-sm">Lyon</span>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 border-2 border-outline-variant rounded-lg font-label-md text-label-md text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-all"
-                >
-                  Voir les Détails
-                </button>
-              </div>
+      <!-- NOUVELLE SECTION : Marques Partenaires -->
+      <section class="py-16">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop">
+          <div class="text-center mb-12">
+            <h2 class="font-headline-lg text-headline-lg text-primary mb-4">
+              Nos Marques Partenaires
+            </h2>
+            <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+              Des marques de confiance pour une qualité garantie
+            </p>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-8 items-center">
+            <div class="bg-surface p-6 rounded-xl border border-outline-variant text-center hover:shadow-lg transition-all">
+              <span class="font-headline-md text-headline-md text-primary font-bold">JD</span>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">John Deere</p>
             </div>
-            <!-- Machine Card 2 -->
-            <div
-              class="bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300"
-            >
-              <div class="relative h-64 overflow-hidden">
-                <div
-                  class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-                  data-alt="A large combine harvester harvesting corn under a clear blue sky. The lighting is crisp and detailed, showing the intricate mechanical components of the header. The scene is bright and professional, representing the high efficiency of modern agricultural equipment for sale or rent."
-                  style="
-                    background-image: url(&quot;https://lh3.googleusercontent.com/aida-public/AB6AXuCZVvYYhzaYpq9Eo6CHr6Ou5k3iAd7sDwY3zxgSlxrahowMIVVqp4zVTPGBmdUhIQ4j1FxCIh5xATWploatJQuQdg5aWr7LgTb08AM-7Ih4fJwE1xgofUEVrec8PRnZ18lXppyUU6AmyGRl4ed7sYKbCrOin8Mhfn85U_OoWpHSaeDNOp6l-7mGqC3pmzArTr_4rmLfXwMOoo1Hnu8wjuRTnZVScEMBolDSwWbvegM7XtrJocft6tHX&quot;);
-                  "
-                ></div>
-                <div
-                  class="absolute top-4 left-4 bg-secondary text-on-secondary px-3 py-1 rounded text-label-sm font-label-md"
-                >
-                  OCCASION RARE
-                </div>
-                <div
-                  class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-on-surface px-3 py-1 rounded text-label-sm font-bold shadow-sm"
-                >
-                  245,000 Ar
-                </div>
-              </div>
-              <div class="p-6">
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-headline-md text-headline-md text-on-surface">
-                    Claas Lexion 760
-                  </h3>
-                  <span class="material-symbols-outlined text-outline"
-                    >favorite</span
-                  >
-                </div>
-                <div class="flex gap-4 mb-6">
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >bolt</span
-                    >
-                    <span class="text-label-sm">530 CV</span>
-                  </div>
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >schedule</span
-                    >
-                    <span class="text-label-sm">850 Hrs</span>
-                  </div>
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >location_on</span
-                    >
-                    <span class="text-label-sm">Bordeaux</span>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 border-2 border-outline-variant rounded-lg font-label-md text-label-md text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-all"
-                >
-                  Voir les Détails
-                </button>
-              </div>
+            <div class="bg-surface p-6 rounded-xl border border-outline-variant text-center hover:shadow-lg transition-all">
+              <span class="font-headline-md text-headline-md text-secondary font-bold">CL</span>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">Claas</p>
             </div>
-            <!-- Machine Card 3 -->
-            <div
-              class="bg-surface border border-outline-variant rounded-xl overflow-hidden group hover:shadow-lg transition-all duration-300"
-            >
-              <div class="relative h-64 overflow-hidden">
-                <div
-                  class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500"
-                  data-alt="A modern red tractor equipped with a heavy-duty front-end loader, parked in a clean paved storage area of a dealership. The lighting is soft and professional, highlighting the versatile features of the utility vehicle. The visual tone is high-strength and reliable, ideal for professional farmers."
-                  style="
-                    background-image: url(&quot;https://l3.googleusercontent.com/aida-public/AB6AXuBLLVVraM6hIBJKP4H146BWwhS6kzIUYjLVgS2TYtUCOxHjyu9hCdfS7oLC-NA2UDVTi-H7iRaGLR7iepmrsnyPLTL3zlsxNfDnc520PWKG-7SoiPxdyyEHusOvlLzYdQ_SLuM-LazN608ZtCnin-&quot;);
-                  "
-                ></div>
-                <div
-                  class="absolute top-4 left-4 bg-tertiary text-on-tertiary px-3 py-1 rounded text-label-sm font-label-md"
-                >
-                  REMISE -10%
-                </div>
-                <div
-                  class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-secondary px-3 py-1 rounded text-label-sm font-bold shadow-sm"
-                >
-                  180 Ar / JOUR
-                </div>
-              </div>
-              <div class="p-6">
-                <div class="flex justify-between items-start mb-2">
-                  <h3 class="font-headline-md text-headline-md text-on-surface">
-                    Massey Ferguson 5S
-                  </h3>
-                  <span class="material-symbols-outlined text-outline"
-                    >favorite</span
-                  >
-                </div>
-                <div class="flex gap-4 mb-6">
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >bolt</span
-                    >
-                    <span class="text-label-sm">145 CV</span>
-                  </div>
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >schedule</span
-                    >
-                    <span class="text-label-sm">45 Hrs</span>
-                  </div>
-                  <div class="flex items-center gap-1 text-on-surface-variant">
-                    <span class="material-symbols-outlined text-[18px]"
-                      >location_on</span
-                    >
-                    <span class="text-label-sm">Nantes</span>
-                  </div>
-                </div>
-                <button
-                  class="w-full py-3 border-2 border-outline-variant rounded-lg font-label-md text-label-md text-primary hover:bg-primary hover:text-on-primary hover:border-primary transition-all"
-                >
-                  Voir les Détails
-                </button>
-              </div>
+            <div class="bg-surface p-6 rounded-xl border border-outline-variant text-center hover:shadow-lg transition-all">
+              <span class="font-headline-md text-headline-md text-tertiary font-bold">MF</span>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">Massey Ferguson</p>
+            </div>
+            <div class="bg-surface p-6 rounded-xl border border-outline-variant text-center hover:shadow-lg transition-all">
+              <span class="font-headline-md text-headline-md text-primary font-bold">NH</span>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">New Holland</p>
+            </div>
+            <div class="bg-surface p-6 rounded-xl border border-outline-variant text-center hover:shadow-lg transition-all">
+              <span class="font-headline-md text-headline-md text-secondary font-bold">KU</span>
+              <p class="font-label-sm text-label-sm text-on-surface-variant">Kubota</p>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- NOUVELLE SECTION : CTA / Appel à l'action -->
+      <section class="relative py-20 overflow-hidden" style="background-image: url('/img/fond.jpg'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black/70"></div>
+        <div class="relative z-10 max-w-[1280px] mx-auto px-margin-desktop text-center">
+          <h2 class="font-headline-lg text-headline-lg text-white mb-4">
+            Prêt à équiper votre exploitation ?
+          </h2>
+          <p class="font-body-lg text-body-lg text-white/80 max-w-2xl mx-auto mb-8">
+            Découvrez notre catalogue complet et trouvez la machine idéale pour vos besoins agricoles.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/catalogue/machines/catalogue" class="bg-primary text-on-primary px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-all inline-block">
+              Explorer le Catalogue
+            </a>
+            <a href="/contact" class="bg-white/20 text-white px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-white/30 transition-all inline-block border border-white/30">
+              Contactez-nous
+            </a>
+          </div>
+        </div>
+      </section>
+
       <!-- Stats Section -->
       <section class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
         <div
@@ -625,6 +536,64 @@
               class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"
             >
               Clients Satisfaits
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOUVELLE SECTION : Articles / Blog -->
+      <section class="bg-surface-container-low py-16">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop">
+          <div class="flex items-end justify-between mb-12">
+            <div>
+              <h2 class="font-headline-lg text-headline-lg text-primary">
+                Conseils & Actualités
+              </h2>
+              <p class="font-body-md text-body-md text-on-surface-variant">
+                Des articles pour vous aider à optimiser votre exploitation
+              </p>
+            </div>
+            <a href="/blog" class="text-primary font-label-md text-label-md hover:underline flex items-center gap-2">
+              Voir tous les articles
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-surface rounded-xl overflow-hidden border border-outline-variant group hover:shadow-lg transition-all">
+              <div class="h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('/img/tracteur.jpg');"></div>
+              <div class="p-6">
+                <span class="inline-block bg-primary/10 text-primary px-3 py-1 rounded text-label-sm font-label-md mb-3">Conseil</span>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Comment entretenir votre tracteur en 5 étapes</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-4">Découvrez les bonnes pratiques pour prolonger la durée de vie de votre matériel agricole.</p>
+                <a href="#" class="text-primary font-label-md text-label-md hover:underline flex items-center gap-2">
+                  Lire l'article
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+            <div class="bg-surface rounded-xl overflow-hidden border border-outline-variant group hover:shadow-lg transition-all">
+              <div class="h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('/img/recolte.jpg');"></div>
+              <div class="p-6">
+                <span class="inline-block bg-secondary/10 text-secondary px-3 py-1 rounded text-label-sm font-label-md mb-3">Tendances</span>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Les nouvelles technologies agricoles en 2025</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-4">Drones, IoT, intelligence artificielle... L'agriculture de demain est déjà là.</p>
+                <a href="#" class="text-primary font-label-md text-label-md hover:underline flex items-center gap-2">
+                  Lire l'article
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+            <div class="bg-surface rounded-xl overflow-hidden border border-outline-variant group hover:shadow-lg transition-all">
+              <div class="h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('/img/produit.jpg');"></div>
+              <div class="p-6">
+                <span class="inline-block bg-tertiary/10 text-tertiary px-3 py-1 rounded text-label-sm font-label-md mb-3">Guide</span>
+                <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Location ou achat : quel choix pour votre ferme ?</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-4">Analyse comparative pour vous aider à prendre la meilleure décision.</p>
+                <a href="#" class="text-primary font-label-md text-label-md hover:underline flex items-center gap-2">
+                  Lire l'article
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

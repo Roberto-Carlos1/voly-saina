@@ -186,31 +186,37 @@
     <!-- Header Navigation -->
     <header th:fragment="header" class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm h-20">
         <nav class="max-w-[1280px] mx-auto px-margin-desktop flex justify-between items-center h-full">
-            <!-- Logo -->
-            <div class="flex items-center gap-8">
-                <a href="/client/accueil" class="font-headline-md text-headline-md text-primary tracking-tight font-extrabold text-[32px] hover:opacity-80 transition-opacity">
-                    Voly Saina +
-                </a>
-                <div class="hidden md:flex gap-6 items-center">
-                    <a href="/guide-plantation" class="nav-link font-label-md text-primary font-bold transition-colors duration-200" data-page="guide-plantation">
-                        Encyclopédie
-                    </a>
-                    <a href="/catalogue/machines/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200" data-page="machines">
-                        Catalogue Machines
-                    </a>
-                    <a href="/catalogue/produits/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200" data-page="produits">
-                        Boutique
-                    </a>
-                    <!-- Mes Réservations -->
-                    <a href="/catalogue/reservations/mes-reservations" 
-                       class="nav-link font-label-md text-label-md transition-colors duration-200" data-page="reservations">
-                        Mes Réservations
-                    </a>
-                </div>
+            <!-- Logo seul à gauche -->
+            <a href="/client/accueil" class="font-headline-md text-headline-md text-primary tracking-tight font-extrabold text-[32px] hover:opacity-80 transition-opacity flex-shrink-0">
+                Voly Saina +
+            </a>
+            
+            <!-- Navigation centrée -->
+            <div class="hidden md:flex gap-6 items-center">
+<div class="hidden md:flex gap-6 items-center">
+    <a href="/guide-plantation" class="nav-link font-label-md text-primary font-bold transition-colors duration-200 flex items-center gap-2" data-page="guide-plantation">
+        <span class="material-symbols-outlined text-[20px]">menu_book</span>
+        Encyclopédie
+    </a>
+    <a href="/catalogue/machines/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="machines">
+        <span class="material-symbols-outlined text-[20px]">agriculture</span>
+        Machines
+    </a>
+    <a href="/catalogue/produits/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="produits">
+        <span class="material-symbols-outlined text-[20px]">storefront</span>
+        Boutique    
+    </a>
+    <!-- Mes Réservations -->
+    <a href="/catalogue/reservations/mes-reservations" 
+       class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="reservations">
+        <span class="material-symbols-outlined text-[20px]">event_note</span>
+        Mes Réservations
+    </a>
+</div>
             </div>
             
-            <!-- Right Side -->
-            <div class="flex items-center gap-4">
+            <!-- Right Side (Panier + Profil + Déconnexion) -->
+            <div class="flex items-center gap-4 flex-shrink-0">
                 <a class="p-2 hover:bg-surface-container rounded-full transition-colors relative" th:href="@{/panier}">
                     <span class="material-symbols-outlined text-on-surface-variant">shopping_cart</span>
                 </a>

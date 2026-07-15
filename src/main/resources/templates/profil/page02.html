@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <!--
   Vue « Mon profil » — route GET /profil (ProfilPageController.afficherProfil).
-  Reprend la charte de l'espace admin (design tokens de /css/admin.css) pour
-  rester cohérente, responsive et lisible, sans la barre latérale d'admin
-  (cette page est accessible à tous les utilisateurs connectés).
+  Cette page ne fait que DEUX choses (aucune donnée à valider ni à enregistrer) :
+    1. afficher un résumé de la session en cours (compte connecté) ;
+    2. énoncer les conditions d'utilisation de la plateforme.
+  Elle propose aussi deux raccourcis : l'espace client (pour tous) et
+  l'espace administrateur (seulement si la session est un compte responsable/admin).
 
   Données fournies par le contrôleur :
-    - utilisateur    : le compte connecté (nom, email, telephone, role)
-    - profil         : ProfilUtilisateur (genre, age, csp, localisation, niveauConnexion)
-    - roleCode       : code du rôle (ex. RESPONSABLE) — pilote l'accès admin
-    - recommandation : texte de recommandation personnalisé
-    - idClient       : identifiant utilisé par l'espace client
+    - utilisateur : le compte connecté (nom, email, telephone, role)
+    - profil      : ProfilUtilisateur (localisation...)
+    - roleCode    : code du rôle (ex. RESPONSABLE) — pilote l'accès admin
+    - idClient    : identifiant utilisé par l'espace client
 -->
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/admin-sidebar :: head('Mon profil — Voly Saina +')}"></head>
@@ -43,21 +44,21 @@
 
     <div class="admin-canvas">
 
-        <!-- ===== En-tête de page ===== -->
+        <!-- ===== En-tête de page + raccourcis ===== -->
         <div class="page-head">
             <div>
                 <h1>Mon profil</h1>
-                <p>Complète tes informations pour personnaliser tes recommandations et ton guide de plantation.</p>
+                <p>Résumé de votre session et conditions d'utilisation de la plateforme.</p>
             </div>
             <div class="page-head__actions">
-                <!-- Accès au back-office : visible pour tout compte non-client (responsable,
-                     gestionnaire, employé, admin...), masqué pour les clients.
-                     Pointe vers /admin qui redirige vers le tableau de bord. -->
-                <a th:if="${roleCode != null and !#strings.equalsIgnoreCase(roleCode, 'client')}"
+                <!-- Espace administrateur : uniquement pour un compte responsable (le seul
+                     rôle autorisé à entrer dans /admin). Pointe vers /admin (redirige vers le tableau de bord). -->
+                <a th:if="${roleCode != null and #strings.equalsIgnoreCase(roleCode, 'responsable')}"
                    class="btn btn--primary" th:href="@{/admin}">
                     <span class="material-symbols-outlined">dashboard</span>
                     Espace administrateur
                 </a>
+                <!-- Espace client : accessible à tous les comptes connectés. -->
                 <a class="btn btn--outline" th:href="@{/client/accueil(idClient=${idClient})}">
                     <span class="material-symbols-outlined">home</span>
                     Espace client
@@ -69,17 +70,11 @@
             </div>
         </div>
 
-        <!-- Messages flash -->
-        <div th:if="${success}" class="flash flash--success" th:text="${success}"></div>
-        <div th:if="${error}" class="flash flash--error" th:text="${error}"></div>
-
-        <!-- ===== Grille : résumé (gauche) / formulaire (droite) ===== -->
+        <!-- ===== Grille : session (gauche) / conditions (droite) ===== -->
         <div class="profil-grid">
 
-            <!-- ---------- Colonne gauche : compte + recommandation ---------- -->
+            <!-- ---------- Colonne gauche : session en cours ---------- -->
             <div class="detail-col">
-
-                <!-- Compte connecté -->
                 <div class="card card--pad-lg">
                     <div class="profil-id">
                         <div class="profil-id__avatar">
@@ -101,105 +96,65 @@
                         </div>
                         <div class="spec-row">
                             <span class="spec-row__key">Localisation</span>
-                            <span class="spec-row__val" th:text="${profil.localisation != null and !profil.localisation.isEmpty() ? profil.localisation : 'Non renseignée'}">—</span>
+                            <span class="spec-row__val" th:text="${profil != null and profil.localisation != null and !profil.localisation.isEmpty() ? profil.localisation : 'Non renseignée'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Rôle</span>
+                            <span class="spec-row__val" th:text="${roleCode != null and !roleCode.isEmpty() ? roleCode : '—'}">—</span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Recommandation personnalisée -->
-                <div class="card card--pad-lg">
-                    <div class="section-head" style="margin-bottom:8px;">
-                        <h4>Recommandation</h4>
-                        <span class="material-symbols-outlined" style="color:var(--secondary);">tips_and_updates</span>
-                    </div>
-                    <p class="detail-text" th:text="${recommandation}">Complète le profil pour activer les recommandations.</p>
                 </div>
             </div>
 
-            <!-- ---------- Colonne droite : formulaire profil agricole ---------- -->
+            <!-- ---------- Colonne droite : conditions d'utilisation ---------- -->
             <div class="detail-col">
                 <div class="card card--pad-lg">
                     <div class="section-head">
-                        <h2>Profil agricole</h2>
-                        <span class="material-symbols-outlined" style="color:var(--primary);">grass</span>
+                        <h2>Conditions d'utilisation</h2>
+                        <span class="material-symbols-outlined" style="color:var(--primary);">contract</span>
                     </div>
+                    <p class="detail-text" style="margin-bottom:16px;">
+                        En utilisant Voly Saina +, vous acceptez les conditions ci-dessous.
+                        Cette page est informative : aucune action n'est requise de votre part.
+                    </p>
 
-                    <form th:action="@{/profil/enregistrer}" method="post">
-                        <div class="form-grid">
-                            <div class="form-field">
-                                <label for="genre">Genre</label>
-                                <select id="genre" name="genre">
-                                    <option value="">— Choisir —</option>
-                                    <option value="Homme" th:selected="${profil.genre == 'Homme'}">Homme</option>
-                                    <option value="Femme" th:selected="${profil.genre == 'Femme'}">Femme</option>
-                                    <option value="Autre" th:selected="${profil.genre == 'Autre'}">Autre</option>
-                                </select>
-                            </div>
-
-                            <div class="form-field">
-                                <label for="age">Âge</label>
-                                <input id="age" type="number" name="age" min="0" th:value="${profil.age}">
-                            </div>
-
-                            <div class="form-field">
-                                <label for="csp">Catégorie / CSP</label>
-                                <select id="csp" name="csp">
-                                    <option value="">— Choisir —</option>
-                                    <option value="Agriculteur" th:selected="${profil.csp == 'Agriculteur'}">Agriculteur</option>
-                                    <option value="Commerçant" th:selected="${profil.csp == 'Commerçant'}">Commerçant</option>
-                                    <option value="Coopérative" th:selected="${profil.csp == 'Coopérative'}">Coopérative</option>
-                                    <option value="Jeune" th:selected="${profil.csp == 'Jeune'}">Jeune</option>
-                                    <option value="Entrepreneur" th:selected="${profil.csp == 'Entrepreneur'}">Entrepreneur</option>
-                                </select>
-                            </div>
-
-                            <div class="form-field">
-                                <label for="niveauConnexion">Niveau de connexion</label>
-                                <select id="niveauConnexion" name="niveauConnexion">
-                                    <option value="">— Choisir —</option>
-                                    <option value="aucune" th:selected="${profil.niveauConnexion == 'aucune'}">Aucune connexion</option>
-                                    <option value="faible" th:selected="${profil.niveauConnexion == 'faible'}">Connexion faible</option>
-                                    <option value="moyenne" th:selected="${profil.niveauConnexion == 'moyenne'}">Connexion moyenne</option>
-                                    <option value="bonne" th:selected="${profil.niveauConnexion == 'bonne'}">Bonne connexion</option>
-                                </select>
-                            </div>
-
-                            <div class="form-field form-field--wide">
-                                <label for="localisation">Localisation</label>
-                                <input id="localisation" type="text" name="localisation"
-                                       placeholder="Exemple : Antananarivo, Toamasina, Mahajanga..."
-                                       th:value="${profil.localisation}">
-                            </div>
-                        </div>
-
-                        <div class="btn-row" style="margin-top:var(--stack-lg);">
-                            <button type="submit" class="btn btn--primary">
-                                <span class="material-symbols-outlined">check_circle</span>
-                                Enregistrer le profil
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Raccourcis -->
-                <div class="card card--pad-lg">
-                    <div class="section-head" style="margin-bottom:8px;">
-                        <h4>Accès rapides</h4>
-                    </div>
-                    <div class="btn-row">
-                        <a class="btn btn--outline" th:href="@{/guide-plantation/cultures}">
-                            <span class="material-symbols-outlined">menu_book</span>
-                            Guide de plantation
-                        </a>
-                        <a class="btn btn--outline" th:href="@{/catalogue/machines/catalogue}">
-                            <span class="material-symbols-outlined">agriculture</span>
-                            Catalogue machines
-                        </a>
-                        <a class="btn btn--outline" th:href="@{/catalogue/produits/catalogue}">
-                            <span class="material-symbols-outlined">storefront</span>
-                            Catalogue produits
-                        </a>
-                    </div>
+                    <!-- Liste des articles (simple énoncé, sans case à cocher) -->
+                    <ol class="cgu-list">
+                        <li>
+                            <strong>Objet</strong>
+                            La plateforme permet la location de matériel agricole, l'achat de produits
+                            et l'accès à un guide de plantation.
+                        </li>
+                        <li>
+                            <strong>Compte utilisateur</strong>
+                            Vous êtes responsable de l'exactitude de vos informations et de la
+                            confidentialité de vos identifiants de connexion.
+                        </li>
+                        <li>
+                            <strong>Réservations et locations</strong>
+                            Toute réservation est soumise à validation par l'administration. Le matériel
+                            doit être restitué dans l'état et les délais convenus.
+                        </li>
+                        <li>
+                            <strong>Paiements et factures</strong>
+                            Les montants sont exprimés en ariary (Ar). Une facture est émise pour chaque
+                            opération ; un retard de paiement peut entraîner des pénalités.
+                        </li>
+                        <li>
+                            <strong>Responsabilités</strong>
+                            Vous vous engagez à utiliser le matériel conformément à sa destination et à
+                            signaler sans délai tout dommage constaté.
+                        </li>
+                        <li>
+                            <strong>Données personnelles</strong>
+                            Les informations collectées servent uniquement à la gestion de votre compte
+                            et de vos opérations ; elles ne sont pas cédées à des tiers.
+                        </li>
+                        <li>
+                            <strong>Contact</strong>
+                            Pour toute question, contactez l'équipe Voly Saina + via les coordonnées du support.
+                        </li>
+                    </ol>
                 </div>
             </div>
         </div>

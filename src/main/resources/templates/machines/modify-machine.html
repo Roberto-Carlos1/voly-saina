@@ -1,65 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Modifier machine — Voly Saina +')}"></head>
 <body>
-    <h1>Page de modification</h1>
-    <form th:action="@{/admin/machines/modifier/{id}(id=${machine.getIdMachine()})}" method="post">
-        <p>
-            Nom machine
-            <input type="text" name="nom" th:value="${machine.getNom()}">
+
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('machines')}"></aside>
+
+<main class="admin-main">
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <p class="crumb">
+            <a th:href="@{/admin/machines}">Flotte</a>
+            <span> / </span>
+            <span th:text="'Modifier #' + ${machine.idMachine}">Modifier</span>
         </p>
 
-        <p>
-            Description
-            <input type="text" name="description" th:value="${machine.getDescription()}">
-        </p>
+        <div class="page-head">
+            <div>
+                <h1 th:text="'Modifier — ' + ${machine.nom}">Modifier la machine</h1>
+                <p>Mettez à jour les informations de cette machine.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/machines}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
 
-        <p>
-            Prix (par jour)
-            <input type="number" name="prixJour" step="0.01" th:value="${machine.getPrixJour()}" required>
-        </p>
+        <div th:if="${success}" class="flash flash--success" th:text="${success}"></div>
+        <div th:if="${error}" class="flash flash--error" th:text="${error}"></div>
 
-        <p>
-            Type machine
-            <select name="typeMachine" required>
-                <option value="">Vide</option>
-                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}" th:text="${type.getLibelle()}"
-                    th:selected="${machine.getTypeMachine() != null and machine.getTypeMachine().getIdTypeMachine().equals(type.getIdTypeMachine())}">
-                </option>
-            </select>
-        </p>
+        <div class="card card--pad-lg" style="max-width:760px;">
+            <div class="section-head" style="margin-bottom:var(--stack-md);">
+                <h2>Informations de la machine</h2>
+                <span class="material-symbols-outlined" style="color:var(--primary);">agriculture</span>
+            </div>
 
-        <p>
-            Etat machine
-            <select name="etatMachine" required>
-                <option value="">Vide</option>
-                <option th:each="etat : ${etatMachine}" th:value="${etat.getIdEtatMachine()}"
-                    th:text="${etat.getLibelle()}"
-                    th:selected="${machine.getEtatMachine() != null and machine.getEtatMachine().getIdEtatMachine().equals(etat.getIdEtatMachine())}"></option>
-            </select>
-        </p>
-        <p>
-            Localisation
-            <input type="text" name="localisation" th:value="${machine.getLocalisation()}">
-        </p>
-        <p>
-            Kilometrage
-            <input type="number" name="kilometrage" step="0.01" th:value="${machine.getKilometrage()}">
-        </p>
-   
-        <p>
-            Disponible
-            <input type="checkbox" name="disponible" value="true" th:checked="${machine.getDisponible()}">
-        </p>
+            <form th:action="@{/admin/machines/modifier/{id}(id=${machine.idMachine})}" method="post">
 
-        <input type="submit" value="Modifier">
-    </form>
+                <div class="form-grid">
+
+                    <div class="form-field form-field--wide">
+                        <label for="nom">Nom de la machine *</label>
+                        <input type="text" id="nom" name="nom" required
+                               th:value="${machine.nom}">
+                    </div>
+
+                    <div class="form-field form-field--wide">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="3"
+                                  th:text="${machine.description}"></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="typeMachine">Type de machine *</label>
+                        <select id="typeMachine" name="typeMachine" required>
+                            <option value="">Sélectionnez un type</option>
+                            <option th:each="type : ${types}" th:value="${type.idTypeMachine}" th:text="${type.libelle}"
+                                    th:selected="${machine.typeMachine != null and machine.typeMachine.idTypeMachine == type.idTypeMachine}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="etatMachine">État *</label>
+                        <select id="etatMachine" name="etatMachine" required>
+                            <option value="">Sélectionnez un état</option>
+                            <option th:each="etat : ${etatMachine}" th:value="${etat.idEtatMachine}" th:text="${etat.libelle}"
+                                    th:selected="${machine.etatMachine != null and machine.etatMachine.idEtatMachine == etat.idEtatMachine}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="prixJour">Prix par jour (Ar) *</label>
+                        <input type="number" step="0.01" min="0" id="prixJour" name="prixJour" required
+                               th:value="${machine.prixJour}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="localisation">Localisation</label>
+                        <input type="text" id="localisation" name="localisation"
+                               th:value="${machine.localisation}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="kilometrage">Kilométrage</label>
+                        <input type="number" step="0.01" min="0" id="kilometrage" name="kilometrage"
+                               th:value="${machine.kilometrage}">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="disponible">Disponible</label>
+                        <label class="form-check">
+                            <input type="checkbox" id="disponible" name="disponible" value="true"
+                                   th:checked="${machine.disponible}">
+                            <span>Oui, cette machine est disponible à la location</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="btn-row" style="margin-top:var(--stack-lg);">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        Enregistrer les modifications
+                    </button>
+                    <a class="btn btn--outline" th:href="@{/admin/machines}">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/reservations-machine}">Réservations</a>
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+        </div>
+    </footer>
+</main>
 </body>
-
 </html>

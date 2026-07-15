@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<!--
+  Formulaire de maintenance — routes GET /admin/maintenances-machine/ajouter
+  et GET /admin/maintenances-machine/modifier/{id}.
+  Rendu par MaintenanceMachineController.insertForm / modifyForm.
+  Données fournies par le contrôleur :
+    - action      : 'insert' (création) ou 'update' (modification)
+    - machines    : List<Machine> (sélecteur)
+    - statuts     : List<StatutMaintenance> (sélecteur, modification uniquement)
+    - maintenance : MaintenanceMachine (préremplissage, modification uniquement)
+  Selon l'action, le champ de date est envoyé sous le nom « dateCreation » (création)
+  ou « dateDebut » (modification), conformément au contrôleur.
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head(${action == 'update' ? 'Modifier maintenance — Voly Saina +' : 'Nouvelle maintenance — Voly Saina +'})}"></head>
+<body>
+
+<!-- Barre latérale (onglet « Maintenances » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('maintenances')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- Fil d'Ariane -->
+        <p class="crumb">
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+            <span> / </span>
+            <span th:text="${action == 'update' ? 'Modifier' : 'Nouvelle'}">Nouvelle</span>
+        </p>
+
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <h1 th:text="${action == 'update' ? 'Modifier la maintenance' : 'Nouvelle maintenance'}">Maintenance</h1>
+                <p>Renseignez la machine, la période et les travaux de l'intervention.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/maintenances-machine}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        <div th:if="${success}" class="flash flash--success" th:text="${success}"></div>
+        <div th:if="${error}" class="flash flash--error" th:text="${error}"></div>
+
+        <!-- ===== Carte formulaire ===== -->
+        <div class="card card--pad-lg" style="max-width:760px;">
+            <div class="section-head" style="margin-bottom:var(--stack-md);">
+                <h2>Détails de l'intervention</h2>
+                <span class="material-symbols-outlined" style="color:var(--primary);">build</span>
+            </div>
+
+            <form th:action="@{${action == 'update' ? '/admin/maintenances-machine/modifier/' + maintenance.idMaintenance : '/admin/maintenances-machine/ajouter'}}"
+                  method="post" onsubmit="return validerFormulaire()">
+
+                <div class="form-grid">
+
+                    <!-- Machine -->
+                    <div class="form-field form-field--wide">
+                        <label for="idMachine">Machine *</label>
+                        <select id="idMachine" name="idMachine" required>
+                            <option value="">Sélectionnez une machine</option>
+                            <option th:each="m : ${machines}" th:value="${m.idMachine}"
+                                    th:text="${m.nom + ' (#' + m.idMachine + ')'}"
+                                    th:selected="${maintenance != null && maintenance.machine != null && maintenance.machine.idMachine == m.idMachine}">
+                            </option>
+                        </select>
+                        <span id="idMachineError" class="form-error">Veuillez sélectionner une machine</span>
+                    </div>
+
+                    <!-- Date (création ou début selon l'action) -->
+                    <div class="form-field">
+                        <label for="dateDebut" th:text="${action == 'update' ? 'Date début *' : 'Date création *'}">Date *</label>
+                        <input type="date" id="dateDebut"
+                               th:name="${action == 'update' ? 'dateDebut' : 'dateCreation'}"
+                               th:value="${maintenance != null ? maintenance.dateDebut : ''}" required>
+                        <span id="dateError" class="form-error">Veuillez entrer une date valide</span>
+                    </div>
+
+                    <!-- Date retour prévue (modification uniquement) -->
+                    <div class="form-field" th:if="${action == 'update'}">
+                        <label for="dateRetourPrevue">Date retour prévue</label>
+                        <input type="date" id="dateRetourPrevue" name="dateRetourPrevue"
+                               th:value="${maintenance != null ? maintenance.dateRetourPrevue : ''}">
+                    </div>
+
+                    <!-- Travaux -->
+                    <div class="form-field form-field--wide">
+                        <label for="travaux">Travaux *</label>
+                        <textarea id="travaux" name="travaux" rows="3" required
+                                  placeholder="Décrivez les travaux à réaliser..."
+                                  th:text="${maintenance != null ? maintenance.travaux : ''}"></textarea>
+                        <span id="travauxError" class="form-error">Veuillez décrire les travaux</span>
+                    </div>
+
+                    <!-- Coût -->
+                    <div class="form-field">
+                        <label for="cout">Coût (Ar) *</label>
+                        <input type="number" step="0.01" min="0" id="cout" name="cout" required
+                               placeholder="0.00"
+                               th:value="${maintenance != null ? maintenance.cout : ''}">
+                        <span id="coutError" class="form-error">Veuillez entrer un coût valide (≥ 0)</span>
+                    </div>
+
+                    <!-- Statut (modification uniquement) -->
+                    <div class="form-field" th:if="${action == 'update'}">
+                        <label for="idStatutMaintenance">Statut</label>
+                        <select id="idStatutMaintenance" name="idStatutMaintenance">
+                            <option value="">Sélectionnez un statut</option>
+                            <option th:each="s : ${statuts}" th:value="${s.idStatutMaintenance}"
+                                    th:text="${s.libelle}"
+                                    th:selected="${maintenance != null && maintenance.statutMaintenance != null && maintenance.statutMaintenance.idStatutMaintenance == s.idStatutMaintenance}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-row" style="margin-top:var(--stack-lg);">
+                    <button type="submit" class="btn btn--primary">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        <span th:text="${action == 'update' ? 'Mettre à jour' : 'Créer la maintenance'}">Enregistrer</span>
+                    </button>
+                    <a class="btn btn--outline" th:href="@{/admin/maintenances-machine}">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+            <a th:href="@{/admin/machines}">Flotte</a>
+        </div>
+    </footer>
+</main>
+
+<script>
+    // Validation côté client avant envoi (le contrôleur revalide côté serveur).
+    function validerFormulaire() {
+        let valide = true;
+
+        function toggle(errorId, condition) {
+            document.getElementById(errorId).style.display = condition ? "inline" : "none";
+            if (condition) valide = false;
+        }
+
+        const idMachine = document.getElementById("idMachine");
+        toggle("idMachineError", !idMachine.value);
+
+        const dateInput = document.getElementById("dateDebut");
+        toggle("dateError", !dateInput.value);
+
+        const travaux = document.getElementById("travaux");
+        toggle("travauxError", !travaux.value.trim());
+
+        const cout = document.getElementById("cout");
+        toggle("coutError", !cout.value || parseFloat(cout.value) < 0);
+
+        return valide;
+    }
+</script>
+</body>
+</html>

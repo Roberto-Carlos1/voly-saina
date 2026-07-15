@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!--
+  Vue liste des factures — route GET /admin/factures
+  Rendue par FactureController.getAll(...).
+  Données fournies par le contrôleur :
+    - factures      : List<Facture> (page courante) — numero, typeOperation, client,
+                      statutFacture (code/libelle), montantTotal, montantPaye, dateLimite
+    - statuts       : List<StatutFacture> (pour le filtre)
+    - currentPage / totalPages : pagination
+    - nombreParPage : nombre d'éléments par page
+    - success / error : messages flash
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+  Le filtre et la pagination utilisent l'API POST /admin/factures/filtre (AJAX).
+  Les tuiles de statistiques résument la page affichée (recalculées côté JS au filtrage).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Factures — Voly Saina +')}"></head>
+<body>
+
+<!-- Barre latérale (onglet « Factures » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('factures')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== Messages flash ===== -->
+        <div th:if="${success}" class="flash flash--success" th:text="${success}">Succès</div>
+        <div th:if="${error}" class="flash flash--error" th:text="${error}">Erreur</div>
+
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Gestion des factures</h1>
+                <p>Suivez la facturation, les encaissements et les restes à recouvrer.</p>
+            </div>
+        </div>
+
+        <!-- ===== Synthèse de la page affichée ===== -->
+        <div class="stat-bar"
+             th:with="totalFacture=${#lists.isEmpty(factures) ? 0 : #aggregates.sum(factures.![montantTotal])},
+                      totalPaye=${#lists.isEmpty(factures) ? 0 : #aggregates.sum(factures.![montantPaye])}">
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">receipt_long</span></div>
+                <div>
+                    <p class="stat-tile__label">Factures</p>
+                    <p class="stat-tile__value" id="statCount" th:text="${#lists.size(factures)}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">payments</span></div>
+                <div>
+                    <p class="stat-tile__label">Montant total</p>
+                    <p class="stat-tile__value" id="statTotal" th:text="${totalFacture} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--ok"><span class="material-symbols-outlined">check_circle</span></div>
+                <div>
+                    <p class="stat-tile__label">Encaissé</p>
+                    <p class="stat-tile__value" id="statPaye" th:text="${totalPaye} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--off"><span class="material-symbols-outlined">schedule</span></div>
+                <div>
+                    <p class="stat-tile__label">Reste à recouvrer</p>
+                    <p class="stat-tile__value" id="statReste" th:text="${totalFacture - totalPaye} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Barre d'outils : filtre (AJAX) + nombre par page ===== -->
+        <div class="toolbar">
+            <form id="filtreForm">
+                <span class="toolbar__label"><span class="material-symbols-outlined">filter_list</span> Filtrer</span>
+                <input type="text" name="nomClient" placeholder="Nom du client...">
+                <select name="idStatut">
+                    <option value="">Tous les statuts</option>
+                    <option th:each="statut : ${statuts}"
+                            th:value="${statut.idStatutFacture}"
+                            th:text="${statut.libelle}">Statut</option>
+                </select>
+                <button type="submit" class="btn btn--primary">
+                    <span class="material-symbols-outlined">search</span>
+                    Filtrer
+                </button>
+                <input type="hidden" name="numeroPage" value="0" id="numeroPage">
+            </form>
+
+            <div class="toolbar__spacer"></div>
+
+            <!-- Nombre d'éléments par page (POST classique) -->
+            <form action="/admin/factures/pages" method="post">
+                <span class="toolbar__label">Par page</span>
+                <input type="number" name="pages" min="1" th:value="${nombreParPage}" placeholder="10">
+                <button type="submit" class="btn btn--outline">Appliquer</button>
+            </form>
+        </div>
+
+        <!-- ===== Tableau des factures ===== -->
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Facture</th>
+                        <th>Client</th>
+                        <th>Statut</th>
+                        <th style="text-align:right;">Montant total</th>
+                        <th style="text-align:right;">Payé</th>
+                        <th style="text-align:right;">Reste</th>
+                        <th>Échéance</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="factureLines">
+                    <!-- Ligne vide si aucune facture -->
+                    <tr th:if="${#lists.isEmpty(factures)}">
+                        <td colspan="8" class="empty-state">Aucune facture enregistrée.</td>
+                    </tr>
+                    <!-- Une ligne par facture -->
+                    <tr th:each="facture : ${factures}">
+                        <td>
+                            <div class="m-cell">
+                                <div class="m-avatar"><span class="material-symbols-outlined">receipt_long</span></div>
+                                <div>
+                                    <div class="m-name" th:text="${facture.numero}">Numéro</div>
+                                    <div class="m-sub" th:text="${facture.typeOperation}">Type</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="${facture.client != null ? facture.client.nom : '—'}">Client</td>
+                        <td>
+                            <span th:if="${facture.statutFacture != null}" class="badge"
+                                  th:classappend="' badge--' + ${facture.statutFacture.code}"
+                                  th:text="${facture.statutFacture.libelle}">Statut</span>
+                            <span th:unless="${facture.statutFacture != null}" class="badge">Aucun état</span>
+                        </td>
+                        <td class="strong" style="text-align:right;" th:text="${facture.montantTotal} + ' Ar'">0 Ar</td>
+                        <td style="text-align:right;" th:text="${facture.montantPaye} + ' Ar'">0 Ar</td>
+                        <td style="text-align:right;"
+                            th:classappend="${(facture.montantTotal - facture.montantPaye) > 0} ? ' txt-off' : ' txt-ok'"
+                            th:text="${facture.montantTotal - facture.montantPaye} + ' Ar'">0 Ar</td>
+                        <td>
+                            <span class="cell-loc">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '—'}">—</span>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a class="icon-btn" title="Voir le détail"
+                                   th:href="@{/admin/factures/{id}(id=${facture.idFacture})}">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </a>
+                                <a class="icon-btn" title="Exporter en PDF"
+                                   th:href="@{/admin/factures/exportFacture/{idF}/{idC}(idF=${facture.idFacture},idC=${facture.client != null ? facture.client.idUtilisateur : 0})}">
+                                    <span class="material-symbols-outlined">picture_as_pdf</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pager">
+                <span class="pager__info" id="infoPage"
+                      th:text="'Page ' + (${currentPage} + 1) + ' sur ' + ${totalPages}">Page 1 sur 1</span>
+                <div class="pager__btns">
+                    <button type="button" id="btnPrecedent" class="pager__btn">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                        Précédent
+                    </button>
+                    <button type="button" id="btnSuivant" class="pager__btn">
+                        Suivant
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/machines}">Flotte</a>
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+        </div>
+    </footer>
+</main>
+
+<script>
+    // ================================================================
+    //  Filtre + pagination des factures (JS pur, aucune dépendance).
+    //  Le formulaire de filtre est envoyé en AJAX vers l'API du contrôleur ;
+    //  la réponse (Page<Facture> JSON) réalimente le tableau et les tuiles.
+    // ================================================================
+    const form = document.getElementById("filtreForm");
+    const numeroPageInput = document.getElementById("numeroPage");
+    const lines = document.getElementById("factureLines");
+    const infoPage = document.getElementById("infoPage");
+    const btnPrecedent = document.getElementById("btnPrecedent");
+    const btnSuivant = document.getElementById("btnSuivant");
+
+    // Ajoute ' Ar' à un montant (0 si absent).
+    function ar(v) { return (v != null ? v : 0) + " Ar"; }
+
+    // Formate une date ISO (yyyy-MM-dd, ou tableau [a,m,j]) en jj/mm/aaaa.
+    function formatDate(d) {
+        if (!d) return "—";
+        if (Array.isArray(d)) {
+            const [y, m, j] = d;
+            return String(j).padStart(2, "0") + "/" + String(m).padStart(2, "0") + "/" + y;
+        }
+        const parts = String(d).substring(0, 10).split("-");
+        return parts.length === 3 ? parts[2] + "/" + parts[1] + "/" + parts[0] : d;
+    }
+
+    // Construit le HTML d'une ligne à partir d'une facture (JSON).
+    function renderRow(f) {
+        const client = f.client ? f.client.nom : "—";
+        const idClient = f.client ? f.client.idUtilisateur : 0;
+        const statut = f.statutFacture
+            ? `<span class="badge badge--${f.statutFacture.code}">${f.statutFacture.libelle}</span>`
+            : `<span class="badge">Aucun état</span>`;
+        const total = f.montantTotal != null ? f.montantTotal : 0;
+        const paye = f.montantPaye != null ? f.montantPaye : 0;
+        const reste = total - paye;
+        const resteCls = reste > 0 ? "txt-off" : "txt-ok";
+        return `
+            <tr>
+                <td>
+                    <div class="m-cell">
+                        <div class="m-avatar"><span class="material-symbols-outlined">receipt_long</span></div>
+                        <div>
+                            <div class="m-name">${f.numero}</div>
+                            <div class="m-sub">${f.typeOperation || ""}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${client}</td>
+                <td>${statut}</td>
+                <td class="strong" style="text-align:right;">${ar(total)}</td>
+                <td style="text-align:right;">${ar(paye)}</td>
+                <td style="text-align:right;" class="${resteCls}">${ar(reste)}</td>
+                <td>
+                    <span class="cell-loc">
+                        <span class="material-symbols-outlined">event</span>
+                        <span>${formatDate(f.dateLimite)}</span>
+                    </span>
+                </td>
+                <td>
+                    <div class="row-actions">
+                        <a class="icon-btn" title="Voir le détail" href="/admin/factures/${f.idFacture}">
+                            <span class="material-symbols-outlined">visibility</span></a>
+                        <a class="icon-btn" title="Exporter en PDF"
+                           href="/admin/factures/exportFacture/${f.idFacture}/${idClient}">
+                            <span class="material-symbols-outlined">picture_as_pdf</span></a>
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    // Met à jour les tuiles de synthèse à partir des factures affichées.
+    function majStats(factures) {
+        let total = 0, paye = 0;
+        factures.forEach(f => {
+            total += Number(f.montantTotal || 0);
+            paye += Number(f.montantPaye || 0);
+        });
+        document.getElementById("statCount").textContent = factures.length;
+        document.getElementById("statTotal").textContent = ar(total);
+        document.getElementById("statPaye").textContent = ar(paye);
+        document.getElementById("statReste").textContent = ar(total - paye);
+    }
+
+    // Charge une page de factures filtrées.
+    function chargerFactures(pageCible) {
+        numeroPageInput.value = pageCible;
+        const data = new FormData(form);
+
+        fetch("/admin/factures/filtre", { method: "POST", body: data })
+            .then(response => response.json())
+            .then(pageSpring => {
+                lines.innerHTML = "";
+                const contenu = pageSpring.content || [];
+                if (contenu.length === 0) {
+                    lines.innerHTML = `<tr><td colspan="8" class="empty-state">Aucune facture trouvée.</td></tr>`;
+                } else {
+                    contenu.forEach(f => lines.insertAdjacentHTML("beforeend", renderRow(f)));
+                }
+                majStats(contenu);
+                const totalPages = Math.max(pageSpring.totalPages, 1);
+                infoPage.textContent = `Page ${pageSpring.number + 1} sur ${totalPages}`;
+                btnPrecedent.disabled = pageSpring.first;
+                btnSuivant.disabled = pageSpring.last;
+            })
+            .catch(() => {
+                lines.innerHTML = `<tr><td colspan="8" class="empty-state">Erreur lors du chargement.</td></tr>`;
+            });
+    }
+
+    // Soumettre le filtre → repartir de la page 0.
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        chargerFactures(0);
+    });
+
+    // Boutons de pagination.
+    btnSuivant.addEventListener("click", function () {
+        chargerFactures(parseInt(numeroPageInput.value, 10) + 1);
+    });
+    btnPrecedent.addEventListener("click", function () {
+        const p = parseInt(numeroPageInput.value, 10);
+        if (p > 0) chargerFactures(p - 1);
+    });
+</script>
+</body>
+</html>

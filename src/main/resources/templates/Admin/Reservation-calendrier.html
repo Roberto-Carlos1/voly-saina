@@ -1,0 +1,465 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Calendrier des Réservations - VolySaina+ Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(120px, auto);
+        }
+        .reservation-bar {
+            transition: transform 0.15s ease-out, filter 0.15s ease-out;
+        }
+        .reservation-bar:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+            z-index: 10;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #bfc9bd;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary": "#9a4614",
+                      "primary-fixed-dim": "#8bd79b",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-container": "#ffc1a4",
+                      "error": "#ba1a1a",
+                      "surface-dim": "#e0d9d2",
+                      "on-primary-container": "#93e0a2",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed-variant": "#005226",
+                      "on-error": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#341000",
+                      "inverse-surface": "#33302c",
+                      "inverse-primary": "#8bd79b",
+                      "secondary-container": "#fd925b",
+                      "tertiary-container": "#81492d",
+                      "tertiary": "#653319",
+                      "surface": "#fff8f2",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-primary-fixed": "#00210b",
+                      "on-background": "#1e1b17",
+                      "surface-bright": "#fff8f2",
+                      "on-surface": "#1e1b17",
+                      "on-surface-variant": "#404940",
+                      "surface-container-high": "#eee7e0",
+                      "secondary-fixed": "#ffdbcb",
+                      "on-error-container": "#93000a",
+                      "surface-container": "#f4ede6",
+                      "secondary-fixed-dim": "#ffb693",
+                      "primary-fixed": "#a6f4b5",
+                      "surface-tint": "#1f6c3a",
+                      "inverse-on-surface": "#f7efe9",
+                      "outline-variant": "#bfc9bd",
+                      "on-secondary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "background": "#fff8f2",
+                      "on-tertiary-fixed": "#351000",
+                      "surface-container-highest": "#e8e1db",
+                      "on-tertiary-fixed-variant": "#6d391e",
+                      "outline": "#707a6f",
+                      "primary-container": "#166534",
+                      "on-secondary-container": "#712c00",
+                      "surface-container-low": "#faf2eb",
+                      "primary": "#004c22",
+                      "on-secondary-fixed-variant": "#7a3000",
+                      "surface-variant": "#e8e1db"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-lg": "32px",
+                      "stack-sm": "8px",
+                      "gutter-mobile": "16px",
+                      "gutter-desktop": "24px",
+                      "base": "4px",
+                      "stack-md": "16px",
+                      "margin-mobile": "20px",
+                      "margin-desktop": "48px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-xl": ["Inter"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-low border-r border-outline-variant flex flex-col py-stack-md px-base shrink-0 z-40">
+<div class="px-stack-md mb-stack-lg">
+<div class="flex items-center gap-stack-sm mb-base">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded-lg shadow-sm overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional, rugged brand logo for an agricultural management platform. The design features a stylized tractor silhouette against a fertile green field background, rendered in a crisp, technical vector style with Forest Green and Stone tones. The lighting is bright and clear, conveying reliability and mechanical precision for industrial equipment software." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwLP79GFpXwIicjofu2f6FRydcWV95PAoz4gKviF35siPqIl8Xnp-3n_DRjhFUREkvdW1dYybsTEAwdqcZTn4Ksu_dADB3suHYuAaoDSNbAvADdNr8iMY0Y-Sr3LO_j5aPt9-Ilnj4U1h8QmMTqfbo5L5Ta-MhgWRBw3XBNXqqXNJoBxhwNVv0WDxfowMNsrU51yIdVS2j21zzYiZ6kF_U7PjTew2X_6_zixI4sMf8EqmaBPv20qDi">
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary leading-tight">Gestion Agricole</h1>
+<p class="font-body-md text-label-sm text-on-surface-variant">Back-office Admin</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-base">
+<a class="flex items-center gap-3 px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Tableau de bord
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">agriculture</span>
+                Flotte de matériel
+            </a>
+<!-- Active Navigation (Semantic Mapping: Reservations Page) -->
+<a class="flex items-center gap-3 px-4 py-3 font-label-md text-label-md bg-primary-container text-on-primary-container rounded-lg font-bold translate-x-1 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Réservations
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                Boutique
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">groups</span>
+                Clients
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                Rapports
+            </a>
+</nav>
+<div class="mt-auto px-base">
+<button class="w-full bg-primary text-on-primary py-3 px-4 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all mb-stack-md shadow-sm">
+<span class="material-symbols-outlined">add</span>
+                Nouvelle Réservation
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 font-label-sm text-label-sm text-on-surface-variant hover:underline" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+                    Aide
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 font-label-sm text-label-sm text-on-surface-variant hover:underline" href="#">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+                    Déconnexion
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar (Authority: JSON) -->
+<header class="flex justify-between items-center w-full px-gutter-desktop h-16 sticky top-0 z-30 bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-stack-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">AgriManager Pro</span>
+<div class="hidden md:flex items-center bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 w-80">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full p-0" placeholder="Rechercher une machine, un client..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low transition-colors duration-150 rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full border border-outline-variant overflow-hidden">
+<img alt="Administrator Profile" data-alt="Professional administrator profile portrait. A clean-cut man in a corporate-industrial polo shirt against a blurred warehouse background. High-quality lighting and professional photography style, conveying authority and technical expertise in the agricultural machinery sector. The image is bright with warm wood and steel accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmkHUCOSeZfjudcrFRQ9DwpILypMVMQLpFasSJWWcGBFbJTTsSqlleFZyKr2LTK_unkvdZEu5sBapm6S3qJEHPlN7lY09YPkmcpiqqUO_xTSiMn7l3-1iXPRA6Ab9OhEt9y0vP4B72vjs-xJwXlMW6To2UcZAEOmJSJ79Io8fJo8V1EJ1Q9cx8kt676Y3sx5XGvOgRE_40eZmBZUgrLIEos51ilJkYkj42IZeA0cgy3PQwAN9rAjmL">
+</div>
+</div>
+</header>
+<!-- Planning View -->
+<div class="p-gutter-desktop flex gap-gutter-desktop flex-1">
+<!-- Calendar Section -->
+<section class="flex-1 bg-surface-container-lowest border border-outline-variant flex flex-col">
+<!-- Calendar Header -->
+<div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface">
+<div class="flex items-center gap-stack-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Octobre 2024</h2>
+<div class="flex border border-outline-variant rounded overflow-hidden">
+<button class="px-3 py-1 bg-surface-container hover:bg-surface-container-high border-r border-outline-variant">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="px-3 py-1 bg-surface-container hover:bg-surface-container-high">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-stack-sm">
+<button class="px-4 py-1.5 font-label-md text-label-md border border-outline-variant rounded bg-surface hover:bg-surface-container-low">Aujourd'hui</button>
+<select class="px-4 py-1.5 font-label-md text-label-md border border-outline-variant rounded bg-surface focus:ring-primary focus:border-primary">
+<option>Mois</option>
+<option>Semaine</option>
+<option>Jour</option>
+</select>
+</div>
+</div>
+<!-- Day Names -->
+<div class="grid grid-cols-7 bg-surface-container-low border-b border-outline-variant">
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider">Lun</div>
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider">Mar</div>
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider">Mer</div>
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider">Jeu</div>
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider">Ven</div>
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider">Sam</div>
+<div class="p-2 text-center font-label-md text-label-sm text-on-surface-variant uppercase tracking-wider text-secondary">Dim</div>
+</div>
+<!-- Calendar Content -->
+<div class="calendar-grid flex-1 custom-scrollbar overflow-y-auto">
+<!-- Week 1 - Leading empty days -->
+<div class="border-r border-b border-outline-variant bg-surface-dim opacity-40 p-2"></div>
+<div class="border-r border-b border-outline-variant p-2 group relative">
+<span class="font-label-md text-label-md">1</span>
+</div>
+<div class="border-r border-b border-outline-variant p-2 group relative">
+<span class="font-label-md text-label-md">2</span>
+<!-- Reservation Bar -->
+<div class="reservation-bar absolute top-8 left-1 w-[280%] bg-primary-container text-on-primary-container border-l-4 border-primary p-2 rounded shadow-sm cursor-pointer z-10">
+<div class="font-label-md text-[11px] truncate">M. BERTRAND - John Deere 8R</div>
+<div class="group-hover:block hidden absolute top-full left-0 mt-2 w-64 bg-surface-container-highest border border-outline shadow-xl p-3 z-50 rounded">
+<div class="font-bold text-primary mb-1">Détails Réservation</div>
+<div class="text-label-sm text-on-surface grid grid-cols-2 gap-1">
+<span class="opacity-70">Client:</span> <span>Jean Bertrand</span>
+<span class="opacity-70">Machine:</span> <span>John Deere 8R 410</span>
+<span class="opacity-70">Période:</span> <span>02 Oct - 04 Oct</span>
+<span class="opacity-70">Statut:</span> <span class="text-primary font-bold">Confirmé</span>
+</div>
+</div>
+</div>
+</div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md">3</span>
+</div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md">4</span>
+</div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-low">
+<span class="font-label-md text-label-md">5</span>
+</div>
+<div class="border-b border-outline-variant p-2 bg-surface-container-low">
+<span class="font-label-md text-label-md text-secondary">6</span>
+</div>
+<!-- Week 2 -->
+<div class="border-r border-b border-outline-variant p-2 bg-primary/5">
+<span class="font-label-md text-label-md">7</span>
+<div class="reservation-bar mt-2 bg-secondary-container text-on-secondary-container border-l-4 border-secondary p-1 rounded text-[10px] truncate">
+                            EARL DU PRÉ - Moissonneuse
+                        </div>
+</div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md">8</span>
+</div>
+<div class="border-r border-b border-outline-variant p-2 bg-primary/5">
+<span class="font-label-md text-label-md">9</span>
+<div class="reservation-bar mt-2 w-[180%] bg-primary-container text-on-primary-container border-l-4 border-primary p-1 rounded text-[10px] truncate z-20">
+                            DUFOUR - Tracteur 6M
+                        </div>
+</div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md">10</span>
+</div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md font-bold text-primary ring-2 ring-primary ring-inset rounded-full w-7 h-7 flex items-center justify-center -ml-1">11</span>
+<div class="mt-2 space-y-1">
+<div class="reservation-bar bg-tertiary-container text-on-tertiary-container border-l-4 border-tertiary p-1 rounded text-[10px] truncate">
+                                G. MARTIN - Pulvérisateur
+                            </div>
+</div>
+</div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-low">
+<span class="font-label-md text-label-md">12</span>
+</div>
+<div class="border-b border-outline-variant p-2 bg-surface-container-low">
+<span class="font-label-md text-label-md text-secondary">13</span>
+</div>
+<!-- Week 3 -->
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">14</span></div>
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">15</span></div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md">16</span>
+<div class="reservation-bar mt-2 w-[480%] bg-primary-container text-on-primary-container border-l-4 border-primary p-2 rounded shadow-sm cursor-pointer z-10">
+<div class="font-label-md text-[11px] truncate">AGRI-SERVICES - Flotte de 3 Tracteurs</div>
+</div>
+</div>
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">17</span></div>
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">18</span></div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-low"><span class="font-label-md text-label-md">19</span></div>
+<div class="border-b border-outline-variant p-2 bg-surface-container-low"><span class="font-label-md text-label-md text-secondary">20</span></div>
+<!-- Week 4 -->
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">21</span></div>
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">22</span></div>
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">23</span></div>
+<div class="border-r border-b border-outline-variant p-2">
+<span class="font-label-md text-label-md">24</span>
+<div class="reservation-bar mt-2 bg-secondary-container text-on-secondary-container border-l-4 border-secondary p-1 rounded text-[10px] truncate">
+                            L. PETIT - Charrue 5 corps
+                        </div>
+</div>
+<div class="border-r border-b border-outline-variant p-2"><span class="font-label-md text-label-md">25</span></div>
+<div class="border-r border-b border-outline-variant p-2 bg-surface-container-low"><span class="font-label-md text-label-md">26</span></div>
+<div class="border-b border-outline-variant p-2 bg-surface-container-low"><span class="font-label-md text-label-md text-secondary">27</span></div>
+</div>
+</section>
+<!-- Sidebar: Pending Validations -->
+<aside class="w-80 flex flex-col gap-stack-md">
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg shadow-sm">
+<div class="flex items-center justify-between mb-stack-md">
+<h3 class="font-headline-md text-[18px] text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">pending_actions</span>
+                            En attente
+                        </h3>
+<span class="bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded text-label-sm font-bold">4</span>
+</div>
+<div class="space-y-stack-md">
+<!-- Pending Item 1 -->
+<div class="bg-surface border border-outline-variant p-3 rounded hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="font-label-md text-label-md text-primary">Sébastien Roux</div>
+<span class="text-label-sm text-on-surface-variant">Il y a 2h</span>
+</div>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">agriculture</span>
+<span class="font-body-md text-label-sm">Fendt 939 Vario</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-1.5 rounded font-label-sm text-label-sm hover:brightness-110">Valider</button>
+<button class="px-2 border border-error text-error rounded hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined text-[20px] align-middle">close</span>
+</button>
+</div>
+</div>
+<!-- Pending Item 2 -->
+<div class="bg-surface border border-outline-variant p-3 rounded hover:border-primary transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="font-label-md text-label-md text-primary">Ferme des Vignes</div>
+<span class="text-label-sm text-on-surface-variant">Il y a 5h</span>
+</div>
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">calendar_month</span>
+<span class="font-body-md text-label-sm">24 Oct - 26 Oct</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-1.5 rounded font-label-sm text-label-sm hover:brightness-110">Valider</button>
+<button class="px-2 border border-error text-error rounded hover:bg-error-container">
+<span class="material-symbols-outlined text-[20px] align-middle">close</span>
+</button>
+</div>
+</div>
+<!-- Pending Item 3 -->
+<div class="bg-surface border border-outline-variant p-3 rounded opacity-70">
+<div class="flex justify-between items-start mb-1">
+<div class="font-label-md text-label-md text-primary">Marc Lefebvre</div>
+<span class="text-label-sm text-on-surface-variant">Hier</span>
+</div>
+<div class="font-body-md text-label-sm italic mb-3">Télescopique JCB</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-1.5 rounded font-label-sm text-label-sm hover:brightness-110">Valider</button>
+<button class="px-2 border border-error text-error rounded">
+<span class="material-symbols-outlined text-[20px] align-middle">close</span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full mt-stack-lg py-2 text-center text-primary font-label-md text-label-md hover:underline decoration-2 underline-offset-4">
+                        Voir toutes les demandes
+                    </button>
+</div>
+<!-- Stats/Quick Info -->
+<div class="bg-surface-container-highest border border-outline-variant p-stack-md rounded-lg">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-stack-md uppercase tracking-widest">Aperçu Octobre</h4>
+<div class="space-y-stack-sm">
+<div class="flex justify-between items-center">
+<span class="text-label-sm">Taux d'occupation</span>
+<span class="font-bold text-primary">78%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 78%"></div>
+</div>
+<div class="flex justify-between items-center pt-2">
+<span class="text-label-sm">Locations actives</span>
+<span class="font-bold">12</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-label-sm">Revenu prévisionnel</span>
+<span class="font-bold text-secondary">24 500€</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Footer (Authority: JSON) -->
+<footer class="flex justify-between items-center w-full px-gutter-desktop py-stack-sm mt-auto bg-surface-container-lowest border-t border-outline-variant">
+<span class="font-label-sm text-label-sm text-on-surface-variant">© 2024 AgriManager Pro. Maintenance Platform v2.4.</span>
+<div class="flex gap-stack-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Support Technique</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Documentation</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Confidentialité</a>
+</div>
+</footer>
+</main>
+<script>
+        // Micro-interaction for calendar bars
+        document.querySelectorAll('.reservation-bar').forEach(bar => {
+            bar.addEventListener('click', () => {
+                bar.classList.toggle('ring-4');
+                bar.classList.toggle('ring-primary/30');
+            });
+        });
+
+        // Simple tab/hover effect simulation for navigation
+        const navLinks = document.querySelectorAll('aside nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                if(!link.classList.contains('bg-primary-container')) {
+                    link.style.transform = 'translateX(4px)';
+                }
+            });
+            link.addEventListener('mouseleave', () => {
+                link.style.transform = 'translateX(0px)';
+            });
+        });
+    </script>
+</body></html>

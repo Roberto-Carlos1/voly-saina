@@ -18,8 +18,13 @@ public class EtatMachineService {
         return etatMachineRepository.findAll();
     }
 
-    public Optional<EtatMachine> findById(Long id) {
-        return etatMachineRepository.findById(id);
+    public Optional<EtatMachine> findByCode(String code) {
+        return etatMachineRepository.findByCode(code);
+    }
+    
+
+    public EtatMachine findById(Long id) {
+        return etatMachineRepository.findById(id).orElse(null);
     }
 
     public EtatMachine save(EtatMachine etatMachine) {

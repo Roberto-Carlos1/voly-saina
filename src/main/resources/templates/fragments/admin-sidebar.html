@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+  Fragments réutilisables pour l'espace administrateur.
+  Usage dans une vue :
+    <head th:replace="~{fragments/admin-sidebar :: head(${pageTitle})}"></head>
+    <aside th:replace="~{fragments/admin-sidebar :: sidebar('dashboard')}"></aside>
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- ===== HEAD (polices + feuille de style admin) ===== -->
+<head th:fragment="head(pageTitle)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Administration — Voly Saina +'">Administration — Voly Saina +</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <!-- Icônes Material Symbols auto-hébergées localement (voir @font-face dans admin.css) -->
+    <link rel="stylesheet" th:href="@{/css/admin.css}" href="/css/admin.css">
+</head>
+
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside th:fragment="sidebar(active)" class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar__brand">
+        <div class="admin-sidebar__logo">
+            <span class="material-symbols-outlined">agriculture</span>
+        </div>
+        <div>
+            <h1 class="admin-sidebar__title">Voly Saina +</h1>
+            <p class="admin-sidebar__subtitle">Back-office Admin</p>
+        </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+        <a th:href="@{/admin/dashboard}" class="admin-sidebar__link"
+           th:classappend="${active == 'dashboard'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span>Tableau de bord</span>
+        </a>
+        <a th:href="@{/admin/machines}" class="admin-sidebar__link"
+           th:classappend="${active == 'machines'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">agriculture</span>
+            <span>Flotte de matériel</span>
+        </a>
+        <a th:href="@{/admin/reservations-machine}" class="admin-sidebar__link"
+           th:classappend="${active == 'reservations'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <span>Réservations</span>
+        </a>
+        <a th:href="@{/admin/reservations-machine/calendrier}" class="admin-sidebar__link"
+           th:classappend="${active == 'calendrier'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <span>Calendrier</span>
+        </a>
+        <a th:href="@{/admin/maintenances-machine}" class="admin-sidebar__link"
+           th:classappend="${active == 'maintenances'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">build</span>
+            <span>Maintenances</span>
+        </a>
+        <a th:href="@{/admin/factures}" class="admin-sidebar__link"
+           th:classappend="${active == 'factures'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span>Factures</span>
+        </a>
+        <a th:href="@{/guide-plantation/cultures}" class="admin-sidebar__link"
+           th:classappend="${active == 'guide'} ? ' admin-sidebar__link--active'">
+            <span class="material-symbols-outlined">grass</span>
+            <span>Guide plantation</span>
+        </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+        <a th:href="@{/admin/machines/ajouter}" class="btn btn--primary" style="width:100%; justify-content:center; margin-bottom:16px;">
+            <span class="material-symbols-outlined">add</span>
+            Nouvelle machine
+        </a>
+        <a th:href="@{/deconnexion}" class="admin-sidebar__link">
+            <span class="material-symbols-outlined">logout</span>
+            <span>Déconnexion</span>
+        </a>
+    </div>
+</aside>
+
+<!-- ===== TOPBAR ===== -->
+<header th:fragment="topbar" class="admin-topbar">
+    <!-- Bouton menu (visible uniquement en mobile) : ouvre/ferme la barre latérale -->
+    <button type="button" class="admin-topbar__menu" aria-label="Menu"
+            onclick="document.getElementById('adminSidebar').classList.toggle('is-open')">
+        <span class="material-symbols-outlined">menu</span>
+    </button>
+    <div class="admin-user">
+        <div style="text-align:right;">
+            <p class="admin-user__name">Administrateur</p>
+            <p class="admin-user__role">Back-office</p>
+        </div>
+        <!-- Clic sur l'avatar → page « Mon profil » -->
+        <a class="admin-user__avatar" th:href="@{/profil}" href="/profil" title="Mon profil" aria-label="Mon profil">
+            <span class="material-symbols-outlined">person</span>
+        </a>
+    </div>
+</header>
+
+</body>
+</html>

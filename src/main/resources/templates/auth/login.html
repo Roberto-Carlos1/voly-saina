@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Auth | VOLY SAINA+</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#e8e1db",
+                    "surface-container": "#f4ede6",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#fff8f2",
+                    "secondary-fixed": "#ffdbcb",
+                    "on-tertiary-fixed-variant": "#6d391e",
+                    "outline-variant": "#bfc9bd",
+                    "on-secondary": "#ffffff",
+                    "surface-dim": "#e0d9d2",
+                    "surface-container-high": "#eee7e0",
+                    "background": "#fff8f2",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "secondary-fixed-dim": "#ffb693",
+                    "on-secondary-container": "#712c00",
+                    "surface": "#fff8f2",
+                    "surface-variant": "#e8e1db",
+                    "primary-fixed": "#a6f4b5",
+                    "tertiary": "#653319",
+                    "primary-container": "#166534",
+                    "on-primary-container": "#93e0a2",
+                    "surface-tint": "#1f6c3a",
+                    "on-surface": "#1e1b17",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#341000",
+                    "on-primary-fixed-variant": "#005226",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "inverse-surface": "#33302c",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#81492d",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#fd925b",
+                    "error": "#ba1a1a",
+                    "primary-fixed-dim": "#8bd79b",
+                    "secondary": "#9a4614",
+                    "inverse-primary": "#8bd79b",
+                    "surface-container-low": "#faf2eb",
+                    "on-primary-fixed": "#00210b",
+                    "on-tertiary-fixed": "#351000",
+                    "tertiary-fixed": "#ffdbcc",
+                    "on-tertiary-container": "#ffc1a4",
+                    "inverse-on-surface": "#f7efe9",
+                    "on-surface-variant": "#404940",
+                    "outline": "#707a6f",
+                    "on-error-container": "#93000a",
+                    "primary": "#004c22",
+                    "on-background": "#1e1b17"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "gutter-desktop": "24px",
+                    "base": "4px",
+                    "margin-desktop": "48px",
+                    "margin-mobile": "20px",
+                    "stack-sm": "8px",
+                    "gutter-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-xl-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Sliding Overlay Animations */
+        .auth-container {
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        .auth-container.right-panel-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        .overlay {
+            background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmNVzOVZHgyPCjZmG3OxaFMUA_VZ9Cg3Gq2vJYXMEydmUAwxp-Y2_MBW9CHRti1smbGeU0qvSpx2A1r7zoQimJ4qW5WUGrIa3RrtSnPGGYrc2sm2Jocp3UilunMu5nEE7aQlFNBNzGSRajIUGzAMGcBC1FJJjor6zTDcDY-iPIFo9sznTLbRjLRgIrTxlBqVmJxnlfHmu1zAbIr9LtJmWBNWwhLfm7fYouwlGZUeQp8PZZPx9H4Ebi');
+            background-size: cover;
+            background-position: center;
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .auth-container.right-panel-active .overlay {
+            transform: translateX(50%);
+        }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-left {
+            transform: translateX(-20%);
+        }
+
+        .auth-container.right-panel-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        .overlay-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .auth-container.right-panel-active .overlay-right {
+            transform: translateX(20%);
+        }
+
+.form-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    min-height: 100%;
+    height: auto;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out, visibility 0s linear 0.6s;
+}
+
+.sign-in-container {
+    z-index: 2;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.auth-container.right-panel-active .sign-in-container {
+    transform: translateX(100%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.sign-up-container {
+    z-index: 1;
+}
+
+.auth-container.right-panel-active .sign-up-container {
+    transform: translateX(100%);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 5;
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out, visibility 0s linear 0s;
+}
+
+        /* @keyframes show {
+            0%, 49.99% { opacity: 0; z-index: 1; }
+            50%, 100% { opacity: 1; z-index: 5; }
+        } */
+
+        /* Mobile specific adjustments since sliding overlay is desktop-focused */
+        @media (max-width: 768px) {
+            .overlay-container { display: none; }
+            .form-container {
+                position: relative;
+                width: 100% !important;
+                height: auto;
+                min-height: 0;
+                transform: none !important;
+                opacity: 1 !important;
+                display: none;
+            }
+            .form-container.active-mobile {
+                display: block;
+            }
+            .auth-container {
+                display: flex;
+                flex-direction: column;
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-surface-bright text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Bar -->
+<nav class="bg-surface-bright dark:bg-surface-dim border-b border-outline-variant dark:border-outline fixed top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto h-16">
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim" th:href="@{/connexion}">VOLY SAINA+</a>
+<div class="hidden md:flex gap-stack-lg items-center">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors duration-150" href="#">Fleet</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors duration-150" href="#">Rentals</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors duration-150" href="#">Support</a>
+<button class="px-gutter-mobile py-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg active:opacity-80 transition-opacity duration-150" id="navSignIn">Sign In</button>
+</div>
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<main class="min-h-screen pt-24 pb-stack-lg px-margin-mobile flex items-center justify-center">
+<!-- Main Layout Container -->
+<div class="auth-container w-full max-w-[1100px] min-h-[760px] bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm md:relative" id="container">
+<!-- Sign Up Form Panel -->
+<div class="form-container sign-up-container p-stack-lg md:p-12 flex flex-col justify-center active-mobile" id="signUpPanel">
+<div class="mb-stack-lg">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Créer un compte</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Inscription et accès à l’espace selon votre rôle.</p>
+</div>
+
+<!-- Messages -->
+<div class="space-y-base mb-stack-md">
+    <div th:if="${success}" class="rounded-lg border border-primary bg-surface-container-low px-4 py-3 text-primary font-body-md" th:text="${success}"></div>
+    <div th:if="${error}" class="rounded-lg border border-error bg-error-container px-4 py-3 text-error font-body-md" th:text="${error}"></div>
+    <div th:if="${param.error}" class="rounded-lg border border-error bg-error-container px-4 py-3 text-error font-body-md">Email/téléphone ou mot de passe incorrect.</div>
+    <div th:if="${param.logout}" class="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-on-surface-variant font-body-md">Déconnexion réussie.</div>
+    <div th:if="${param.inscription}" class="rounded-lg border border-primary bg-surface-container-low px-4 py-3 text-primary font-body-md">Compte créé avec succès. Connecte-toi maintenant.</div>
+</div>
+
+<form class="space-y-stack-md" th:action="@{/inscription}" method="post">
+<div class="grid md:grid-cols-2 gap-stack-md">
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Nom complet</label>
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" placeholder="Nom et prénom" type="text" name="nom" required/>
+</div>
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Téléphone <span class="text-xs opacity-60">(Optionnel)</span></label>
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" placeholder="034..." type="text" name="telephone"/>
+</div>
+</div>
+<div class="grid md:grid-cols-2 gap-stack-md">
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Email</label>
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" placeholder="exemple@email.com" type="email" name="email" required/>
+</div>
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Mot de passe</label>
+<div class="relative">
+<input class="w-full h-12 pl-4 pr-12 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" placeholder="Mot de passe" type="password" name="motDePasse" required/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer hover:text-primary password-toggle">visibility</span>
+</div>
+</div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-stack-md">
+<div class="space-y-base flex flex-col md:col-span-2">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Rôle</label>
+<select class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" name="idRole" required>
+    <option value="">-- Choisir un rôle --</option>
+    <option th:each="role : ${roles}"
+            th:value="${role.idRole}"
+            th:text="${role.libelle != null ? role.libelle : role.code}"></option>
+</select>
+<div class="text-xs text-on-surface-variant opacity-80 mt-1">Pour l’espace client, choisir Client / Agriculteur.</div>
+</div>
+</div>
+
+<button class="w-full h-14 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="submit" >
+                    Créer mon compte
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<div class="md:hidden pt-stack-md text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Déjà un compte ? <button class="text-primary font-bold hover:underline mobile-toggle-btn" type="button">Se connecter</button>
+</p>
+</div>
+</form>
+</div>
+
+<!-- Sign In Form Panel -->
+<div class="form-container sign-in-container p-stack-lg md:p-12 flex flex-col justify-center" id="signInPanel">
+<div class="mb-stack-lg">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-2">Se connecter</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Accédez à votre espace et gérez votre flotte.</p>
+</div>
+
+<!-- Messages -->
+<div class="space-y-base mb-stack-md">
+    <div th:if="${success}" class="rounded-lg border border-primary bg-surface-container-low px-4 py-3 text-primary font-body-md" th:text="${success}"></div>
+    <div th:if="${error}" class="rounded-lg border border-error bg-error-container px-4 py-3 text-error font-body-md" th:text="${error}"></div>
+    <div th:if="${param.error}" class="rounded-lg border border-error bg-error-container px-4 py-3 text-error font-body-md">Email/téléphone ou mot de passe incorrect.</div>
+    <div th:if="${param.logout}" class="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-on-surface-variant font-body-md">Déconnexion réussie.</div>
+    <div th:if="${param.inscription}" class="rounded-lg border border-primary bg-surface-container-low px-4 py-3 text-primary font-body-md">Compte créé avec succès. Connecte-toi maintenant.</div>
+</div>
+
+<form class="space-y-stack-md" th:action="@{/connexion}" method="post">
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Email ou téléphone</label>
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" placeholder="exemple@email.com ou 034..." type="text" name="identifiant" required/>
+</div>
+<div class="space-y-base">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Mot de passe</label>
+<a class="text-xs text-primary font-semibold hover:underline" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<input class="w-full h-12 pl-4 pr-12 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition-all font-body-md" placeholder="Mot de passe" type="password" name="motDePasse" required/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant cursor-pointer hover:text-primary password-toggle">visibility</span>
+</div>
+</div>
+
+<div class="flex items-center gap-3 py-stack-sm">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" id="remember" type="checkbox"/>
+<label class="font-body-md text-body-md text-on-surface-variant" for="remember">Keep me signed in</label>
+</div>
+
+<button class="w-full h-14 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="submit">
+                    Se connecter
+                    <span class="material-symbols-outlined">login</span>
+</button>
+<div class="md:hidden pt-stack-md text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Pas encore de compte ? <button class="text-primary font-bold hover:underline mobile-toggle-btn" type="button">Créer un compte</button>
+</p>
+</div>
+</form>
+</div>
+
+<!-- Sliding Overlay Content -->
+<div class="overlay-container">
+<div class="overlay">
+<div class="absolute inset-0 z-10 bg-gradient-to-t from-primary/80 to-primary/40"></div>
+<div class="overlay-panel overlay-left z-20">
+<h2 class="font-headline-xl text-headline-xl mb-4 text-white">Déjà un partenaire ?</h2>
+<p class="font-body-lg text-body-lg text-white/90 mb-8 max-w-xs">Accédez à votre tableau de bord et reprenez vos opérations.</p>
+<button class="px-8 py-3 border-2 border-white text-white font-label-md text-label-md rounded-lg hover:bg-white/10 transition-colors" id="signIn">Se connecter</button>
+</div>
+<div class="overlay-panel overlay-right z-20">
+<h2 class="font-headline-xl text-headline-xl mb-4 text-white">Avenir de l’agriculture</h2>
+<p class="font-body-lg text-body-lg text-white/90 mb-8 max-w-xs">Rejoignez des professionnels et pilotez votre matériel avec VolySaina+.</p>
+<button class="px-8 py-3 border-2 border-white text-white font-label-md text-label-md rounded-lg hover:bg-white/10 transition-colors" id="signUp">Créer un compte</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-surface-container-high dark:bg-surface-container-highest border-t border-outline-variant dark:border-outline">
+<div class="w-full py-stack-lg px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-stack-md max-w-[1280px] mx-auto">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">VOLY SAINA+</span>
+<span class="font-label-md text-label-md text-on-surface dark:text-on-surface-variant">© 2026 VOLY SAINA+.</span>
+</div>
+<div class="flex flex-wrap justify-center gap-stack-md">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all hover:underline" href="#">Terms of Service</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all hover:underline" href="#">Privacy Policy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all hover:underline" href="#">Contact Support</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all hover:underline" href="#">Rental Guide</a>
+</div>
+</div>
+</footer>
+<script>
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const navSignIn = document.getElementById('navSignIn');
+    const container = document.getElementById('container');
+    const signUpPanel = document.getElementById('signUpPanel');
+    const signInPanel = document.getElementById('signInPanel');
+    const mobileToggles = document.querySelectorAll('.mobile-toggle-btn');
+
+    // Desktop Transition
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
+
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
+
+    navSignIn.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+        // For mobile
+        signUpPanel.classList.remove('active-mobile');
+        signInPanel.classList.add('active-mobile');
+    });
+
+    // Mobile Toggle (since sliding layout is desktop-only)
+    mobileToggles.forEach(btn => {
+        btn.addEventListener('click', () => {
+            signUpPanel.classList.toggle('active-mobile');
+            signInPanel.classList.toggle('active-mobile');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
+
+    // Simple password visibility toggle
+    const togglePassword = (el) => {
+        const input = el.previousElementSibling;
+        if (input && input.type === 'password') {
+            input.type = 'text';
+            el.innerText = 'visibility_off';
+        } else if (input) {
+            input.type = 'password';
+            el.innerText = 'visibility';
+        }
+    };
+
+    document.querySelectorAll('.password-toggle').forEach(icon => {
+        icon.addEventListener('click', () => togglePassword(icon));
+    });
+</script>
+</body></html>

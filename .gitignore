@@ -12,3 +12,5 @@
 *.tmp
 *.bak
 src/main/resources/application.properties
+database/guide_plantation_test_data.sql
+resume_demarche_projet_VOLY_SAINA.md

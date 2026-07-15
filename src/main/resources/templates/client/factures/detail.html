@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(pageTitle='Facture - VolySaina+')}">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="pt-20">
+        <div class="max-w-[960px] mx-auto px-margin-desktop py-stack-lg">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
+                <a href="/client/accueil" class="hover:text-primary">Accueil</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <a th:href="@{/client/factures(idClient=${idClient})}" class="hover:text-primary">Mes factures</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="text-on-surface font-semibold" th:text="${facture.numero}">Détail</span>
+            </nav>
+
+            <!-- Header -->
+            <div class="bg-white border-2 border-secondary/20 rounded-xl p-6 mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary">receipt_long</span>
+                            <span th:text="'Facture ' + ${facture.numero}">Facture</span>
+                        </h1>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-1"
+                           th:text="${facture.typeOperation == 'location' ? 'Location de machine' : 'Commande de produits'}">Type</p>
+                    </div>
+                    <div class="flex gap-2 flex-shrink-0">
+                        <a th:href="@{/client/factures/{id}/pdf(id=${facture.idFacture}, idClient=${idClient})}"
+                           class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                            PDF
+                        </a>
+                        <a th:href="@{/client/factures/paiement(idFacture=${facture.idFacture}, idClient=${idClient})}"
+                           th:if="${facture.statutCode != 'payee'}"
+                           class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">payments</span>
+                            Payer
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infos générales -->
+            <div class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">info</span>
+                    Informations générales
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex justify-between sm:flex-col sm:gap-1 py-3 border-b border-outline-variant/30">
+                        <span class="text-label-sm text-on-surface-variant font-label-sm uppercase">Numéro</span>
+                        <span class="font-bold text-on-surface" th:text="${facture.numero}">#001</span>
+                    </div>
+                    <div class="flex justify-between sm:flex-col sm:gap-1 py-3 border-b border-outline-variant/30">
+                        <span class="text-label-sm text-on-surface-variant font-label-sm uppercase">Type</span>
+                        <span class="font-bold text-on-surface" th:text="${facture.typeOperation == 'location' ? 'Location' : 'Commande'}">Location</span>
+                    </div>
+                    <div class="flex justify-between sm:flex-col sm:gap-1 py-3 border-b border-outline-variant/30">
+                        <span class="text-label-sm text-on-surface-variant font-label-sm uppercase">Date de facture</span>
+                        <span class="font-bold text-on-surface" th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                    </div>
+                    <div class="flex justify-between sm:flex-col sm:gap-1 py-3 border-b border-outline-variant/30">
+                        <span class="text-label-sm text-on-surface-variant font-label-sm uppercase">Échéance</span>
+                        <span class="font-bold" th:class="${facture.enRetard ? 'text-red-500' : 'text-on-surface'}"
+                              th:text="${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : '-'}">-</span>
+                    </div>
+                    <div class="flex justify-between sm:flex-col sm:gap-1 py-3 border-b border-outline-variant/30 sm:border-b-0">
+                        <span class="text-label-sm text-on-surface-variant font-label-sm uppercase">Statut</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-bold inline-block w-fit"
+                              th:classappend="${facture.statutCode == 'payee' ? 'bg-green-100 text-green-800' :
+                                               facture.statutCode == 'en_attente' ? 'bg-orange-100 text-orange-800' :
+                                               facture.statutCode == 'partiellement_payee' ? 'bg-blue-100 text-blue-800' :
+                                               facture.statutCode == 'en_retard' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}"
+                              th:text="${facture.statutLibelle}">Statut</span>
+                    </div>
+                    <div class="flex justify-between sm:flex-col sm:gap-1 py-3 border-b-0" th:if="${facture.enRetard}">
+                        <span></span>
+                        <span class="px-3 py-1 rounded-full text-sm font-bold bg-red-100 text-red-800 inline-block w-fit flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">warning</span>
+                            Paiement en retard
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Situation financière -->
+            <div class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+                    Situation financière
+                </h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-surface-container-low p-4 rounded-lg text-center">
+                        <p class="text-label-sm text-on-surface-variant mb-1 font-label-sm">Montant total</p>
+                        <p class="font-headline-md text-headline-md text-on-surface"
+                           th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</p>
+                    </div>
+                    <div class="bg-surface-container-low p-4 rounded-lg text-center">
+                        <p class="text-label-sm text-on-surface-variant mb-1 font-label-sm">Déjà payé</p>
+                        <p class="font-headline-md text-headline-md text-green-600"
+                           th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</p>
+                    </div>
+                    <div class="bg-primary/5 border border-primary/20 p-4 rounded-lg text-center">
+                        <p class="text-label-sm text-on-surface-variant mb-1 font-label-sm">Reste à payer</p>
+                        <p class="font-headline-md text-headline-md text-primary font-bold"
+                           th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</p>
+                    </div>
+                </div>
+                <!-- Barre de progression -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-label-sm text-on-surface-variant mb-1 font-label-sm">
+                        <span>Progression du paiement</span>
+                        <span class="font-bold text-on-surface" th:text="${facture.pourcentagePaye} + '%'">0%</span>
+                    </div>
+                    <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full transition-all"
+                             th:style="'width: ' + ${facture.pourcentagePaye} + '%'"></div>
+                    </div>
+                </div>
+                <div th:if="${facture.statutCode == 'payee'}" class="mt-4 bg-green-50 border border-green-200 p-4 rounded-lg text-green-800 flex items-center gap-2">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Facture entièrement réglée
+                </div>
+            </div>
+
+            <!-- Produits commandés -->
+            <div th:if="${lignes != null and not lignes.empty}" class="bg-white border border-outline-variant rounded-xl overflow-hidden mb-6">
+                <div class="bg-surface-container-high px-6 py-4 border-b border-outline-variant">
+                    <h3 class="font-label-md text-label-md text-primary font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+                        Produits commandés
+                    </h3>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-surface-container-lowest border-b border-outline-variant">
+                        <tr>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant">Article</th>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant text-center">Quantité</th>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant text-right">Prix Unitaire</th>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant text-right">Sous-total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/30">
+                        <tr th:each="ligne : ${lignes}" class="hover:bg-surface-container-low transition-colors">
+                            <td class="px-6 py-4 font-label-md text-on-surface" th:text="${ligne.produit.nom}">Produit</td>
+                            <td class="px-6 py-4 text-body-md text-center" th:text="${ligne.quantite}">0</td>
+                            <td class="px-6 py-4 text-body-md text-right"
+                                th:text="${#numbers.formatDecimal(ligne.prixUnitaire, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</td>
+                            <td class="px-6 py-4 font-bold text-on-surface text-right"
+                                th:text="${#numbers.formatDecimal(ligne.sousTotal, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Machines réservées -->
+            <div th:if="${reservations != null and not reservations.empty}" class="bg-white border border-outline-variant rounded-xl overflow-hidden mb-6">
+                <div class="bg-surface-container-high px-6 py-4 border-b border-outline-variant">
+                    <h3 class="font-label-md text-label-md text-primary font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">agriculture</span>
+                        Machines réservées
+                    </h3>
+                </div>
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-surface-container-lowest border-b border-outline-variant">
+                        <tr>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant">Machine</th>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant text-center">Période</th>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant text-center">Lieu</th>
+                            <th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant text-right">Prix Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant/30">
+                        <tr th:each="res : ${reservations}" class="hover:bg-surface-container-low transition-colors">
+                            <td class="px-6 py-4 font-label-md font-bold text-on-surface" th:text="${res.machine.nom}">Machine</td>
+                            <td class="px-6 py-4 text-body-md text-center"
+                                th:text="${res.dateDebut} + ' → ' + ${res.dateFin}">Période</td>
+                            <td class="px-6 py-4 text-body-md text-center text-on-surface-variant" th:text="${res.lieuLivraison}">Lieu</td>
+                            <td class="px-6 py-4 font-bold text-primary text-right"
+                                th:text="${#numbers.formatDecimal(res.prixTotal, 0, 'COMMA', 2, 'POINT') + ' MGA'}">0 MGA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-between items-center">
+                <a th:href="@{/client/factures(idClient=${idClient})}"
+                   class="px-6 py-3 border border-outline-variant rounded-lg font-label-md text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Retour à la liste
+                </a>
+                <a th:if="${facture.statutCode != 'payee'}"
+                   th:href="@{/client/factures/paiement(idFacture=${facture.idFacture}, idClient=${idClient})}"
+                   class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md hover:opacity-90 transition flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">payments</span>
+                    Procéder au paiement
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

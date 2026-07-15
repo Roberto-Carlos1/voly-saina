@@ -22,4 +22,6 @@ public class EtatMachine {
 
     @Column(name = "libelle", length = 80)
     private String libelle;
+
+    
 }

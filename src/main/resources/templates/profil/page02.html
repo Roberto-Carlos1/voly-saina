@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--
+  Vue « Mon profil » — route GET /profil (ProfilPageController.afficherProfil).
+  Cette page ne fait que DEUX choses (aucune donnée à valider ni à enregistrer) :
+    1. afficher un résumé de la session en cours (compte connecté) ;
+    2. énoncer les conditions d'utilisation de la plateforme.
+  Elle propose aussi deux raccourcis : l'espace client (pour tous) et
+  l'espace administrateur (seulement si la session est un compte responsable/admin).
+
+  Données fournies par le contrôleur :
+    - utilisateur : le compte connecté (nom, email, telephone, role)
+    - profil      : ProfilUtilisateur (localisation...)
+    - roleCode    : code du rôle (ex. RESPONSABLE) — pilote l'accès admin
+    - idClient    : identifiant utilisé par l'espace client
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Mon profil — Voly Saina +')}"></head>
+<body>
+
+<!-- ===== Page autonome (même charte que l'admin, sans barre latérale) ===== -->
+<div class="page-shell">
+
+    <!-- Barre supérieure : marque + utilisateur -->
+    <header class="admin-topbar">
+        <div class="admin-sidebar__brand" style="margin:0; padding:0;">
+            <div class="admin-sidebar__logo">
+                <span class="material-symbols-outlined">agriculture</span>
+            </div>
+            <div>
+                <h1 class="admin-sidebar__title">Voly Saina +</h1>
+                <p class="admin-sidebar__subtitle">Mon espace</p>
+            </div>
+        </div>
+        <div class="admin-user">
+            <div style="text-align:right;">
+                <p class="admin-user__name" th:text="${utilisateur.nom}">Utilisateur</p>
+                <p class="admin-user__role" th:text="${roleCode}">Rôle</p>
+            </div>
+            <a class="admin-user__avatar" th:href="@{/profil}" title="Mon profil" aria-label="Mon profil">
+                <span class="material-symbols-outlined">person</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== En-tête de page + raccourcis ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Mon profil</h1>
+                <p>Résumé de votre session et conditions d'utilisation de la plateforme.</p>
+            </div>
+            <div class="page-head__actions">
+                <!-- Espace administrateur : uniquement pour un compte responsable (le seul
+                     rôle autorisé à entrer dans /admin). Pointe vers /admin (redirige vers le tableau de bord). -->
+                <a th:if="${roleCode != null and #strings.equalsIgnoreCase(roleCode, 'responsable')}"
+                   class="btn btn--primary" th:href="@{/admin}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Espace administrateur
+                </a>
+                <!-- Espace client : accessible à tous les comptes connectés. -->
+                <a class="btn btn--outline" th:href="@{/client/accueil(idClient=${idClient})}">
+                    <span class="material-symbols-outlined">home</span>
+                    Espace client
+                </a>
+                <a class="btn btn--outline" th:href="@{/deconnexion}">
+                    <span class="material-symbols-outlined">logout</span>
+                    Déconnexion
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Grille : session (gauche) / conditions (droite) ===== -->
+        <div class="profil-grid">
+
+            <!-- ---------- Colonne gauche : session en cours ---------- -->
+            <div class="detail-col">
+                <div class="card card--pad-lg">
+                    <div class="profil-id">
+                        <div class="profil-id__avatar">
+                            <span class="material-symbols-outlined">account_circle</span>
+                        </div>
+                        <div>
+                            <p class="profil-id__name" th:text="${utilisateur.nom}">Nom utilisateur</p>
+                            <span class="badge badge--validee" th:text="${roleCode}">Rôle</span>
+                        </div>
+                    </div>
+                    <div class="specs">
+                        <div class="spec-row">
+                            <span class="spec-row__key">Email</span>
+                            <span class="spec-row__val" th:text="${utilisateur.email != null and !utilisateur.email.isEmpty() ? utilisateur.email : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Téléphone</span>
+                            <span class="spec-row__val" th:text="${utilisateur.telephone != null and !utilisateur.telephone.isEmpty() ? utilisateur.telephone : '—'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Localisation</span>
+                            <span class="spec-row__val" th:text="${profil != null and profil.localisation != null and !profil.localisation.isEmpty() ? profil.localisation : 'Non renseignée'}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Rôle</span>
+                            <span class="spec-row__val" th:text="${roleCode != null and !roleCode.isEmpty() ? roleCode : '—'}">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ---------- Colonne droite : conditions d'utilisation ---------- -->
+            <div class="detail-col">
+                <div class="card card--pad-lg">
+                    <div class="section-head">
+                        <h2>Conditions d'utilisation</h2>
+                        <span class="material-symbols-outlined" style="color:var(--primary);">contract</span>
+                    </div>
+                    <p class="detail-text" style="margin-bottom:16px;">
+                        En utilisant Voly Saina +, vous acceptez les conditions ci-dessous.
+                        Cette page est informative : aucune action n'est requise de votre part.
+                    </p>
+
+                    <!-- Liste des articles (simple énoncé, sans case à cocher) -->
+                    <ol class="cgu-list">
+                        <li>
+                            <strong>Objet</strong>
+                            La plateforme permet la location de matériel agricole, l'achat de produits
+                            et l'accès à un guide de plantation.
+                        </li>
+                        <li>
+                            <strong>Compte utilisateur</strong>
+                            Vous êtes responsable de l'exactitude de vos informations et de la
+                            confidentialité de vos identifiants de connexion.
+                        </li>
+                        <li>
+                            <strong>Réservations et locations</strong>
+                            Toute réservation est soumise à validation par l'administration. Le matériel
+                            doit être restitué dans l'état et les délais convenus.
+                        </li>
+                        <li>
+                            <strong>Paiements et factures</strong>
+                            Les montants sont exprimés en ariary (Ar). Une facture est émise pour chaque
+                            opération ; un retard de paiement peut entraîner des pénalités.
+                        </li>
+                        <li>
+                            <strong>Responsabilités</strong>
+                            Vous vous engagez à utiliser le matériel conformément à sa destination et à
+                            signaler sans délai tout dommage constaté.
+                        </li>
+                        <li>
+                            <strong>Données personnelles</strong>
+                            Les informations collectées servent uniquement à la gestion de votre compte
+                            et de vos opérations ; elles ne sont pas cédées à des tiers.
+                        </li>
+                        <li>
+                            <strong>Contact</strong>
+                            Pour toute question, contactez l'équipe Voly Saina + via les coordonnées du support.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/guide-plantation/cultures}">Guide de plantation</a>
+            <a th:href="@{/catalogue/machines/catalogue}">Catalogue machines</a>
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>

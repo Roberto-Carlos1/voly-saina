@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--
+  Vue historique des paiements d'une facture — route GET /admin/paiements/facture/{id}
+  Rendue par PaiementController.historiquePaiementFacture(...).
+  Données fournies par le contrôleur :
+    - facture   : la facture concernée (numero, montantTotal, montantPaye...)
+    - paiements : List<Paiement> (montant, datePaiement, modePaiement, reference)
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Historique paiement — Voly Saina +')}"></head>
+<body>
+
+<!-- Barre latérale (onglet « Factures » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('factures')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas"
+         th:with="reste=${facture.montantTotal - facture.montantPaye}">
+
+        <!-- Fil d'Ariane -->
+        <p class="crumb">
+            <a th:href="@{/admin/factures}">Factures</a>
+            <span> / </span>
+            <a th:href="@{/admin/factures/{id}(id=${facture.idFacture})}" th:text="${facture.numero}">Numéro</a>
+            <span> / </span>
+            <span>Historique de paiement</span>
+        </p>
+
+        <!-- ===== En-tête de page + actions ===== -->
+        <div class="page-head">
+            <div>
+                <h1 th:text="'Paiements — ' + ${facture.numero}">Paiements</h1>
+                <p>Liste des règlements enregistrés pour cette facture.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/factures/{id}(id=${facture.idFacture})}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour à la facture
+                </a>
+                <a class="btn btn--primary" th:if="${reste > 0}"
+                   th:href="@{/admin/paiements/reste/{id}(id=${facture.idFacture})}">
+                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                    Payer le reste
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Compteurs (montants de la facture) ===== -->
+        <div class="stat-bar">
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">receipt_long</span></div>
+                <div>
+                    <p class="stat-tile__label">Montant total</p>
+                    <p class="stat-tile__value" th:text="${facture.montantTotal} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--ok"><span class="material-symbols-outlined">check_circle</span></div>
+                <div>
+                    <p class="stat-tile__label">Déjà payé</p>
+                    <p class="stat-tile__value" th:text="${facture.montantPaye} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--off"><span class="material-symbols-outlined">payments</span></div>
+                <div>
+                    <p class="stat-tile__label">Reste à payer</p>
+                    <p class="stat-tile__value" th:text="${reste} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Tableau des paiements ===== -->
+        <div class="table-card">
+            <div class="table-card__head"><h2>Règlements</h2></div>
+
+            <p th:if="${#lists.isEmpty(paiements)}" class="empty-state">
+                Aucun paiement enregistré pour cette facture.
+            </p>
+
+            <div class="table-scroll" th:unless="${#lists.isEmpty(paiements)}">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>N° paiement</th>
+                        <th>Date</th>
+                        <th>Mode</th>
+                        <th>Référence</th>
+                        <th style="text-align:right;">Montant</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="paiement : ${paiements}">
+                        <td class="strong" th:text="'#' + ${paiement.idPaiement}">#0</td>
+                        <td th:text="${paiement.datePaiement != null ? #temporals.format(paiement.datePaiement, 'dd/MM/yyyy HH:mm') : '—'}">—</td>
+                        <td th:text="${paiement.modePaiement != null ? paiement.modePaiement.libelle : '—'}">—</td>
+                        <td th:text="${paiement.reference != null and !paiement.reference.isEmpty() ? paiement.reference : '—'}">—</td>
+                        <td class="strong" style="text-align:right;" th:text="${paiement.montant} + ' Ar'">0 Ar</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/factures}">Toutes les factures</a>
+            <a th:href="@{/admin/machines}">Flotte</a>
+        </div>
+    </footer>
+</main>
+
+</body>
+</html>

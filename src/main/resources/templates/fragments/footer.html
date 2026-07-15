@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Footer -->
+    <footer th:fragment="footer" class="w-full bg-surface-container-highest border-t border-outline-variant mt-auto">
+        <div class="max-w-[1280px] mx-auto px-margin-desktop py-12 grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop">
+            <!-- Brand -->
+            <div class="col-span-1 md:col-span-1">
+                <span class="font-headline-md text-headline-md text-primary mb-4 block">Voly Saina +</span>
+                <p class="font-body-md text-body-md text-on-surface-variant">L'excellence au service des agriculteurs. Leader européen de la location de machines agricoles haute performance.</p>
+            </div>
+            
+            <!-- Services -->
+            <div>
+                <h4 class="font-label-md text-label-md text-on-surface mb-4 uppercase tracking-wider">Services</h4>
+                <ul class="space-y-2">
+                    <li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Assistance Technique</a></li>
+                    <li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Trouver une Agence</a></li>
+                    <li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Documentation</a></li>
+                    <li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Conditions de Location</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact -->
+            <div>
+                <h4 class="font-label-md text-label-md text-on-surface mb-4 uppercase tracking-wider">Contact</h4>
+                <p class="font-label-sm text-label-sm text-on-surface-variant mb-2">📞 0 800 123 456 (Gratuit)</p>
+                <p class="font-label-sm text-label-sm text-on-surface-variant mb-2">✉️ contact@VolySaina+.fr</p>
+                <p class="font-label-sm text-label-sm text-on-surface-variant">📍 42 Avenue des Champs, 75008 Paris</p>
+            </div>
+            
+            <!-- Newsletter -->
+            <div>
+                <h4 class="font-label-md text-label-md text-on-surface mb-4 uppercase tracking-wider">Newsletter</h4>
+                <p class="font-label-sm text-label-sm text-on-surface-variant mb-4">Recevez nos dernières arrivées directement.</p>
+                <div class="flex">
+                    <input class="flex-1 bg-surface-container-low border border-outline-variant rounded-l-lg px-4 py-2 outline-none focus:border-primary" 
+                           placeholder="Votre email" type="email">
+                    <button class="bg-primary text-on-primary px-4 py-2 rounded-r-lg hover:opacity-90 btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Bar -->
+        <div class="max-w-[1280px] mx-auto px-margin-desktop py-6 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="font-label-sm text-label-sm text-on-surface-variant opacity-80">© 2026 VolySaina+. Excellence en Machinerie Agricole.</p>
+            <div class="flex gap-6">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Mentions légales</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary" href="#">Confidentialité</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

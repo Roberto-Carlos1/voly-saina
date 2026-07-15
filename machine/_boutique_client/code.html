@@ -1,0 +1,312 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Boutique VolySaina+ | Pièces et Accessoires Agricoles</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-link {
+            border-bottom: 2px solid #9a4614;
+            padding-bottom: 4px;
+        }
+        /* Custom scrollbar for technical aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f4ede6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #707a6f;
+            border-radius: 4px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-primary": "#ffffff",
+                "inverse-on-surface": "#f7efe9",
+                "on-primary-fixed": "#00210b",
+                "secondary-fixed": "#ffdbcb",
+                "on-tertiary-fixed-variant": "#6d391e",
+                "error-container": "#ffdad6",
+                "surface": "#fff8f2",
+                "surface-container": "#f4ede6",
+                "surface-bright": "#fff8f2",
+                "on-primary-container": "#93e0a2",
+                "on-secondary-fixed": "#341000",
+                "on-primary-fixed-variant": "#005226",
+                "on-error": "#ffffff",
+                "on-surface": "#1e1b17",
+                "on-tertiary-container": "#ffc1a4",
+                "primary-fixed-dim": "#8bd79b",
+                "surface-variant": "#e8e1db",
+                "on-error-container": "#93000a",
+                "surface-dim": "#e0d9d2",
+                "on-secondary": "#ffffff",
+                "primary": "#004c22",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#1f6c3a",
+                "surface-container-high": "#eee7e0",
+                "on-tertiary-fixed": "#351000",
+                "tertiary-fixed-dim": "#ffb694",
+                "inverse-primary": "#8bd79b",
+                "tertiary-container": "#81492d",
+                "on-secondary-container": "#712c00",
+                "inverse-surface": "#33302c",
+                "tertiary-fixed": "#ffdbcc",
+                "primary-container": "#166534",
+                "on-secondary-fixed-variant": "#7a3000",
+                "tertiary": "#653319",
+                "primary-fixed": "#a6f4b5",
+                "on-surface-variant": "#404940",
+                "outline": "#707a6f",
+                "surface-container-low": "#faf2eb",
+                "outline-variant": "#bfc9bd",
+                "on-tertiary": "#ffffff",
+                "error": "#ba1a1a",
+                "background": "#fff8f2",
+                "secondary": "#9a4614",
+                "secondary-fixed-dim": "#ffb693",
+                "on-background": "#1e1b17",
+                "surface-container-highest": "#e8e1db",
+                "secondary-container": "#fd925b"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+              },
+              "spacing": {
+                "stack-sm": "8px",
+                "stack-md": "16px",
+                "gutter-mobile": "16px",
+                "gutter-desktop": "24px",
+                "base": "4px",
+                "margin-mobile": "20px",
+                "margin-desktop": "48px",
+                "stack-lg": "32px"
+              },
+              "fontFamily": {
+                "headline-md": ["Inter"],
+                "headline-xl": ["Inter"],
+                "headline-lg": ["Inter"],
+                "headline-xl-mobile": ["Inter"],
+                "body-md": ["Inter"],
+                "label-md": ["Inter"],
+                "label-sm": ["Inter"],
+                "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                "headline-xl-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant shadow-sm h-20 flex items-center">
+<div class="max-w-[1280px] mx-auto px-margin-desktop flex justify-between items-center w-full">
+<div class="flex items-center gap-stack-lg">
+<a class="font-headline-lg text-display-lg text-primary tracking-tight" href="#">VolySaina+</a>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Matériel Agricole</a>
+<a class="font-label-md text-secondary border-b-2 border-secondary pb-1" href="#">Équipements &amp; Pièces</a>
+<a class="font-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Mes Réservations</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<input class="bg-surface-container border border-outline-variant rounded px-4 py-2 text-label-md focus:outline-none focus:border-primary w-64" placeholder="Rechercher une pièce..." type="text">
+<span class="material-symbols-outlined absolute right-3 top-2 text-on-surface-variant">search</span>
+</div>
+<button class="font-label-md text-on-surface hover:bg-surface-container-low px-4 py-2 rounded transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">person</span>
+                    Mon Compte
+                </button>
+</div>
+</div>
+</header>
+<div class="flex pt-20">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-20 bg-surface-container-low border-r border-outline-variant hidden md:flex flex-col py-4">
+<div class="px-6 mb-stack-lg">
+<h2 class="font-headline-sm text-headline-sm text-primary">Catégories</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Équipements Spécialisés</p>
+</div>
+<nav class="flex flex-col"><a class="bg-secondary-container text-on-secondary-container rounded-lg mx-2 my-1 flex items-center gap-3 p-3 transition-all translate-x-1" href="#"><span class="material-symbols-outlined">eco</span><span class="font-label-md text-label-md">Fertilisants</span></a><a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 flex items-center gap-3 p-3 transition-all" href="#"><span class="material-symbols-outlined">construction</span><span class="font-label-md text-label-md">Outillage à main</span></a><a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 flex items-center gap-3 p-3 transition-all" href="#"><span class="material-symbols-outlined">content_cut</span><span class="font-label-md text-label-md">Entretien &amp; Taille</span></a><a class="text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-2 my-1 flex items-center gap-3 p-3 transition-all" href="#"><span class="material-symbols-outlined">shield</span><span class="font-label-md text-label-md">Protection</span></a></nav>
+<div class="mt-auto px-4 pb-8">
+<div class="bg-primary-container p-stack-md rounded-lg text-white">
+<p class="font-label-md mb-2">Support Urgent?</p>
+<p class="text-xs opacity-90 mb-4">Besoin d'assistance pour identifier une pièce ?</p>
+<button class="bg-white text-primary px-3 py-2 rounded text-xs font-bold w-full uppercase">Appeler un expert</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 w-full px-margin-mobile md:px-margin-desktop py-stack-lg bg-background">
+<!-- Hero Banner / Page Header -->
+<div class="relative w-full h-48 md:h-64 rounded-xl overflow-hidden mb-stack-lg border border-outline-variant">
+<div class="absolute inset-0 bg-black/40 z-10 flex flex-col justify-center px-12">
+<h1 class="font-headline-xl text-headline-xl text-white mb-2">Boutique &amp; Accessoires</h1>
+<p class="font-body-lg text-white/90 max-w-xl">Maintenez votre flotte à son apogée technologique avec nos solutions d'entretien et de précision.</p>
+</div>
+<div class="w-full h-full bg-cover bg-center" data-alt="Close-up of a rugged mechanical tractor engine and hydraulic parts in a bright, professionally lit field workshop environment. The lighting is crisp and natural, highlighting the metallic textures and forest green brand colors of the equipment. A sense of high-strength reliability and industrial precision dominates the composition." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC9Lso9fzVs-RySulq2yLgtgUZz3F2TcBBOgsCM0pVqJfNZFZBZqcYt0I9j5TVA-i8xgRt-dimCTnBO5DHOjxUxJ9y6D2HbfaNK5Y89Vm53l7YfmfB7xWkZ1jgwiBFx1qO0G52GfxH3r6cV6L9RO9KatABF3787S9Yr9dOipCGZUBvqjtX_l8pMC9iTw_0MffvTjorDOW9iqxJQW-y84gazpTxCgqAF83FGjuYtyDqwFX8efVcA3JeK')"></div>
+</div>
+<!-- Filters & Stats Row -->
+<div class="flex flex-wrap items-center justify-between gap-gutter-desktop mb-stack-lg border-b border-outline-variant pb-stack-md">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 border-2 border-outline px-4 py-2 rounded font-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+                        Filtres
+                    </button>
+<button class="flex items-center gap-2 border-2 border-outline px-4 py-2 rounded font-label-md hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">sort</span>
+                        Trier par
+                    </button>
+</div>
+<div class="font-label-md text-on-surface-variant">
+<span class="text-primary font-bold">142</span> Produits trouvés
+                </div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter-desktop">
+<!-- Product Card 1: GPS -->
+<div class="group bg-white border border-outline-variant hover:border-primary transition-all duration-300"><div class="relative h-56 overflow-hidden"><div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4RwKGGJyqKQfrE3EVpafJcrFWUZY-yPmAdHgemcxeKY-lPeGfDxkmK24dxLJGFz9meXr2Jb05y73hiqoHEWf6eboOy8eXjrgUqgOoNlfIgdgyFiArweJ8q73loyd_b4J6BWYIFq96oUvFWtGQs_z0LheOQP7U6ptWSA-A-k3COmQCQQrHJMturOByBLxFrZirRgXENmSLFVqdWSxa8mbs3WOzVoc8RGUhaNuQ5OWWhhOUHf6Lippt')"></div><span class="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Bio</span></div><div class="p-stack-md border-t border-outline-variant"><p class="font-label-sm text-on-surface-variant uppercase mb-1">Fertilisants</p><h3 class="font-headline-md text-headline-md mb-2">Engrais Bio-Croissance</h3><p class="text-sm text-on-surface-variant mb-4 line-clamp-2">Engrais organique professionnel pour grandes cultures, 100% naturel pour une croissance optimale.</p><div class="flex items-center justify-between border-t border-outline-variant pt-stack-md"><span class="text-xl font-bold text-primary">45,00 €</span><button class="bg-primary text-white p-2 rounded hover:bg-primary-container transition-colors"><span class="material-symbols-outlined">shopping_cart</span></button></div></div></div>
+<!-- Product Card 2: Lubricant -->
+<div class="group bg-white border border-outline-variant hover:border-primary transition-all duration-300"><div class="relative h-56 overflow-hidden"><div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBmRt9q_X40_MxF_KzI4fFfVSMxTfQEd_VYZs3f9QZnrzQmD6nqrGT7gPPsQ12PRqxidnRkigeJdhNd56IbLOXyJm0mhc-HcYc_SrVMEIGeR8jA_n6HlVY4VoOLrj-IAxH5tzX7Tk3MP8GAgw1ypGr47BWxt5j7Gy7KCc-7WCYThxYEsxHx3gJ67y3-kOqN0Jx02nLkTKGnRpu0loKxmxkeMEA1wXJT0PS7-EAsnVuhJxd6wYJCBgpj')"></div></div><div class="p-stack-md border-t border-outline-variant"><p class="font-label-sm text-on-surface-variant uppercase mb-1">Outillage à main</p><h3 class="font-headline-md text-headline-md mb-2">Pelle de Chantier Renforcée</h3><p class="text-sm text-on-surface-variant mb-4 line-clamp-2">Pelle en acier trempé avec manche ergonomique, conçue pour les travaux agricoles intensifs.</p><div class="flex items-center justify-between border-t border-outline-variant pt-stack-md"><span class="text-xl font-bold text-primary">29,90 €</span><button class="bg-primary text-white p-2 rounded hover:bg-primary-container transition-colors"><span class="material-symbols-outlined">shopping_cart</span></button></div></div></div>
+<!-- Product Card 3: Heavy Duty Tools -->
+<div class="group bg-white border border-outline-variant hover:border-primary transition-all duration-300"><div class="relative h-56 overflow-hidden"><div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDEGMELX-S9Q2LGKPXUMdcOBzE9qNoqOLQLoa4ghCaH3Nrqs_oLuk9kDS_c1OPpirrh2T9n64On2LVvJMabPWWpRQKkx-54eY9jyC6iaEborCFKzShYQIdpZFCvfUvsaYEYPM4Bio5DZHQv70Lbw5ZiMxVF8BM4iBHJNqp9htRA_vNE50yQzlNJndGIgrEtOp5n2_xmegg5daQOoaKyStcAwZ88F8PdTCHUr-A6CRx-nTDsDQhAwzJb')"></div></div><div class="p-stack-md border-t border-outline-variant"><p class="font-label-sm text-on-surface-variant uppercase mb-1">Outillage à main</p><h3 class="font-headline-md text-headline-md mb-2">Râteau de Culture Pro</h3><p class="text-sm text-on-surface-variant mb-4 line-clamp-2">Râteau à dents larges en métal robuste, idéal pour la préparation des sols et le nivellement.</p><div class="flex items-center justify-between border-t border-outline-variant pt-stack-md"><span class="text-xl font-bold text-primary">24,50 €</span><button class="bg-primary text-white p-2 rounded hover:bg-primary-container transition-colors"><span class="material-symbols-outlined">shopping_cart</span></button></div></div></div>
+<!-- Product Card 4: Spare Parts -->
+<div class="group bg-white border border-outline-variant hover:border-primary transition-all duration-300"><div class="relative h-56 overflow-hidden"><div class="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQzGl3bUGjNyTlvex5Qu03GyNxMidCpGx5-47f2W267yL8-6YaBttgcLLEoWut4BYerH1yZfqHy79hNXuLJUgnlyxouvqvrMbeUtIMlGQJT6aZmFtzBSdPBWGnapczwFpLx0_gWnCO-GZHLzzKz6Jfh_iwsZGz9DHcg2NByvxOw1X3mKTdA5iCRMdLpJTVprAUp3KRMdxucNPFOmOH882Ta1DVvx_fUD7UBNEYR8uT8v3Y_lvOF-lS')"></div></div><div class="p-stack-md border-t border-outline-variant"><p class="font-label-sm text-on-surface-variant uppercase mb-1">Entretien &amp; Taille</p><h3 class="font-headline-md text-headline-md mb-2">Sécateur de Force</h3><p class="text-sm text-on-surface-variant mb-4 line-clamp-2">Sécateur professionnel pour l'émondage et l'arboriculture, haute résistance mécanique.</p><div class="flex items-center justify-between border-t border-outline-variant pt-stack-md"><span class="text-xl font-bold text-primary">35,00 €</span><button class="bg-primary text-white p-2 rounded hover:bg-primary-container transition-colors"><span class="material-symbols-outlined">shopping_cart</span></button></div></div></div>
+<!-- Repeat Pattern for more products -->
+<!-- Promotion Card (Asymmetric Layout Example) -->
+<div class="col-span-1 md:col-span-2 bg-primary-container text-white p-stack-lg flex flex-col md:flex-row gap-gutter-desktop items-center border border-primary">
+<div class="flex-1">
+<span class="bg-secondary text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Offre Spéciale</span>
+<h3 class="font-headline-lg text-headline-lg mt-2 mb-4">Pack Maintenance Automne</h3>
+<p class="font-body-md opacity-90 mb-6">Préparez vos machines pour l'hiver. Le pack comprend filtres, lubrifiants et diagnostic 50 points de contrôle en agence.</p>
+<button class="bg-white text-primary px-8 py-3 rounded font-bold hover:bg-surface-container transition-colors">Découvrir le pack</button>
+</div>
+<div class="w-full md:w-1/3 aspect-square relative rounded-lg overflow-hidden border-2 border-white/20">
+<div class="w-full h-full bg-cover bg-center" data-alt="A flat-lay composition of various agricultural maintenance items including air filters, oil canisters, and technical inspection documents. The elements are arranged neatly on a clean concrete floor with professional workshop lighting, symbolizing preparedness and mechanical excellence in the farming sector." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBC2YYQx8JK6KChSYqcJ9q4zrde0nFEjOOq35M27r3l32mn9jyRXadQ_pcbo0a2nVfGfBMLiPLEtNsmLpSKCVDe2jU6LAuQk2VgF7gQ9x1j-PzHf2SLfJ8ALtFtWqpTTegRJjsptNbrfYL7UM1-8In1YQ3i_mszWBuYxI2MvRZfUE7iRqHnDCj5JSFvQi43f-SiZ5x_e7kp1Nop41b8gQRZz1pAiG3WV-6KnbFxlcgwSEv_ICRPvTlE')"></div>
+</div>
+</div>
+</div>
+<!-- Technical Spec Info Section -->
+<section class="mt-stack-lg bg-surface-container-low p-stack-lg border border-outline-variant rounded-xl">
+<div class="max-w-3xl">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Engagement Qualité VolySaina+</h2>
+<p class="font-body-md text-on-surface-variant mb-8">Toutes nos pièces sont certifiées conformes aux normes constructeurs les plus strictes. Nous garantissons une compatibilité totale et une longévité accrue pour vos machines les plus sollicitées.</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-stack-lg">
+<div class="flex flex-col gap-2">
+<span class="material-symbols-outlined text-secondary text-4xl">verified</span>
+<h4 class="font-label-md">Certifié Origine</h4>
+<p class="text-xs text-on-surface-variant">Traçabilité complète sur 100% de notre catalogue de pièces.</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="material-symbols-outlined text-secondary text-4xl">local_shipping</span>
+<h4 class="font-label-md">Livraison Express</h4>
+<p class="text-xs text-on-surface-variant">Expédition sous 24h pour limiter le temps d'immobilisation au champ.</p>
+</div>
+<div class="flex flex-col gap-2">
+<span class="material-symbols-outlined text-secondary text-4xl">support_agent</span>
+<h4 class="font-label-md">Support Expert</h4>
+<p class="text-xs text-on-surface-variant">Nos techniciens vous assistent par téléphone de 7h à 20h.</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-highest border-t border-outline-variant mt-stack-lg">
+<div class="max-w-[1280px] mx-auto px-margin-desktop py-16 grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop">
+<div class="col-span-1 md:col-span-1">
+<h3 class="font-headline-md text-headline-md text-primary mb-4">VolySaina+</h3>
+<p class="text-on-surface-variant text-label-sm leading-relaxed mb-6">
+                    © 2024 VolySaina+. Excellence en Machinerie Agricole. Solutions professionnelles pour l'agriculture de précision.
+                </p>
+<div class="flex gap-4">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">face_nod</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">share</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-6 tracking-wider">Services</h4>
+<ul class="flex flex-col gap-3">
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Assistance Technique</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Trouver une Agence</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Documentation</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Conditions de Location</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-6 tracking-wider">Compte</h4>
+<ul class="flex flex-col gap-3">
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Historique Commandes</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Mes Machines</a></li>
+<li><a class="font-label-sm text-on-surface-variant hover:text-secondary hover:underline transition-all" href="#">Paramètres</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-6 tracking-wider">Newsletter</h4>
+<p class="text-label-sm text-on-surface-variant mb-4">Recevez nos offres exclusives directement.</p>
+<form class="flex gap-2">
+<input class="bg-surface px-4 py-2 rounded text-label-sm w-full border border-outline-variant focus:outline-none focus:border-primary" placeholder="Votre email" type="email">
+<button class="bg-primary text-white px-4 py-2 rounded font-bold transition-transform active:scale-95">OK</button>
+</form>
+</div>
+</div>
+</footer>
+<!-- Mobile Nav Bar (Bottom) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-outline-variant z-50 flex justify-around py-3 px-2 shadow-lg">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">agriculture</span>
+<span class="text-[10px] font-label-md">Matériel</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="text-[10px] font-label-md">Boutique</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] font-label-md">Réservations</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-label-md">Profil</span>
+</button>
+</div>
+<script>
+        // Simple micro-interaction for active nav states
+        document.querySelectorAll('aside nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('aside nav a').forEach(l => {
+                    l.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'translate-x-1');
+                    l.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+                });
+                this.classList.add('bg-secondary-container', 'text-on-secondary-container', 'translate-x-1');
+                this.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+            });
+        });
+    </script>
+</body></html>

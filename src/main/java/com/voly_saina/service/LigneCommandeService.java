@@ -33,4 +33,8 @@ public class LigneCommandeService {
     public void deleteById(Long id) {
         ligneCommandeRepository.deleteById(id);
     }
+
+    public List<LigneCommande> findByIdCommande(Long idCommande){
+        return ligneCommandeRepository.findByCommandeIdCommande(idCommande);
+    }
 }

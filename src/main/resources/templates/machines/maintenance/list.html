@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<!--
+  Vue liste des maintenances — route GET /admin/maintenances-machine
+  Rendue par MaintenanceMachineController.getAll(...).
+  Données fournies par le contrôleur :
+    - maintenances : List<MaintenanceMachine> (page courante) — machine, dateDebut,
+                     dateRetourPrevue, dateRetourReelle, cout, travaux, statutMaintenance
+    - statuts      : List<StatutMaintenance> (pour le filtre)
+    - machines     : List<Machine> (pour le filtre par machine)
+    - currentPage / totalPages : pagination
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+  Le filtre et la pagination utilisent l'API POST /admin/maintenances-machine/api/filtre (AJAX).
+  Les tuiles de statistiques résument la page affichée (recalculées côté JS au filtrage).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Maintenances — Voly Saina +')}"></head>
+<body>
+
+<!-- Barre latérale (onglet « Maintenances » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('maintenances')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== Messages flash ===== -->
+        <div th:if="${success}" class="flash flash--success" th:text="${success}">Succès</div>
+        <div th:if="${error}" class="flash flash--error" th:text="${error}">Erreur</div>
+
+        <!-- ===== En-tête de page + actions ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Gestion des maintenances</h1>
+                <p>Planifiez, suivez et validez les interventions sur votre parc de machines.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--primary" th:href="@{/admin/maintenances-machine/ajouter}">
+                    <span class="material-symbols-outlined">add</span>
+                    Nouvelle maintenance
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Synthèse de la page affichée ===== -->
+        <div class="stat-bar"
+             th:with="nbPrevue=${#lists.size(maintenances.?[statutMaintenance != null and statutMaintenance.code == 'prevue'])},
+                      nbEnCours=${#lists.size(maintenances.?[statutMaintenance != null and statutMaintenance.code == 'en_cours'])},
+                      nbTerminee=${#lists.size(maintenances.?[statutMaintenance != null and statutMaintenance.code == 'terminee'])},
+                      coutTotal=${#lists.isEmpty(maintenances) ? 0 : #aggregates.sum(maintenances.![cout])}">
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">schedule</span></div>
+                <div>
+                    <p class="stat-tile__label">Prévues</p>
+                    <p class="stat-tile__value" id="statPrevue" th:text="${nbPrevue}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">build</span></div>
+                <div>
+                    <p class="stat-tile__label">En cours</p>
+                    <p class="stat-tile__value" id="statEnCours" th:text="${nbEnCours}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon stat-tile__icon--ok"><span class="material-symbols-outlined">check_circle</span></div>
+                <div>
+                    <p class="stat-tile__label">Terminées</p>
+                    <p class="stat-tile__value" id="statTerminee" th:text="${nbTerminee}">0</p>
+                </div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile__icon"><span class="material-symbols-outlined">payments</span></div>
+                <div>
+                    <p class="stat-tile__label">Coût (page)</p>
+                    <p class="stat-tile__value" id="statCout" th:text="${coutTotal} + ' Ar'">0 Ar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Barre d'outils : filtre (AJAX) + nombre par page ===== -->
+        <div class="toolbar">
+            <form id="filtreForm">
+                <span class="toolbar__label"><span class="material-symbols-outlined">filter_list</span> Filtrer</span>
+                <select name="idMachine">
+                    <option value="">Toutes les machines</option>
+                    <option th:each="m : ${machines}"
+                            th:value="${m.idMachine}"
+                            th:text="${m.nom}">Machine</option>
+                </select>
+                <select name="codeStatut">
+                    <option value="">Tous les statuts</option>
+                    <option th:each="statut : ${statuts}"
+                            th:value="${statut.code}"
+                            th:text="${statut.libelle}">Statut</option>
+                </select>
+                <button type="submit" class="btn btn--primary">
+                    <span class="material-symbols-outlined">search</span>
+                    Filtrer
+                </button>
+                <input type="hidden" name="page" value="0" id="numeroPage">
+            </form>
+
+            <div class="toolbar__spacer"></div>
+
+            <!-- Nombre d'éléments par page (POST classique) -->
+            <form action="/admin/maintenances-machine/pages" method="post">
+                <span class="toolbar__label">Par page</span>
+                <input type="number" name="pages" min="1" placeholder="10">
+                <button type="submit" class="btn btn--outline">Appliquer</button>
+            </form>
+        </div>
+
+        <!-- ===== Tableau des maintenances ===== -->
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Machine</th>
+                        <th>Période prévue</th>
+                        <th>Retour réel</th>
+                        <th>Statut</th>
+                        <th style="text-align:right;">Coût</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="maintenanceLines">
+                    <!-- Ligne vide si aucune maintenance -->
+                    <tr th:if="${#lists.isEmpty(maintenances)}">
+                        <td colspan="6" class="empty-state">Aucune maintenance enregistrée.</td>
+                    </tr>
+                    <!-- Une ligne par maintenance -->
+                    <tr th:each="m : ${maintenances}">
+                        <td>
+                            <div class="m-cell">
+                                <div class="m-avatar"><span class="material-symbols-outlined">agriculture</span></div>
+                                <div>
+                                    <div class="m-name" th:text="${m.machine != null ? m.machine.nom : '—'}">Machine</div>
+                                    <div class="m-sub m-sub--clip" th:text="${m.travaux}" th:title="${m.travaux}">Travaux</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="cell-loc">
+                                <span class="material-symbols-outlined">event</span>
+                                <span th:text="${(m.dateDebut != null ? #temporals.format(m.dateDebut, 'dd/MM/yyyy') : '—')
+                                              + ' → ' + (m.dateRetourPrevue != null ? #temporals.format(m.dateRetourPrevue, 'dd/MM/yyyy') : '—')}">—</span>
+                            </span>
+                        </td>
+                        <td th:text="${m.dateRetourReelle != null ? #temporals.format(m.dateRetourReelle, 'dd/MM/yyyy') : '—'}">—</td>
+                        <td>
+                            <span th:if="${m.statutMaintenance != null}" class="badge"
+                                  th:classappend="' badge--' + ${m.statutMaintenance.code}"
+                                  th:text="${m.statutMaintenance.libelle}">Statut</span>
+                            <span th:unless="${m.statutMaintenance != null}" class="badge">—</span>
+                        </td>
+                        <td class="strong" style="text-align:right;" th:text="${m.cout} + ' Ar'">0 Ar</td>
+                        <td>
+                            <div class="row-actions">
+                                <a class="icon-btn" title="Valider la maintenance"
+                                   th:if="${m.statutMaintenance != null and (m.statutMaintenance.code == 'prevue' or m.statutMaintenance.code == 'en_cours')}"
+                                   th:href="@{/admin/maintenances-machine/valider/{id}(id=${m.idMaintenance})}">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </a>
+                                <a class="icon-btn" title="Modifier"
+                                   th:href="@{/admin/maintenances-machine/modifier/{id}(id=${m.idMaintenance})}">
+                                    <span class="material-symbols-outlined">edit</span>
+                                </a>
+                                <a class="icon-btn icon-btn--danger" title="Supprimer"
+                                   th:href="@{/admin/maintenances-machine/supprimer/{id}(id=${m.idMaintenance})}"
+                                   onclick="return confirm('Supprimer définitivement cette maintenance ?');">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pager">
+                <span class="pager__info" id="infoPage"
+                      th:text="'Page ' + (${currentPage} + 1) + ' sur ' + ${totalPages}">Page 1 sur 1</span>
+                <div class="pager__btns">
+                    <button type="button" id="btnPrecedent" class="pager__btn">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                        Précédent
+                    </button>
+                    <button type="button" id="btnSuivant" class="pager__btn">
+                        Suivant
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/machines}">Flotte</a>
+            <a th:href="@{/admin/reservations-machine}">Réservations</a>
+        </div>
+    </footer>
+</main>
+
+<script>
+    // ================================================================
+    //  Filtre + pagination des maintenances (JS pur, aucune dépendance).
+    //  Le formulaire de filtre est envoyé en AJAX vers l'API du contrôleur ;
+    //  la réponse (Page<MaintenanceMachine> JSON) réalimente le tableau + les tuiles.
+    // ================================================================
+    const form = document.getElementById("filtreForm");
+    const numeroPageInput = document.getElementById("numeroPage");
+    const lines = document.getElementById("maintenanceLines");
+    const infoPage = document.getElementById("infoPage");
+    const btnPrecedent = document.getElementById("btnPrecedent");
+    const btnSuivant = document.getElementById("btnSuivant");
+
+    // Formate une date ISO (yyyy-MM-dd, ou tableau [a,m,j]) en jj/mm/aaaa.
+    function formatDate(d) {
+        if (!d) return "—";
+        if (Array.isArray(d)) {
+            const [y, m, j] = d;
+            return String(j).padStart(2, "0") + "/" + String(m).padStart(2, "0") + "/" + y;
+        }
+        const parts = String(d).substring(0, 10).split("-");
+        return parts.length === 3 ? parts[2] + "/" + parts[1] + "/" + parts[0] : d;
+    }
+
+    // Échappe le texte destiné à un attribut title (travaux).
+    function escapeAttr(s) { return String(s || "").replace(/"/g, "&quot;"); }
+
+    // Construit le HTML d'une ligne à partir d'une maintenance (JSON).
+    function renderRow(m) {
+        const machine = m.machine ? m.machine.nom : "—";
+        const travaux = m.travaux || "";
+        const statut = m.statutMaintenance
+            ? `<span class="badge badge--${m.statutMaintenance.code}">${m.statutMaintenance.libelle}</span>`
+            : `<span class="badge">—</span>`;
+        const code = m.statutMaintenance ? m.statutMaintenance.code : "";
+        const id = m.idMaintenance;
+        const lienValider = (code === "prevue" || code === "en_cours")
+            ? `<a class="icon-btn" title="Valider la maintenance" href="/admin/maintenances-machine/valider/${id}">
+                   <span class="material-symbols-outlined">check_circle</span></a>`
+            : "";
+        const periode = formatDate(m.dateDebut) + " → " + formatDate(m.dateRetourPrevue);
+        return `
+            <tr>
+                <td>
+                    <div class="m-cell">
+                        <div class="m-avatar"><span class="material-symbols-outlined">agriculture</span></div>
+                        <div>
+                            <div class="m-name">${machine}</div>
+                            <div class="m-sub m-sub--clip" title="${escapeAttr(travaux)}">${travaux}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="cell-loc">
+                        <span class="material-symbols-outlined">event</span>
+                        <span>${periode}</span>
+                    </span>
+                </td>
+                <td>${formatDate(m.dateRetourReelle)}</td>
+                <td>${statut}</td>
+                <td class="strong" style="text-align:right;">${m.cout != null ? m.cout : 0} Ar</td>
+                <td>
+                    <div class="row-actions">
+                        ${lienValider}
+                        <a class="icon-btn" title="Modifier" href="/admin/maintenances-machine/modifier/${id}">
+                            <span class="material-symbols-outlined">edit</span></a>
+                        <a class="icon-btn icon-btn--danger" title="Supprimer"
+                           href="/admin/maintenances-machine/supprimer/${id}"
+                           onclick="return confirm('Supprimer définitivement cette maintenance ?');">
+                            <span class="material-symbols-outlined">delete</span></a>
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    // Met à jour les tuiles de synthèse à partir des maintenances affichées.
+    function majStats(items) {
+        let prevue = 0, enCours = 0, terminee = 0, cout = 0;
+        items.forEach(m => {
+            const code = m.statutMaintenance ? m.statutMaintenance.code : "";
+            if (code === "prevue") prevue++;
+            else if (code === "en_cours") enCours++;
+            else if (code === "terminee") terminee++;
+            cout += Number(m.cout || 0);
+        });
+        document.getElementById("statPrevue").textContent = prevue;
+        document.getElementById("statEnCours").textContent = enCours;
+        document.getElementById("statTerminee").textContent = terminee;
+        document.getElementById("statCout").textContent = cout + " Ar";
+    }
+
+    // Charge une page de maintenances filtrées.
+    function chargerMaintenances(pageCible) {
+        numeroPageInput.value = pageCible;
+        const data = new FormData(form);
+
+        fetch("/admin/maintenances-machine/api/filtre", { method: "POST", body: data })
+            .then(response => response.json())
+            .then(pageSpring => {
+                lines.innerHTML = "";
+                const contenu = pageSpring.content || [];
+                if (contenu.length === 0) {
+                    lines.innerHTML = `<tr><td colspan="6" class="empty-state">Aucune maintenance trouvée.</td></tr>`;
+                } else {
+                    contenu.forEach(m => lines.insertAdjacentHTML("beforeend", renderRow(m)));
+                }
+                majStats(contenu);
+                const totalPages = Math.max(pageSpring.totalPages, 1);
+                infoPage.textContent = `Page ${pageSpring.number + 1} sur ${totalPages}`;
+                btnPrecedent.disabled = pageSpring.first;
+                btnSuivant.disabled = pageSpring.last;
+            })
+            .catch(() => {
+                lines.innerHTML = `<tr><td colspan="6" class="empty-state">Erreur lors du chargement.</td></tr>`;
+            });
+    }
+
+    // Soumettre le filtre → repartir de la page 0.
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        chargerMaintenances(0);
+    });
+
+    // Boutons de pagination.
+    btnSuivant.addEventListener("click", function () {
+        chargerMaintenances(parseInt(numeroPageInput.value, 10) + 1);
+    });
+    btnPrecedent.addEventListener("click", function () {
+        const p = parseInt(numeroPageInput.value, 10);
+        if (p > 0) chargerMaintenances(p - 1);
+    });
+</script>
+</body>
+</html>

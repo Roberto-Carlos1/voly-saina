@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu - Voly Saina+</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f5f5; padding: 20px 0; }
+        .container { max-width: 1200px; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .card-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0 !important; }
+        .table thead th { background: #f9fafb; border-bottom: 2px solid #e5e7eb; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Résumé de votre achat</h4>
+            <a th:href="@{/catalogue/produits/catalogue}" class="text-decoration-none" style="color: white; font-weight: 500;">← Retour catalogue</a>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div th:if="${commande != null}" id="receiptContent">
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="fw-semibold text-muted">Commande</div>
+                        <div class="fs-5" th:text="${commande.idCommande != null ? 'N° ' + commande.idCommande : '-'}">N° -</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="fw-semibold text-muted">Mode de paiement</div>
+                        <div class="fs-5" th:text="${commande.modePaiement.libelle != null ? commande.modePaiement.libelle : '-'}">-</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="fw-semibold text-muted">Adresse de livraison</div>
+                    <div class="fs-5" th:text="${commande.adresseLivraison != null ? commande.adresseLivraison : '-'}">-</div>
+                </div>
+
+                <div class="table-responsive mt-4">
+                    <table class="table align-middle">
+                        <thead>
+                        <tr>
+                            <th style="width: 45%">Produit</th>
+                            <th style="width: 15%">Quantité</th>
+                            <th style="width: 20%">Prix unitaire</th>
+                            <th style="width: 20%">Sous-total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="ligne : ${lignes}">
+                            <td>
+                                <div style="font-weight:700;" th:text="${ligne.produit != null && ligne.produit.nom != null ? ligne.produit.nom : '-'}">Produit</div>
+                                <div class="text-muted" style="font-size:12px;" th:text="${ligne.produit != null && ligne.produit.categorie != null ? ligne.produit.categorie.nom : ''}"></div>
+                            </td>
+                            <td th:text="${ligne.quantite != null ? ligne.quantite : '-'}">1</td>
+                            <td th:text="${ligne.prixUnitaire != null ? ligne.prixUnitaire : '-'}">-</td>
+                            <td th:text="${ligne.sousTotal != null ? ligne.sousTotal : '-'}">-</td>
+                        </tr>
+                        <tr th:if="${lignes == null or #lists.isEmpty(lignes)}">
+                            <td colspan="4" class="text-center py-4 text-muted">Aucune ligne trouvée.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-end mt-3">
+                    <div style="min-width: 320px;">
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted" style="font-weight:600;">Total</div>
+                            <div style="font-weight:800;" th:text="${montantTotal != null ? montantTotal : 0} + ' AR'">0 AR</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-4" role="alert">
+                    Achat clôturé avec succès. Merci pour votre commande !
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

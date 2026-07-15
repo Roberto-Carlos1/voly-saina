@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Client - Voly Saina+</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; margin-bottom: 30px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .card-icon { font-size: 48px; margin-bottom: 15px; }
+        .card-title { font-size: 20px; font-weight: bold; color: #1f2937; margin-bottom: 10px; }
+        .card-description { color: #6b7280; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Espace Client</h1>
+        
+        <div class="cards-grid">
+            <a th:href="@{/client/factures(idClient=${idClient})}" class="card">
+                <div class="card-icon">📄</div>
+                <div class="card-title">Mes factures</div>
+                <div class="card-description">Consultez vos factures, voyez les détails et téléchargez les PDF</div>
+            </a>
+            
+            <a th:href="@{/client/statistiques(idClient=${idClient})}" class="card">
+                <div class="card-icon">📊</div>
+                <div class="card-title">Mes statistiques</div>
+                <div class="card-description">Visualisez vos dépenses, locations et commandes</div>
+            </a>
+
+            <a th:href="@{/catalogue/machines/catalogue}">Catalogue</a>
+            <a th:href="@{/catalogue/reservations/mes-reservations(clientId=${clientId})}">Mes réservations</a></li>
+        </div>
+    </div>
+</body>
+</html>

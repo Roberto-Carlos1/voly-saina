@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head(${machine != null ? 'Machine — ' + machine.nom : 'Détails machine'})}"></head>
+<body>
+
+<!-- Barre latérale (fragment réutilisable, onglet « Flotte de matériel » actif) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('machines')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure (fragment réutilisable) -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== En-tête de page : titre, puces d'état, actions ===== -->
+        <div class="page-head">
+            <div>
+                <h1 th:text="'Détails de l\'équipement : ' + ${machine.nom}">Détails de l'équipement</h1>
+                <div class="chip-row">
+                    <!-- État courant de la machine (badge coloré selon le code) -->
+                    <span th:if="${machine.etatMachine != null}" class="badge"
+                          th:classappend="' badge--' + ${machine.etatMachine.code}"
+                          th:text="${machine.etatMachine.libelle}">État</span>
+                    <span th:if="${machine.etatMachine == null}" class="chip">Aucun état</span>
+                    <!-- Type de machine -->
+                    <span class="chip">
+                        <span class="material-symbols-outlined">precision_manufacturing</span>
+                        <span th:text="${machine.typeMachine.libelle}">Type</span>
+                    </span>
+                    <!-- Identifiant -->
+                    <span class="chip" th:text="'ID : ' + ${machine.idMachine}">ID</span>
+                </div>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/machines}">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour
+                </a>
+                <a class="btn btn--outline" th:href="@{/admin/machines/modifier/{id}(id=${machine.idMachine})}">
+                    <span class="material-symbols-outlined">edit</span>
+                    Modifier
+                </a>
+                <a class="btn btn--primary" th:href="@{/admin/machines/supprimer/{id}(id=${machine.idMachine})}"
+                   onclick="return confirm('Supprimer définitivement cette machine ?');"
+                   style="background-color:var(--error);">
+                    <span class="material-symbols-outlined">delete</span>
+                    Supprimer
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Grille principale : identité (gauche) / historiques (droite) ===== -->
+        <div class="detail-grid">
+
+            <!-- ---------- Colonne gauche ---------- -->
+            <div class="detail-col">
+
+                <!-- Visuel de la machine.
+                     Aucune photo n'est stockée en base : on réutilise donc une
+                     seule image générique, importée depuis Internet, pour toutes
+                     les machines. Si l'image ne se charge pas (hors ligne, lien
+                     mort...), l'icône ci-dessous prend automatiquement le relais. -->
+                <div class="machine-hero">
+                    <div class="machine-hero__art">
+                        <img class="machine-hero__img"
+                             src="https://loremflickr.com/1280/640/tractor,agriculture?lock=7"
+                             alt="Illustration de matériel agricole"
+                             onerror="this.remove()">
+                        <span class="material-symbols-outlined">agriculture</span>
+                    </div>
+                    <div class="machine-hero__foot">
+                        <span th:text="${machine.typeMachine.libelle}">Type</span>
+                        <span th:if="${machine.dateCreation != null}"
+                              th:text="'Ajoutée le ' + ${#temporals.format(machine.dateCreation, 'dd/MM/yyyy')}">Ajoutée le</span>
+                    </div>
+                </div>
+
+                <!-- Caractéristiques techniques -->
+                <div class="card card--pad-lg">
+                    <div class="section-head">
+                        <h2>Caractéristiques</h2>
+                    </div>
+                    <div class="specs">
+                        <div class="spec-row">
+                            <span class="spec-row__key">Type</span>
+                            <span class="spec-row__val" th:text="${machine.typeMachine.libelle}">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Prix / jour</span>
+                            <span class="spec-row__val" th:text="${machine.prixJour} + ' Ar'">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Kilométrage</span>
+                            <span class="spec-row__val" th:text="${machine.kilometrage} + ' km'">—</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-row__key">Date d'ajout</span>
+                            <span class="spec-row__val"
+                                  th:text="${machine.dateCreation != null ? #temporals.format(machine.dateCreation, 'dd/MM/yyyy') : '—'}">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="card card--pad-lg" th:if="${machine.description != null and !machine.description.isEmpty()}">
+                    <div class="section-head">
+                        <h2>Description</h2>
+                    </div>
+                    <p class="detail-text" th:text="${machine.description}">Description de la machine.</p>
+                </div>
+
+                <!-- État opérationnel -->
+                <div class="card card--pad-lg">
+                    <div class="section-head">
+                        <h2>État opérationnel</h2>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <span class="info-box__label">Disponibilité</span>
+                            <div class="info-box__value">
+                                <span class="material-symbols-outlined"
+                                      th:classappend="${machine.disponible} ? ' txt-ok' : ' txt-off'"
+                                      th:text="${machine.disponible} ? 'check_circle' : 'block'">check_circle</span>
+                                <span th:text="${machine.disponible} ? 'Disponible' : 'Indisponible'">Disponible</span>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <span class="info-box__label">État actuel</span>
+                            <div class="info-box__value">
+                                <span th:if="${machine.etatMachine != null}" class="badge"
+                                      th:classappend="' badge--' + ${machine.etatMachine.code}"
+                                      th:text="${machine.etatMachine.libelle}">État</span>
+                                <span th:if="${machine.etatMachine == null}">Aucun état</span>
+                            </div>
+                        </div>
+                        <div class="info-box info-box--wide">
+                            <span class="info-box__label">Localisation</span>
+                            <div class="info-box__value">
+                                <span class="material-symbols-outlined">location_on</span>
+                                <span th:text="${machine.localisation != null and !machine.localisation.isEmpty() ? machine.localisation : 'Non renseignée'}">Localisation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini-statistiques (données réelles) -->
+                <div class="card card--pad-lg">
+                    <div class="mini-stats">
+                        <div class="mini-stat">
+                            <div class="mini-stat__icon"><span class="material-symbols-outlined">speed</span></div>
+                            <div>
+                                <p class="mini-stat__label">Kilométrage</p>
+                                <p class="mini-stat__value" th:text="${machine.kilometrage} + ' km'">0 km</p>
+                            </div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="mini-stat__icon"><span class="material-symbols-outlined">event</span></div>
+                            <div>
+                                <p class="mini-stat__label">Réservations</p>
+                                <p class="mini-stat__value" th:text="${#lists.size(reservations)}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ---------- Colonne droite ---------- -->
+            <div class="detail-col">
+
+                <!-- Historique des réservations -->
+                <div class="card card--pad-lg">
+                    <div class="section-head">
+                        <h2>Historique des réservations</h2>
+                    </div>
+
+                    <!-- Aucun résultat -->
+                    <p th:if="${#lists.isEmpty(reservations)}" class="empty-state">
+                        Aucune réservation pour cette machine.
+                    </p>
+
+                    <!-- Liste des réservations -->
+                    <div class="res-list" th:unless="${#lists.isEmpty(reservations)}">
+                        <div class="res-item" th:each="reservation : ${reservations}">
+                            <!-- Pastille date (jour + mois de début) -->
+                            <div class="res-date">
+                                <span class="res-date__month"
+                                      th:text="${#temporals.format(reservation.dateDebut, 'MMM')}">Oct</span>
+                                <span class="res-date__day"
+                                      th:text="${#temporals.day(reservation.dateDebut)}">01</span>
+                            </div>
+                            <div class="res-body">
+                                <div class="res-body__top">
+                                    <h4 class="res-body__client" th:text="${reservation.client.nom}">Client</h4>
+                                    <span class="badge"
+                                          th:classappend="' badge--' + ${reservation.statutReservation.code}"
+                                          th:text="${reservation.statutReservation.libelle}">Statut</span>
+                                </div>
+                                <div class="res-meta">
+                                    <span>
+                                        <span class="material-symbols-outlined">calendar_today</span>
+                                        <span th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')} + ' → ' + ${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}">dates</span>
+                                    </span>
+                                    <span class="price">
+                                        <span class="material-symbols-outlined">payments</span>
+                                        <span th:text="${reservation.prixTotal} + ' Ar'">prix</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total (chiffre d'affaires cumulé sur cette machine) -->
+                    <div class="card-foot" th:unless="${#lists.isEmpty(reservations)}">
+                        <span class="card-foot__label">Chiffre d'affaires cumulé</span>
+                        <span class="card-foot__value"
+                              th:text="${#aggregates.sum(reservations.![prixTotal])} + ' Ar'">0 Ar</span>
+                    </div>
+                </div>
+
+                <!-- Historique des maintenances -->
+                <div class="table-card">
+                    <div class="table-card__head">
+                        <h2>Historique des maintenances</h2>
+                    </div>
+
+                    <p th:if="${#lists.isEmpty(maintenances)}" class="empty-state">
+                        Aucune maintenance enregistrée pour cette machine.
+                    </p>
+
+                    <div class="table-scroll" th:unless="${#lists.isEmpty(maintenances)}">
+                        <table class="data">
+                            <thead>
+                            <tr>
+                                <th>Début</th>
+                                <th>Retour prévu</th>
+                                <th>Retour réel</th>
+                                <th>Coût</th>
+                                <th>Statut</th>
+                                <th>Travaux</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="maintenance : ${maintenances}">
+                                <td th:text="${maintenance.dateDebut != null ? #temporals.format(maintenance.dateDebut, 'dd/MM/yyyy') : '—'}">—</td>
+                                <td class="muted" th:text="${maintenance.dateRetourPrevue != null ? #temporals.format(maintenance.dateRetourPrevue, 'dd/MM/yyyy') : '—'}">—</td>
+                                <td class="muted" th:text="${maintenance.dateRetourReelle != null ? #temporals.format(maintenance.dateRetourReelle, 'dd/MM/yyyy') : '—'}">—</td>
+                                <td th:text="${maintenance.cout} + ' Ar'">—</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="' badge--' + ${maintenance.statutMaintenance.code}"
+                                          th:text="${maintenance.statutMaintenance.libelle}">Statut</span>
+                                </td>
+                                <td class="muted" th:text="${maintenance.travaux != null and !maintenance.travaux.isEmpty() ? maintenance.travaux : '—'}">—</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/machines}">Flotte de matériel</a>
+            <a th:href="@{/admin/maintenances-machine}">Maintenances</a>
+        </div>
+    </footer>
+</main>
+
+</body>
+</html>

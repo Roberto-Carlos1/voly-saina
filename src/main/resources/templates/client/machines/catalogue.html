@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(pageTitle='Catalogue - VolySaina+')}">
+</head>
+<body class="min-h-screen flex flex-col bg-surface">
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 pt-20">
+        <!-- Sidebar Filters -->
+        <aside class="w-72 min-h-[calc(100vh-80px)] bg-surface-container-low border-r border-outline-variant overflow-y-auto flex-shrink-0 hidden lg:block">
+            <div class="p-6">
+                <!-- Categories -->
+                <div class="mb-8">
+                    <h3 class="font-headline-md text-headline-md text-primary mb-1">Catégories</h3>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant mb-4">Équipements Spécialisés</p>
+                    <div class="flex flex-col space-y-1">
+                        <div th:each="type : ${types}" class="w-full">
+                            <a th:href="@{/catalogue/machines/catalogue(typeId=${type.idTypeMachine}, disponible=${disponibleOnly}, prixMax=${prixMax}, page=${currentPage})}" 
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all w-full"
+                               th:classappend="${param.typeId != null and param.typeId[0] == type.idTypeMachine.toString()} ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant hover:bg-surface-container-high'">
+                                <span class="material-symbols-outlined text-[20px]">agriculture</span>
+                                <span class="font-label-md text-label-md" th:text="${type.libelle}">Tracteurs</span>
+                            </a>
+                        </div>
+                        <div th:if="${types == null or #lists.isEmpty(types)}" class="text-on-surface-variant text-label-sm p-3">
+                            Aucune catégorie disponible
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disponibilité -->
+                <div class="mb-8">
+                    <label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Disponibilité</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input class="rounded border-outline-variant text-primary focus:ring-primary h-5 w-5" 
+                                   type="checkbox" id="filtreDisponible"
+                                   th:checked="${disponibleOnly}">
+                            <span class="font-body-md text-body-md group-hover:text-primary">Disponible uniquement</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Prix -->
+                <div class="mb-8">
+                    <label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Prix / Jour (€)</label>
+                    <div class="px-1">
+                        <input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-primary" 
+                               type="range" min="0" max="500000" step="100" id="prixRange"
+                               th:value="${prixMax != null ? prixMax : 2500}">
+                        <div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
+                            <span>0 €</span>
+                            <span id="prixLabel" th:text="${prixMax != null ? prixMax + ' €' : '2500 €'}">2500 €</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Réinitialiser -->
+                <button class="w-full bg-surface-container-highest text-on-surface py-3 rounded-lg font-label-md hover:bg-outline-variant transition-colors"
+                        onclick="window.location.href='/catalogue/machines/catalogue'">
+                    Réinitialiser
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-8">
+            <!-- Header -->
+            <header class="mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant pb-6">
+                    <div>
+                        <nav class="flex items-center gap-2 text-label-sm text-on-surface-variant mb-2">
+                            <a href="/client/accueil" class="hover:text-primary">Accueil</a>
+                            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                            <span class="text-primary font-bold">Catalogue Machines</span>
+                        </nav>
+                        <h1 class="font-headline-lg text-headline-lg text-on-surface">Machines Agricoles</h1>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-2xl">
+                            Découvrez notre sélection de machines agricoles de pointe. Robustesse et performance au service de votre exploitation.
+                        </p>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-2">
+                            <span th:text="${machines != null ? #lists.size(machines) : 0}">0</span> machine(s) trouvée(s)
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 flex-shrink-0">
+                        <span class="font-label-md text-label-md">Trier par :</span>
+                        <select class="bg-white border border-outline-variant rounded-lg py-2 px-4 font-label-md focus:ring-primary outline-none" id="triSelect">
+                            <option value="nom" th:selected="${param.tri == null or param.tri[0] == 'nom'}">Nom</option>
+                            <option value="prix_asc" th:selected="${param.tri != null and param.tri[0] == 'prix_asc'}">Prix croissant</option>
+                            <option value="prix_desc" th:selected="${param.tri != null and param.tri[0] == 'prix_desc'}">Prix décroissant</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Machines Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div th:each="machine : ${machines}" 
+                    class="bg-white border border-outline-variant rounded-xl overflow-hidden hover:shadow-lg hover:border-primary transition-all duration-300 flex flex-col">
+                    
+                    <div class="relative h-48 bg-gradient-to-br from-surface-container-high to-surface-container flex items-center justify-center overflow-hidden">
+                        <span th:if="${machine.disponible}" 
+                            class="absolute top-3 left-3 bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
+                            Disponible
+                        </span>
+                        <span th:unless="${machine.disponible}" 
+                            class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
+                            Indisponible
+                        </span>
+                        <img th:src="${machineImages[machine.idMachine]}" 
+                             th:alt="${machine.nom}" 
+                             class="w-full h-full object-cover"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+                        <span class="material-symbols-outlined text-outline text-[64px]" style="display:none">agriculture</span>
+                    </div>
+                    
+                    <div class="p-5 flex flex-col flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-secondary text-xs uppercase tracking-wider font-semibold" 
+                                   th:text="${machine.typeMachine != null ? machine.typeMachine.libelle : 'Machine'}">
+                                    Type
+                                </p>
+                                <h3 class="font-bold text-lg text-on-surface leading-tight truncate" th:text="${machine.nom}">
+                                    Nom
+                                </h3>
+                            </div>
+                            <div class="text-right ml-2 flex-shrink-0">
+                                <p class="font-bold text-xl text-primary">
+                                    <span th:text="${#numbers.formatDecimal(machine.prixJour, 0, 0, 'COMMA')}">0</span> €
+                                    <span class="text-xs font-normal text-on-surface-variant block">/jour</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <p class="text-sm text-on-surface-variant mt-1 line-clamp-2 flex-1" 
+                           th:text="${machine.description != null ? machine.description : 'Aucune description'}">
+                            Description
+                        </p>
+                        
+                        <div class="flex justify-between mt-3 pt-3 border-t border-gray-100 text-sm text-on-surface-variant">
+                            <span class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                <span class="truncate max-w-[80px]" th:text="${machine.localisation != null and !machine.localisation.isEmpty() ? machine.localisation : 'Non spécifiée'}">
+                                    Localisation
+                                </span>
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">speed</span>
+                                <span th:text="${machine.kilometrage != null ? #numbers.formatDecimal(machine.kilometrage, 0, 0, 'COMMA') + ' km' : 'N/A'}">
+                                    N/A
+                                </span>
+                            </span>
+                        </div>
+                        
+                        <div class="flex gap-2 mt-4">
+                            <a th:href="@{/catalogue/machines/detail(id=${machine.idMachine})}" 
+                               class="flex-1 bg-primary text-white text-center py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition">
+                                Voir détails
+                            </a>
+                            <a th:if="${machine.disponible}" 
+                               th:href="@{/catalogue/reservations/{machineId}/nouvelle(machineId=${machine.idMachine})}" 
+                               class="flex-1 bg-secondary text-white text-center py-2.5 rounded-lg text-sm font-medium hover:bg-secondary/90 transition">
+                                Réserver
+                            </a>
+                            <span th:unless="${machine.disponible}" 
+                                  class="flex-1 bg-gray-200 text-gray-500 text-center py-2.5 rounded-lg text-sm font-medium cursor-not-allowed">
+                                Indisponible
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${machines == null or #lists.isEmpty(machines)}" 
+                 class="text-center py-20">
+                <span class="material-symbols-outlined text-outline text-[64px]">search_off</span>
+                <h3 class="font-headline-md text-headline-md text-on-surface mt-4">Aucune machine trouvée</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">
+                    Aucune machine ne correspond à vos critères.
+                </p>
+                <a href="/catalogue/machines/catalogue" 
+                   class="inline-block mt-4 bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md hover:opacity-90 transition">
+                    Réinitialiser les filtres
+                </a>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages != null and totalPages > 1}" 
+                 class="mt-8 flex justify-center items-center gap-2">
+                <a th:href="@{/catalogue/machines/catalogue(page=${currentPage - 1}, typeId=${param.typeId != null ? param.typeId[0] : ''}, disponible=${disponibleOnly}, prixMax=${prixMax}, tri=${param.tri != null ? param.tri[0] : 'nom'})}" 
+                   th:classappend="${currentPage == 0} ? 'opacity-50 pointer-events-none' : ''"
+                   class="w-10 h-10 border border-outline-variant rounded flex items-center justify-center hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </a>
+                
+                <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}" 
+                   th:href="@{/catalogue/machines/catalogue(page=${i}, typeId=${param.typeId != null ? param.typeId[0] : ''}, disponible=${disponibleOnly}, prixMax=${prixMax}, tri=${param.tri != null ? param.tri[0] : 'nom'})}"
+                   th:classappend="${i == currentPage} ? 'bg-primary text-on-primary' : 'border border-outline-variant hover:bg-surface-container-high'"
+                   class="w-10 h-10 rounded font-label-md flex items-center justify-center transition-colors"
+                   th:text="${i + 1}">
+                    1
+                </a>
+                
+                <a th:href="@{/catalogue/machines/catalogue(page=${currentPage + 1}, typeId=${param.typeId != null ? param.typeId[0] : ''}, disponible=${disponibleOnly}, prixMax=${prixMax}, tri=${param.tri != null ? param.tri[0] : 'nom'})}" 
+                   th:classappend="${currentPage >= totalPages - 1} ? 'opacity-50 pointer-events-none' : ''"
+                   class="w-10 h-10 border border-outline-variant rounded flex items-center justify-center hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        // Récupérer les paramètres de l'URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                typeId: params.get('typeId'),
+                page: params.get('page') || 0,
+                disponible: params.get('disponible') === 'true',
+                prixMax: params.get('prixMax') || null,
+                tri: params.get('tri') || 'nom'
+            };
+        }
+
+        const urlParams = getUrlParams();
+
+        // Gérer le filtre de disponibilité
+        document.getElementById('filtreDisponible')?.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            if (this.checked) {
+                url.searchParams.set('disponible', 'true');
+            } else {
+                url.searchParams.delete('disponible');
+            }
+            url.searchParams.delete('page'); // Retour à la première page
+            window.location.href = url.toString();
+        });
+
+        // Gérer le slider de prix
+        const prixRange = document.getElementById('prixRange');
+        const prixLabel = document.getElementById('prixLabel');
+        
+        if (prixRange) {
+            prixRange.addEventListener('input', function() {
+                prixLabel.textContent = this.value + ' €';
+            });
+            
+            prixRange.addEventListener('change', function() {
+                const url = new URL(window.location.href);
+                url.searchParams.set('prixMax', this.value);
+                url.searchParams.delete('page');
+                window.location.href = url.toString();
+            });
+        }
+
+        // Gérer le tri
+        document.getElementById('triSelect')?.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('tri', this.value);
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
+
+        // Sélectionner la bonne option de tri
+        if (urlParams.tri) {
+            const select = document.getElementById('triSelect');
+            if (select) {
+                for (let option of select.options) {
+                    if (option.value === urlParams.tri) {
+                        option.selected = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        console.log('🔍 Paramètres URL:', urlParams);
+        console.log('📦 Nombre de machines affichées:', document.querySelectorAll('.bg-white.border').length);
+    </script>
+</body>
+</html>

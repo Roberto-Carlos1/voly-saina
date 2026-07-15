@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Page de modification</h1>
+    <form th:action="@{/admin/machines/modifier/{id}(id=${machine.getIdMachine()})}" method="post">
+        <p>
+            Nom machine
+            <input type="text" name="nom" th:value="${machine.getNom()}">
+        </p>
+
+        <p>
+            Description
+            <input type="text" name="description" th:value="${machine.getDescription()}">
+        </p>
+
+        <p>
+            Prix (par jour)
+            <input type="number" name="prixJour" step="0.01" th:value="${machine.getPrixJour()}" required>
+        </p>
+
+        <p>
+            Type machine
+            <select name="typeMachine" required>
+                <option value="">Vide</option>
+                <option th:each="type : ${types}" th:value="${type.getIdTypeMachine()}" th:text="${type.getLibelle()}"
+                    th:selected="${machine.getTypeMachine() != null and machine.getTypeMachine().getIdTypeMachine().equals(type.getIdTypeMachine())}">
+                </option>
+            </select>
+        </p>
+
+        <p>
+            Etat machine
+            <select name="etatMachine" required>
+                <option value="">Vide</option>
+                <option th:each="etat : ${etatMachine}" th:value="${etat.getIdEtatMachine()}"
+                    th:text="${etat.getLibelle()}"
+                    th:selected="${machine.getEtatMachine() != null and machine.getEtatMachine().getIdEtatMachine().equals(etat.getIdEtatMachine())}"></option>
+            </select>
+        </p>
+        <p>
+            Localisation
+            <input type="text" name="localisation" th:value="${machine.getLocalisation()}">
+        </p>
+        <p>
+            Kilometrage
+            <input type="number" name="kilometrage" step="0.01" th:value="${machine.getKilometrage()}">
+        </p>
+   
+        <p>
+            Disponible
+            <input type="checkbox" name="disponible" value="true" th:checked="${machine.getDisponible()}">
+        </p>
+
+        <input type="submit" value="Modifier">
+    </form>
+</body>
+
+</html>

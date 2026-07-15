@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(pageTitle='Retourner une machine - VolySaina+')}">
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="pt-20">
+        <div class="max-w-[768px] mx-auto px-margin-desktop py-stack-lg">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
+                <a href="/client/accueil" class="hover:text-primary">Accueil</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <a th:href="@{/catalogue/reservations/mes-reservations(idClient=${clientId})}" class="hover:text-primary">Mes réservations</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="text-on-surface font-semibold">Retourner une machine</span>
+            </nav>
+
+            <!-- Header -->
+            <div class="bg-white border-2 border-secondary/20 rounded-xl p-6 mb-6">
+                <h1 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">undo</span>
+                    Retourner une machine
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">
+                    Veuillez évaluer l'état de la machine et confirmer son retour.
+                </p>
+            </div>
+
+            <!-- Informations réservation -->
+            <div id="infoReservation" class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="animate-pulse flex gap-4">
+                        <div class="w-16 h-16 bg-surface-container-high rounded-xl"></div>
+                        <div class="flex-1 space-y-2">
+                            <div class="h-4 bg-surface-container-high rounded w-3/4"></div>
+                            <div class="h-3 bg-surface-container-high rounded w-1/2"></div>
+                        </div>
+                    </div>
+                    <p class="text-on-surface-variant">⏳ Chargement des informations...</p>
+                </div>
+            </div>
+
+            <!-- Formulaire -->
+            <form id="formRetour" class="bg-white border-2 border-primary/10 rounded-xl shadow-lg p-6" style="display:none;">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-6">État de la machine</h2>
+
+                <!-- Options d'état -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('bon')">
+                        <input type="radio" name="etatRetour" value="bon" id="etat_bon" class="hidden" checked>
+                        <span class="material-symbols-outlined text-green-500">check_circle</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Bon état</p>
+                            <p class="text-label-sm text-on-surface-variant">Aucun dommage constaté</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('endommage')">
+                        <input type="radio" name="etatRetour" value="endommage" id="etat_endommage" class="hidden">
+                        <span class="material-symbols-outlined text-orange-500">warning</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Endommagé</p>
+                            <p class="text-label-sm text-on-surface-variant">Dommages importants constatés</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('casse')">
+                        <input type="radio" name="etatRetour" value="casse" id="etat_casse" class="hidden">
+                        <span class="material-symbols-outlined text-red-500">broken_image</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Cassé</p>
+                            <p class="text-label-sm text-on-surface-variant">Machine non fonctionnelle</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                         onclick="selectEtat('perdu')">
+                        <input type="radio" name="etatRetour" value="perdu" id="etat_perdu" class="hidden">
+                        <span class="material-symbols-outlined text-red-700">search_off</span>
+                        <div>
+                            <p class="font-label-md text-label-md font-bold">Perdu</p>
+                            <p class="text-label-sm text-on-surface-variant">Machine non restituée</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remarque -->
+                <div class="mb-6">
+                    <label class="block font-label-sm text-on-surface-variant mb-2">Remarque (optionnelle)</label>
+                    <textarea name="remarque" rows="3" 
+                              class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                              placeholder="Décrivez l'état de la machine, les éventuels dommages..."></textarea>
+                </div>
+
+                <!-- Résumé -->
+                <div id="resumeRetour" class="bg-surface-container-low p-4 rounded-lg mb-6">
+                    <h4 class="font-label-md text-label-md text-on-surface mb-2">Résumé du retour</h4>
+                    <div class="flex justify-between">
+                        <span class="font-body-md text-body-md text-on-surface-variant">Date de retour</span>
+                        <span class="font-body-md text-body-md font-bold" id="dateRetour">--/--/----</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-body-md text-body-md text-on-surface-variant">Pénalité</span>
+                        <span class="font-body-md text-body-md font-bold text-red-500" id="penaliteRetour">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between border-t border-outline-variant pt-2 mt-2">
+                        <span class="font-body-md text-body-md text-on-surface-variant">Total à payer</span>
+                        <span class="font-headline-md text-headline-md text-primary" id="totalRetour">0 Ar</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="submit" id="btnEnregistrer" 
+                            class="flex-1 bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all btn-primary flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Enregistrer le retour
+                    </button>
+                    <a th:href="@{/catalogue/reservations/mes-reservations(idClient=${clientId})}" 
+                       class="px-6 py-4 border border-outline-variant rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+
+            <!-- Message -->
+            <div id="message" class="mt-4"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        // Récupération des paramètres
+        const pathParts = window.location.pathname.split('/');
+        const reservationId = pathParts[3] || 1;
+        const clientId = /*[[${clientId != null ? clientId : 1}]]*/ 1;
+
+        console.log('🔍 Reservation ID:', reservationId);
+        console.log('🔍 Client ID:', clientId);
+
+        let reservationData = null;
+        let penaliteSelectionnee = 0;
+
+        // Charger les informations
+        function loadReservationInfo() {
+            const infoDiv = document.getElementById('infoReservation');
+            
+            fetch('/catalogue/retours/api/form/' + reservationId)
+                .then(r => {
+                    if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(data => {
+                    console.log('📦 Données:', data);
+                    reservationData = data;
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    // Afficher les informations
+                    infoDiv.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 rounded-xl bg-surface-container-high flex items-center justify-center">
+                                <span class="material-symbols-outlined text-outline text-[32px]">agriculture</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-headline-md text-headline-md text-on-surface">${data.machineNom || 'Machine'}</h3>
+                                <p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest">${data.machineType || 'Type inconnu'}</p>
+                                <div class="flex flex-wrap gap-4 mt-2 text-sm text-on-surface-variant">
+                                    <span>📍 ${data.lieuLivraison || 'Lieu non spécifié'}</span>
+                                    <span>📅 ${data.dateDebut || ''} → ${data.dateFin || ''}</span>
+                                    <span class="font-bold text-primary">${data.prixTotal || 0} Ar</span>
+                                </div>
+                                ${data.estRetard ? `<div class="mt-2 text-red-500 font-bold">⚠️ Retard : ${data.joursRetard} jour(s) - Pénalité : ${data.penaliteRetard} Ar</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+
+                    // Mettre à jour le résumé
+                    document.getElementById('dateRetour').textContent = data.dateRetour || new Date().toLocaleDateString('fr-FR');
+                    document.getElementById('penaliteRetour').textContent = (data.penaliteRetard || 0) + ' Ar';
+                    document.getElementById('totalRetour').textContent = (data.prixTotal || 0) + (data.penaliteRetard || 0) + ' Ar';
+                    penaliteSelectionnee = data.penaliteRetard || 0;
+
+                    // Afficher le formulaire
+                    document.getElementById('formRetour').style.display = 'block';
+                })
+                .catch(err => {
+                    console.error('❌ Erreur:', err);
+                    infoDiv.innerHTML = `
+                        <div class="border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined">error</span>
+                                ❌ ${err.message}
+                            </div>
+                            <div class="mt-3 flex gap-3">
+                                <button onclick="loadReservationInfo()" 
+                                        class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition">
+                                    Réessayer
+                                </button>
+                                <a href="/catalogue/reservations/mes-reservations?idClient=${clientId}" 
+                                   class="border border-primary text-primary px-4 py-2 rounded-lg font-label-md hover:bg-primary/10 transition">
+                                    Retour à la liste
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+        }
+
+        // Sélectionner un état
+        function selectEtat(code) {
+            document.querySelectorAll('input[name="etatRetour"]').forEach(input => {
+                input.checked = false;
+                input.closest('.border').classList.remove('border-primary', 'bg-primary/5');
+            });
+            
+            const input = document.querySelector(`input[name="etatRetour"][value="${code}"]`);
+            if (input) {
+                input.checked = true;
+                input.closest('.border').classList.add('border-primary', 'bg-primary/5');
+
+                const penalites = { bon: 0, use: 0, endommage: 50000, casse: 250000, perdu: 1000000 };
+                penaliteSelectionnee = penalites[code] || 0;
+                document.getElementById('penaliteRetour').textContent = penaliteSelectionnee + ' Ar';
+                const total = (reservationData?.prixTotal || 0) + penaliteSelectionnee;
+                document.getElementById('totalRetour').textContent = total + ' Ar';
+            }
+        }
+
+        // Soumettre le formulaire
+        document.getElementById('formRetour').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const etatSelectionne = document.querySelector('input[name="etatRetour"]:checked');
+            if (!etatSelectionne) {
+                document.getElementById('message').innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container flex items-center gap-2">
+                        <span class="material-symbols-outlined">warning</span>
+                        Veuillez sélectionner un état pour la machine.
+                    </div>
+                `;
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = {
+                reservationId: Number(reservationId),
+                etatRetour: formData.get('etatRetour'),
+                remarque: formData.get('remarque') || ''
+            };
+
+            const btn = document.getElementById('btnEnregistrer');
+            const msgDiv = document.getElementById('message');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Enregistrement...';
+            msgDiv.innerHTML = '';
+
+            fetch('/catalogue/retours/api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => {
+                if (!r.ok) throw new Error('Erreur HTTP ' + r.status);
+                return r.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                const penalite = data.retour?.penalite || data.penalite || 0;
+                const montantTotal = data.montantTotal || (reservationData?.prixTotal || 0) + penalite;
+                
+                msgDiv.innerHTML = `
+                    <div class="border border-primary-container bg-primary-container/10 p-4 rounded-lg text-primary">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <span class="font-bold"> ${data.message || 'Retour enregistré avec succès !'}</span>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-4 bg-white p-3 rounded-lg">
+                            <div>
+                                <p class="text-label-sm text-on-surface-variant">Pénalité</p>
+                                <p class="font-bold text-red-500">${penalite} Ar</p>
+                            </div>
+                            <div>
+                                <p class="text-label-sm text-on-surface-variant">Total à payer</p>
+                                <p class="font-headline-md text-primary">${montantTotal} Ar</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-3">
+                            <a href="/catalogue/reservations/mes-reservations?idClient=${clientId}" 
+                               class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition">
+                                Voir mes réservations
+                            </a>
+                            <a href="/catalogue/reservations/${reservationId}?idClient=${clientId}" 
+                               class="border border-primary text-primary px-4 py-2 rounded-lg font-label-md hover:bg-primary/10 transition">
+                                Voir le détail
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('formRetour').style.display = 'none';
+                btn.style.display = 'none';
+            })
+            .catch(err => {
+                console.error('❌ Erreur:', err);
+                msgDiv.innerHTML = `
+                    <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container flex items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                        ❌ ${err.message}
+                    </div>
+                `;
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1;">check_circle</span> Enregistrer le retour';
+            });
+        };
+
+        // Charger au démarrage
+        loadReservationInfo();
+    </script>
+</body>
+</html>

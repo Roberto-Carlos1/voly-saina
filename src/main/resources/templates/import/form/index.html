@@ -1,0 +1,40 @@
+
+
+<!-- ===== Fragment : formulaire d'import Excel (admin) ===== -->
+<div th:fragment="importForm(entityType, templateUrl)" id="importSection" class="import-section" style="display:none;">
+    <div class="import-card">
+        <div class="import-card__head">
+            <h3><span class="material-symbols-outlined">description</span> Importer via Excel</h3>
+            <button type="button" class="icon-btn" onclick="document.getElementById('importSection').style.display='none'">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <p class="import-card__desc">
+            Téléchargez d'abord le <a th:href="${templateUrl}" class="link">modèle Excel</a>,
+            remplissez-le puis importez-le ici.
+        </p>
+
+        <form method="POST" enctype="multipart/form-data" action="/api/exel/import" id="importExcelForm" class="import-card__form">
+            <div class="import-card__drop" id="dropZone">
+                <span class="material-symbols-outlined import-card__drop-icon">description</span>
+                <p>Glissez votre fichier ici ou</p>
+                <label class="btn btn--outline import-card__browse" for="importFileInput">Parcourir</label>
+                <input type="file" name="file" id="importFileInput" accept=".xlsx,.xls,.csv" class="import-card__file-input">
+            </div>
+            <div id="importFileInfo" class="import-card__file-info" style="display:none;">
+                <span class="material-symbols-outlined">description</span>
+                <span id="importFileName"></span>
+                <button type="button" class="icon-btn icon-btn--danger" id="importRemoveFile">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="importMsg" class="import-card__msg"></div>
+            <div class="import-card__actions">
+                <button type="submit" class="btn btn--primary" id="importBtnUpload" disabled>
+                    <span class="material-symbols-outlined">send</span>
+                    Importer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

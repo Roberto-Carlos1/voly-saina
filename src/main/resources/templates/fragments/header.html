@@ -154,7 +154,7 @@
             left: 0;
             width: 0;
             height: 2px;
-            background-color: #0d7106ff; /* Couleur orange/marron */
+            background-color: #004c22;
             transition: width 0.3s ease;
         }
         /* Au survol - la ligne apparaît */
@@ -163,12 +163,12 @@
         }
         /* Quand la page est active - la ligne reste visible ET changement de couleur */
         .nav-link.active {
-            color: #046513ff !important; /* Orange/marron */
+            color: #004c22 !important;
             font-weight: 600 !important;
         }
         .nav-link.active::after {
             width: 100% !important;
-            background-color: #046513ff !important;
+            background-color: #004c22 !important;
         }
         /* Couleur par défaut */
         .nav-link:not(.active) {
@@ -193,26 +193,31 @@
             
             <!-- Navigation centrée -->
             <div class="hidden md:flex gap-6 items-center">
-<div class="hidden md:flex gap-6 items-center">
-    <a href="/guide-plantation" class="nav-link font-label-md text-primary font-bold transition-colors duration-200 flex items-center gap-2" data-page="guide-plantation">
-        <span class="material-symbols-outlined text-[20px]">menu_book</span>
-        Encyclopédie
-    </a>
-    <a href="/catalogue/machines/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="machines">
-        <span class="material-symbols-outlined text-[20px]">agriculture</span>
-        Machines
-    </a>
-    <a href="/catalogue/produits/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="produits">
-        <span class="material-symbols-outlined text-[20px]">storefront</span>
-        Boutique    
-    </a>
-    <!-- Mes Réservations -->
-    <a href="/catalogue/reservations/mes-reservations" 
-       class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="reservations">
-        <span class="material-symbols-outlined text-[20px]">event_note</span>
-        Mes Réservations
-    </a>
-</div>
+                <!-- Encyclopédie - SUPPRESSION de font-bold en dur -->
+                <a href="/guide-plantation" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="guide-plantation">
+                    <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                    Encyclopédie
+                </a>
+                <a href="/catalogue/machines/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="machines">
+                    <span class="material-symbols-outlined text-[20px]">agriculture</span>
+                    Machines
+                </a>
+                <a href="/catalogue/produits/catalogue" class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="produits">
+                    <span class="material-symbols-outlined text-[20px]">storefront</span>
+                    Boutique    
+                </a>
+                <!-- Mes Réservations -->
+                <a href="/catalogue/reservations/mes-reservations" 
+                   class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="reservations">
+                    <span class="material-symbols-outlined text-[20px]">event_note</span>
+                    Mes Réservations
+                </a>
+                <!-- Mes Factures -->
+                <a href="/client/factures" 
+                   class="nav-link font-label-md text-label-md transition-colors duration-200 flex items-center gap-2" data-page="factures">
+                    <span class="material-symbols-outlined text-[20px]">receipt_long</span>
+                    Mes Factures
+                </a>
             </div>
             
             <!-- Right Side (Panier + Profil + Déconnexion) -->
@@ -249,12 +254,16 @@
                 
                 // Déterminer quel lien doit être actif
                 let activePage = '';
-                if (currentPath.startsWith('/catalogue/machines')) {
+                if (currentPath.startsWith('/guide-plantation')) {
+                    activePage = 'guide-plantation';
+                } else if (currentPath.startsWith('/catalogue/machines')) {
                     activePage = 'machines';
                 } else if (currentPath.startsWith('/catalogue/produits')) {
                     activePage = 'produits';
                 } else if (currentPath.startsWith('/catalogue/reservations')) {
                     activePage = 'reservations';
+                } else if (currentPath.startsWith('/client/factures')) {
+                    activePage = 'factures';
                 }
                 
                 // Ajouter la classe active au lien correspondant

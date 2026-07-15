@@ -62,37 +62,43 @@
             <!-- Navigation des onglets -->
             <ul class="flex border-b border-outline-variant px-4 overflow-x-auto" id="profileTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 border-transparent hover:border-primary transition-all active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+                    <button class="tab-btn active px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 transition-all" 
+                            data-target="info" type="button">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">person</span>
                         Informations
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 border-transparent hover:border-primary transition-all" id="res-tab" data-bs-toggle="tab" data-bs-target="#res" type="button" role="tab" aria-controls="res" aria-selected="false">
+                    <button class="tab-btn px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 transition-all" 
+                            data-target="res" type="button">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">calendar_month</span>
                         Réservations
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 border-transparent hover:border-primary transition-all" id="cmd-tab" data-bs-toggle="tab" data-bs-target="#cmd" type="button" role="tab" aria-controls="cmd" aria-selected="false">
+                    <button class="tab-btn px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 transition-all" 
+                            data-target="cmd" type="button">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">shopping_bag</span>
                         Commandes
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 border-transparent hover:border-primary transition-all" id="fac-tab" data-bs-toggle="tab" data-bs-target="#fac" type="button" role="tab" aria-controls="fac" aria-selected="false">
+                    <button class="tab-btn px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 transition-all" 
+                            data-target="fac" type="button">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">description</span>
                         Factures
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 border-transparent hover:border-primary transition-all" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
+                    <button class="tab-btn px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 transition-all" 
+                            data-target="stats" type="button">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">monitoring</span>
                         Statistiques
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 border-transparent hover:border-primary transition-all" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+                    <button class="tab-btn px-4 py-3 font-semibold text-sm text-on-surface-variant hover:text-primary border-b-2 transition-all" 
+                            data-target="settings" type="button">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">settings</span>
                         Paramètres
                     </button>
@@ -103,7 +109,7 @@
             <div class="tab-content p-6" id="profileTabsContent">
 
                 <!-- Onglet Informations -->
-                <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                <div class="tab-pane active" id="panel-info" role="tabpanel">
                     <form method="POST" th:action="@{/client/profil/informations}">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="border-e border-outline-variant pr-6">
@@ -173,7 +179,7 @@
                 </div>
 
                 <!-- Onglet Réservations -->
-                <div class="tab-pane fade" id="res" role="tabpanel" aria-labelledby="res-tab">
+                <div class="tab-pane hidden" id="panel-res" role="tabpanel">
                     <div th:if="${reservations == null or #lists.isEmpty(reservations)}" class="text-center py-12">
                         <span class="material-symbols-outlined text-[64px] text-outline-variant">event_busy</span>
                         <p class="text-base text-on-surface-variant mt-2">Aucune réservation en cours.</p>
@@ -212,7 +218,7 @@
                 </div>
 
                 <!-- Onglet Commandes -->
-                <div class="tab-pane fade" id="cmd" role="tabpanel" aria-labelledby="cmd-tab">
+                <div class="tab-pane hidden" id="panel-cmd" role="tabpanel">
                     <div th:if="${commandes == null or #lists.isEmpty(commandes)}" class="text-center py-12">
                         <span class="material-symbols-outlined text-[64px] text-outline-variant">shopping_basket</span>
                         <p class="text-base text-on-surface-variant mt-2">Historique des commandes vide.</p>
@@ -251,7 +257,7 @@
                 </div>
 
                 <!-- Onglet Factures -->
-                <div class="tab-pane fade" id="fac" role="tabpanel" aria-labelledby="fac-tab">
+                <div class="tab-pane hidden" id="panel-fac" role="tabpanel">
                     <div th:if="${factures == null or #lists.isEmpty(factures)}" class="text-center py-12">
                         <span class="material-symbols-outlined text-[64px] text-outline-variant">receipt_long</span>
                         <p class="text-base text-on-surface-variant mt-2">Aucune facture disponible.</p>
@@ -294,7 +300,7 @@
                 </div>
 
                 <!-- Onglet Statistiques -->
-                <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+                <div class="tab-pane hidden" id="panel-stats" role="tabpanel">
                     <!-- Filtres de période -->
                     <form method="GET" th:action="@{/client/profil}" class="mb-6">
                         <input type="hidden" name="tab" value="stats"/>
@@ -405,7 +411,7 @@
                 </div>
 
                 <!-- Onglet Paramètres -->
-                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                <div class="tab-pane hidden" id="panel-settings" role="tabpanel">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="border-e border-outline-variant pr-6">
                             <h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-2">
@@ -462,11 +468,87 @@
     <!-- ===== FOOTER ===== -->
     <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
     <script th:inline="javascript">
-        const ONGLET_ACTIF = /*[[${ongletActif}]]*/ 'info';
+        // ============================================
+        // 1. GESTION DES ONGLETS (JavaScript pur)
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            // Fonction pour activer un onglet
+            function activateTab(targetId) {
+                // Retirer la classe active de tous les onglets
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.classList.remove('border-primary');
+                    t.classList.add('border-transparent');
+                    t.classList.remove('text-primary');
+                    t.classList.add('text-on-surface-variant');
+                });
+
+                // Ajouter la classe active à l'onglet ciblé
+                const targetTab = document.querySelector(`.tab-btn[data-target="${targetId}"]`);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                    targetTab.classList.remove('border-transparent');
+                    targetTab.classList.add('border-primary');
+                    targetTab.classList.remove('text-on-surface-variant');
+                    targetTab.classList.add('text-primary');
+                }
+
+                // Cacher tous les panneaux
+                panes.forEach(p => {
+                    p.classList.remove('active');
+                    p.classList.add('hidden');
+                });
+
+                // Afficher le panneau correspondant
+                const panel = document.getElementById('panel-' + targetId);
+                if (panel) {
+                    panel.classList.remove('hidden');
+                    panel.classList.add('active');
+                }
+            }
+
+            // Ajouter les écouteurs d'événements
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    activateTab(target);
+                    
+                    // Mettre à jour l'URL avec le paramètre tab (optionnel)
+                    const url = new URL(window.location);
+                    url.searchParams.set('tab', target);
+                    window.history.pushState({}, '', url);
+                });
+            });
+
+            // Activer l'onglet demandé depuis le serveur ou depuis l'URL
+            const ongletActif = /*[[${ongletActif}]]*/ 'info';
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabFromUrl = urlParams.get('tab');
+            
+            const tabToActivate = tabFromUrl || ongletActif || 'info';
+            activateTab(tabToActivate);
+
+            // ============================================
+            // 2. DÉFINIR LA PAGE ACTIVE POUR LE HEADER
+            // ============================================
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === 'profil') {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ============================================
+        // 3. DONNÉES POUR LES GRAPHIQUES
+        // ============================================
         const STATS_LABELS_MOIS = /*[[${stats.depensesMensuelles != null ? stats.depensesMensuelles.![libelleMois] : null}]]*/ [];
         const STATS_DATA_MOIS = /*[[${stats.depensesMensuelles != null ? stats.depensesMensuelles.![montant] : null}]]*/ [];
         const STATS_MONTANT_LOCATIONS = /*[[${stats.totalDepensesLocations}]]*/ 0;
@@ -477,28 +559,203 @@
         const STATS_LABELS_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![nomProduit] : null}]]*/ [];
         const STATS_DATA_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![quantiteTotale] : null}]]*/ [];
         const STATS_MONTANTS_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![totalDepense] : null}]]*/ [];
-        const STATS_CATEGORIES_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![categorie] : null}]]*/ [];
 
+        // ============================================
+        // 4. INITIALISATION DES GRAPHIQUES
+        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Activer l'onglet demandé
-            const ongletsValides = ['info', 'res', 'cmd', 'fac', 'stats', 'settings'];
-            if (ONGLET_ACTIF && ongletsValides.includes(ONGLET_ACTIF)) {
-                const bouton = document.getElementById(ONGLET_ACTIF + '-tab');
-                if (bouton) {
-                    new bootstrap.Tab(bouton).show();
+            // Chart 1: Dépenses mensuelles
+            if (STATS_LABELS_MOIS && STATS_LABELS_MOIS.length > 0) {
+                const ctx1 = document.getElementById('chartDepensesMensuelles');
+                if (ctx1) {
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: STATS_LABELS_MOIS,
+                            datasets: [{
+                                label: 'Dépenses (Ar)',
+                                data: STATS_DATA_MOIS,
+                                backgroundColor: 'rgba(0, 76, 34, 0.7)',
+                                borderColor: 'rgb(0, 76, 34)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toLocaleString() + ' Ar';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             }
 
-            // Définir la page active pour le header
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(function(link) {
-                link.classList.remove('active');
-                if (link.getAttribute('data-page') === 'profil') {
-                    link.classList.add('active');
+            // Chart 2: Répartition
+            if (STATS_MONTANT_LOCATIONS > 0 || STATS_MONTANT_COMMANDES > 0) {
+                const ctx2 = document.getElementById('chartRepartition');
+                if (ctx2) {
+                    new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Locations', 'Achats'],
+                            datasets: [{
+                                data: [STATS_MONTANT_LOCATIONS, STATS_MONTANT_COMMANDES],
+                                backgroundColor: ['#004c22', '#9a4614'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
                 }
-            });
+            }
+
+            // Chart 3: Top Machines
+            if (STATS_LABELS_MACHINES && STATS_LABELS_MACHINES.length > 0) {
+                const ctx3 = document.getElementById('chartTopMachines');
+                if (ctx3) {
+                    new Chart(ctx3, {
+                        type: 'bar',
+                        data: {
+                            labels: STATS_LABELS_MACHINES,
+                            datasets: [
+                                {
+                                    label: 'Nombre de locations',
+                                    data: STATS_DATA_MACHINES,
+                                    backgroundColor: 'rgba(0, 76, 34, 0.6)',
+                                    borderColor: 'rgb(0, 76, 34)',
+                                    borderWidth: 1,
+                                    order: 1
+                                },
+                                {
+                                    label: 'Dépenses (Ar)',
+                                    data: STATS_MONTANTS_MACHINES,
+                                    backgroundColor: 'rgba(154, 70, 20, 0.6)',
+                                    borderColor: 'rgb(154, 70, 20)',
+                                    borderWidth: 1,
+                                    order: 0
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Chart 4: Top Produits
+            if (STATS_LABELS_PRODUITS && STATS_LABELS_PRODUITS.length > 0) {
+                const ctx4 = document.getElementById('chartTopProduits');
+                if (ctx4) {
+                    new Chart(ctx4, {
+                        type: 'bar',
+                        data: {
+                            labels: STATS_LABELS_PRODUITS,
+                            datasets: [
+                                {
+                                    label: 'Quantité achetée',
+                                    data: STATS_DATA_PRODUITS,
+                                    backgroundColor: 'rgba(0, 76, 34, 0.6)',
+                                    borderColor: 'rgb(0, 76, 34)',
+                                    borderWidth: 1,
+                                    order: 1
+                                },
+                                {
+                                    label: 'Dépenses (Ar)',
+                                    data: STATS_MONTANTS_PRODUITS,
+                                    backgroundColor: 'rgba(154, 70, 20, 0.6)',
+                                    borderColor: 'rgb(154, 70, 20)',
+                                    borderWidth: 1,
+                                    order: 0
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
         });
     </script>
+
+    <!-- Styles personnalisés pour les onglets -->
+    <style>
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+        .tab-btn {
+            border-bottom-color: transparent !important;
+            color: #404940;
+        }
+        .tab-btn.active {
+            color: #004c22 !important;
+            border-bottom-color: #004c22 !important;
+            font-weight: 600;
+        }
+        .tab-btn:hover {
+            color: #004c22 !important;
+        }
+        .tab-btn:not(.active):hover {
+            border-bottom-color: #004c22 !important;
+        }
+    </style>
 
 </body>
 </html>

@@ -340,7 +340,7 @@ public class GuidePlantationExportService {
     }
 
     private void ajouterProduits(Document document, List<?> produits) throws DocumentException {
-        ajouterTitreSection(document, "Produits et intrants suggeres");
+        ajouterTitreSection(document, "Produits et intrants");
         if (produits == null || produits.isEmpty()) {
             ajouterMessageVide(document, "Aucun produit disponible.");
             return;

@@ -1,136 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr" class="light">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Mon Panier | VolySaina+</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "background": "#fff8f2",
-                        "on-tertiary-fixed": "#351000",
-                        "on-background": "#1e1b17",
-                        "surface-variant": "#e8e1db",
-                        "surface-dim": "#e0d9d2",
-                        "inverse-on-surface": "#f7efe9",
-                        "on-tertiary": "#ffffff",
-                        "on-secondary-container": "#712c00",
-                        "on-primary": "#ffffff",
-                        "secondary-fixed-dim": "#ffb693",
-                        "primary": "#004c22",
-                        "surface-bright": "#fff8f2",
-                        "surface": "#fff8f2",
-                        "outline-variant": "#bfc9bd",
-                        "on-primary-fixed-variant": "#005226",
-                        "error-container": "#ffdad6",
-                        "surface-container-high": "#eee7e0",
-                        "tertiary-fixed-dim": "#ffb694",
-                        "on-error": "#ffffff",
-                        "surface-container": "#f4ede6",
-                        "surface-container-highest": "#e8e1db",
-                        "inverse-primary": "#8bd79b",
-                        "tertiary": "#653319",
-                        "on-tertiary-container": "#ffc1a4",
-                        "on-error-container": "#93000a",
-                        "secondary": "#9a4614",
-                        "inverse-surface": "#33302c",
-                        "on-primary-fixed": "#00210b",
-                        "primary-container": "#166534",
-                        "on-tertiary-fixed-variant": "#6d391e",
-                        "on-surface": "#1e1b17",
-                        "surface-tint": "#1f6c3a",
-                        "surface-container-low": "#faf2eb",
-                        "secondary-container": "#fd925b",
-                        "tertiary-fixed": "#ffdbcc",
-                        "surface-container-lowest": "#ffffff",
-                        "on-secondary-fixed": "#341000",
-                        "on-surface-variant": "#404940",
-                        "error": "#ba1a1a",
-                        "on-secondary-fixed-variant": "#7a3000",
-                        "primary-fixed": "#a6f4b5",
-                        "tertiary-container": "#81492d",
-                        "secondary-fixed": "#ffdbcb",
-                        "outline": "#707a6f",
-                        "primary-fixed-dim": "#8bd79b",
-                        "on-primary-container": "#93e0a2",
-                        "on-secondary": "#ffffff"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.125rem",
-                        lg: "0.25rem",
-                        xl: "0.5rem",
-                        full: "0.75rem"
-                    },
-                    spacing: {
-                        "margin-desktop": "48px",
-                        "stack-lg": "32px",
-                        "gutter-desktop": "24px",
-                        "base": "4px",
-                        "stack-sm": "8px",
-                        "margin-mobile": "20px",
-                        "gutter-mobile": "16px",
-                        "stack-md": "16px"
-                    },
-                    fontFamily: {
-                        "body-lg": ["Inter"],
-                        "label-md": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-xl-mobile": ["Inter"],
-                        "headline-xl": ["Inter"],
-                        "headline-md": ["Inter"]
-                    },
-                    fontSize: {
-                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
-                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "headline-xl-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f4ede6; }
-        ::-webkit-scrollbar-thumb { background: #707a6f; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: #004c22; }
-    </style>
+<head th:replace="~{fragments/header :: head(pageTitle='Mon Panier | VolySaina+')}">
 </head>
 
 <body class="bg-background text-on-background min-h-screen flex flex-col">
 
-    <!-- Top Navigation -->
-    <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-mobile md:px-margin-desktop h-16 bg-surface border-b border-outline-variant">
-        <div class="flex items-center gap-4">
-            <span class="material-symbols-outlined text-primary text-headline-md">agriculture</span>
-            <h1 class="font-headline-md text-headline-md font-bold text-primary">VolySaina+</h1>
-        </div>
-        <nav class="hidden md:flex gap-8">
-<a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" th:href="@{/client/accueil}">Accueil</a>
-<a class="text-on-surface-variant font-label-md hover:text-primary transition-colors" th:href="@{/catalogue/produits/catalogue}">Catalogue</a>
-<a class="text-primary font-bold font-label-md" th:href="@{/panier}">Mon Panier</a>
-        </nav>
-        <div class="flex items-center gap-4">
-            <button class="material-symbols-outlined text-primary hover:bg-surface-variant rounded-full p-2 transition-colors">search</button>
-            <button class="material-symbols-outlined text-primary hover:bg-surface-variant rounded-full p-2 transition-colors">person</button>
-        </div>
-    </header>
+    <!-- Header Navigation - Importé depuis fragments/header -->
+    <header th:replace="~{fragments/header :: header}"></header>
 
     <!-- Main Content -->
     <main class="flex-grow pt-24 pb-stack-lg px-gutter-mobile md:px-margin-desktop max-w-[1280px] mx-auto w-full">
@@ -348,7 +224,7 @@
             <span class="font-bold">VolySaina+</span>
         </div>
         <div class="flex flex-wrap justify-center gap-gutter-desktop">
-<a class="text-on-surface-variant font-label-sm hover:underline" th:href="@{/client/accueil}">CGV</a>
+            <a class="text-on-surface-variant font-label-sm hover:underline" th:href="@{/client/accueil}">CGV</a>
             <a class="text-on-surface-variant font-label-sm hover:underline" href="#">Confidentialité</a>
             <a class="text-on-surface-variant font-label-sm hover:underline" href="#">Contact</a>
             <a class="text-on-surface-variant font-label-sm hover:underline" href="#">Aide</a>
@@ -358,7 +234,7 @@
 
     <!-- Bottom Navigation (Mobile) -->
     <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface border-t border-outline-variant">
-<a class="flex flex-col items-center justify-center text-on-surface-variant" th:href="@{/client/accueil}">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant" th:href="@{/client/accueil}">
             <span class="material-symbols-outlined">home</span>
             <span class="text-label-sm">Accueil</span>
         </a>
@@ -366,11 +242,11 @@
             <span class="material-symbols-outlined">search</span>
             <span class="text-label-sm">Catalogue</span>
         </a>
-<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" th:href="@{/panier}">
+        <a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" th:href="@{/panier}">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
             <span class="text-label-sm">Panier</span>
         </a>
-<a class="flex flex-col items-center justify-center text-on-surface-variant" th:href="@{/client/profil}">
+        <a class="flex flex-col items-center justify-center text-on-surface-variant" th:href="@{/client/profil}">
             <span class="material-symbols-outlined">person</span>
             <span class="text-label-sm">Profil</span>
         </a>

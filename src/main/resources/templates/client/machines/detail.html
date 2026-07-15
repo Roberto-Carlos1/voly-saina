@@ -82,7 +82,7 @@
                                 <tbody class="divide-y divide-outline-variant">
                                     <tr class="bg-white">
                                         <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Prix / Jour</td>
-                                        <td class="p-4 font-body-md" th:text="${machine.prixJour} + ' €'">0 €</td>
+                                        <td class="p-4 font-body-md" th:text="${machine.prixJour} + ' Ar'">0 Ar</td>
                                     </tr>
                                     <tr class="bg-surface-container-lowest">
                                         <td class="p-4 font-label-md text-on-surface-variant uppercase tracking-wider">Type</td>
@@ -113,7 +113,7 @@
                             <div>
                                 <div class="font-label-sm text-secondary uppercase mb-1">Tarif de Location</div>
                                 <div class="font-headline-md text-headline-md text-primary">
-                                    <span th:text="${machine.prixJour}">0</span> € 
+                                    <span th:text="${machine.prixJour}">0</span> Ar 
                                     <span class="text-body-md font-normal text-on-surface-variant">/ jour</span>
                                 </div>
                             </div>

@@ -325,7 +325,7 @@
                         <div class="mt-auto flex justify-between items-center pt-stack-md border-t border-outline-variant">
                             <div>
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Prix par jour</p>
-                                <p class="font-headline-md text-headline-md text-primary" th:text="${outil.prixJour} + ' €/j'">150 €/j</p>
+                                <p class="font-headline-md text-headline-md text-primary" th:text="${outil.prixJour} + ' Ar/j'">150 Ar/j</p>
                             </div>
                             <div class="flex items-center text-on-surface-variant">
                                 <span class="material-symbols-outlined mr-1" style="font-size: 18px;">location_on</span>
@@ -358,7 +358,7 @@
                                 <span class="font-label-sm text-label-sm text-on-secondary-fixed-variant" th:text="${produit.categorie != null ? produit.categorie.nom : 'Produit'}">Catégorie</span>
                                 <h4 class="font-label-md text-label-md font-bold mb-1" th:text="${produit.nom}">Nom du produit</h4>
                             </div>
-                            <p class="font-label-md text-label-md text-primary font-bold" th:text="'€' + ${produit.prixUnitaire}">45,99 €</p>
+                            <p class="font-label-md text-label-md text-primary font-bold" th:text="'Ar' + ${produit.prixUnitaire}">45,99 Ar</p>
                         </div>
                         <p class="font-body-md text-body-md text-on-surface-variant text-sm line-clamp-2" th:text="${produit.description}">Description</p>
                         <div class="mt-auto flex justify-between items-center pt-stack-sm">

@@ -41,13 +41,13 @@ public interface CultureRepository extends JpaRepository<Culture, Long> {
             FROM Culture c
             WHERE c.actif = true
             AND (
-                LOWER(c.nom) LIKE LOWER(CONCAT('%', :motCle, '%'))
-                OR LOWER(c.description) LIKE LOWER(CONCAT('%', :motCle, '%'))
-                OR LOWER(c.saisonRecommandee) LIKE LOWER(CONCAT('%', :motCle, '%'))
-                OR LOWER(c.localisationRecommandee) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                LOWER(COALESCE(c.nom, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                OR LOWER(COALESCE(c.description, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                OR LOWER(COALESCE(c.saisonRecommandee, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                OR LOWER(COALESCE(c.localisationRecommandee, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
             )
-            AND LOWER(c.saisonRecommandee) LIKE LOWER(CONCAT('%', :saison, '%'))
-            AND LOWER(c.localisationRecommandee) LIKE LOWER(CONCAT('%', :localisation, '%'))
+            AND LOWER(COALESCE(c.saisonRecommandee, '')) LIKE LOWER(CONCAT('%', :saison, '%'))
+            AND LOWER(COALESCE(c.localisationRecommandee, '')) LIKE LOWER(CONCAT('%', :localisation, '%'))
             ORDER BY c.nom ASC
             """)
     Page<Culture> rechercherCulturesDisponiblesTrieesAsc(
@@ -61,13 +61,13 @@ public interface CultureRepository extends JpaRepository<Culture, Long> {
             FROM Culture c
             WHERE c.actif = true
             AND (
-                LOWER(c.nom) LIKE LOWER(CONCAT('%', :motCle, '%'))
-                OR LOWER(c.description) LIKE LOWER(CONCAT('%', :motCle, '%'))
-                OR LOWER(c.saisonRecommandee) LIKE LOWER(CONCAT('%', :motCle, '%'))
-                OR LOWER(c.localisationRecommandee) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                LOWER(COALESCE(c.nom, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                OR LOWER(COALESCE(c.description, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                OR LOWER(COALESCE(c.saisonRecommandee, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
+                OR LOWER(COALESCE(c.localisationRecommandee, '')) LIKE LOWER(CONCAT('%', :motCle, '%'))
             )
-            AND LOWER(c.saisonRecommandee) LIKE LOWER(CONCAT('%', :saison, '%'))
-            AND LOWER(c.localisationRecommandee) LIKE LOWER(CONCAT('%', :localisation, '%'))
+            AND LOWER(COALESCE(c.saisonRecommandee, '')) LIKE LOWER(CONCAT('%', :saison, '%'))
+            AND LOWER(COALESCE(c.localisationRecommandee, '')) LIKE LOWER(CONCAT('%', :localisation, '%'))
             ORDER BY c.nom DESC
             """)
     Page<Culture> rechercherCulturesDisponiblesTrieesDesc(

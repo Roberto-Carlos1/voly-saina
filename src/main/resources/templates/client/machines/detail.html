@@ -35,7 +35,11 @@
                 <!-- Left Column -->
                 <div class="lg:col-span-8">
                     <div class="relative group aspect-video rounded-xl overflow-hidden border border-outline-variant mb-stack-md bg-gradient-to-br from-surface-container-high to-surface-container flex items-center justify-center">
-                        <span class="material-symbols-outlined text-outline text-[100px]">agriculture</span>
+                        <img th:src="${machineImage}" 
+                             th:alt="${machine.nom}" 
+                             class="w-full h-full object-cover"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+                        <span class="material-symbols-outlined text-outline text-[100px]" style="display:none">agriculture</span>
                         <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
                             <span class="text-white font-label-md" th:text="'Vue principale : ' + ${machine.nom}">Vue principale</span>
                         </div>

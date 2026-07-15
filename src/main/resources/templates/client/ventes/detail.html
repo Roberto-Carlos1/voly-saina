@@ -179,10 +179,14 @@
         <!-- Product Detail Section -->
         <div class="bento-grid" th:if="${produit != null}">
 
-            <!-- Hero Image Section (Left Column) -->
+                <!-- Hero Image Section (Left Column) -->
             <div class="col-span-12 lg:col-span-7 flex flex-col gap-6">
                 <div class="bento-item rounded-xl overflow-hidden aspect-[4/3] relative group bg-primary-fixed flex items-center justify-center">
-                    <span class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
+                    <img th:src="${produitImage}" 
+                         th:alt="${produit.nom}" 
+                         class="w-full h-full object-cover"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                    <span class="material-symbols-outlined text-8xl text-on-primary-container opacity-60" style="display:none">agriculture</span>
                     <!-- Availability Chip -->
                     <div class="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full font-label-md text-label-md bg-primary/90 text-white shadow-lg backdrop-blur-sm" 
                          th:classappend="${estDisponible} ? 'bg-primary/90' : 'bg-error/90'">

@@ -223,7 +223,11 @@
                          th:each="p : ${produits}">
                         <!-- Card Image -->
                         <div class="relative aspect-video overflow-hidden bg-surface-dim flex items-center justify-center">
-                            <span class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30">agriculture</span>
+                            <img th:src="${produitImages[p.idProduit]}" 
+                                 th:alt="${p.nom}" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                            <span class="material-symbols-outlined text-6xl text-on-surface-variant opacity-30" style="display:none">agriculture</span>
                         </div>
                         <button class="absolute bottom-3 right-3 p-2 bg-white/80 hover:bg-white text-on-surface rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all shadow-lg translate-y-2 group-hover:translate-y-0">
                             <span class="material-symbols-outlined">favorite</span>

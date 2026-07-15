@@ -3,6 +3,7 @@ package com.voly_saina.controller.client;
 import com.voly_saina.entity.ModePaiement;
 import com.voly_saina.entity.Produit;
 import com.voly_saina.service.ProduitService;
+import com.voly_saina.service.ProduitImageService;
 import com.voly_saina.service.CategorieProduitService;
 import com.voly_saina.service.ModePaiementService;
 
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/catalogue/produits")
@@ -32,6 +35,9 @@ public class VenteController {
 
     @Autowired
     private ModePaiementService modePaiementService;
+
+    @Autowired
+    private ProduitImageService produitImageService;
 
     // ==================== CATALOGUE (HTML) ====================
 
@@ -101,6 +107,16 @@ public class VenteController {
         model.addAttribute("q", q);
         model.addAttribute("categorie", categorie);
         model.addAttribute("disponible", disponible);
+
+        // Image mapping for product cards
+        Map<Long, String> imageMap = pageProduits.stream()
+                .filter(p -> p.getIdProduit() != null)
+                .collect(Collectors.toMap(
+                        com.voly_saina.entity.Produit::getIdProduit,
+                        p -> produitImageService.getImagePath(p.getIdProduit())
+                ));
+        model.addAttribute("produitImages", imageMap);
+
         return "client/ventes/catalogue";
     }
 
@@ -130,6 +146,7 @@ public class VenteController {
 
         model.addAttribute("produit", produit);
         model.addAttribute("estDisponible", estDisponible(produit));
+        model.addAttribute("produitImage", produitImageService.getImagePath(produit.getIdProduit()));
         return "client/ventes/detail";
     }
 

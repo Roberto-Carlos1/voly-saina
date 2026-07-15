@@ -255,7 +255,7 @@
                         <input type="hidden" name="localisation" th:value="${filtres.localisation}" />
                         <input type="hidden" name="saison" th:value="${filtres.saison}" />
                         <input type="hidden" name="tri" th:value="${tri}" />
-                        <input type="number" name="size" min="1" max="100" th:value="${size - 1}"
+                        <input type="number" name="size" min="1" max="100" th:value="${size}"
                                onchange="this.form.submit()"
                                class="w-20 bg-surface border-outline focus:border-primary focus:ring-0 text-body-md py-1 px-stack-sm" />
                     </form>
@@ -274,9 +274,12 @@
 
         <div th:if="${!#lists.isEmpty(culturesPage.content)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter-desktop">
             <article th:each="culture : ${culturesPage.content}" class="crop-card bg-surface border border-outline-variant overflow-hidden flex flex-col">
-                <!-- Image placeholder - à remplacer par une vraie image si disponible -->
-                <div class="h-48 overflow-hidden bg-primary-fixed flex items-center justify-center">
-                    <span class="material-symbols-outlined text-7xl text-on-primary-container opacity-60">agriculture</span>
+                <div class="h-48 overflow-hidden bg-primary-fixed flex items-center justify-center" th:with="imageCulture=${imagesCultures[culture.idCulture]}">
+                    <img th:if="${imageCulture != null}"
+                         th:src="@{${imageCulture}}"
+                         th:alt="${culture.nom}"
+                         class="w-full h-full object-cover" />
+                    <span th:unless="${imageCulture != null}" class="material-symbols-outlined text-7xl text-on-primary-container opacity-60">agriculture</span>
                 </div>
 
                 <div class="p-stack-md flex-grow flex flex-col">

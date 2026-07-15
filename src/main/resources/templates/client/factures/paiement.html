@@ -1,23 +1,229 @@
-<h2 th:text="${facture.numero}"></h2>
-<ul>
-    <li th:text=" 'Montant total à payer : ' + ${facture.montantTotal} + ' Ar'"></li>
-    <li th:text=" 'Reste à payer : ' + ${facture.montantTotal - facture.montantPaye} + ' Ar'"></li>
-</ul>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head(pageTitle='Paiement - VolySaina+')}">
+</head>
+<body>
+    <!-- Header -->
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<h3> Formulaire de paiement </h3>
+    <main class="pt-20">
+        <div class="max-w-[768px] mx-auto px-margin-desktop py-stack-lg">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 mb-stack-md text-on-surface-variant font-label-sm">
+                <a href="/client/accueil" class="hover:text-primary">Accueil</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <a th:href="@{/client/factures(idClient=${idClient})}" class="hover:text-primary">Mes factures</a>
+                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                <span class="text-on-surface font-semibold">Paiement</span>
+            </nav>
 
-<form action="/client/factures/achat" method="post">
-    <input type="hidden" name="idFacture" th:value="${facture.getIdFacture()}">
-    <p> Montant à payer <input type="number" name="montant" min="1" max="${facture.montantTotal}" required> </p>
-    <p> Date de paiement <input type="datetime-local" name="date"> </p>
-    <p> Mode de paiement:
-        <select name="modePaiement">
-            <option th:each="mode: ${modes}" th:value="${mode.idModePaiement}" th:text="${mode.libelle}">
-            </option>
-        </select>
-    </p>
-    <input type="hidden" th:value="${idClient}" th:name="idClient">
+            <!-- Header -->
+            <div class="bg-white border-2 border-secondary/20 rounded-xl p-6 mb-6">
+                <h1 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">payments</span>
+                    Paiement de facture
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">
+                    Effectuez un paiement pour régler tout ou partie de votre facture.
+                </p>
+            </div>
 
-    <p th:if="${erreur != null}" th:text="${erreur}" style="color: red;"></p>
-    <button type="submit">Valider le paiement</button>
-</form>
+            <!-- Facture Info -->
+            <div class="bg-white border border-outline-variant rounded-xl p-6 mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-xl bg-surface-container-high flex items-center justify-center">
+                        <span class="material-symbols-outlined text-outline text-[32px]">receipt_long</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-headline-md text-headline-md text-on-surface" th:text="'Facture ' + ${facture.numero}">Facture #001</h3>
+                        <p class="text-secondary font-label-sm text-label-sm uppercase tracking-widest"
+                           th:text="${facture.typeOperation}">Type</p>
+                        <div class="flex flex-wrap gap-4 mt-2 text-sm text-on-surface-variant">
+                            <span th:text="'Date : ' + ${facture.dateFacture != null ? #temporals.format(facture.dateFacture, 'dd/MM/yyyy') : 'N/A'}">Date</span>
+                            <span th:text="'Échéance : ' + ${facture.dateLimite != null ? #temporals.format(facture.dateLimite, 'dd/MM/yyyy') : 'N/A'}">Échéance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Montants -->
+                <div class="grid grid-cols-3 gap-4 mt-6 pt-4 border-t border-outline-variant">
+                    <div class="bg-surface-container-low p-4 rounded-lg text-center">
+                        <p class="text-label-sm text-on-surface-variant mb-1">Montant total</p>
+                        <p class="font-headline-md text-headline-md text-on-surface"
+                           th:text="${#numbers.formatDecimal(facture.montantTotal, 0, 0, 'COMMA') + ' Ar'}">0 Ar</p>
+                    </div>
+                    <div class="bg-surface-container-low p-4 rounded-lg text-center">
+                        <p class="text-label-sm text-on-surface-variant mb-1">Déjà payé</p>
+                        <p class="font-headline-md text-headline-md text-green-600"
+                           th:text="${#numbers.formatDecimal(facture.montantPaye, 0, 0, 'COMMA') + ' Ar'}">0 Ar</p>
+                    </div>
+                    <div class="bg-primary/5 border border-primary/20 p-4 rounded-lg text-center">
+                        <p class="text-label-sm text-on-surface-variant mb-1">Reste à payer</p>
+                        <p class="font-headline-md text-headline-md text-primary font-bold"
+                           th:text="${#numbers.formatDecimal(facture.montantRestant, 0, 0, 'COMMA') + ' Ar'}">0 Ar</p>
+                    </div>
+                </div>
+
+                <!-- Barre de progression -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-label-sm text-on-surface-variant mb-1">
+                        <span>Progression du paiement</span>
+                        <span th:text="${facture.pourcentagePaye} + '%'">0%</span>
+                    </div>
+                    <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full transition-all"
+                             th:style="'width: ' + ${facture.pourcentagePaye} + '%'"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire -->
+            <form id="formPaiement" class="bg-white border-2 border-primary/10 rounded-xl shadow-lg p-6" method="post" th:action="@{/client/factures/achat}">
+                <h2 class="font-headline-md text-headline-md text-on-surface mb-6">Effectuer un paiement</h2>
+
+                <input type="hidden" name="idFacture" th:value="${facture.idFacture}">
+                <input type="hidden" th:value="${idClient}" th:name="idClient">
+
+                <!-- Montant -->
+                <div class="mb-6">
+                    <label class="block font-label-sm text-on-surface-variant mb-2">Montant à payer (Ar)</label>
+                    <div class="relative">
+                        <input type="number" name="montant" min="1" 
+                               th:max="${facture.montantRestant}" 
+                               th:value="${facture.montantRestant}" required
+                               class="w-full border border-outline-variant rounded-lg px-4 py-3 pr-16 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-lg font-bold"
+                               id="montantInput"/>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-md">Ar</span>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button type="button" onclick="setMontantPct(25)" 
+                                class="px-3 py-1 bg-surface-container-high rounded-lg text-label-sm hover:bg-outline-variant transition-colors">25%</button>
+                        <button type="button" onclick="setMontantPct(50)" 
+                                class="px-3 py-1 bg-surface-container-high rounded-lg text-label-sm hover:bg-outline-variant transition-colors">50%</button>
+                        <button type="button" onclick="setMontantPct(75)" 
+                                class="px-3 py-1 bg-surface-container-high rounded-lg text-label-sm hover:bg-outline-variant transition-colors">75%</button>
+                        <button type="button" onclick="setMontantPct(100)" 
+                                class="px-3 py-1 bg-primary/10 border border-primary/30 text-primary rounded-lg text-label-sm font-bold hover:bg-primary/20 transition-colors">100%</button>
+                    </div>
+                </div>
+
+                <!-- Date -->
+                <div class="mb-6">
+                    <label class="block font-label-sm text-on-surface-variant mb-2">Date de paiement</label>
+                    <input type="datetime-local" name="date" required
+                           id="dateInput"
+                           class="w-full border border-outline-variant rounded-lg px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"/>
+                </div>
+
+                <!-- Mode de paiement -->
+                <div class="mb-6">
+                    <label class="block font-label-sm text-on-surface-variant mb-3">Mode de paiement</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div th:each="mode : ${modes}" 
+                             class="flex items-center gap-3 p-4 border border-outline-variant rounded-lg cursor-pointer hover:border-primary transition-all"
+                             th:onclick="'selectMode(this)'">
+                            <input type="radio" name="modePaiement" th:value="${mode.idModePaiement}" class="hidden">
+                            <span class="material-symbols-outlined text-on-surface-variant">credit_card</span>
+                            <div>
+                                <p class="font-label-md text-label-md font-bold" th:text="${mode.libelle}">Mode</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Erreur -->
+                <div th:if="${erreur != null}" class="mb-6 border border-error-container bg-error-container/10 p-4 rounded-lg text-on-error-container flex items-center gap-2">
+                    <span class="material-symbols-outlined">error</span>
+                    <span th:text="${erreur}">Erreur</span>
+                </div>
+
+                <!-- Résumé -->
+                <div class="bg-surface-container-low p-4 rounded-lg mb-6">
+                    <h4 class="font-label-md text-label-md text-on-surface mb-2">Résumé du paiement</h4>
+                    <div class="flex justify-between">
+                        <span class="font-body-md text-body-md text-on-surface-variant">Montant à payer</span>
+                        <span class="font-body-md text-body-md font-bold" id="montantResume">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-body-md text-body-md text-on-surface-variant">Reste après paiement</span>
+                        <span class="font-body-md text-body-md font-bold text-primary" id="resteResume">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between border-t border-outline-variant pt-2 mt-2">
+                        <span class="font-body-md text-body-md text-on-surface-variant">Statut</span>
+                        <span class="font-body-md text-body-md font-bold" id="statutResume">
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Partiel</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="submit" id="btnPayer" 
+                            class="flex-1 bg-primary text-on-primary py-4 rounded-lg font-headline-md hover:bg-primary-container transition-all btn-primary flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Confirmer le paiement
+                    </button>
+                    <a th:href="@{/client/factures/{id}(id=${facture.idFacture}, idClient=${idClient})}" 
+                       class="px-6 py-4 border border-outline-variant rounded-lg font-label-md text-center hover:bg-surface-container transition-all flex items-center justify-center gap-2">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:inline="javascript">
+        const montantRestant = /*[[${facture.montantRestant}]]*/ 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set date to now
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            document.getElementById('dateInput').value =
+                now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate()) +
+                'T' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+            document.getElementById('montantInput').addEventListener('input', updateResume);
+            updateResume();
+        });
+
+        function selectMode(element) {
+            document.querySelectorAll('input[name="modePaiement"]').forEach(input => {
+                input.checked = false;
+                input.parentElement.classList.remove('border-primary', 'bg-primary/5');
+            });
+            const input = element.querySelector('input[type="radio"]');
+            if (input) {
+                input.checked = true;
+                element.classList.add('border-primary', 'bg-primary/5');
+            }
+        }
+
+        function setMontantPct(pct) {
+            const input = document.getElementById('montantInput');
+            input.value = Math.floor(montantRestant * pct / 100);
+            updateResume();
+        }
+
+        function updateResume() {
+            const montant = parseFloat(document.getElementById('montantInput').value) || 0;
+            const reste = Math.max(0, montantRestant - montant);
+
+            document.getElementById('montantResume').textContent = montant.toLocaleString('fr-FR') + ' Ar';
+            document.getElementById('resteResume').textContent = reste.toLocaleString('fr-FR') + ' Ar';
+
+            const statutDiv = document.getElementById('statutResume');
+            if (reste === 0) {
+                statutDiv.innerHTML = '<span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-bold">Solde</span>';
+            } else if (montant > 0) {
+                statutDiv.innerHTML = '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Partiel</span>';
+            } else {
+                statutDiv.innerHTML = '<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm">Impayé</span>';
+            }
+        }
+    </script>
+</body>
+</html>

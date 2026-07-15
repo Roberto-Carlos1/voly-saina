@@ -42,7 +42,7 @@
                     <span class="material-symbols-outlined">download</span>
                     Modèle Excel
                 </a>
-                <a class="btn btn--outline" th:href="@{/admin/files}">
+                <a class="btn btn--outline" id="btnImporter" type="button">
                     <span class="material-symbols-outlined">table_view</span>
                     Importer
                 </a>
@@ -52,6 +52,9 @@
                 </a>
             </div>
         </div>
+
+        <!-- ===== Import Excel (fragment) ===== -->
+        <div th:replace="~{import/form/index :: importForm('Machine', '/api/exel/template/Machine')}"></div>
 
         <!-- ===== État global du stock ===== -->
         <div class="stat-bar">
@@ -302,6 +305,99 @@
         const p = parseInt(numeroPageInput.value, 10);
         if (p > 0) chargerMachines(p - 1);
     });
+
+    // ===== Import toggle =====
+    document.getElementById('btnImporter').addEventListener('click', function() {
+        var s = document.getElementById('importSection');
+        s.style.display = s.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    (function() {
+    const form      = document.getElementById('importExcelForm');
+    const dropZone  = document.getElementById('dropZone');
+    const fileInput = document.getElementById('importFileInput');
+    const fileInfo  = document.getElementById('importFileInfo');
+    const fileName  = document.getElementById('importFileName');
+    const removeBtn = document.getElementById('importRemoveFile');
+    const btnUpload = document.getElementById('importBtnUpload');
+    const msgDiv    = document.getElementById('importMsg');
+
+    if (!form) return;
+
+    function showMsg(html, type) {
+        msgDiv.innerHTML = '<div class="import-card__msg-inner import-card__msg--' + type + '">' + html + '</div>';
+    }
+    function clearMsg() { msgDiv.innerHTML = ''; }
+
+    /* ---------- file input ---------- */
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            fileName.textContent = this.files[0].name;
+            fileInfo.style.display = 'flex';
+            dropZone.style.display = 'none';
+            btnUpload.disabled = false;
+            clearMsg();
+        }
+    });
+
+    removeBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        fileInfo.style.display = 'none';
+        dropZone.style.display = '';
+        btnUpload.disabled = true;
+        clearMsg();
+    });
+
+    /* ---------- drag & drop ---------- */
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    dropZone.addEventListener('dragleave', function() {
+        this.classList.remove('dragover');
+    });
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            fileInput.dispatchEvent(new Event('change'));
+        }
+    });
+
+    /* ---------- submit via fetch ---------- */
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!fileInput.files.length) {
+            showMsg('Veuillez sélectionner un fichier.', 'error');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        btnUpload.disabled = true;
+        btnUpload.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 1s linear infinite">send</span> Importation...';
+        clearMsg();
+
+        fetch('/api/exel/import', { method: 'POST', body: formData })
+            .then(function(r) { return r.text(); })
+            .then(function(text) {
+                showMsg(text, 'success');
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+                dropZone.style.display = '';
+            })
+            .catch(function(err) {
+                showMsg('Erreur : ' + err.message, 'error');
+            })
+            .finally(function() {
+                btnUpload.disabled = false;
+                btnUpload.innerHTML = '<span class="material-symbols-outlined">send</span> Importer';
+            });
+    });
+})();
 </script>
 </body>
 </html>

@@ -1,1 +1,89 @@
-<h1>Paiement se passe par ici</h1>
+<!DOCTYPE html>
+<!--
+  Vue liste de tous les paiements — route GET /admin/paiements
+  Rendue par PaiementController.getAll(...).
+  Données fournies par le contrôleur :
+    - paiements : List<Paiement> (facture, montant, datePaiement, modePaiement, reference)
+  Mise en page : HTML + CSS pur via /css/admin.css (aucun framework CSS).
+-->
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin-sidebar :: head('Paiements — Voly Saina +')}"></head>
+<body>
+
+<!-- Barre latérale (onglet « Factures » actif, les paiements découlent des factures) -->
+<aside th:replace="~{fragments/admin-sidebar :: sidebar('factures')}"></aside>
+
+<main class="admin-main">
+
+    <!-- Barre supérieure -->
+    <header th:replace="~{fragments/admin-sidebar :: topbar}"></header>
+
+    <div class="admin-canvas">
+
+        <!-- ===== En-tête de page ===== -->
+        <div class="page-head">
+            <div>
+                <h1>Paiements</h1>
+                <p>Tous les règlements enregistrés sur la plateforme.</p>
+            </div>
+            <div class="page-head__actions">
+                <a class="btn btn--outline" th:href="@{/admin/factures}">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    Factures
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== Tableau des paiements ===== -->
+        <div class="table-card">
+            <div class="table-card__head"><h2>Historique global</h2></div>
+
+            <p th:if="${#lists.isEmpty(paiements)}" class="empty-state">
+                Aucun paiement enregistré pour le moment.
+            </p>
+
+            <div class="table-scroll" th:unless="${#lists.isEmpty(paiements)}">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>N° paiement</th>
+                        <th>Facture</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th>Mode</th>
+                        <th style="text-align:right;">Montant</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="paiement : ${paiements}">
+                        <td class="strong" th:text="'#' + ${paiement.idPaiement}">#0</td>
+                        <td>
+                            <a th:if="${paiement.facture != null}"
+                               th:href="@{/admin/factures/{id}(id=${paiement.facture.idFacture})}"
+                               th:text="${paiement.facture.numero}"
+                               style="color:var(--primary); font-weight:600;">Numéro</a>
+                            <span th:unless="${paiement.facture != null}">—</span>
+                        </td>
+                        <td th:text="${paiement.facture != null and paiement.facture.client != null ? paiement.facture.client.nom : '—'}">—</td>
+                        <td th:text="${paiement.datePaiement != null ? #temporals.format(paiement.datePaiement, 'dd/MM/yyyy HH:mm') : '—'}">—</td>
+                        <td th:text="${paiement.modePaiement != null ? paiement.modePaiement.libelle : '—'}">—</td>
+                        <td class="strong" style="text-align:right;" th:text="${paiement.montant} + ' Ar'">0 Ar</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="admin-footer">
+        <p>© 2026 Voly Saina + — Plateforme de gestion agricole.</p>
+        <div style="display:flex; gap:24px;">
+            <a th:href="@{/admin/factures}">Factures</a>
+            <a th:href="@{/admin/machines}">Flotte</a>
+        </div>
+    </footer>
+</main>
+
+</body>
+</html>

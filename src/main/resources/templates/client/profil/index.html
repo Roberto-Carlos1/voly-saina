@@ -170,8 +170,11 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            background-color: #e8e1db;
+            color: #404940;
+            white-space: nowrap;
         }
-        .badge-statut.active {
+        .badge-statut.en_cours {
             background-color: #166534;
             color: #93e0a2;
         }
@@ -179,17 +182,86 @@
             background-color: #e8e1db;
             color: #404940;
         }
-        .badge-statut.en_attente {
+        .badge-statut.en_attente,
+        .badge-statut.partiellement_payee,
+        .badge-statut.preparee,
+        .badge-statut.en_livraison {
             background-color: #fd925b;
             color: #341000;
         }
-        .badge-statut.payee {
+        .badge-statut.payee,
+        .badge-statut.validee,
+        .badge-statut.livree {
             background-color: #a6f4b5;
             color: #00210b;
         }
-        .badge-statut.en_retard {
+        .badge-statut.en_retard,
+        .badge-statut.refusee,
+        .badge-statut.annulee {
             background-color: #ffdad6;
             color: #93000a;
+        }
+        .alert-agri {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        .alert-agri.success {
+            background-color: #a6f4b5;
+            color: #00210b;
+            border: 1px solid #166534;
+        }
+        .alert-agri.error {
+            background-color: #ffdad6;
+            color: #93000a;
+            border: 1px solid #ba1a1a;
+        }
+        .filter-btn-agri {
+            padding: 0.4rem 1rem;
+            border: 1px solid #bfc9bd;
+            border-radius: 0.75rem;
+            background-color: #ffffff;
+            color: #404940;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 150ms ease;
+        }
+        .filter-btn-agri:hover {
+            border-color: #004c22;
+            color: #004c22;
+        }
+        .filter-btn-agri.active {
+            background-color: #004c22;
+            border-color: #004c22;
+            color: #ffffff;
+        }
+        .chart-card {
+            border: 1px solid #bfc9bd;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            padding: 16px;
+        }
+        .chart-card .canvas-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        .chart-card .canvas-wrapper.short {
+            height: 120px;
+        }
+        .empty-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #707a6f;
+            font-size: 14px;
         }
         /* Couleurs de texte personnalisées */
         .text-primary {
@@ -258,6 +330,16 @@
 
     <main class="max-w-[1280px] mx-auto px-margin-desktop py-stack-lg">
 
+        <!-- Messages flash -->
+        <div th:if="${success}" class="alert-agri success" role="alert">
+            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+            <span th:text="${success}">Opération réussie</span>
+        </div>
+        <div th:if="${error}" class="alert-agri error" role="alert">
+            <span class="material-symbols-outlined text-[20px]">error</span>
+            <span th:text="${error}">Une erreur est survenue</span>
+        </div>
+
         <!-- Section 1: Header -->
         <div class="flex flex-col md:flex-row items-center gap-stack-md mb-stack-lg bg-primary-container p-stack-lg rounded-lg text-on-primary-container">
             <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-white text-headline-lg shadow-lg">
@@ -290,7 +372,7 @@
             <div class="card-agri p-4 text-center">
                 <span class="material-symbols-outlined text-primary mb-2 text-[32px]">payments</span>
                 <div class="font-label-sm text-on-surface-variant uppercase mb-1">Total Dépensé</div>
-                <div class="font-headline-md text-primary" th:text="${totalDepense != null ? totalDepense + ' Ar' : '0 Ar'}">0 Ar</div>
+                <div class="font-headline-md text-primary" th:text="${totalDepense != null ? #numbers.formatDecimal(totalDepense, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar' : '0 Ar'}">0 Ar</div>
             </div>
         </div>
 
@@ -320,6 +402,12 @@
                     <button class="nav-link font-label-md" id="fac-tab" data-bs-toggle="tab" data-bs-target="#fac" type="button" role="tab" aria-controls="fac" aria-selected="false">
                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">description</span>
                         Factures
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link font-label-md" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button" role="tab" aria-controls="stats" aria-selected="false">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">monitoring</span>
+                        Statistiques
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -427,22 +515,20 @@
                             </thead>
                             <tbody>
                                 <tr th:each="reservation : ${reservations}" class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
-                                    <td class="p-stack-md font-body-md font-semibold" th:text="${reservation.machine.nom}">Machine</td>
-                                    <td class="p-stack-md text-body-md text-on-surface-variant" 
+                                    <td class="p-stack-md font-body-md font-semibold" th:text="${reservation.machine != null ? reservation.machine.nom : '-'}">Machine</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant"
                                         th:text="${#temporals.format(reservation.dateDebut, 'dd/MM/yyyy')} + ' au ' + ${#temporals.format(reservation.dateFin, 'dd/MM/yyyy')}">
                                         Date
                                     </td>
-                                    <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${reservation.lieuLivraison}">Lieu</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${reservation.lieuLivraison != null ? reservation.lieuLivraison : '-'}">Lieu</td>
                                     <td class="p-stack-md">
                                         <span class="badge-statut"
-                                              th:classappend="${reservation.statut == 'ACTIVE'} ? 'active' : 
-                                                              ${reservation.statut == 'TERMINEE'} ? 'terminee' : 
-                                                              'en_attente'"
-                                              th:text="${reservation.statut}">
+                                              th:classappend="${reservation.statutReservation != null ? reservation.statutReservation.code : ''}"
+                                              th:text="${reservation.statutReservation != null ? (reservation.statutReservation.libelle != null ? reservation.statutReservation.libelle : reservation.statutReservation.code) : 'Inconnu'}">
                                             Statut
                                         </span>
                                     </td>
-                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${reservation.prixTotal + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${#numbers.formatDecimal(reservation.prixTotal, 1, 'WHITESPACE', 0, 'COMMA')} + ' Ar'">0 Ar</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -472,19 +558,18 @@
                             <tbody>
                                 <tr th:each="commande : ${commandes}" class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
                                     <td class="p-stack-md font-body-md font-semibold" th:text="'#CMD-' + ${commande.idCommande}">#CMD-001</td>
-                                    <td class="p-stack-md text-body-md text-on-surface-variant" 
+                                    <td class="p-stack-md text-body-md text-on-surface-variant"
                                         th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy')}">Date</td>
-                                    <td class="p-stack-md text-body-md text-on-surface-variant" th:text="${commande.nbArticles} + ' article(s)'">0</td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant"
+                                        th:text="${nbArticlesParCommande != null and nbArticlesParCommande[commande.idCommande] != null ? nbArticlesParCommande[commande.idCommande] : 0} + ' article(s)'">0</td>
                                     <td class="p-stack-md">
                                         <span class="badge-statut"
-                                              th:classappend="${commande.statut == 'PAYEE'} ? 'payee' : 
-                                                              ${commande.statut == 'EN_ATTENTE'} ? 'en_attente' : 
-                                                              'terminee'"
-                                              th:text="${commande.statut}">
+                                              th:classappend="${commande.statutCommande != null ? commande.statutCommande.code : ''}"
+                                              th:text="${commande.statutCommande != null ? (commande.statutCommande.libelle != null ? commande.statutCommande.libelle : commande.statutCommande.code) : 'Inconnu'}">
                                             Statut
                                         </span>
                                     </td>
-                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${commande.montantTotal + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${#numbers.formatDecimal(commande.montantTotal, 1, 'WHITESPACE', 0, 'COMMA')} + ' Ar'">0 Ar</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -510,22 +595,22 @@
                             </thead>
                             <tbody>
                                 <tr th:each="facture : ${factures}" class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
-                                    <td class="p-stack-md font-body-md font-semibold" th:text="${facture.reference}">INV-2024-001</td>
-                                    <td class="p-stack-md text-body-md text-on-surface-variant" 
+                                    <td class="p-stack-md font-body-md font-semibold">
+                                        <a th:href="@{/client/factures/{id}(id=${facture.idFacture})}"
+                                           class="text-primary hover:underline" th:text="${facture.numero}">INV-2024-001</a>
+                                    </td>
+                                    <td class="p-stack-md text-body-md text-on-surface-variant"
                                         th:text="${#temporals.format(facture.dateFacture, 'dd/MM/yyyy')}">Date</td>
                                     <td class="p-stack-md">
                                         <span class="badge-statut"
-                                              th:classappend="${facture.statut == 'PAYEE'} ? 'payee' : 
-                                                              ${facture.statut == 'EN_ATTENTE'} ? 'en_attente' : 
-                                                              ${facture.statut == 'EN_RETARD'} ? 'en_retard' : 
-                                                              'terminee'"
-                                              th:text="${facture.statut}">
+                                              th:classappend="${facture.enRetard ? 'en_retard' : facture.statutCode}"
+                                              th:text="${facture.enRetard ? 'En retard' : (facture.statutLibelle != null ? facture.statutLibelle : facture.statutCode)}">
                                             Statut
                                         </span>
                                     </td>
-                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${facture.montant + ' Ar'}">0 Ar</td>
+                                    <td class="p-stack-md text-right font-bold text-primary" th:text="${#numbers.formatDecimal(facture.montantTotal, 1, 'WHITESPACE', 0, 'COMMA')} + ' Ar'">0 Ar</td>
                                     <td class="p-stack-md text-center">
-                                        <a th:href="@{/client/factures/{id}/telecharger(id=${facture.idFacture})}" 
+                                        <a th:href="@{/client/factures/{id}/pdf(id=${facture.idFacture}, idClient=${utilisateur.idUtilisateur})}"
                                            class="text-primary hover:text-primary-container hover:underline font-label-sm text-label-sm transition-colors">
                                             <span class="material-symbols-outlined text-[18px] align-middle mr-1">download</span>
                                             Télécharger
@@ -537,6 +622,128 @@
                     </div>
                 </div>
 
+                <!-- Onglet Statistiques -->
+                <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+
+                    <!-- Filtres de période -->
+                    <form method="GET" th:action="@{/client/profil}" class="mb-stack-lg">
+                        <input type="hidden" name="tab" value="stats"/>
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                            <button type="submit" name="periode" value="3mois" class="filter-btn-agri"
+                                    th:classappend="${periodeSelectionnee == '3mois'} ? 'active'">3 derniers mois</button>
+                            <button type="submit" name="periode" value="6mois" class="filter-btn-agri"
+                                    th:classappend="${periodeSelectionnee == '6mois'} ? 'active'">6 derniers mois</button>
+                            <button type="submit" name="periode" value="12mois" class="filter-btn-agri"
+                                    th:classappend="${periodeSelectionnee == '12mois'} ? 'active'">12 derniers mois</button>
+                            <button type="submit" name="periode" value="annee_en_cours" class="filter-btn-agri"
+                                    th:classappend="${periodeSelectionnee == 'annee_en_cours'} ? 'active'">Année en cours</button>
+                        </div>
+                        <div class="flex flex-wrap items-end gap-3">
+                            <div>
+                                <label class="form-label font-label-sm text-on-surface-variant mb-1">Date début</label>
+                                <input type="date" name="dateDebut" th:value="${statsDateDebut}"
+                                       class="form-control rounded-none border-outline-variant focus:border-primary"/>
+                            </div>
+                            <div>
+                                <label class="form-label font-label-sm text-on-surface-variant mb-1">Date fin</label>
+                                <input type="date" name="dateFin" th:value="${statsDateFin}"
+                                       class="form-control rounded-none border-outline-variant focus:border-primary"/>
+                            </div>
+                            <button type="submit" class="btn-primary-agri px-4 py-2 rounded-lg font-label-md">Appliquer</button>
+                            <span class="font-label-sm text-on-surface-variant ml-auto"
+                                  th:text="'Période : ' + ${#temporals.format(statsDateDebut, 'dd/MM/yyyy')} + ' → ' + ${#temporals.format(statsDateFin, 'dd/MM/yyyy')}">Période</span>
+                        </div>
+                    </form>
+
+                    <!-- Indicateurs de la période -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-desktop mb-stack-lg">
+                        <div class="card-agri p-4">
+                            <div class="font-label-sm text-on-surface-variant uppercase mb-1">Total dépensé</div>
+                            <div class="font-headline-md text-primary"
+                                 th:text="${#numbers.formatDecimal(stats.totalDepenses, 1, 'WHITESPACE', 0, 'COMMA')} + ' Ar'">0 Ar</div>
+                        </div>
+                        <div class="card-agri p-4">
+                            <div class="font-label-sm text-on-surface-variant uppercase mb-1">Réservations</div>
+                            <div class="font-headline-md text-primary" th:text="${stats.nombreLocations}">0</div>
+                            <div class="font-label-sm text-on-surface-variant"
+                                 th:text="${#numbers.formatDecimal(stats.totalDepensesLocations, 1, 'WHITESPACE', 0, 'COMMA')} + ' Ar'">0 Ar</div>
+                        </div>
+                        <div class="card-agri p-4">
+                            <div class="font-label-sm text-on-surface-variant uppercase mb-1">Commandes</div>
+                            <div class="font-headline-md text-primary" th:text="${stats.nombreCommandes}">0</div>
+                            <div class="font-label-sm text-on-surface-variant"
+                                 th:text="${#numbers.formatDecimal(stats.totalDepensesCommandes, 1, 'WHITESPACE', 0, 'COMMA')} + ' Ar'">0 Ar</div>
+                        </div>
+                        <div class="card-agri p-4">
+                            <div class="font-label-sm text-on-surface-variant uppercase mb-1">Factures</div>
+                            <div class="font-headline-md text-primary" th:text="${stats.nombreFactures}">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Dépenses par mois -->
+                    <div class="chart-card mb-stack-lg">
+                        <h3 class="font-headline-md text-primary mb-stack-md flex items-center gap-2">
+                            <span class="material-symbols-outlined">bar_chart</span>
+                            Dépenses par mois
+                        </h3>
+                        <div class="canvas-wrapper">
+                            <div th:if="${stats.depensesMensuelles == null or stats.depensesMensuelles.empty}" class="empty-chart">
+                                <span class="material-symbols-outlined text-[40px] mb-2">insights</span>
+                                Aucune dépense sur cette période
+                            </div>
+                            <canvas id="chartDepensesMensuelles" th:if="${stats.depensesMensuelles != null and not stats.depensesMensuelles.empty}"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Répartition des dépenses -->
+                    <div class="chart-card mb-stack-lg">
+                        <h3 class="font-headline-md text-primary mb-1 flex items-center gap-2">
+                            <span class="material-symbols-outlined">donut_small</span>
+                            Répartition des dépenses
+                        </h3>
+                        <p class="font-label-sm text-on-surface-variant mb-stack-md">Locations de machines vs Achats de produits</p>
+                        <div class="canvas-wrapper short">
+                            <div th:if="${stats.totalDepensesLocations == 0 and stats.totalDepensesCommandes == 0}" class="empty-chart">
+                                Aucune dépense sur cette période
+                            </div>
+                            <canvas id="chartRepartition" th:if="${stats.totalDepensesLocations > 0 or stats.totalDepensesCommandes > 0}"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-desktop">
+                        <!-- Machines les plus louées -->
+                        <div class="chart-card">
+                            <h3 class="font-headline-md text-primary mb-stack-md flex items-center gap-2">
+                                <span class="material-symbols-outlined">agriculture</span>
+                                Machines les plus louées
+                            </h3>
+                            <div class="canvas-wrapper">
+                                <div th:if="${stats.topMachines == null or stats.topMachines.empty}" class="empty-chart">
+                                    <span class="material-symbols-outlined text-[40px] mb-2">event_busy</span>
+                                    Aucune location sur cette période
+                                </div>
+                                <canvas id="chartTopMachines" th:if="${stats.topMachines != null and not stats.topMachines.empty}"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Produits les plus achetés -->
+                        <div class="chart-card">
+                            <h3 class="font-headline-md text-primary mb-stack-md flex items-center gap-2">
+                                <span class="material-symbols-outlined">compost</span>
+                                Produits les plus achetés
+                            </h3>
+                            <div class="canvas-wrapper">
+                                <div th:if="${stats.topProduits == null or stats.topProduits.empty}" class="empty-chart">
+                                    <span class="material-symbols-outlined text-[40px] mb-2">shopping_basket</span>
+                                    Aucun achat sur cette période
+                                </div>
+                                <canvas id="chartTopProduits" th:if="${stats.topProduits != null and not stats.topProduits.empty}"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
                 <!-- Onglet Paramètres -->
                 <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter-desktop">
@@ -545,7 +752,7 @@
                                 <span class="material-symbols-outlined">key</span>
                                 Changer le mot de passe
                             </h3>
-                            <form method="POST" th:action="@{/client/profil/securite}">
+                            <form method="POST" th:action="@{/client/profil/mot-de-passe}">
                                 <div class="mb-3">
                                     <label class="form-label font-label-md text-on-surface-variant">Mot de passe actuel</label>
                                     <input class="form-control rounded-none border-outline-variant focus:border-primary" name="oldPassword" type="password" required/>
@@ -576,8 +783,8 @@
                                         La suppression de votre compte est définitive. Toutes vos données, réservations et factures seront supprimées de nos serveurs conformément au RGPD.
                                     </p>
                                 </div>
-                                <form method="post" onsubmit="return confirm('Êtes-vous certain de vouloir supprimer votre compte VolySaina+ ?');" 
-                                      th:action="@{/profil/supprimer}">
+                                <form method="post" onsubmit="return confirm('Êtes-vous certain de vouloir supprimer votre compte VolySaina+ ?');"
+                                      th:action="@{/client/profil/supprimer}">
                                     <button class="btn-danger-agri px-4 py-2 rounded-lg font-label-md transition-all" type="submit">
                                         <span class="material-symbols-outlined text-[18px] align-middle mr-1">delete_forever</span>
                                         Supprimer définitivement mon compte
@@ -613,6 +820,24 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+    <!-- Données statistiques injectées par Thymeleaf -->
+    <script th:inline="javascript">
+        const ONGLET_ACTIF = /*[[${ongletActif}]]*/ 'info';
+        const STATS_LABELS_MOIS = /*[[${stats.depensesMensuelles != null ? stats.depensesMensuelles.![libelleMois] : null}]]*/ [];
+        const STATS_DATA_MOIS = /*[[${stats.depensesMensuelles != null ? stats.depensesMensuelles.![montant] : null}]]*/ [];
+        const STATS_MONTANT_LOCATIONS = /*[[${stats.totalDepensesLocations}]]*/ 0;
+        const STATS_MONTANT_COMMANDES = /*[[${stats.totalDepensesCommandes}]]*/ 0;
+        const STATS_LABELS_MACHINES = /*[[${stats.topMachines != null ? stats.topMachines.![nomMachine] : null}]]*/ [];
+        const STATS_DATA_MACHINES = /*[[${stats.topMachines != null ? stats.topMachines.![nombreLocations] : null}]]*/ [];
+        const STATS_MONTANTS_MACHINES = /*[[${stats.topMachines != null ? stats.topMachines.![totalDepense] : null}]]*/ [];
+        const STATS_LABELS_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![nomProduit] : null}]]*/ [];
+        const STATS_DATA_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![quantiteTotale] : null}]]*/ [];
+        const STATS_MONTANTS_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![totalDepense] : null}]]*/ [];
+        const STATS_CATEGORIES_PRODUITS = /*[[${stats.topProduits != null ? stats.topProduits.![categorie] : null}]]*/ [];
+    </script>
+
     <script>
         // Micro-interaction for tabs
         document.querySelectorAll('.nav-link').forEach(tab => {
@@ -622,20 +847,172 @@
             });
         });
 
-        // Vérifier que Bootstrap fonctionne
-        document.addEventListener('DOMContentLoaded', function() {
-            var firstTab = document.querySelector('#profileTabs .nav-link.active');
-            if (!firstTab) {
-                var tabs = document.querySelectorAll('#profileTabs .nav-link');
-                if (tabs.length > 0) {
-                    tabs[0].classList.add('active');
-                    var target = tabs[0].getAttribute('data-bs-target');
-                    if (target) {
-                        var pane = document.querySelector(target);
-                        if (pane) {
-                            pane.classList.add('show', 'active');
+        // ----- Graphiques (onglet Statistiques) -----
+        const COULEUR_LOCATIONS = '#166534';
+        const COULEUR_COMMANDES = '#fd925b';
+        const COULEUR_GRILLE = '#e8e1db';
+        const COULEUR_TEXTE = '#404940';
+
+        function formatAr(valeur) {
+            return new Intl.NumberFormat('fr-FR').format(Math.round(valeur)) + ' Ar';
+        }
+
+        let chartsInitialises = false;
+
+        function initCharts() {
+            if (chartsInitialises || typeof Chart === 'undefined') return;
+            chartsInitialises = true;
+
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = COULEUR_TEXTE;
+
+            const canvasMois = document.getElementById('chartDepensesMensuelles');
+            if (canvasMois) {
+                new Chart(canvasMois, {
+                    type: 'bar',
+                    data: {
+                        labels: STATS_LABELS_MOIS,
+                        datasets: [{
+                            data: STATS_DATA_MOIS,
+                            backgroundColor: COULEUR_LOCATIONS,
+                            borderRadius: 4,
+                            maxBarThickness: 36
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: COULEUR_GRILLE }, ticks: { callback: v => formatAr(v) } },
+                            x: { grid: { display: false } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: ctx => formatAr(ctx.raw) } }
                         }
                     }
+                });
+            }
+
+            const canvasRepartition = document.getElementById('chartRepartition');
+            if (canvasRepartition) {
+                new Chart(canvasRepartition, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Dépenses'],
+                        datasets: [
+                            { label: 'Locations de machines', data: [STATS_MONTANT_LOCATIONS], backgroundColor: COULEUR_LOCATIONS, borderColor: '#ffffff', borderWidth: 2 },
+                            { label: 'Achats de produits', data: [STATS_MONTANT_COMMANDES], backgroundColor: COULEUR_COMMANDES, borderColor: '#ffffff', borderWidth: 2 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { stacked: true, grid: { display: false }, ticks: { callback: v => formatAr(v) } },
+                            y: { stacked: true, display: false }
+                        },
+                        plugins: {
+                            legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 12 } },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => {
+                                        const total = STATS_MONTANT_LOCATIONS + STATS_MONTANT_COMMANDES;
+                                        const part = total > 0 ? Math.round(ctx.raw * 100 / total) : 0;
+                                        return `${ctx.dataset.label} : ${formatAr(ctx.raw)} (${part}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const canvasMachines = document.getElementById('chartTopMachines');
+            if (canvasMachines) {
+                new Chart(canvasMachines, {
+                    type: 'bar',
+                    data: {
+                        labels: STATS_LABELS_MACHINES,
+                        datasets: [{
+                            data: STATS_DATA_MACHINES,
+                            backgroundColor: COULEUR_LOCATIONS,
+                            borderRadius: 4,
+                            maxBarThickness: 28
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, grid: { color: COULEUR_GRILLE }, ticks: { precision: 0 } },
+                            y: { grid: { display: false } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `${ctx.raw} location(s)`,
+                                    afterLabel: ctx => 'Montant : ' + formatAr(STATS_MONTANTS_MACHINES[ctx.dataIndex] || 0)
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const canvasProduits = document.getElementById('chartTopProduits');
+            if (canvasProduits) {
+                new Chart(canvasProduits, {
+                    type: 'bar',
+                    data: {
+                        labels: STATS_LABELS_PRODUITS,
+                        datasets: [{
+                            data: STATS_DATA_PRODUITS,
+                            backgroundColor: COULEUR_COMMANDES,
+                            borderRadius: 4,
+                            maxBarThickness: 28
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: { beginAtZero: true, grid: { color: COULEUR_GRILLE } },
+                            y: { grid: { display: false } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => `Quantité : ${ctx.raw}`,
+                                    afterLabel: ctx => [
+                                        'Catégorie : ' + (STATS_CATEGORIES_PRODUITS[ctx.dataIndex] || 'Sans catégorie'),
+                                        'Montant : ' + formatAr(STATS_MONTANTS_PRODUITS[ctx.dataIndex] || 0)
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ----- Activation de l'onglet demandé (?tab=...) -----
+        document.addEventListener('DOMContentLoaded', function() {
+            const statsTabBtn = document.getElementById('stats-tab');
+            if (statsTabBtn) {
+                statsTabBtn.addEventListener('shown.bs.tab', initCharts);
+            }
+
+            const ongletsValides = ['info', 'res', 'cmd', 'fac', 'stats', 'settings'];
+            if (ONGLET_ACTIF && ONGLET_ACTIF !== 'info' && ongletsValides.includes(ONGLET_ACTIF)) {
+                const bouton = document.getElementById(ONGLET_ACTIF + '-tab');
+                if (bouton) {
+                    bootstrap.Tab.getOrCreateInstance(bouton).show();
                 }
             }
         });

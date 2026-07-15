@@ -153,11 +153,13 @@
                             </a>
                             
                             <!-- Facturer - UNIQUEMENT si en_attente ET pas de facture -->
-                            <button th:if="${reservation.factureId == null and reservation.statut == 'en_attente'}" 
+                            <a th:if="${reservation.factureId == null and reservation.statut == 'en_attente'}" 
                                     class="bg-blue-500 text-white px-4 py-2 rounded-lg font-label-md hover:opacity-90 transition-all btn-primary"
-                                    onclick="genererFacture(${reservation.idReservation}, ${idClient})">
+                                    onclick="event.preventDefault(); genererFacture(this.dataset.reservationId, this.dataset.clientId);"
+                                    th:data-client-id="${idClient}"
+                                    th:data-reservation-id="${reservation.idReservation}">
                                 Facturer
-                            </button>
+                            </a>
                             
                             <!-- Voir facture - si une facture existe -->
                             <a th:if="${reservation.factureId != null}" 
@@ -222,7 +224,7 @@
                 msgDiv.innerHTML = `
                     <div class="border border-primary-container bg-primary-container/10 p-3 rounded-lg text-primary flex items-center gap-2">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                        ✅ ${data.message || 'Facture générée avec succès !'}
+                        ${data.message || 'Facture générée avec succès !'}
                         <a href="/client/factures/${data.factureId}?idClient=${clientId}" 
                            class="ml-4 bg-primary text-on-primary px-4 py-1 rounded-lg font-label-md hover:opacity-90 transition">
                             Voir la facture
@@ -230,15 +232,14 @@
                     </div>
                 `;
                 
-                // Recharger la page après 2 secondes
                 setTimeout(() => window.location.reload(), 2000);
             })
             .catch(err => {
-                console.error('❌ Erreur:', err);
+                console.error('Erreur:', err);
                 msgDiv.innerHTML = `
                     <div class="border border-error-container bg-error-container/10 p-3 rounded-lg text-on-error-container flex items-center gap-2">
                         <span class="material-symbols-outlined">error</span>
-                        ❌ ${err.message}
+                        ${err.message}
                     </div>
                 `;
             });

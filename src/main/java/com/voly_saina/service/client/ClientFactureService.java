@@ -7,6 +7,7 @@ import com.lowagie.text.Font;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.voly_saina.controller.machine.ReservationMachineController;
 import java.awt.Color;
 
 import java.io.ByteArrayOutputStream;
@@ -25,6 +26,7 @@ import com.voly_saina.entity.LigneCommande;
 import com.voly_saina.entity.Panier;
 import com.voly_saina.entity.PanierDetails;
 import com.voly_saina.entity.ReservationMachine;
+import com.voly_saina.exception.ReservationException;
 import com.voly_saina.exception.ResourceNotFoundException;
 import com.voly_saina.repository.FactureRepository;
 import com.voly_saina.service.FactureService;
@@ -105,7 +107,10 @@ public class ClientFactureService {
         List<PanierDetails> panierDetails = panierDetailsService.findByIdPanier(panier.getIdPanier());
         List<LigneCommande> ligneCommande = ligneCommandeService.findAll();
         List<ReservationMachine> reservationMachines = reservationMachineService.findAll();
-
+        if(reservationMachines == null) {
+            reservationMachines = new ArrayList<>();
+            reservationMachines.add(reservationMachineService.findByIdFacture(idFacture));
+        }
         List<LigneCommande> lignes = new ArrayList<>();
         List<ReservationMachine> ligneReservation = new ArrayList<>();
 
@@ -117,10 +122,14 @@ public class ClientFactureService {
                 }
             }
         }
-
-        for (ReservationMachine reserve : reservationMachines) {
-            if (reserve.getFacture().getIdFacture() == facture.getIdFacture()) {
-                ligneReservation.add(reserve);
+        if (reservationMachines != null) {
+            for (ReservationMachine reserve : reservationMachines) {
+                for (PanierDetails panierDet : panierDetails) {
+                    if (panierDet.getReservationMachine() != null
+                            && (panierDet.getReservationMachine().getIdReservation() == reserve.getIdReservation())) {
+                        ligneReservation.add(reserve);
+                    }
+                }
             }
         }
 
@@ -130,20 +139,39 @@ public class ClientFactureService {
 
     }
 
-    public byte[] exporterFacturePDF(Long idFacture, Long idClient) {
+    public byte[] exporterFacturePDF(Long idFacture, Long idClient) throws ReservationException {
         Facture facture = factureService.findById(idFacture);
+
         Panier panier = facture.getPanier();
+        List<PanierDetails> listeCommande = new ArrayList<>();
+        List<PanierDetails> listeReservation = new ArrayList<>();
+        BigDecimal montantCommande = BigDecimal.ZERO;
+        BigDecimal montantReservation = BigDecimal.ZERO;
+        BigDecimal montantTotal = BigDecimal.ZERO;
 
-        List<PanierDetails> listeCommande = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
-        List<PanierDetails> listeReservation = panierDetailsService.findReservationByPanier(panier.getIdPanier());
+        if (panier == null) {
+            ReservationMachine reservation = reservationMachineService.findByIdFacture(idFacture);
+            if (reservation == null) {
+                throw new ReservationException("cette reservation doit d'abord etre facturee");
+            }
+            PanierDetails detail = new PanierDetails();
+            detail.setReservationMachine(reservation);
+            listeReservation.add(detail);
+            montantReservation = listeReservation.get(0).getReservationMachine().getPrixTotal();
 
-        BigDecimal montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null
-                ? panierDetailsService.montantCommande(panier.getIdPanier())
-                : BigDecimal.ZERO;
-        BigDecimal montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null
-                ? panierDetailsService.montantReservation(panier.getIdPanier())
-                : BigDecimal.ZERO;
-        BigDecimal montantTotal = montantCommande.add(montantReservation);
+        } else {
+            listeCommande = panierDetailsService.findCommandesByPanier(panier.getIdPanier());
+            listeReservation = panierDetailsService.findReservationByPanier(panier.getIdPanier());
+
+            montantCommande = panierDetailsService.montantCommande(panier.getIdPanier()) != null
+                    ? panierDetailsService.montantCommande(panier.getIdPanier())
+                    : BigDecimal.ZERO;
+            montantReservation = panierDetailsService.montantReservation(panier.getIdPanier()) != null
+                    ? panierDetailsService.montantReservation(panier.getIdPanier())
+                    : BigDecimal.ZERO;
+
+        }
+        montantTotal = montantCommande.add(montantReservation);
 
         try {
             Document document = new Document(PageSize.A4, 50, 50, 50, 50);
@@ -198,7 +226,9 @@ public class ClientFactureService {
                             + facture.getDateFacture().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     normalFont));
             rightHeader.addElement(new Paragraph(
-                    "Date limite : " + facture.getDateLimite().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    "Date limite : " + (facture.getDateLimite() != null
+                            ? facture.getDateLimite().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                            : "-"),
                     normalFont));
             headerTable.addCell(rightHeader);
 

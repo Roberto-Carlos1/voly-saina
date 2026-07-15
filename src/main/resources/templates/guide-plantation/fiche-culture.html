@@ -169,7 +169,11 @@
         <!-- Hero Section -->
         <section class="relative h-[400px] rounded-xl overflow-hidden mb-stack-lg border border-outline-variant">
             <div class="absolute inset-0 bg-primary-fixed flex items-center justify-center">
-                <span class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
+                <img th:if="${imageCulture != null}"
+                     th:src="@{${imageCulture}}"
+                     th:alt="${culture.nom}"
+                     class="w-full h-full object-cover" />
+                <span th:unless="${imageCulture != null}" class="material-symbols-outlined text-8xl text-on-primary-container opacity-60">agriculture</span>
             </div>
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
             <div class="absolute bottom-0 left-0 p-stack-lg w-full">
@@ -301,7 +305,7 @@
         <!-- Recommended Tools Section -->
         <section class="mb-stack-lg">
             <div class="flex justify-between items-end mb-stack-md">
-                <h2 class="font-headline-lg text-headline-lg text-on-surface">Équipements recommandés</h2>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">Équipements disponibles</h2>
             </div>
 
             <!-- Message si aucun outil -->

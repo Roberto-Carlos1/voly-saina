@@ -109,7 +109,11 @@
                             class="absolute top-3 left-3 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-1 rounded-full z-10">
                             Indisponible
                         </span>
-                        <span class="material-symbols-outlined text-outline text-[64px]">agriculture</span>
+                        <img th:src="${machineImages[machine.idMachine]}" 
+                             th:alt="${machine.nom}" 
+                             class="w-full h-full object-cover"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+                        <span class="material-symbols-outlined text-outline text-[64px]" style="display:none">agriculture</span>
                     </div>
                     
                     <div class="p-5 flex flex-col flex-1">

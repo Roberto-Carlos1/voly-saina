@@ -70,4 +70,8 @@ public class ReservationMachineService {
     public List<ReservationMachine> findByStatutReservationAndCode(String code) {
         return reservationMachineRepository.findByStatutReservationCode(code);
     }
+
+    public ReservationMachine findByIdFacture(Long idFacture) {
+        return reservationMachineRepository.findByIdFacture(idFacture);
+    }
 }

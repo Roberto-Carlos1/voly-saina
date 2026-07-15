@@ -189,15 +189,17 @@ Login : `POST /connexion` — paramètres `identifiant` (email ou téléphone) +
 | DELETE | `/admin/maintenances-machine/{id}` | MaintenanceMachineController |
 
 ### Réservations (`/admin/reservations-machine`)
-| Méthode | Route | Contrôleur |
-|---------|-------|-----------|
-| GET | `/admin/reservations-machine` | ReservationMachineController |
-| GET | `/admin/reservations-machine/{id}` | ReservationMachineController |
-| POST | `/admin/reservations-machine` | ReservationMachineController |
-| PUT | `/admin/reservations-machine/{id}` | ReservationMachineController |
-| DELETE | `/admin/reservations-machine/{id}` | ReservationMachineController |
-| GET | `/admin/reservations-machine/calendrier` | CalendarController |
-| GET | `/admin/reservations-machine/calendrier/events` | CalendarController |
+| Méthode | Route | Contrôleur | Description |
+|---------|-------|-----------|-------------|
+| GET | `/admin/reservations-machine` | ReservationMachineController | `reservation/list` (liste maître/détail) |
+| GET | `/admin/reservations-machine/{id}` | ReservationMachineController | `reservation/detail` (fiche admin : durée, reste, historique machine) |
+| GET | `/admin/reservations-machine/{id}/valider` | ReservationMachineController | Valide une réservation *en attente* (bloque si machine en maintenance / déjà réservée / indisponible), puis redirige |
+| GET | `/admin/reservations-machine/{id}/refuser` | ReservationMachineController | Refuse une réservation *en attente* (param. facultatif `motif`), puis redirige |
+| POST | `/admin/reservations-machine` | ReservationMachineController | JSON (création) |
+| PUT | `/admin/reservations-machine/{id}` | ReservationMachineController | JSON (modification) |
+| DELETE | `/admin/reservations-machine/{id}` | ReservationMachineController | JSON (suppression) |
+| GET | `/admin/reservations-machine/calendrier` | CalendarController | |
+| GET | `/admin/reservations-machine/calendrier/events` | CalendarController | |
 
 ### Factures (`/admin/factures`)
 | Méthode | Route | Contrôleur |

@@ -24,8 +24,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String identifiant) throws UsernameNotFoundException {
+        String identifiantNettoye = identifiant != null ? identifiant.trim().toLowerCase() : "";
         Utilisateur utilisateur = utilisateurRepository
-                .findByEmailOrTelephone(identifiant, identifiant)
+                .findByEmailOrTelephone(identifiantNettoye, identifiantNettoye)
                 .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé : " + identifiant));
 
         if (utilisateur.getStatutCompte() != null

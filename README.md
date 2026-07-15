@@ -64,7 +64,7 @@ Le projet est prévu pour démarrer dans une zone pilote puis s'étendre progres
 
 Avant de commencer, vérifier que les outils suivants sont installés :
 
-- **Java 17+** — [https://adoptium.net](https://adoptium.net)
+- **Java 21+** — [https://adoptium.net](https://adoptium.net)
 - **Maven 3.8+** — [https://maven.apache.org](https://maven.apache.org)
 - **PostgreSQL 14+** — [https://www.postgresql.org](https://www.postgresql.org)
 
@@ -92,7 +92,7 @@ Le fichier `src/main/resources/application.properties` n'est **pas versionné** 
    spring.datasource.password=MOT_DE_PASSE_ICI
 
    # Gestion du schéma Hibernate
-   spring.jpa.hibernate.ddl-auto=update
+   # spring.jpa.hibernate.ddl-auto=update
    spring.jpa.show-sql=true
    spring.jpa.properties.hibernate.format_sql=true
    ```

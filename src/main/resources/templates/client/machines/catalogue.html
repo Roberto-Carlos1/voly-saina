@@ -45,14 +45,14 @@
 
                 <!-- Prix -->
                 <div class="mb-8">
-                    <label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Prix / Jour (€)</label>
+                    <label class="font-label-md text-label-md text-primary uppercase tracking-wider block mb-3">Prix / Jour (Ar)</label>
                     <div class="px-1">
                         <input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-primary" 
                                type="range" min="0" max="500000" step="100" id="prixRange"
                                th:value="${prixMax != null ? prixMax : 2500}">
                         <div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
-                            <span>0 €</span>
-                            <span id="prixLabel" th:text="${prixMax != null ? prixMax + ' €' : '2500 €'}">2500 €</span>
+                            <span>0 Ar</span>
+                            <span id="prixLabel" th:text="${prixMax != null ? prixMax + ' Ar' : '2500 Ar'}">2500 Ar</span>
                         </div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
                             </div>
                             <div class="text-right ml-2 flex-shrink-0">
                                 <p class="font-bold text-xl text-primary">
-                                    <span th:text="${#numbers.formatDecimal(machine.prixJour, 0, 0, 'COMMA')}">0</span> €
+                                    <span th:text="${#numbers.formatDecimal(machine.prixJour, 0, 0, 'COMMA')}">0</span> Ar
                                     <span class="text-xs font-normal text-on-surface-variant block">/jour</span>
                                 </p>
                             </div>
@@ -250,7 +250,7 @@
         
         if (prixRange) {
             prixRange.addEventListener('input', function() {
-                prixLabel.textContent = this.value + ' €';
+                prixLabel.textContent = this.value + ' Ar';
             });
             
             prixRange.addEventListener('change', function() {

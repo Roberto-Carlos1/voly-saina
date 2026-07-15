@@ -80,7 +80,7 @@
                             </div>
                             <div class="bg-surface-container-low p-4 rounded-lg">
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Prix total</p>
-                                <p class="font-headline-md text-headline-md text-primary" id="prixTotal">0 €</p>
+                                <p class="font-headline-md text-headline-md text-primary" id="prixTotal">0 Ar</p>
                             </div>
                             <div class="bg-surface-container-low p-4 rounded-lg">
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Lieu de livraison</p>
@@ -112,7 +112,7 @@
                             </div>
                             <div class="bg-surface-container-low p-4 rounded-lg flex-1">
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Montant</p>
-                                <p class="font-body-md text-body-md font-bold text-primary" id="factureMontant">0 €</p>
+                                <p class="font-body-md text-body-md font-bold text-primary" id="factureMontant">0 Ar</p>
                             </div>
                             <div class="bg-surface-container-low p-4 rounded-lg flex-1">
                                 <p class="font-label-sm text-label-sm text-on-surface-variant">Statut</p>
@@ -281,7 +281,7 @@
             const dateDebut = data.dateDebut ? new Date(data.dateDebut).toLocaleDateString('fr-FR') : '--/--/----';
             const dateFin = data.dateFin ? new Date(data.dateFin).toLocaleDateString('fr-FR') : '--/--/----';
             document.getElementById('periode').textContent = `${dateDebut} → ${dateFin}`;
-            document.getElementById('prixTotal').textContent = (data.prixTotal || 0) + ' €';
+            document.getElementById('prixTotal').textContent = (data.prixTotal || 0) + ' Ar';
             
             if (data.lieuLivraison) {
                 document.getElementById('lieuLivraison').textContent = data.lieuLivraison;
@@ -351,7 +351,7 @@
                 if (data.factureId) {
                     document.getElementById('factureCard').style.display = 'block';
                     document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
-                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' Ar';
                     document.getElementById('factureStatut').textContent = 'Payée';
                     document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
                 }
@@ -370,7 +370,7 @@
                 if (data.factureId) {
                     document.getElementById('factureCard').style.display = 'block';
                     document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
-                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' Ar';
                     document.getElementById('factureStatut').textContent = 'Payée';
                     document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
                 }
@@ -390,7 +390,7 @@
                 if (data.factureId) {
                     document.getElementById('factureCard').style.display = 'block';
                     document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
-                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' Ar';
                     document.getElementById('factureStatut').textContent = 'En attente de paiement';
                     document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
                 }
@@ -416,7 +416,7 @@
                 if (data.factureId) {
                     document.getElementById('factureCard').style.display = 'block';
                     document.getElementById('factureNumero').textContent = data.factureNumero || 'N/A';
-                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' €';
+                    document.getElementById('factureMontant').textContent = (data.prixTotal || 0) + ' Ar';
                     document.getElementById('factureStatut').textContent = 'En attente de paiement';
                     document.getElementById('voirFactureBtn').href = '/client/factures/' + data.factureId + '?idClient=' + clientId;
                 } else {

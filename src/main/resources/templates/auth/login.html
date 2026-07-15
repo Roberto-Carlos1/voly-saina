@@ -337,6 +337,15 @@
 <p class="font-body-md text-body-md text-on-surface-variant">Accédez à votre espace et gérez votre flotte.</p>
 </div>
 
+<!-- Messages -->
+<div class="space-y-base mb-stack-md">
+    <div th:if="${success}" class="rounded-lg border border-primary bg-surface-container-low px-4 py-3 text-primary font-body-md" th:text="${success}"></div>
+    <div th:if="${error}" class="rounded-lg border border-error bg-error-container px-4 py-3 text-error font-body-md" th:text="${error}"></div>
+    <div th:if="${param.error}" class="rounded-lg border border-error bg-error-container px-4 py-3 text-error font-body-md">Email/téléphone ou mot de passe incorrect.</div>
+    <div th:if="${param.logout}" class="rounded-lg border border-outline-variant bg-surface-container-low px-4 py-3 text-on-surface-variant font-body-md">Déconnexion réussie.</div>
+    <div th:if="${param.inscription}" class="rounded-lg border border-primary bg-surface-container-low px-4 py-3 text-primary font-body-md">Compte créé avec succès. Connecte-toi maintenant.</div>
+</div>
+
 <form class="space-y-stack-md" th:action="@{/connexion}" method="post">
 <div class="space-y-base">
 <label class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Email ou téléphone</label>

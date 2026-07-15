@@ -3,26 +3,26 @@
 
 -- 1. S'assurer que les rôles existent
 INSERT INTO voly_saina.role_utilisateur (code, libelle) 
-VALUES ('CLIENT', 'Client')
+VALUES ('client', 'Client')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO voly_saina.role_utilisateur (code, libelle) 
-VALUES ('GESTIONNAIRE', 'Gestionnaire')
+VALUES ('gestionnaire', 'Gestionnaire')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO voly_saina.role_utilisateur (code, libelle) 
-VALUES ('RESPONSABLE', 'Responsable')
+VALUES ('responsable', 'Responsable')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO voly_saina.role_utilisateur (code, libelle) 
-VALUES ('EMPLOYE', 'Employé')
+VALUES ('employe', 'Employé')
 ON CONFLICT (code) DO NOTHING;
 
 -- 2. S'assurer que les statuts existent
 INSERT INTO voly_saina.statut_compte (code, libelle) 
-VALUES ('ACTIF', 'Actif')
+VALUES ('actif', 'Actif')
 ON CONFLICT (code) DO NOTHING;
 
 INSERT INTO voly_saina.statut_compte (code, libelle) 
-VALUES ('INACTIF', 'Inactif')
+VALUES ('inactif', 'Inactif')
 ON CONFLICT (code) DO NOTHING;

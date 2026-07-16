@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Erreur - Voly Saina</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; background:#f7f7f9; color:#222; margin:0; padding:0; }
+        .container{ max-width:900px; margin:60px auto; background:white; padding:30px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.08);} 
+        h1{ margin:0 0 8px 0; font-size:28px; color:#d9534f }
+        p.lead{ margin:0 0 18px 0; color:#444 }
+        .meta{ color:#666; font-size:14px; margin-bottom:18px }
+        .actions a{ display:inline-block; margin-right:8px; text-decoration:none; color:#fff; background:#337ab7; padding:10px 14px; border-radius:6px }
+        .actions a.secondary{ background:#6c757d }
+        footer{ margin-top:20px; color:#999; font-size:13px }
+        pre{ background:#f1f1f1; padding:12px; border-radius:6px; overflow:auto }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${status} + ' — ' + (${error} ?: 'Erreur')">Erreur</h1>
+        <p class="lead">Désolé — une erreur est survenue lors du traitement de votre requête.</p>
+
+        <div class="meta">
+            <div th:if="${path}"><strong>Chemin :</strong> <span th:text="${path}">/exemple</span></div>
+            <div th:if="${timestamp}"><strong>Heure :</strong> <span th:text="${timestamp}">2026-07-16T12:00:00</span></div>
+        </div>
+
+        <div th:if="${message}">
+            <strong>Message :</strong>
+            <div><span th:text="${message}">Détails techniques</span></div>
+        </div>
+
+        <div class="actions">
+            <a href="/">Retour à l'accueil</a>
+            <a href="javascript:history.back()" class="secondary">Retour</a>
+        </div>
+
+        <footer>
+            <div>Si le problème persiste, contactez le support ou réessayez plus tard.</div>
+        </footer>
+    </div>
+</body>
+</html>

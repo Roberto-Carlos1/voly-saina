@@ -1,16 +1,19 @@
 package com.voly_saina.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "fiche_culture", schema = "voly_saina")
 public class FicheCulture {
@@ -18,8 +21,10 @@ public class FicheCulture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_fiche")
+    @EqualsAndHashCode.Include
     private Long idFiche;
     
+    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_culture", nullable = false)
     private Culture culture;
@@ -54,4 +59,17 @@ public class FicheCulture {
     @CreationTimestamp
     @Column(name = "date_mise_a_jour", nullable = false, updatable = false)
     private LocalDateTime dateMiseAJour;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        FicheCulture that = (FicheCulture) o;
+        return idFiche != null && Objects.equals(idFiche, that.idFiche);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

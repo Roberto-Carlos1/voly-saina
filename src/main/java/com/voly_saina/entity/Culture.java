@@ -1,15 +1,17 @@
 package com.voly_saina.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "culture", schema = "voly_saina")
 public class Culture {
@@ -17,6 +19,7 @@ public class Culture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_culture")
+    @EqualsAndHashCode.Include
     private Long idCulture;
     
     @Column(name = "nom", nullable = false, length = 120, unique = true)
@@ -34,6 +37,20 @@ public class Culture {
     @Column(name = "actif", nullable = false)
     private Boolean actif = true;
     
+    @ToString.Exclude
     @OneToOne(mappedBy = "culture", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private FicheCulture ficheCulture;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Culture that = (Culture) o;
+        return idCulture != null && Objects.equals(idCulture, that.idCulture);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

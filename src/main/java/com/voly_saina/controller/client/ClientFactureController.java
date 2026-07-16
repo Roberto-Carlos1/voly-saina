@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -50,12 +51,28 @@ public class ClientFactureController {
             @RequestParam(required = false) String statut,
             Model model) {
         Utilisateur utilisateur = getUtilisateurConnecte(user);
-        List<FactureClientDTO> factures = clientFactureService.listerFacturesClient(utilisateur.getIdUtilisateur(),
-                statut);
+        List<FactureClientDTO> toutesLesFactures = clientFactureService.listerFacturesClient(utilisateur.getIdUtilisateur(),
+            null);
+        List<FactureClientDTO> factures = (statut == null || statut.isBlank())
+            ? toutesLesFactures
+            : toutesLesFactures.stream()
+                .filter(facture -> statut.equalsIgnoreCase(facture.getStatutCode()))
+                .toList();
+
+        BigDecimal totalRestant = toutesLesFactures.stream()
+            .map(FactureClientDTO::getMontantRestant)
+            .filter(java.util.Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long nbFacturesEnRetard = toutesLesFactures.stream()
+            .filter(FactureClientDTO::isEnRetard)
+            .count();
 
         model.addAttribute("factures", factures);
         model.addAttribute("filtreStatut", statut);
         model.addAttribute("idClient", utilisateur.getIdUtilisateur());
+        model.addAttribute("totalRestant", totalRestant);
+        model.addAttribute("nbFacturesEnRetard", nbFacturesEnRetard);
 
         return "client/factures/list";
     }
